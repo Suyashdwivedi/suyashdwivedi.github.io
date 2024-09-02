@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recent Changes - Hindi Wikipedia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #changes {
+            margin-top: 20px;
+        }
+
+        .change-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        #counter {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Recent Changes - Hindi Wikipedia</h1>
+    <div id="counter">Changes Count: 0</div>
+    <div id="changes"></div>
+
+    <audio id="beep" preload="auto">
+        <source src="beep1.mp3" type="audio/mp3">
+    </audio>
+
+    <script>
+        let lastChangeTimestamp = null;
+        let changeCount = 0;
+
+        async function fetchRecentChanges() {
+            const response = await fetch('https://hi.wikipedia.org/w/api.php?action=query&list=recentchanges&rclimit=10&format=json&origin=*');
+            const data = await response.json();
+            displayChanges(data.query.recentchanges);
+        }
+
+        function displayChanges(changes) {
+            const changesDiv = document.getElementById('changes');
+            changesDiv.innerHTML = ''; // Clear previous changes
+
+            changes.forEach(change => {
+                const changeItem = document.createElement('div');
+                changeItem.className = 'change-item';
+                changeItem.innerHTML = `
+                    <strong>पृष्ठ:</strong> <a href="https://hi.wikipedia.org/wiki/${encodeURIComponent(change.title)}" target="_blank">${change.title}</a><br>
+                    <strong>संपादक:</strong> ${change.user || 'Anonymous'}<br>
+                    <strong>समय:</strong> ${new Date(change.timestamp).toLocaleString('hi-IN')}<br>
+                    <strong>सारांश:</strong> ${change.comment || 'कोई सारांश नहीं'}
+                `;
+                changesDiv.appendChild(changeItem);
+                
+                // Check if this change is new
+                if (!lastChangeTimestamp || new Date(change.timestamp) > lastChangeTimestamp) {
+                    changeCount++;
+                    lastChangeTimestamp = new Date(change.timestamp);
+                    document.getElementById('beep').play(); // Play beep sound
+                    showNotification(change.title); // Show notification
+                }
+            });
+
+            // Update the change counter
+            document.getElementById('counter').innerText = `Changes Count: ${changeCount}`;
+        }
+
+        function showNotification(title) {
+            // Check for notification permission
+            if (Notification.permission === 'granted') {
+                new Notification('नया परिवर्तन', {
+                    body: `पृष्ठ "${title}" में बदलाव हुआ है!`,
+                    icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Wikipedia-logo-v2.svg/1200px-Wikipedia-logo-v2.svg.png' // Optional icon
+                });
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        new Notification('नई परिवर्तन मिली', {
+                            body: `पृष्ठ "${title}" में बदलाव हुआ है!`,
+                            icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Wikipedia-logo-v2.svg/1200px-Wikipedia-logo-v2.svg.png' // Optional icon
+                        });
+                    }
+                });
+            }
+        }
+
+        // Function to periodically fetch changes
+        function startFetching() {
+            fetchRecentChanges();
+            setInterval(fetchRecentChanges, 5000); // Fetch every 5 seconds
+        }
+
+        // Start fetching changes
+        startFetching();
+    </script>
+</body>
+</html>
