@@ -2,7 +2,7 @@ name: Scheduled PHP Script
 
 on:
   schedule:
-    - cron: '*/10 * * * *'  # Runs every 10 minutes
+    - cron: '*/1 * * * *'  # Runs every 1 minutes
 
 jobs:
   run:
