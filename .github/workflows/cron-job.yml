@@ -1,17 +1,1 @@
-name: Scheduled PHP Script
 
-on:
-  schedule:
-    - cron: '*/1 * * * *'  # Runs every 1 minutes
-
-jobs:
-  run:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Run PHP script
-        run: |
-          sudo apt-get install php
-          php /path/to/update_edit_count.php
