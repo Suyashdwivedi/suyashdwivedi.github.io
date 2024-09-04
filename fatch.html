@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hindi Wikipedia Edit Count Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        #editCount {
+            font-size: 2em;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Total Edits in Hindi Wikipedia</h1>
+    <p>Total edits made to Hindi Wikipedia: <span id="editCount">Loading...</span></p>
+
+    <script>
+        async function fetchEditCount() {
+            const response = await fetch('fetch_edit_count.php');
+            const data = await response.json();
+            document.getElementById('editCount').textContent = data.editCount.toLocaleString(); // Update the displayed count
+        }
+
+        // Fetch the edit count every 10 seconds
+        setInterval(fetchEditCount, 10000);
+        fetchEditCount(); // Initial fetch
+    </script>
+</body>
+</html>
