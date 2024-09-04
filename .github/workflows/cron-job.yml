@@ -1,0 +1,1 @@
+*/10 * * * * /usr/bin/php /path/to/update_edit_count.php >> /path/to/logfile.log 2>&1
