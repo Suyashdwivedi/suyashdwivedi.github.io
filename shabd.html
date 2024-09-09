@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Replacement Tool Set</title>
+<style>
+    #input,
+    #output {
+        width: 400px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 10px;
+    }
+</style>
+<script>
+    function replaceWords() {
+        var paragraph = document.getElementById("paragraph").value;
+        var replacements = {
+            "ƒ": "१",
+            "„": "२",
+            "…": "३",
+            "†": "४",
+            "‡": "५",
+            "ˆ": "६",
+            "‰": "७",
+            "Š": "८",
+            "‹": "९",
+            "Œ": "०",
+            "å": "०",
+            "1": "१",
+            "2": "२",
+            "3": "३",
+            "4": "४",
+            "5": "५",
+            "6": "६",
+            "7": "७",
+            "8": "८",
+            "9": "९",
+            "0": "०",
+            "Jan": "जनवरी",
+            "Feb": "फरवरी",
+            "Mar": "मार्च",
+            "Apr": "अप्रैल",
+            "May": "मई",
+            "Jun": "जून",
+            "Jul": "जुलाई",
+            "Aug": "अगस्त",
+            "Sep": "सितंबर",
+            "Oct": "अक्टूबर",
+            "Nov": "नवंबर",
+            "Dec": "दिसंबर",
+            "जवाब": "उत्तर",
+            "खुद": "स्वयं",
+            "जहां": "जहाँ",
+            "संरचनाएं": "संरचनाएँ",
+            "सिफारिश": "अनुशंसा",
+            "शामिल": "सम्मिलित",
+            "यहां": "यहाँ",
+            "प्रक्रियाएं": "प्रक्रियाएँ",
+            "जांच": "जाँच",
+            "मसौदा": "प्रारूप",
+            "काम": "कार्य",
+            "दस्तावेज़": "आलेख",
+            "मजबूत": "सशक्त",
+            "ढांचे": "ढाँचे",
+            "ढांचा": "ढाँचा",
+            "उगाहने": "संग्रहण",
+            "तरीके": "उपाए",
+            "ढूंढ": "ढूँढ़",
+			"मुफ्त": "निःशुल्क",
+			"दुनिया": "विश्व",
+			"साल": "वर्ष",
+			"पहुंचने": "पहुँचने",
+			"पहुंचेगा": "पहुँचेगा",
+			"शुरू": "प्रारम्भ",
+			"मंजूरी": "अनुमति",
+			"मौजूद": "उपलब्ध",
+			"पहुंचते": "पहुँचते",
+			"हालांकि": " हालाँकी",
+			"शुरुआत": "प्रारम्भ",
+			"पहुंच": "पहुँच",
+			"मंजूरी": "अनुमति",
+			"जरूरतें": "आवश्यकताएँ",
+			"जरूरत": "आवश्यकता",
+			"हिस्से": "भाग",
+			"हिस्सा": "भाग",
+			"सवालों": "प्रश्नो",
+			"सवाल": "प्रश्न",
+			"मदद": "सहयता",
+			"मुफ़्त": "निःशुल्क",
+			"वहां": "वहाँ",
+			"करने के लिए": "हेतु",
+			"हमेशा": "सदैव",
+			"अलावा": "अतिरिक्त",
+			"जिम्मेदारियों": "उत्तरदायित्वों",
+			"जिम्मेदारियां": "उत्तरदायित्व",
+			"बढ़ाएं": "बढ़ाएँ",
+			"परियोजनाएं": "परियोजनाएँ",
+			"बनाएंगे": "बनाएँगे",
+			"बनाएंगी": "बनाएँगी",
+			"नीतियां": "नीतियाँ",
+			"पहुंच": "पहुँच",
+			"पहुंच": "पहुँच",
+			"पहुंच": "पहुँच",
+			"पहुंच": "पहुँच",
+			"पहुंच": "पहुँच",
+			"पहुंच": "पहुँच",
+			"पहुंच": "पहुँच",
+			"पहुंच": "पहुँच",
+			"पहुंच": "पहुँच",
+			"पहुंच": "पहुँच",
+			"पहुंच": "पहुँच",
+			"पहुंच": "पहुँच",
+            "vikimeediya": "Wikimedia",
+            "phaundeshan": "foundation",
+            "aandolan": "Movement",
+            "nyaasee bord": "Board of Trustees",
+            "wmf": "WMF",
+            "svayansevakon": "volunteers",
+            "entarapraiz": "Enterprise",
+            "tredamaark": "trademarks",
+            "sahayogiyon": "affiliate",
+            "chaartar": "Charter",
+            "hai": "hae",
+            "sakata": "sake",
+            "sadasyon": "members",
+            "hub": "Hubs",
+            "sadasyata": "membership",
+            "sahayogee": "affiliates",
+            "chaeptar": "Chapter",
+            "global kaunsil": "Global Council",
+            "vaishvik parishad": "Global Council"
+        };
+
+        for (var word in replacements) {
+            paragraph = paragraph.split(word).join(replacements[word]);
+        }
+
+        var outputDiv = document.getElementById("output");
+        outputDiv.innerHTML = "<p>" + paragraph + "</p>";
+    }
+
+    function copyOutput() {
+        var output = document.getElementById("output");
+        var range = document.createRange();
+        range.selectNode(output);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand("copy");
+        window.getSelection().removeAllRanges();
+
+        // Clear both input and output box contents
+        document.getElementById("paragraph").value = "";
+        document.getElementById("output").innerHTML = "";
+    }
+
+    function pasteFromClipboard() {
+        navigator.clipboard.readText().then(clipText => {
+            document.getElementById("paragraph").value = clipText;
+        });
+    }
+</script>
+</head>
+<body>
+
+
+    <div>
+        <textarea id="paragraph" rows="15" cols="100" style="float:left;"></textarea>
+      <!--  <button onclick="pasteFromClipboard()" style="float:left; margin-left: 10px;">Paste</button>-->
+    </div>
+    
+    <br style="clear:both;">
+    <button onclick="replaceWords()">Replace Words</button><br>
+    <div id="output"></div><br>
+
+    <button onclick="copyOutput()">Copy Output Text</button>
+</body>
+</html>
