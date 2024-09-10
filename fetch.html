@@ -51,15 +51,27 @@
             margin-top: 15px;
             cursor: pointer;
             border: none;
-            background-color: #28a745;
             color: white;
             border-radius: 5px;
             font-size: 16px;
+            font-weight: bold; /* Make text bold */
             transition: background-color 0.3s;
         }
 
-        button:hover {
-            background-color: #218838;
+        button#replace {
+            background-color: #dc3545; /* Red background for Replace Words */
+        }
+
+        button#replace:hover {
+            background-color: #c82333; /* Darker red on hover */
+        }
+
+        button#copy {
+            background-color: #28a745; /* Green background for Copy Output Text */
+        }
+
+        button#copy:hover {
+            background-color: #218838; /* Darker green on hover */
         }
 
         button:focus {
@@ -124,9 +136,9 @@
 <body>
     <div id="container">
         <textarea id="paragraph" rows="10" placeholder="Enter your text here..."></textarea>
-        <button onclick="replaceWords()">Replace Words</button>
+        <button id="replace" onclick="replaceWords()">Replace Words</button>
         <div id="output"></div>
-        <button onclick="copyOutput()">Copy Output Text</button>
+        <button id="copy" onclick="copyOutput()">Copy Output Text</button>
     </div>
 </body>
 </html>
