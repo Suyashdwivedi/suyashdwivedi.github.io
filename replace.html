@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suyash's Word Replacement Tool Set</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center-aligns items horizontally */
+            justify-content: center; /* Center-aligns items vertically */
+            height: 100vh; /* Full height of the viewport */
+            margin: 0; /* Remove default margin */
+            font-family: Arial, sans-serif; /* Set a default font */
+        }
+
+        #input,
+        #output {
+            width: 400px; /* Set a fixed width for both input and output */
+            border: 1px solid #ccc; /* Border for input and output */
+            padding: 10px; /* Padding inside the fields */
+            margin-top: 10px; /* Space above the fields */
+            resize: none; /* Prevent resizing of the textarea */
+        }
+
+        button {
+            margin: 10px; /* Space between buttons */
+            padding: 10px 20px; /* Padding inside buttons */
+            cursor: pointer; /* Change cursor on hover */
+        }
+
+        #output {
+            min-height: 50px; /* Ensure output has a minimum height */
+        }
+    </style>
+    <script>
+        let replacements = {};
+
+        // Function to load replacements from JSON file
+        async function loadReplacements() {
+            const response = await fetch('replacements.json');
+            replacements = await response.json();
+        }
+
+        async function replaceWords() {
+            // Ensure replacements are loaded
+            if (Object.keys(replacements).length === 0) {
+                alert("Replacements not loaded yet. Please try again.");
+                return;
+            }
+
+            var paragraph = document.getElementById("paragraph").value;
+
+            for (var word in replacements) {
+                paragraph = paragraph.split(word).join(replacements[word]);
+            }
+
+            var outputDiv = document.getElementById("output");
+            outputDiv.innerHTML = "<p>" + paragraph + "</p>";
+        }
+
+        function copyOutput() {
+            var output = document.getElementById("output");
+            var range = document.createRange();
+            range.selectNode(output);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand("copy");
+            window.getSelection().removeAllRanges();
+
+            // Clear both input and output box contents
+            document.getElementById("paragraph").value = "";
+            document.getElementById("output").innerHTML = "";
+            alert("Text copied to clipboard!");
+        }
+
+        function pasteFromClipboard() {
+            navigator.clipboard.readText().then(clipText => {
+                document.getElementById("paragraph").value = clipText;
+            });
+        }
+
+        // Load replacements when the page loads
+        window.onload = loadReplacements;
+    </script>
+</head>
+<body>
+    <div>
+        <textarea id="paragraph" rows="15" cols="100" style="float:left;"></textarea>
+    </div>
+    
+    <br style="clear:both;">
+    <button onclick="replaceWords()">Replace Words</button><br>
+    <div id="output"></div><br>
+
+    <button onclick="copyOutput()">Copy Output Text</button>
+</body>
+</html>
