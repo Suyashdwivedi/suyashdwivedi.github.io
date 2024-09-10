@@ -3,36 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hindi Wikipedia Edit Count Tracker</title>
+    <title>Suyash's Word Replacement Tool Set</title>
     <style>
-        body {
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
+            background-color: #f4f4f4;
         }
-        h1 {
-            color: #4CAF50;
+
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 80%;
+            max-width: 800px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
         }
-        #editCount {
-            font-size: 2em;
-            color: #333;
+
+        #input,
+        #output {
+            width: 100%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+        textarea {
+            width: 100%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-top: 15px;
+            cursor: pointer;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        button:focus {
+            outline: none;
         }
     </style>
-</head>
-<body>
-    <h1>Total Edits in Hindi Wikipedia</h1>
-    <p>Total edits made to Hindi Wikipedia: <span id="editCount">Loading...</span></p>
-
     <script>
-        async function fetchEditCount() {
-            const response = await fetch('fetch_edit_count.php');
-            const data = await response.json();
-            document.getElementById('editCount').textContent = data.editCount.toLocaleString(); // Update the displayed count
+        let replacements = {};
+
+        // Fetch the JSON file containing the word replacements
+        function loadReplacements() {
+            fetch('replacements.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    replacements = data;
+                    console.log('Replacements loaded:', replacements);
+                })
+                .catch(error => {
+                    console.error('Error loading replacements:', error);
+                });
         }
 
-        // Fetch the edit count every 10 seconds
-        setInterval(fetchEditCount, 10000);
-        fetchEditCount(); // Initial fetch
+        // Function to replace words based on the dictionary
+        function replaceWords() {
+            var paragraph = document.getElementById("paragraph").value;
+
+            // Perform word replacements
+            for (var word in replacements) {
+                paragraph = paragraph.split(word).join(replacements[word]);
+            }
+
+            var outputDiv = document.getElementById("output");
+            outputDiv.innerHTML = "<p>" + paragraph + "</p>";
+        }
+
+        // Function to copy output to clipboard
+        function copyOutput() {
+            var output = document.getElementById("output");
+            var range = document.createRange();
+            range.selectNode(output);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand("copy");
+            window.getSelection().removeAllRanges();
+
+            // Clear both input and output boxes
+            document.getElementById("paragraph").value = "";
+            document.getElementById("output").innerHTML = "";
+        }
+
+        // Load the replacements when the page is loaded
+        window.onload = function() {
+            loadReplacements();
+        };
     </script>
+</head>
+<body>
+    <div id="container">
+        <textarea id="paragraph" rows="10" placeholder="Enter your text here..."></textarea>
+        <button onclick="replaceWords()">Replace Words</button>
+        <div id="output"></div>
+        <button onclick="copyOutput()">Copy Output Text</button>
+    </div>
 </body>
 </html>
