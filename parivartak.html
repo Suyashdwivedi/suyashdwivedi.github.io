@@ -30,14 +30,6 @@
             border-radius: 10px;
         }
 
-        #home-link {
-            align-self: flex-start; /* Align to the left */
-            margin-bottom: 15px; /* Space below the link */
-            text-decoration: none; /* Remove underline */
-            color: #007bff; /* Bootstrap primary color */
-            font-weight: bold; /* Make text bold */
-        }
-
         textarea {
             width: 100%;
             border: 1px solid #ccc;
@@ -149,13 +141,14 @@
                 
                 console.log("Output copied to clipboard.");
                 
-             } else {
-                 console.log("No output available to copy.");
-                 // Play alternative sound
-                 const altAudio = new Audio('beep1.mp3'); // Path to your alternative beep sound file
-                 altAudio.play();
-                 
-                 console.log("No output available to copy.");
+            } else {
+                console.log("No output available to copy.");
+                // Play alternative sound
+                const altAudio = new Audio('beep1.mp3'); // Path to your alternative beep sound file
+                altAudio.play();
+                
+                console.log("No output available to copy.");
+                
              }
          }
 
@@ -167,7 +160,6 @@
  </head>
  <body>
      <div id="container">
-         <a id="home-link" href="index.html">Home</a> <!-- Link to Home Page -->
          <textarea id="paragraph" rows="10" placeholder="Enter your text here..."></textarea>
          <button id="replace" onclick="replaceWords()">Replace Words</button>
          <div id="output"></div>
