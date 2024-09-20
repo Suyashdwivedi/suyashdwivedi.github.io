@@ -12,6 +12,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column; /* Stack elements vertically */
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
         }
@@ -77,6 +78,12 @@
             margin-top: 10px;
             border-radius: 5px;
         }
+
+        /* Style for Home link */
+        #home-link {
+            margin-bottom: 15px; /* Space below the link */
+            font-size: 18px; /* Font size for the link */
+        }
     </style>
     <script>
         let replacements = {};
@@ -141,14 +148,13 @@
                 
                 console.log("Output copied to clipboard.");
                 
-            } else {
+             } else {
                 console.log("No output available to copy.");
                 // Play alternative sound
                 const altAudio = new Audio('beep1.mp3'); // Path to your alternative beep sound file
                 altAudio.play();
                 
                 console.log("No output available to copy.");
-                
              }
          }
 
@@ -159,6 +165,8 @@
      </script>
  </head>
  <body>
+     <!-- Home Link -->
+     <a id="home-link" href="index.html">Home</a> <!-- Change 'index.html' to your homepage URL -->
      <div id="container">
          <textarea id="paragraph" rows="10" placeholder="Enter your text here..."></textarea>
          <button id="replace" onclick="replaceWords()">Replace Words</button>
