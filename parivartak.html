@@ -30,6 +30,14 @@
             border-radius: 10px;
         }
 
+        #home-link {
+            align-self: flex-start; /* Align to the left */
+            margin-bottom: 15px; /* Space below the link */
+            text-decoration: none; /* Remove underline */
+            color: #007bff; /* Bootstrap primary color */
+            font-weight: bold; /* Make text bold */
+        }
+
         textarea {
             width: 100%;
             border: 1px solid #ccc;
@@ -72,8 +80,10 @@
 
         #output {
             width: 100%;
-            border-top: 1px solid #ccc; /* Add a top border to separate input and output */
-            padding-top: 10px; /* Add some padding at the top of the output area */
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
         }
     </style>
     <script>
@@ -109,19 +119,19 @@
             var outputDiv = document.getElementById("output");
             outputDiv.innerHTML = "<p>" + paragraph + "</p>";
 
+            // Clear the input box after replacing words
+            document.getElementById("paragraph").value = "";
+
             // Play sound when replacing words
             const audio = new Audio('beep2.mp3'); // Path to your beep2 sound file
             audio.play();
-            
-             // Clear the input box after replacement
-             document.getElementById("paragraph").value = "";
         }
 
         // Function to copy output to clipboard and play sound
         function copyOutput() {
             var output = document.getElementById("output");
             
-             if (output.innerHTML.trim() !== "") { // Check if output has content
+            if (output.innerHTML.trim() !== "") { // Check if output has content
                 var range = document.createRange();
                 range.selectNode(output);
                 window.getSelection().removeAllRanges();
@@ -136,11 +146,16 @@
                 // Play sound
                 const audio = new Audio('beep.mp3'); // Path to your beep sound file
                 audio.play();
+                
+                console.log("Output copied to clipboard.");
+                
              } else {
                  console.log("No output available to copy.");
                  // Play alternative sound
                  const altAudio = new Audio('beep1.mp3'); // Path to your alternative beep sound file
                  altAudio.play();
+                 
+                 console.log("No output available to copy.");
              }
          }
 
@@ -148,14 +163,15 @@
          window.onload = function() {
              loadReplacements();
          };
-    </script>
-</head>
-<body>
-    <div id="container">
-        <textarea id="paragraph" rows="10" placeholder="Enter your text here..."></textarea>
-        <button id="replace" onclick="replaceWords()">Replace Words</button>
-        <div id="output"></div>
-        <button id="copy" onclick="copyOutput()">Copy Output Text</button>
-    </div>
-</body>
+     </script>
+ </head>
+ <body>
+     <div id="container">
+         <a id="home-link" href="index.html">Home</a> <!-- Link to Home Page -->
+         <textarea id="paragraph" rows="10" placeholder="Enter your text here..."></textarea>
+         <button id="replace" onclick="replaceWords()">Replace Words</button>
+         <div id="output"></div>
+         <button id="copy" onclick="copyOutput()">Copy Output Text</button>
+     </div>
+ </body>
 </html>
