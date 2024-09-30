@@ -9,6 +9,7 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            position: relative;
         }
 
         #changes {
@@ -25,85 +26,133 @@
             font-weight: bold;
             margin-bottom: 10px;
         }
+
+        #credit {
+            margin-top: 20px;
+            font-size: small;
+        }
+
+        button {
+            position: fixed;
+            z-index: 1000;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        #scrollToTop {
+            top: 20px; /* Positioning for top button */
+            right: 20px; /* Positioning for top button */
+        }
+
+        #scrollToBottom {
+            bottom: 20px; /* Positioning for bottom button */
+            right: 20px; /* Positioning for bottom button */
+        }
     </style>
 </head>
 <body>
-    <h1>Recent Changes - Hindi Wikipedia</h1>
-    <div id="counter">Changes Count: 0</div>
-    <div id="changes"></div>
+   <h1>
+      <a href="https://hi.wikipedia.org/w/index.php?hidecategorization=1&hideWikibase=1&hidenewuserlog=1&limit=50&days=14&title=%E0%A4%B5%E0%A4%BF%E0%A4%B7%E0%A5%87%E0%A4%B7:RecentChanges&urlversion=2" target="_blank">
+         Recent Changes - Hindi Wikipedia
+      </a>
+   </h1>
 
-    <audio id="beep" preload="auto">
-        <source src="Recent_changes.mp3" type="audio/mp3">
-    </audio>
+   <div id="counter">Changes Count: 0</div>
+   <div id="changes"></div>
 
-    <script>
-        let lastChangeTimestamp = null;
-        let changeCount = 0;
+   <div id="credit">
+       Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>
+   </div>
 
-        async function fetchRecentChanges() {
-            // Updated URL with specified parameters
-            const response = await fetch('https://hi.wikipedia.org/w/api.php?action=query&list=recentchanges&rcprop=title|timestamp|user|comment|ids|sizes|redirect&rcshow=!bot&hidecategorization=1&hideWikibase=1&hidenewuserlog=1&rclimit=500&format=json&origin=*');
-            const data = await response.json();
-            displayChanges(data.query.recentchanges);
-        }
+   <audio id="beep" preload="auto">
+       <source src="Recent_changes.mp3" type="audio/mp3">
+   </audio>
 
-        function displayChanges(changes) {
-            const changesDiv = document.getElementById('changes');
-            changesDiv.innerHTML = ''; // Clear previous changes
+   <!-- Scroll to Top Button -->
+   <button id="scrollToTop" onclick="scrollToTop()">▲</button>
 
-            changes.forEach(change => {
-                const changeItem = document.createElement('div');
-                changeItem.className = 'change-item';
+   <!-- Scroll to Bottom Button -->
+   <button id="scrollToBottom" onclick="scrollToBottom()">▼</button>
 
-                changeItem.innerHTML = `
-                    <strong>पृष्ठ में परिवर्तन:</strong> <a href="https://hi.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history" target="_blank">${change.title}</a><br>                    
-                    <strong>संपादक:</strong> <a href="https://hi.wikipedia.org/wiki/विशेष:Contributions/${encodeURIComponent(change.user)}" target="_blank">${change.user || 'Anonymous'}</a><br>
-                    <strong>समय (UTC):</strong> ${new Date(change.timestamp).toUTCString()}<br>
-                    <strong>समय (IST):</strong> ${new Date(change.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}<br>
-                    <strong>सारांश:</strong> ${change.comment || 'कोई सारांश नहीं'}<br>
-                `;
-                changesDiv.appendChild(changeItem);
+   <script>
+       let lastChangeTimestamp = null;
+       let changeCount = 0;
 
-                // Check if this change is new
-                if (!lastChangeTimestamp || new Date(change.timestamp) > lastChangeTimestamp) {
-                    changeCount++;
-                    lastChangeTimestamp = new Date(change.timestamp);
-                    document.getElementById('beep').play(); // Play beep sound
-                    showNotification(change.title); // Show notification
-                }
-            });
+       async function fetchRecentChanges() {
+           const response = await fetch('https://hi.wikipedia.org/w/api.php?action=query&list=recentchanges&rcprop=title|timestamp|user|comment|ids|sizes|redirect&rcshow=!bot&hidecategorization=1&hideWikibase=1&hidenewuserlog=1&rclimit=500&format=json&origin=*');
+           const data = await response.json();
+           displayChanges(data.query.recentchanges);
+       }
 
-            // Update the change counter
-            document.getElementById('counter').innerText = `Changes Count: ${changeCount}`;
-        }
+       function displayChanges(changes) {
+           const changesDiv = document.getElementById('changes');
+           changesDiv.innerHTML = ''; // Clear previous changes
 
-        function showNotification(title) {
-            // Check for notification permission
-            if (Notification.permission === 'granted') {
-                new Notification('नया परिवर्तन', {
-                    body: `पृष्ठ "${title}" में बदलाव हुआ है!`,
-                    icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Wikipedia-logo-v2.svg/1200px-Wikipedia-logo-v2.svg.png' // Optional icon
-                });
-            } else if (Notification.permission !== 'denied') {
-                Notification.requestPermission().then(permission => {
-                    if (permission === 'granted') {
-                        new Notification('नई परिवर्तन मिली', {
-                            body: `पृष्ठ "${title}" में बदलाव हुआ है!`,
-                            icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Wikipedia-logo-v2.svg/1200px-Wikipedia-logo-v2.svg.png' // Optional icon
-                        });
-                    }
-                });
-            }
-        }
+           changes.forEach(change => {
+               const changeItem = document.createElement('div');
+               changeItem.className = 'change-item';
 
-        // Function to periodically fetch changes
-        function startFetching() {
-            fetchRecentChanges();
-            setInterval(fetchRecentChanges, 5000); // Fetch every 5 seconds
-        }
+               changeItem.innerHTML = `
+                   <strong>पृष्ठ में परिवर्तन:</strong> <a href="https://hi.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history" target="_blank">${change.title}</a><br>                    
+                   <strong>संपादक:</strong> <a href="https://hi.wikipedia.org/wiki/विशेष:Contributions/${encodeURIComponent(change.user)}" target="_blank">${change.user || 'Anonymous'}</a><br>
+                   <strong>समय (UTC):</strong> ${new Date(change.timestamp).toUTCString()}<br>
+                   <strong>समय (IST):</strong> ${new Date(change.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}<br>
+                   <strong>सारांश:</strong> ${change.comment || 'कोई सारांश नहीं'}<br>
+               `;
+               changesDiv.appendChild(changeItem);
 
-        // Start fetching changes
-        startFetching();
-    </script>
+               // Check if this change is new
+               if (!lastChangeTimestamp || new Date(change.timestamp) > lastChangeTimestamp) {
+                   changeCount++;
+                   lastChangeTimestamp = new Date(change.timestamp);
+                   document.getElementById('beep').play(); // Play beep sound
+                   showNotification(change.title); // Show notification
+               }
+           });
+
+           // Update the change counter
+           document.getElementById('counter').innerText = `Changes Count: ${changeCount}`;
+       }
+
+       function showNotification(title) {
+           if (Notification.permission === 'granted') {
+               new Notification('नया परिवर्तन', {
+                   body: `पृष्ठ "${title}" में बदलाव हुआ है!`,
+                   icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Wikipedia-logo-v2.svg/1200px-Wikipedia-logo-v2.svg.png'
+               });
+           } else if (Notification.permission !== 'denied') {
+               Notification.requestPermission().then(permission => {
+                   if (permission === 'granted') {
+                       new Notification('नई परिवर्तन मिली', {
+                           body: `पृष्ठ "${title}" में बदलाव हुआ है!`,
+                           icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Wikipedia-logo-v2.svg/1200px-Wikipedia-logo-v2.svg.png'
+                       });
+                   }
+               });
+           }
+       }
+
+       function startFetching() {
+           fetchRecentChanges();
+           setInterval(fetchRecentChanges, 5000); // Fetch every 5 seconds
+       }
+
+       startFetching();
+
+       // Scroll to Top function
+       function scrollToTop() {
+           window.scrollTo({ top: 0, behavior: 'smooth' });
+       }
+
+       // Scroll to Bottom function
+       function scrollToBottom() {
+           window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+       }
+   </script>
 </body>
 </html>
