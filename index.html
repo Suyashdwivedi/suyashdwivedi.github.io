@@ -41,7 +41,7 @@
         let changeCount = 0;
 
         async function fetchRecentChanges() {
-            const response = await fetch('https://hi.wikipedia.org/w/api.php?action=query&list=recentchanges&rclimit=50&format=json&origin=*');
+            const response = await fetch('https://hi.wikipedia.org/w/api.php?action=query&list=recentchanges&rcprop=title|timestamp|user|comment|ids|sizes|redirect&rcshow=!bot&hidenewuserlog=1&hidecategorization=1&hideWikibase=1&rclimit=500&rcend=2024-09-16T00:00:00Z&rcstart=2024-09-30T00:00:00Z&format=json&origin=*');
             const data = await response.json();
             displayChanges(data.query.recentchanges);
         }
@@ -84,7 +84,7 @@
             } else if (Notification.permission !== 'denied') {
                 Notification.requestPermission().then(permission => {
                     if (permission === 'granted') {
-                        new Notification('नई परिवर्तन मिली', {
+                        new Notification('नया परिवर्तन', {
                             body: `पृष्ठ "${title}" में बदलाव हुआ है!`,
                             icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Wikipedia-logo-v2.svg/1200px-Wikipedia-logo-v2.svg.png' // Optional icon
                         });
