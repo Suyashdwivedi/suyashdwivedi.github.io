@@ -56,7 +56,7 @@
                 changeItem.className = 'change-item';
 
                 changeItem.innerHTML = `
-                    <strong>पृष्ठ:</strong> <a href="https://hi.wikipedia.org/wiki/${encodeURIComponent(change.title)}" target="_blank">${change.title}</a><br>
+                    <strong>पृष्ठ में परिवर्तन:</strong> <a href="https://hi.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history" target="_blank">${change.title}</a><br>                    
                     <strong>संपादक:</strong> <a href="https://hi.wikipedia.org/wiki/विशेष:Contributions/${encodeURIComponent(change.user)}" target="_blank">${change.user || 'Anonymous'}</a><br>
                     <strong>समय (UTC):</strong> ${new Date(change.timestamp).toUTCString()}<br>
                     <strong>समय (IST):</strong> ${new Date(change.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}<br>
