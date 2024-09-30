@@ -57,7 +57,7 @@
 
                 changeItem.innerHTML = `
                     <strong>पृष्ठ:</strong> <a href="https://hi.wikipedia.org/wiki/${encodeURIComponent(change.title)}" target="_blank">${change.title}</a><br>
-                    <strong>संपादक:</strong> <a href="https://hi.wikipedia.org/wiki/User:${encodeURIComponent(change.user)}" target="_blank">${change.user || 'Anonymous'}</a><br>
+                    <strong>संपादक:</strong> <a href="https://hi.wikipedia.org/wiki/विशेष:Contributions/${encodeURIComponent(change.user)}" target="_blank">${change.user || 'Anonymous'}</a><br>
                     <strong>समय (UTC):</strong> ${new Date(change.timestamp).toUTCString()}<br>
                     <strong>समय (IST):</strong> ${new Date(change.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}<br>
                     <strong>सारांश:</strong> ${change.comment || 'कोई सारांश नहीं'}<br>
