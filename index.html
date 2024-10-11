@@ -122,7 +122,7 @@
        function showNotification(title) {
            if (Notification.permission === 'granted') {
                new Notification('नया परिवर्तन', {
-                   body: `पृष्ठ "${title}" में बदलाव हुआ है!`,
+                   body: `पृष्ठ "${title}" में परिवर्तन हुआ है!`,
                    icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Wikipedia-logo-v2.svg/1200px-Wikipedia-logo-v2.svg.png'
                });
            } else if (Notification.permission !== 'denied') {
