@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wikimedia URL Shortener</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+            text-align: center; /* Center align text */
+        }
+        h1 {
+            color: #333;
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #87CEEB; /* Light blue color */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #00BFFF; /* Darker blue on hover */
+        }
+        .output-box {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+            display: none; /* Initially hidden */
+        }
+        footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #555;
+        }
+        .instructions {
+            margin-top: 10px; /* Space between input and instructions */
+            font-size: 12px; /* Smaller font size for instructions */
+            color: #666; /* Lighter color for instructions */
+        }
+    </style>
+</head>
+<body>
+    <h1>Wikimedia URL Shortener</h1>
+    <div>
+        <input type="text" id="longUrl" placeholder="Enter long URL here" aria-label="Long URL input" />
+        <button id="shortenBtn">Shorten URL</button>
+    </div>
+
+    <!-- Instructions below the input box -->
+    <p class="instructions">Links to the following domains may be shortened:</p>
+    <p class="instructions">*.wikipedia.org, *.wiktionary.org, *.wikibooks.org, *.wikinews.org, *.wikiquote.org, *.wikisource.org, *.wikiversity.org, *.wikivoyage.org, *.wikimedia.org, *.wikidata.org, *.wikifunctions.org and *.mediawiki.org</p>
+
+    <div class="output-box" id="result"></div> <!-- Output box -->
+    <button id="copyBtn" style="display:none;">Copy Shortened URL</button> <!-- Initially hidden -->
+
+    <footer>
+        <p>Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></p>
+    </footer>
+
+    <script>
+        document.getElementById('shortenBtn').onclick = function() {
+            const longUrl = document.getElementById('longUrl').value.trim();
+            
+            if (!longUrl) {
+                alert('Please enter a valid URL.');
+                return;
+            }
+
+            const apiUrl = 'https://meta.wikimedia.org/w/api.php?action=shortenurl&format=json&origin=*';
+            
+            // Create the data object for the POST request
+            const data = new URLSearchParams();
+            data.append('url', longUrl);
+
+            fetch(apiUrl, {
+                method: 'POST',
+                body: data,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.shortenurl && data.shortenurl.shorturl) {
+                        const shortUrl = data.shortenurl.shorturl;
+
+                        // Display the shortened URL in the output box
+                        document.getElementById('result').innerHTML = 'Shortened URL: <a href="' + shortUrl + '" target="_blank">' + shortUrl + '</a>';
+                        document.getElementById('result').style.display = 'block'; // Show output box
+                        document.getElementById('copyBtn').style.display = 'inline-block'; // Show copy button
+                    } else {
+                        let errorMessage = 'Error shortening URL.';
+                        if (data.error && data.error.info) {
+                            errorMessage += ' ' + data.error.info; // Provide specific error message if available
+                        }
+                        document.getElementById('result').innerHTML = errorMessage;
+                        document.getElementById('result').style.display = 'block'; // Show output box even on error
+                        document.getElementById('copyBtn').style.display = 'none'; // Hide copy button
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('result').innerHTML = 'Error occurred while shortening the URL.';
+                    document.getElementById('result').style.display = 'block'; // Show output box on catch
+                    document.getElementById('copyBtn').style.display = 'none'; // Hide copy button
+                });
+        };
+
+        document.getElementById('copyBtn').onclick = function() {
+            const shortUrl = document.querySelector('#result a').href; // Get the shortened URL
+            navigator.clipboard.writeText(shortUrl).then(() => {
+                alert('Shortened URL copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy the shortened URL.');
+            });
+        };
+    </script>
+</body>
+</html>
