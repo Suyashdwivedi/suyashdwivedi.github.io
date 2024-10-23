@@ -47,13 +47,14 @@
     </table>
     <script>
         const sparqlQuery = `
-        SELECT ?scientist ?scientistLabel ?fieldLabel ?placeLabel ?placeCoord WHERE {
+        SELECT ?scientist ?scientistLabel ?fieldLabel ?placeLabel ?placeCoord ?article WHERE {
           ?scientist wdt:P31 wd:Q5;          # Entity must be a human
                     wdt:P106 wd:Q901;       # Occupation must be a scientist
                     wdt:P27 wd:Q668;        # Nationality must be Indian
                     wdt:P101 ?field;        # Field of study property
                     wdt:P19 ?place.         # Place of birth property
           ?place wdt:P625 ?placeCoord.      # Get coordinates for the birthplace
+          OPTIONAL { ?article schema:about ?scientist ; schema:inLanguage "en" ; schema:isPartOf <https://en.wikipedia.org/>. }
           SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
         }
         LIMIT 100`;
@@ -68,10 +69,11 @@
                         name: person.scientistLabel.value,
                         field: person.fieldLabel.value,
                         birthplace: person.placeLabel.value,
-                        coordinates: [parseFloat(coords[1]), parseFloat(coords[0])]
+                        coordinates: [parseFloat(coords[1]), parseFloat(coords[0])],
+                        article: person.article ? person.article.value : null
                     };
                     tableBody.append("tr")
-                        .html(`<td>${scientistInfo.name}</td><td>${scientistInfo.field}</td><td>${scientistInfo.birthplace}</td>`);
+                        .html(`<td><a href="${scientistInfo.article}" target="_blank">${scientistInfo.name}</a></td><td>${scientistInfo.field}</td><td>${scientistInfo.birthplace}</td>`);
                     return scientistInfo;
                 });
 
