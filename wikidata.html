@@ -3,60 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Indian Scientists and Their Fields of Study</title>
+    <title>Historical Figures Map</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/topojson@3"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             background-color: #f4f4f4;
         }
-        table {
+        svg {
             width: 100%;
-            border-collapse: collapse;
+            height: 90vh;
         }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-            text-align: left;
+        .tooltip {
+            position: absolute;
+            text-align: center;
+            width: 100px;
+            padding: 5px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 0px;
+            border-radius: 8px;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
-    <table>
-        <thead>
-            <tr>
-                <th>Scientist</th>
-                <th>Field of Study</th>
-            </tr>
-        </thead>
-        <tbody id="data"></tbody>
-    </table>
-    <script>
-        const sparqlQuery = `
-        SELECT ?scientist ?scientistLabel ?fieldLabel WHERE {
-          ?scientist wdt:P31 wd:Q5;          # Entity must be a human
-                    wdt:P106 wd:Q901;       # Occupation must be a scientist
-                    wdt:P27 wd:Q668;        # Nationality must be Indian
-                    wdt:P101 ?field.        # Field of study property
-          SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-        }
-        LIMIT 100`;
 
-        fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparqlQuery) + "&format=json")
-            .then(response => response.json())
-            .then(data => {
-                const tableBody = d3.select("#data");
-                data.results.bindings.forEach(entry => {
-                    tableBody.append("tr")
-                        .html(`<td>${entry.scientistLabel.value}</td><td>${entry.fieldLabel.value}</td>`);
+<svg id="map"></svg>
+<div class="tooltip" style="opacity: 0;"></div>
+
+<script>
+    const sparqlQuery = `
+    SELECT ?person ?personLabel ?placeLabel ?birthYear ?placeCoord WHERE {
+      ?person wdt:P31 wd:Q5;              # Entity must be a human
+              wdt:P569 ?birthDate;         # Birth date property
+              wdt:P19 ?place.              # Place of birth property
+      ?place wdt:P625 ?placeCoord.         # Get coordinates for the birthplace
+      BIND(YEAR(?birthDate) AS ?birthYear)
+      FILTER(?birthYear > 1800 && ?birthYear < 2000)   # Birth year range
+      SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+    }
+    LIMIT 100`;
+
+    fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparqlQuery) + "&format=json")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.results.bindings.length === 0) {
+                console.log("No data found from the query.");
+                return;
+            }
+
+            const peopleData = data.results.bindings.map(person => {
+                const coords = person.placeCoord.value.replace('Point(', '').replace(')', '').split(' ');
+                return {
+                    name: person.personLabel.value,
+                    birthplace: [parseFloat(coords[0]), parseFloat(coords[1])],
+                    year: person.birthYear.value,
+                    place: person.placeLabel.value
+                };
+            });
+
+            // Set up the map dimensions
+            const width = 960, height = 600;
+            const svg = d3.select("#map").attr("width", width).attr("height", height);
+            const projection = d3.geoNaturalEarth1().scale(160).translate([width / 2, height / 2]);
+            const path = d3.geoPath().projection(projection);
+
+            // Load the world map data
+            d3.json("https://unpkg.com/world-atlas@2.0.0/world/110m.json")
+                .then(worldData => {
+                    const countries = topojson.feature(worldData, worldData.objects.countries).features;
+
+                    svg.selectAll("path")
+                        .data(countries)
+                        .enter().append("path")
+                        .attr("fill", "#c4c4c4")
+                        .attr("d", path)
+                        .style("stroke", "#333");
+
+                    // Tooltip setup
+                    const tooltip = d3.select(".tooltip");
+
+                    // Plotting people on the map
+                    svg.selectAll("circle")
+                        .data(peopleData)
+                        .enter().append("circle")
+                        .attr("cx", d => projection(d.birthplace)[0])
+                        .attr("cy", d => projection(d.birthplace)[1])
+                        .attr("r", 5)
+                        .attr("fill", "red")
+                        .attr("stroke", "black")
+                        .attr("stroke-width", 1)
+                        .on("mouseover", function(event, d) {
+                            tooltip.transition().duration(200).style("opacity", .9);
+                            tooltip.html(`${d.name}<br>Born: ${d.place} (${d.year})`)
+                                   .style("left", (event.pageX + 5) + "px")
+                                   .style("top", (event.pageY - 28) + "px");
+                        })
+                        .on("mouseout", function() {
+                            tooltip.transition().duration(500).style("opacity", 0);
+                        });
+
+                    // Adding place labels
+                    svg.selectAll("text")
+                        .data(peopleData)
+                        .enter().append("text")
+                        .attr("x", d => projection(d.birthplace)[0] + 10) // Offset for better visibility
+                        .attr("y", d => projection(d.birthplace)[1])
+                        .text(d => d.place)
+                        .attr("font-size", "10px")
+                        .attr("fill", "black");
+                })
+                .catch(error => {
+                    console.error("Error loading the world map data:", error);
                 });
-            })
-            .catch(error => console.error('Error fetching or parsing data:', error));
-    </script>
+        })
+        .catch(error => {
+            console.error('Error fetching or parsing data:', error);
+        });
+</script>
+
 </body>
 </html>
