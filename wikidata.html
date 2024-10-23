@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historical Figures Born by Region</title>
+    <title>Historical Figures Map</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/topojson@3"></script>
     <style>
@@ -28,7 +28,6 @@
 <svg id="map"></svg>
 
 <script>
-    // SPARQL query to get historical figures, their birthplaces, and birth years
     const sparqlQuery = `
     SELECT ?person ?personLabel ?placeLabel ?birthYear ?placeCoord WHERE {
       ?person wdt:P31 wd:Q5;              # Entity must be a human
@@ -41,93 +40,66 @@
     }
     LIMIT 100`;
 
-    // Fetch function to get the data from Wikidata SPARQL endpoint
     fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparqlQuery) + "&format=json")
-      .then(response => {
-          if (!response.ok) {
-              throw new Error('Network response was not ok');
-          }
-          return response.json();
-      })
-      .then(data => {
-          console.log("Data fetched:", data);  // Debugging step
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.results.bindings.length === 0) {
+                console.log("No data found from the query.");
+                return;
+            }
 
-          // Check if any data was returned
-          if (data.results.bindings.length === 0) {
-              console.log("No data found from the query.");
-              return;
-          }
+            const peopleData = data.results.bindings.map(person => {
+                const coords = person.placeCoord.value.replace('Point(', '').replace(')', '').split(' ');
+                return {
+                    name: person.personLabel.value,
+                    birthplace: [parseFloat(coords[0]), parseFloat(coords[1])],
+                    year: person.birthYear.value
+                };
+            });
 
-          // Parse the results into an array of people with coordinates
-          const peopleData = data.results.bindings.map(person => {
-              const coords = person.placeCoord.value.replace('Point(', '').replace(')', '').split(' ');
-              return {
-                  name: person.personLabel.value,
-                  birthplace: [parseFloat(coords[0]), parseFloat(coords[1])],
-                  year: person.birthYear.value
-              };
-          });
+            // Set up the map dimensions
+            const width = 960, height = 600;
+            const svg = d3.select("#map").attr("width", width).attr("height", height);
+            const projection = d3.geoNaturalEarth1().scale(160).translate([width / 2, height / 2]);
+            const path = d3.geoPath().projection(projection);
 
-          console.log("Parsed people data:", peopleData);  // Debugging step
-          
-          // Set up dimensions for the map
-          const width = 960, height = 600;
+            // Load the world map data
+            d3.json("https://unpkg.com/world-atlas@2.0.0/world/110m.json")
+                .then(worldData => {
+                    const countries = topojson.feature(worldData, worldData.objects.countries).features;
 
-          // Create SVG container
-          const svg = d3.select("#map")
-                        .attr("width", width)
-                        .attr("height", height);
+                    svg.selectAll("path")
+                        .data(countries)
+                        .enter().append("path")
+                        .attr("fill", "#c4c4c4")
+                        .attr("d", path)
+                        .style("stroke", "#333");
 
-          // Define map projection and path generator
-          const projection = d3.geoNaturalEarth1()
-                               .scale(160)
-                               .translate([width / 2, height / 2]);
-
-          const path = d3.geoPath().projection(projection);
-
-          // Load the world map data
-          d3.json("https://unpkg.com/world-atlas@2.0.0/world/110m.json").then(worldData => {
-              console.log("World map data:", worldData);  // Debugging step
-
-              const countries = topojson.feature(worldData, worldData.objects.countries).features;
-
-              // Draw the world map
-              svg.selectAll("path")
-                 .data(countries)
-                 .enter().append("path")
-                 .attr("fill", "#c4c4c4")
-                 .attr("d", path)
-                 .style("stroke", "#333");
-
-              console.log("Map drawn successfully.");  // Debugging step
-
-              // Plot people on the map based on the coordinates
-              svg.selectAll("circle")
-                 .data(peopleData)
-                 .enter().append("circle")
-                 .attr("cx", d => projection(d.birthplace)[0])
-                 .attr("cy", d => projection(d.birthplace)[1])
-                 .attr("r", 5)
-                 .attr("fill", "red")
-                 .attr("stroke", "black")
-                 .attr("stroke-width", 1)
-                 .on("mouseover", function (event, d) {
-                     d3.select(this)
-                       .attr("r", 10)
-                       .attr("fill", "blue");
-                 })
-                 .on("mouseout", function () {
-                     d3.select(this)
-                       .attr("r", 5)
-                       .attr("fill", "red");
-                 })
-                 .append("title")  // Tooltip on hover
-                 .text(d => `${d.name} (Born: ${d.year})`);
-          }).catch(error => {
-              console.error("Error loading the world map data:", error);  // Error handling
-          });
-      })
-      .catch(error => console.error('Error fetching or parsing data:', error));  // Error handling
+                    // Plotting people on the map
+                    svg.selectAll("circle")
+                        .data(peopleData)
+                        .enter().append("circle")
+                        .attr("cx", d => projection(d.birthplace)[0])
+                        .attr("cy", d => projection(d.birthplace)[1])
+                        .attr("r", 5)
+                        .attr("fill", "red")
+                        .attr("stroke", "black")
+                        .attr("stroke-width", 1)
+                        .append("title")  // Tooltip on hover
+                        .text(d => `${d.name} (Born: ${d.year})`);
+                })
+                .catch(error => {
+                    console.error("Error loading the world map data:", error);
+                });
+        })
+        .catch(error => {
+            console.error('Error fetching or parsing data:', error);
+        });
 </script>
 
 </body>
