@@ -89,7 +89,7 @@
                 peopleData.forEach(person => {
                     L.marker(person.coordinates)
                         .addTo(map)
-                        .bindPopup(`<b>${person.name}</b><br>${person.field}<br>${person.birthplace}`);
+                        .bindPopup(`<b><a href="${person.article}" target="_blank">${person.name}</a></b><br>${person.field}<br>${person.birthplace}`);
                 });
             })
             .catch(error => console.error('Error fetching or parsing data:', error));
