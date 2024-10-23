@@ -43,8 +43,21 @@
 
     // Fetch function to get the data from Wikidata SPARQL endpoint
     fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparqlQuery) + "&format=json")
-      .then(response => response.json())
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Network response was not ok');
+          }
+          return response.json();
+      })
       .then(data => {
+          console.log("Data fetched:", data);  // Debugging step
+
+          // Check if any data was returned
+          if (data.results.bindings.length === 0) {
+              console.log("No data found from the query.");
+              return;
+          }
+
           // Parse the results into an array of people with coordinates
           const peopleData = data.results.bindings.map(person => {
               const coords = person.placeCoord.value.replace('Point(', '').replace(')', '').split(' ');
@@ -54,6 +67,8 @@
                   year: person.birthYear.value
               };
           });
+
+          console.log("Parsed people data:", peopleData);  // Debugging step
           
           // Set up dimensions for the map
           const width = 960, height = 600;
@@ -72,6 +87,8 @@
 
           // Load the world map data
           d3.json("https://unpkg.com/world-atlas@2.0.0/world/110m.json").then(worldData => {
+              console.log("World map data:", worldData);  // Debugging step
+
               const countries = topojson.feature(worldData, worldData.objects.countries).features;
 
               // Draw the world map
@@ -81,6 +98,8 @@
                  .attr("fill", "#c4c4c4")
                  .attr("d", path)
                  .style("stroke", "#333");
+
+              console.log("Map drawn successfully.");  // Debugging step
 
               // Plot people on the map based on the coordinates
               svg.selectAll("circle")
@@ -104,9 +123,11 @@
                  })
                  .append("title")  // Tooltip on hover
                  .text(d => `${d.name} (Born: ${d.year})`);
+          }).catch(error => {
+              console.error("Error loading the world map data:", error);  // Error handling
           });
       })
-      .catch(error => console.error('Error fetching or parsing data:', error));
+      .catch(error => console.error('Error fetching or parsing data:', error));  // Error handling
 </script>
 
 </body>
