@@ -151,9 +151,9 @@
                       birthplace: person.placeLabel.value,
                       country: person.countryLabel.value,
                       coordinates: [parseFloat(coords[1]), parseFloat(coords[0])],
-                      article: person.article ? person.article.value : null,
-                      image: person.image ? person.image.value : null,
-                      wikidata: `https://www.wikidata.org/wiki/${person.scientist.value.split('/').pop()}`
+                      articleLink: person.article ? person.article.value : null,
+                      imageUrl: person.image ? person.image.value : null,
+                      wikidataLink: `https://www.wikidata.org/wiki/${person.scientist.value.split('/').pop()}`
                   };
               });
 
@@ -165,15 +165,15 @@
                           field: scientist.field,
                           birthplace: scientist.birthplace,
                           country: scientist.country,
-                          article: scientist.article,
-                          image: scientist.image,
-                          wikidata: scientist.wikidata,
+                          articleLink: scientist.articleLink,
+                          imageUrl: scientist.imageUrl,
+                          wikidataLink: scientist.wikidataLink,
                           coordinates: scientist.coordinates
                       };
 
                       tableBody.append("tr")
                         .html(`<td>${index + 1}</td>
-                               <td><a href="${scientist.article || '#'}" target="_blank">${scientist.name}</a> (<a href="${scientist.wikidata}" target="_blank">Wikidata</a>)</td>
+                               <td><a href="${scientist.articleLink || '#'}" target="_blank">${scientist.name}</a> (<a href="${scientist.wikidataLink}" target="_blank">Wikidata</a>)</td>
                                <td>${scientist.field}</td>
                                <td>${scientist.birthplace}</td>
                                <td>${scientist.country}</td>`);
@@ -188,7 +188,16 @@
 
               Object.values(uniqueScientists).forEach(scientist => {
                   const marker = L.marker(scientist.coordinates).addTo(map);
-                  marker.bindPopup(`<b>${scientist.name}</b><br>${scientist.field}<br>${scientist.birthplace}<br>${scientist.country}`);
+                  const popupContent = `
+                    <b>${scientist.name}</b><br />
+                    ${scientist.field}<br />
+                    ${scientist.birthplace}<br />
+                    ${scientist.country}<br />
+                    ${scientist.imageUrl ? `<img src="${scientist.imageUrl}" alt="${scientist.name}" style="width:auto;height:auto;max-width:150px;">` : ''}
+                    ${scientist.articleLink ? `<br /><a href="${scientist.articleLink}" target="_blank">Wikipedia</a>` : ''}
+                    (<a href="${scientist.wikidataLink}" target="_blank">Wikidata</a>)
+                  `;
+                  marker.bindPopup(popupContent);
               });
 
               hideLoading();
@@ -199,7 +208,7 @@
           });
 
         function scrollToTop() {
-          window.scrollTo({ top: 0, behavior:'smooth' });
+          window.scrollTo({ top : 0, behavior:'smooth' });
         }
 
         function scrollToBottom() {
