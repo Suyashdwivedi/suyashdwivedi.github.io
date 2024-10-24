@@ -113,9 +113,7 @@
                 <th class="sortable" onclick="sortTable(2)">Field</th>
                 <th class="sortable" onclick="sortTable(3)">Birthplace</th>
                 <th class="sortable" onclick="sortTable(4)">Country</th>
-                <th>Image</th> <!-- Added column for image -->
-                <th>Wikipedia</th> <!-- Added column for Wikipedia link -->
-                <th>Wikidata</th> <!-- Added column for Wikidata link -->
+                <!-- Removed image and link columns from the table -->
             </tr>
         </thead>
         <tbody id="data"></tbody>
@@ -179,10 +177,7 @@
                                <td><a href="${scientist.articleLink || '#'}" target="_blank">${scientist.name}</a></td>
                                <td>${scientist.field}</td>
                                <td>${scientist.birthplace}</td>
-                               <td>${scientist.country}</td>
-                               <td>${scientist.imageUrl ? `<img src="${scientist.imageUrl}" alt="${scientist.name}" style="width:auto;height:auto;max-width:100px;">` : 'N/A'}</td> <!-- Thumbnail Image -->
-                               <td><a href="${scientist.articleLink || '#'}" target="_blank">Wikipedia</a></td> <!-- Wikipedia Link -->
-                               <td><a href="${scientist.wikidataLink}" target="_blank">Wikidata</a></td>`); <!-- Wikidata Link -->
+                               <td>${scientist.country}</td>`);
                   }
               });
 
@@ -199,8 +194,8 @@
                     ${scientist.field}<br />
                     ${scientist.birthplace}<br />
                     ${scientist.country}<br />
-                    ${scientist.imageUrl ? `<img src="${scientist.imageUrl}" alt="${scientist.name}" style="width:auto;height:auto;max-width:150px;">` : ''}
-                    ${scientist.articleLink ? `<br /><a href="${scientist.articleLink}" target="_blank">Wikipedia</a>` : ''}
+                    ${scientist.imageUrl ? `<img src="${scientist.imageUrl}" alt="${scientist.name}" style="width:auto;height:auto;max-width:150px;">` : 'Image N/A'}<br />
+                    ${scientist.articleLink ? `<a href="${scientist.articleLink}" target="_blank">Wikipedia</a>` : ''}
                     (<a href="${scientist.wikidataLink}" target="_blank">Wikidata</a>)
                   `;
                   marker.bindPopup(popupContent);
