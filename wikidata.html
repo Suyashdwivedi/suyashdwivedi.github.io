@@ -51,7 +51,7 @@
           ?writer wdt:P31 wd:Q5;              # Entity must be a human
                   wdt:P106 wd:Q36180;        # Occupation must be a writer
                   wdt:P21 wd:Q6581072;       # Gender must be female
-                  wdt:P27 wd:Q48;            # Nationality must be Asian
+                  wdt:P27 wd:Q48;            # Continent must be Asia
                   wdt:P136 ?genre;           # Genre property
                   wdt:P19 ?place.            # Place of birth property
           ?place wdt:P625 ?placeCoord.       # Get coordinates for the birthplace
@@ -62,8 +62,19 @@
         LIMIT 100`;
 
         fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparqlQuery) + "&format=json")
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('Received data:', data);
+                if (!data.results.bindings.length) {
+                    console.log("No data found.");
+                    return;
+                }
+
                 const tableBody = d3.select("#data");
                 const peopleData = data.results.bindings.map(person => {
                     const coords = person.placeCoord.value.replace('Point(', '').replace(')', '').split(' ');
@@ -75,6 +86,7 @@
                         article: person.article ? person.article.value : null,
                         image: person.image ? person.image.value : null
                     };
+                    console.log('Processed writer info:', writerInfo);
                     tableBody.append("tr")
                         .html(`<td><a href="${writerInfo.article}" target="_blank">${writerInfo.name}</a></td><td>${writerInfo.genre}</td><td>${writerInfo.birthplace}</td>`);
                     return writerInfo;
