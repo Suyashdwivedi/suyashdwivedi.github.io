@@ -38,6 +38,7 @@
     <table>
         <thead>
             <tr>
+                <th>S.No</th>
                 <th>Scientist</th>
                 <th>Field</th>
                 <th>Birthplace</th>
@@ -65,7 +66,7 @@
             .then(response => response.json())
             .then(data => {
                 const tableBody = d3.select("#data");
-                const scientistsData = data.results.bindings.map(person => {
+                const scientistsData = data.results.bindings.map((person, index) => {
                     const coords = person.placeCoord.value.replace('Point(', '').replace(')', '').split(' ');
                     const scientistInfo = {
                         name: person.scientistLabel.value,
@@ -75,8 +76,10 @@
                         article: person.article ? person.article.value : null,
                         image: person.image ? person.image.value : null
                     };
+
+                    // Append a table row with the serial number
                     tableBody.append("tr")
-                        .html(`<td><a href="${scientistInfo.article}" target="_blank">${scientistInfo.name}</a></td><td>${scientistInfo.field}</td><td>${scientistInfo.birthplace}</td>`);
+                        .html(`<td>${index + 1}</td><td><a href="${scientistInfo.article}" target="_blank">${scientistInfo.name}</a></td><td>${scientistInfo.field}</td><td>${scientistInfo.birthplace}</td>`);
                     return scientistInfo;
                 });
 
