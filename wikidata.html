@@ -17,38 +17,61 @@
         }
         #map {
             width: 100%;
-            height: 90vh;
+            height: 70vh;
+            margin-bottom: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 2em;
+            color: #333;
+        }
+        p {
+            text-align: center;
+            font-size: 1.2em;
+            color: #555;
+            margin: 10px 20px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
+            cursor: pointer;
         }
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
+            text-align: left;
         }
         th {
             background-color: #f2f2f2;
-            text-align: left;
+        }
+        th.sortable:hover {
+            background-color: #ddd;
         }
     </style>
 </head>
 <body>
+    <h1>Asian Female Scientists and Their Birthplaces</h1>
+    <p>This page highlights notable female scientists from Asia, showcasing their fields of expertise, birthplaces, and countries. Below is a map showing their birthplaces, and a sortable table that provides more detailed information about each scientist.</p>
+
     <div id="map"></div>
+    
     <table>
         <thead>
             <tr>
-                <th>S.No</th>
-                <th>Scientist</th>
-                <th>Field</th>
-                <th>Birthplace</th>
+                <th class="sortable" onclick="sortTable(0)">S.No</th>
+                <th class="sortable" onclick="sortTable(1)">Scientist</th>
+                <th class="sortable" onclick="sortTable(2)">Field</th>
+                <th class="sortable" onclick="sortTable(3)">Birthplace</th>
+                <th class="sortable" onclick="sortTable(4)">Country</th>
             </tr>
         </thead>
         <tbody id="data"></tbody>
     </table>
+
     <script>
         const sparqlQuery = `
-        SELECT ?scientist ?scientistLabel ?fieldLabel ?placeLabel ?placeCoord ?article ?image WHERE {
+        SELECT ?scientist ?scientistLabel ?fieldLabel ?placeLabel ?placeCoord ?article ?image ?countryLabel WHERE {
           ?scientist wdt:P31 wd:Q5;             # Entity must be a human
                     wdt:P106 wd:Q901;           # Occupation must be a scientist
                     wdt:P21 wd:Q6581072;        # Gender must be female
@@ -73,14 +96,19 @@
                         name: person.scientistLabel.value,
                         field: person.fieldLabel.value,
                         birthplace: person.placeLabel.value,
+                        country: person.countryLabel.value,
                         coordinates: [parseFloat(coords[1]), parseFloat(coords[0])],
                         article: person.article ? person.article.value : null,
                         image: person.image ? person.image.value : null
                     };
 
-                    // Append a table row with the serial number
+                    // Append a table row with the serial number, scientist info, field, birthplace, and country
                     tableBody.append("tr")
-                        .html(`<td>${index + 1}</td><td><a href="${scientistInfo.article}" target="_blank">${scientistInfo.name}</a></td><td>${scientistInfo.field}</td><td>${scientistInfo.birthplace}</td>`);
+                        .html(`<td>${index + 1}</td>
+                               <td><a href="${scientistInfo.article}" target="_blank">${scientistInfo.name}</a></td>
+                               <td>${scientistInfo.field}</td>
+                               <td>${scientistInfo.birthplace}</td>
+                               <td>${scientistInfo.country}</td>`);
                     return scientistInfo;
                 });
 
@@ -94,7 +122,7 @@
 
                 // Add markers for each scientist with images if available
                 scientistsData.forEach(person => {
-                    let popupContent = `<b><a href="${person.article}" target="_blank">${person.name}</a></b><br>${person.field}<br>${person.birthplace}`;
+                    let popupContent = `<b><a href="${person.article}" target="_blank">${person.name}</a></b><br>${person.field}<br>${person.birthplace}, ${person.country}`;
                     if (person.image) {
                         popupContent += `<br><img src="${person.image}" alt="${person.name}" style="width:50px;height:50px;">`;
                     }
@@ -104,6 +132,48 @@
                 });
             })
             .catch(error => console.error('Error fetching or parsing data:', error));
+
+        // Sorting function for the table
+        function sortTable(n) {
+            const table = document.querySelector("table");
+            let rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            switching = true;
+            dir = "asc";  // Set the sorting direction to ascending
+
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+
+                    if (dir === "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir === "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount === 0 && dir === "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
     </script>
 </body>
 </html>
