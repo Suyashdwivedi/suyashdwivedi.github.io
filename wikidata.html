@@ -113,6 +113,9 @@
                 <th class="sortable" onclick="sortTable(2)">Field</th>
                 <th class="sortable" onclick="sortTable(3)">Birthplace</th>
                 <th class="sortable" onclick="sortTable(4)">Country</th>
+                <th>Image</th> <!-- Added column for image -->
+                <th>Wikipedia</th> <!-- Added column for Wikipedia link -->
+                <th>Wikidata</th> <!-- Added column for Wikidata link -->
             </tr>
         </thead>
         <tbody id="data"></tbody>
@@ -173,10 +176,13 @@
 
                       tableBody.append("tr")
                         .html(`<td>${index + 1}</td>
-                               <td><a href="${scientist.articleLink || '#'}" target="_blank">${scientist.name}</a> (<a href="${scientist.wikidataLink}" target="_blank">Wikidata</a>)</td>
+                               <td><a href="${scientist.articleLink || '#'}" target="_blank">${scientist.name}</a></td>
                                <td>${scientist.field}</td>
                                <td>${scientist.birthplace}</td>
-                               <td>${scientist.country}</td>`);
+                               <td>${scientist.country}</td>
+                               <td>${scientist.imageUrl ? `<img src="${scientist.imageUrl}" alt="${scientist.name}" style="width:auto;height:auto;max-width:100px;">` : 'N/A'}</td> <!-- Thumbnail Image -->
+                               <td><a href="${scientist.articleLink || '#'}" target="_blank">Wikipedia</a></td> <!-- Wikipedia Link -->
+                               <td><a href="${scientist.wikidataLink}" target="_blank">Wikidata</a></td>`); <!-- Wikidata Link -->
                   }
               });
 
@@ -223,11 +229,16 @@
           const sortedRows = rows.sort((a, b) => {
               const cellA = a.cells[columnIndex].innerText.toLowerCase();
               const cellB = b.cells[columnIndex].innerText.toLowerCase();
-              return cellA.localeCompare(cellB);
+              
+              if (columnIndex === 0) { // Numeric sorting for S.No
+                  return parseInt(cellA) - parseInt(cellB);
+              } else { // Alphabetical sorting for other columns
+                  return cellA.localeCompare(cellB);
+              }
           });
 
-          tbody.innerHTML = "";
-          sortedRows.forEach(row => tbody.appendChild(row));
+          tbody.innerHTML = ""; // Clear existing rows
+          sortedRows.forEach(row => tbody.appendChild(row)); // Append sorted rows
       }
     </script>
 </body>
