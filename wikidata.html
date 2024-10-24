@@ -97,7 +97,7 @@
     <p>This page highlights notable female scientists from Asia, showcasing their fields of expertise, birthplaces, and countries. Below is a map showing their birthplaces, and a sortable table that provides more detailed information about each scientist.</p>
     
     <div class="credentials">
-        Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>, Wikimedia Contributor (*You may need to wait for sometime/refres thee page once)..
+        Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>, Wikimedia Contributor (*You may need to wait for sometime/refres the page once)..
     </div>
 
     <div class="scroll-btn">
@@ -197,15 +197,32 @@
                 // Add markers to the map for each unique scientist
                 Object.values(uniqueScientists).forEach(scientist => {
                     const marker = L.marker(scientist.coordinates).addTo(map);
-                    marker.bindPopup(`<b>${scientist.name}</b><br>${scientist.field}<br>${scientist.birthplace}<br>${scientist.country}`);
+                    marker.bindPopup(`<b>${scientist.name}</b><br>${scientist.field}<br>${scientist.birthplace}, ${scientist.country}`);
                 });
 
-                hideLoading(); // Hide the loading GIF when the content is fully loaded
+                hideLoading(); // Hide loading GIF
             })
             .catch(error => {
-                console.error('Error fetching data:', error);
-                hideLoading(); // Hide the loading GIF even if there's an error
+                console.error("Error fetching data: ", error);
+                hideLoading(); // Hide loading GIF
             });
+
+        // Function to sort table by a given column index
+        function sortTable(colIndex) {
+            const table = document.querySelector("table tbody");
+            const rows = Array.from(table.rows);
+            const sortedRows = rows.slice(1).sort((a, b) => {
+                const aText = a.cells[colIndex].innerText.toLowerCase();
+                const bText = b.cells[colIndex].innerText.toLowerCase();
+                return aText.localeCompare(bText);
+            });
+            // Clear existing rows
+            table.innerHTML = "";
+            // Append sorted rows
+            sortedRows.forEach(row => table.appendChild(row));
+            // Re-add header
+            table.prepend(rows[0]);
+        }
 
         // Scroll to Top Function
         function scrollToTop() {
@@ -215,23 +232,6 @@
         // Scroll to Bottom Function
         function scrollToBottom() {
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        }
-
-        // Function to sort table
-        function sortTable(columnIndex) {
-            const table = document.querySelector("table");
-            const tbody = table.tBodies[0];
-            const rows = Array.from(tbody.rows);
-
-            const sortedRows = rows.sort((a, b) => {
-                const cellA = a.cells[columnIndex].innerText;
-                const cellB = b.cells[columnIndex].innerText;
-                return cellA.localeCompare(cellB);
-            });
-
-            // Clear the table and append sorted rows
-            tbody.innerHTML = "";
-            sortedRows.forEach(row => tbody.appendChild(row));
         }
     </script>
 </body>
