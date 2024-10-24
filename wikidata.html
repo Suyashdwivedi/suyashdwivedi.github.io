@@ -174,7 +174,7 @@
                         .html(`<td>${index + 1}</td>
                                <td><a href="${scientist.article || '#'}" target="_blank">${scientist.name}</a> (<a href="${scientist.wikidata}" target="_blank">Wikidata</a>)</td>
                                <td>${scientist.field}</td>
-                               <td>${scientist.birthplace}</td>
+                               <td><a href="${scientist.article || `https://en.wikipedia.org/wiki/${encodeURIComponent(scientist.birthplace.replace(/ /g, '_'))}`}" target="_blank">${scientist.birthplace}</a></td> <!-- Hyperlinked Birthplace -->
                                <td>${scientist.country}</td>`);
                   }
               });
@@ -188,13 +188,13 @@
               Object.values(uniqueScientists).forEach(scientist => {
                   const marker = L.marker(scientist.coordinates).addTo(map);
                   
-                  // Determine the appropriate Wikipedia link
+                  // Determine the appropriate Wikipedia link for the article
                   const wikiLink = scientist.article || `https://en.wikipedia.org/wiki/${encodeURIComponent(scientist.name.replace(/ /g, '_'))}`;
 
                   const popupContent = `
                     <b><a href="${wikiLink}" target="_blank">${scientist.name}</a></b><br />
                     ${scientist.field}<br />
-                    ${scientist.birthplace}<br />
+                    <a href="${wikiLink}" target="_blank">${scientist.birthplace}</a><br /> <!-- Hyperlinked Birthplace -->
                     ${scientist.country}<br />
                     ${scientist.image ? `<img src="${scientist.image}" alt="${scientist.name}" style="width:auto;height:auto;max-width:150px;">` : 'Image N/A'}<br />
                     (<a href="${scientist.wikidata}" target="_blank">Wikidata</a>)
