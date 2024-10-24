@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asian Female Scientists and Their Birthplaces as per Wikidata</title>
+    <title>100 Asian Female Scientists and Their Birthplaces as per Wikidata</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/topojson@3"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -85,7 +85,7 @@
     <p>This page highlights notable female scientists from Asia, showcasing their fields of expertise, birthplaces, and countries. Below is a map showing their birthplaces, and a sortable table that provides more detailed information about each scientist.</p>
     
     <div class="credentials">
-        Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>, Wikimedia Contributor (*You may need to refres thee page once).
+        Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>, Wikimedia Contributor (*You may need to refres thee page once)..
     </div>
 
     <div class="scroll-btn">
@@ -109,7 +109,7 @@
     </table>
 
     <script>
-        const sparqlQuery = 
+        const sparqlQuery = `
         SELECT ?scientist ?scientistLabel ?fieldLabel ?placeLabel ?placeCoord ?article ?image ?countryLabel WHERE {
           ?scientist wdt:P31 wd:Q5;             # Entity must be a human
                     wdt:P106 wd:Q901;           # Occupation must be a scientist
@@ -123,7 +123,7 @@
           OPTIONAL { ?scientist wdt:P18 ?image. } # Optional image property
           SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
         }
-        LIMIT 100;
+        LIMIT 100`;
 
         fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparqlQuery) + "&format=json")
             .then(response => response.json())
@@ -143,11 +143,11 @@
 
                     // Append a table row with the serial number, scientist info, field, birthplace, and country
                     tableBody.append("tr")
-                        .html(<td>${index + 1}</td>
+                        .html(`<td>${index + 1}</td>
                                <td><a href="${scientistInfo.article}" target="_blank">${scientistInfo.name}</a></td>
                                <td>${scientistInfo.field}</td>
                                <td>${scientistInfo.birthplace}</td>
-                               <td>${scientistInfo.country}</td>);
+                               <td>${scientistInfo.country}</td>`);
                     return scientistInfo;
                 });
 
@@ -161,9 +161,9 @@
 
                 // Add markers for each scientist with images if available
                 scientistsData.forEach(person => {
-                    let popupContent = <b><a href="${person.article}" target="_blank">${person.name}</a></b><br>${person.field}<br>${person.birthplace}, ${person.country};
+                    let popupContent = `<b><a href="${person.article}" target="_blank">${person.name}</a></b><br>${person.field}<br>${person.birthplace}, ${person.country}`;
                     if (person.image) {
-                        popupContent += <br><img src="${person.image}" alt="${person.name}" style="width:50px;height:50px;">;
+                        popupContent += `<br><img src="${person.image}" alt="${person.name}" style="width:50px;height:50px;">`;
                     }
                     L.marker(person.coordinates)
                         .addTo(map)
