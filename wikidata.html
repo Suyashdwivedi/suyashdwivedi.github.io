@@ -22,6 +22,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
         th, td {
             border: 1px solid #ddd;
@@ -38,7 +39,6 @@
     <table>
         <thead>
             <tr>
-                <th>S.No</th>
                 <th>Scientist</th>
                 <th>Field</th>
                 <th>Birthplace</th>
@@ -49,11 +49,11 @@
     <script>
         const sparqlQuery = `
         SELECT ?scientist ?scientistLabel ?fieldLabel ?placeLabel ?placeCoord ?article ?image WHERE {
-          ?scientist wdt:P31 wd:Q5;             # Entity must be a human
+          ?scientist wdt:P31 wd:Q5;              # Entity must be a human
                     wdt:P106 wd:Q901;           # Occupation must be a scientist
                     wdt:P21 wd:Q6581072;        # Gender must be female
                     wdt:P27 wd:Q668;            # Nationality must be Indian
-                    wdt:P101 ?field;            # Field of work property
+                    wdt:P101 ?field;            # Field of study property
                     wdt:P19 ?place.             # Place of birth property
           ?place wdt:P625 ?placeCoord.          # Get coordinates for the birthplace
           OPTIONAL { ?article schema:about ?scientist ; schema:inLanguage "en" ; schema:isPartOf <https://en.wikipedia.org/>. }
@@ -62,11 +62,25 @@
         }
         LIMIT 100`;
 
+        console.log('Fetching data from Wikidata...');
+        
         fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparqlQuery) + "&format=json")
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response received:', response);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('Received data:', data);
+                if (!data.results.bindings.length) {
+                    console.log("No data found.");
+                    return;
+                }
+
                 const tableBody = d3.select("#data");
-                const scientistsData = data.results.bindings.map((person, index) => {
+                const peopleData = data.results.bindings.map(person => {
                     const coords = person.placeCoord.value.replace('Point(', '').replace(')', '').split(' ');
                     const scientistInfo = {
                         name: person.scientistLabel.value,
@@ -76,14 +90,14 @@
                         article: person.article ? person.article.value : null,
                         image: person.image ? person.image.value : null
                     };
-
-                    // Append a table row with the serial number
+                    console.log('Processed scientist info:', scientistInfo);
                     tableBody.append("tr")
-                        .html(`<td>${index + 1}</td><td><a href="${scientistInfo.article}" target="_blank">${scientistInfo.name}</a></td><td>${scientistInfo.field}</td><td>${scientistInfo.birthplace}</td>`);
+                        .html(`<td><a href="${scientistInfo.article}" target="_blank">${scientistInfo.name}</a></td><td>${scientistInfo.field}</td><td>${scientistInfo.birthplace}</td>`);
                     return scientistInfo;
                 });
 
                 // Initialize the map
+                console.log('Initializing map...');
                 const map = L.map('map').setView([20, 78], 4); // Centering on India
 
                 // Set up the OSM layer
@@ -91,8 +105,9 @@
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(map);
 
+                console.log('Adding markers...');
                 // Add markers for each scientist with images if available
-                scientistsData.forEach(person => {
+                peopleData.forEach(person => {
                     let popupContent = `<b><a href="${person.article}" target="_blank">${person.name}</a></b><br>${person.field}<br>${person.birthplace}`;
                     if (person.image) {
                         popupContent += `<br><img src="${person.image}" alt="${person.name}" style="width:50px;height:50px;">`;
@@ -101,6 +116,8 @@
                         .addTo(map)
                         .bindPopup(popupContent);
                 });
+
+                console.log('All markers added.');
             })
             .catch(error => console.error('Error fetching or parsing data:', error));
     </script>
