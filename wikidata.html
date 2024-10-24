@@ -15,6 +15,7 @@
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
+            position: relative; /* Set relative positioning for the buttons */
         }
         #map {
             width: 100%;
@@ -57,19 +58,23 @@
         }
         /* Scroll to Top/Bottom Buttons */
         .scroll-btn {
-            text-align: center;
-            margin: 20px 0;
+            position: fixed;
+            right: 20px; /* Adjust the right positioning */
+            top: 50%; /* Center vertically */
+            transform: translateY(-50%); /* Adjust to truly center */
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* Space between buttons */
         }
         .scroll-btn button {
             font-size: 24px;
-            padding: 10px 20px;
+            padding: 10px;
             background-color: #333;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
-            margin: 0 10px;
         }
         .scroll-btn button:hover {
             background-color: #555;
@@ -85,7 +90,8 @@
     </div>
 
     <div class="scroll-btn">
-        <button onclick="scrollToTop()">Go to Top <i class='fas fa-arrow-alt-circle-up'></i></button>
+        <button onclick="scrollToTop()">↑ <i class='fas fa-arrow-alt-circle-up'></i></button>
+        <button onclick="scrollToBottom()">↓ <i class='fas fa-arrow-alt-circle-down'></i></button>
     </div>
     
     <div id="map"></div>
@@ -102,10 +108,6 @@
         </thead>
         <tbody id="data"></tbody>
     </table>
-
-    <div class="scroll-btn">
-        <button onclick="scrollToBottom()">Go to Bottom <i class='fas fa-arrow-alt-circle-down'></i></button>
-    </div>
 
     <script>
         const sparqlQuery = `
@@ -206,7 +208,7 @@
                     switchcount++;
                 } else {
                     if (switchcount === 0 && dir === "asc") {
-                        dir = "desc";
+                        dir = "desc"; // Set the direction to descending and run the loop again
                         switching = true;
                     }
                 }
