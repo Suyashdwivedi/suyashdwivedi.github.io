@@ -3,98 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Female Scientists from Asia</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/d3/dist/d3.min.js" />
+    <title>500 Asian Female Scientists and Their Birthplaces as per Wikidata</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/topojson@3"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            background-color: #f4f4f4;
+            position: relative; /* Set relative positioning for the buttons */
         }
-
-        #loading {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-        }
-
-        #loading img {
-            width: 50px;
-            height: 50px;
-            margin-right: 10px;
-        }
-
         #map {
-            height: 500px;
             width: 100%;
+            height: 70vh;
+            margin-bottom: 20px;
         }
-
-        #data {
+        h1 {
+            text-align: center;
             margin-top: 20px;
-            width: 80%;
+            font-size: 2em;
+            color: #333;
+        }
+        p {
+            text-align: center;
+            font-size: 1.2em;
+            color: #555;
+            margin: 10px 20px;
+        }
+        .credentials {
+            text-align: center;
+            font-size: 1em;
+            color: #777;
+            margin: 5px 20px;
+        }
+        table {
+            width: 100%;
             border-collapse: collapse;
-        }
-
-        #data th, #data td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-
-        #data th {
-            background-color: #f2f2f2;
-        }
-
-        .button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 10px;
-            background-color: rgba(255, 255, 255, 0.5);
-            border: none;
-            border-radius: 25px;
             cursor: pointer;
         }
-
-        .button:hover {
-            background-color: rgba(255, 255, 255, 0.8);
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        th.sortable:hover {
+            background-color: #ddd;
+        }
+        /* Scroll to Top/Bottom Buttons */
+        .scroll-btn {
+            position: fixed;
+            right: 20px; /* Position to the right */
+            top: 20px; /* Position at the top */
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* Space between buttons */
+            z-index: 1000; /* Ensure buttons are above other elements */
+        }
+        .scroll-btn button {
+            width: 50px; /* Set a fixed width for circular shape */
+            height: 50px; /* Set a fixed height for circular shape */
+            border-radius: 50%; /* Make the button circular */
+            background-color: rgba(51, 51, 51, 0.5); /* 50% transparent background */
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 24px; /* Font size for the icon */
+        }
+        .scroll-btn button:hover {
+            background-color: rgba(51, 51, 51, 0.7); /* Slightly darker on hover */
+        }
+        /* Loading GIF styles */
+        #loading {
+            position: fixed;
+            top: 20px; /* Position at the top */
+            left: 20px; /* Position on the left */
+            z-index: 1001; /* Ensure it's above other elements */
+            display: block; /* Show loading GIF */
         }
     </style>
 </head>
 <body>
+    <img id="loading" src="https://example.com/loading.gif" alt="Loading..." width="50" height="50"> <!-- Replace with your GIF URL -->
+    
+    <h1>500 Asian Female Scientists and Their Birthplaces as per Wikidata</h1>
+    <p>This page highlights notable female scientists from Asia, showcasing their fields of expertise, birthplaces, and countries. Below is a map showing their birthplaces, and a sortable table that provides more detailed information about each scientist.</p>
+    
+    <div class="credentials">
+        Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>, Wikimedia Contributor (*You may need to wait for sometime/refres thee page once)..
+    </div>
 
-    <div id="loading">
-        <img src="https://i.gifer.com/4Q1t.gif" alt="Loading..."> <!-- Loading GIF -->
-        <span>Loading data, please wait...</span>
+    <div class="scroll-btn">
+        <button onclick="scrollToTop()">⮝</button>
+        <button onclick="scrollToBottom()">⮟</button>
     </div>
     
     <div id="map"></div>
-
-    <button class="button" onclick="location.reload();">Refresh</button> <!-- Refresh button -->
-
-    <table id="data">
+    
+    <table>
         <thead>
             <tr>
-                <th>No</th>
-                <th>Name</th>
-                <th>Field</th>
-                <th>Birthplace</th>
-                <th>Country</th>
+                <th class="sortable" onclick="sortTable(0)">S.No</th>
+                <th class="sortable" onclick="sortTable(1)">Scientist</th>
+                <th class="sortable" onclick="sortTable(2)">Field</th>
+                <th class="sortable" onclick="sortTable(3)">Birthplace</th>
+                <th class="sortable" onclick="sortTable(4)">Country</th>
             </tr>
         </thead>
-        <tbody>
-            <!-- Data will be populated here -->
-        </tbody>
+        <tbody id="data"></tbody>
     </table>
 
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/d3/dist/d3.min.js"></script>
     <script>
         // Function to hide loading GIF and show content
         function hideLoading() {
@@ -120,17 +145,17 @@
         fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparqlQuery) + "&format=json")
             .then(response => response.json())
             .then(data => {
-                const tableBody = d3.select("#data tbody");
+                const tableBody = d3.select("#data");
                 const scientistsData = data.results.bindings.map((person, index) => {
                     const coords = person.placeCoord.value.replace('Point(', '').replace(')', '').split(' ');
                     return {
-                        name: person.scientistLabel?.value || "Unknown Scientist", // Use optional chaining and default value
-                        field: person.fieldLabel?.value || "Field not available", // Use optional chaining and default value
-                        birthplace: person.placeLabel?.value || "Birthplace not available", // Use optional chaining and default value
-                        country: person.countryLabel?.value || "Country not available", // Use optional chaining and default value
+                        name: person.scientistLabel.value,
+                        field: person.fieldLabel.value,
+                        birthplace: person.placeLabel.value,
+                        country: person.countryLabel.value,
                         coordinates: [parseFloat(coords[1]), parseFloat(coords[0])],
-                        article: person.article?.value || null,
-                        image: person.image?.value || "https://via.placeholder.com/150", // Placeholder image
+                        article: person.article ? person.article.value : null,
+                        image: person.image ? person.image.value : null,
                         wikidata: `https://www.wikidata.org/wiki/${person.scientist.value.split('/').pop()}` // Link to Wikidata
                     };
                 });
@@ -153,15 +178,11 @@
                         // Append a table row with the serial number, scientist info, field, birthplace, and country
                         tableBody.append("tr")
                             .html(`<td>${index + 1}</td>
-                                   <td><a href="${scientist.article || '#'}" target="_blank">${scientist.name}</a> (<a href="${scientist.wikidata}" target="_blank">Wikidata</a>)</td>
+                                   <td><a href="${scientist.article}" target="_blank">${scientist.name}</a> (<a href="${scientist.wikidata}" target="_blank">Wikidata</a>)</td>
                                    <td>${scientist.field}</td>
                                    <td>${scientist.birthplace}</td>
                                    <td>${scientist.country}</td>`);
                     }
-
-                    // Add markers to the map for each unique scientist
-                    const marker = L.marker(scientist.coordinates).addTo(map);
-                    marker.bindPopup(`<b>${scientist.name}</b><br>${scientist.field}<br>${scientist.birthplace}<br>${scientist.country}<br><a href="${scientist.article || '#'}" target="_blank">Wikipedia</a><br><img src="${scientist.image || 'https://via.placeholder.com/150'}" alt="${scientist.name}" width="50" height="50" style="border-radius: 50%;">`);
                 });
 
                 // Initialize the map
@@ -173,12 +194,45 @@
                     attribution: '© OpenStreetMap contributors'
                 }).addTo(map);
 
+                // Add markers to the map for each unique scientist
+                Object.values(uniqueScientists).forEach(scientist => {
+                    const marker = L.marker(scientist.coordinates).addTo(map);
+                    marker.bindPopup(`<b>${scientist.name}</b><br>${scientist.field}<br>${scientist.birthplace}<br>${scientist.country}`);
+                });
+
                 hideLoading(); // Hide the loading GIF when the content is fully loaded
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
                 hideLoading(); // Hide the loading GIF even if there's an error
             });
+
+        // Scroll to Top Function
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Scroll to Bottom Function
+        function scrollToBottom() {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        // Function to sort table
+        function sortTable(columnIndex) {
+            const table = document.querySelector("table");
+            const tbody = table.tBodies[0];
+            const rows = Array.from(tbody.rows);
+
+            const sortedRows = rows.sort((a, b) => {
+                const cellA = a.cells[columnIndex].innerText;
+                const cellB = b.cells[columnIndex].innerText;
+                return cellA.localeCompare(cellB);
+            });
+
+            // Clear the table and append sorted rows
+            tbody.innerHTML = "";
+            sortedRows.forEach(row => tbody.appendChild(row));
+        }
     </script>
 </body>
 </html>
