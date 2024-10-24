@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asian Female Writers and Their Birthplaces</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Female Writers and Their Birthplaces</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/topojson@3"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -21,7 +22,6 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
         }
         th, td {
             border: 1px solid #ddd;
@@ -51,7 +51,7 @@
           ?writer wdt:P31 wd:Q5;              # Entity must be a human
                   wdt:P106 wd:Q36180;        # Occupation must be a writer
                   wdt:P21 wd:Q6581072;       # Gender must be female
-                  wdt:P27 wd:Q48;            # Continent must be Asia
+                  wdt:P27 wd:Q668;           # Nationality must be Indian
                   wdt:P136 ?genre;           # Genre property
                   wdt:P19 ?place.            # Place of birth property
           ?place wdt:P625 ?placeCoord.       # Get coordinates for the birthplace
@@ -61,23 +61,9 @@
         }
         LIMIT 100`;
 
-        console.log('Fetching data from Wikidata...');
-        
         fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparqlQuery) + "&format=json")
-            .then(response => {
-                console.log('Response received:', response);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.statusText);
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log('Received data:', data);
-                if (!data.results.bindings.length) {
-                    console.log("No data found.");
-                    return;
-                }
-
                 const tableBody = d3.select("#data");
                 const peopleData = data.results.bindings.map(person => {
                     const coords = person.placeCoord.value.replace('Point(', '').replace(')', '').split(' ');
@@ -89,22 +75,19 @@
                         article: person.article ? person.article.value : null,
                         image: person.image ? person.image.value : null
                     };
-                    console.log('Processed writer info:', writerInfo);
                     tableBody.append("tr")
                         .html(`<td><a href="${writerInfo.article}" target="_blank">${writerInfo.name}</a></td><td>${writerInfo.genre}</td><td>${writerInfo.birthplace}</td>`);
                     return writerInfo;
                 });
 
                 // Initialize the map
-                console.log('Initializing map...');
-                const map = L.map('map').setView([20, 100], 3); // Centering on Asia
+                const map = L.map('map').setView([20, 78], 4); // Centering on India
 
                 // Set up the OSM layer
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(map);
 
-                console.log('Adding markers...');
                 // Add markers for each writer with images if available
                 peopleData.forEach(person => {
                     let popupContent = `<b><a href="${person.article}" target="_blank">${person.name}</a></b><br>${person.genre}<br>${person.birthplace}`;
@@ -115,8 +98,6 @@
                         .addTo(map)
                         .bindPopup(popupContent);
                 });
-
-                console.log('All markers added.');
             })
             .catch(error => console.error('Error fetching or parsing data:', error));
     </script>
