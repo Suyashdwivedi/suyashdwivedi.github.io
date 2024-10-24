@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Indian Female Writers and Their Birthplaces</title>
+    <title>Indian Female Scientists and Their Birthplaces</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/topojson@3"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -38,8 +38,8 @@
     <table>
         <thead>
             <tr>
-                <th>Writer</th>
-                <th>Genre</th>
+                <th>Scientist</th>
+                <th>Field</th>
                 <th>Birthplace</th>
             </tr>
         </thead>
@@ -47,16 +47,16 @@
     </table>
     <script>
         const sparqlQuery = `
-        SELECT ?writer ?writerLabel ?genreLabel ?placeLabel ?placeCoord ?article ?image WHERE {
-          ?writer wdt:P31 wd:Q5;              # Entity must be a human
-                  wdt:P106 wd:Q36180;        # Occupation must be a writer
-                  wdt:P21 wd:Q6581072;       # Gender must be female
-                  wdt:P27 wd:Q668;           # Nationality must be Indian
-                  wdt:P136 ?genre;           # Genre property
-                  wdt:P19 ?place.            # Place of birth property
-          ?place wdt:P625 ?placeCoord.       # Get coordinates for the birthplace
-          OPTIONAL { ?article schema:about ?writer ; schema:inLanguage "en" ; schema:isPartOf <https://en.wikipedia.org/>. }
-          OPTIONAL { ?writer wdt:P18 ?image. } # Optional image property
+        SELECT ?scientist ?scientistLabel ?fieldLabel ?placeLabel ?placeCoord ?article ?image WHERE {
+          ?scientist wdt:P31 wd:Q5;             # Entity must be a human
+                    wdt:P106 wd:Q901;           # Occupation must be a scientist
+                    wdt:P21 wd:Q6581072;        # Gender must be female
+                    wdt:P27 wd:Q668;            # Nationality must be Indian
+                    wdt:P101 ?field;            # Field of work property
+                    wdt:P19 ?place.             # Place of birth property
+          ?place wdt:P625 ?placeCoord.          # Get coordinates for the birthplace
+          OPTIONAL { ?article schema:about ?scientist ; schema:inLanguage "en" ; schema:isPartOf <https://en.wikipedia.org/>. }
+          OPTIONAL { ?scientist wdt:P18 ?image. } # Optional image property
           SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
         }
         LIMIT 100`;
@@ -65,19 +65,19 @@
             .then(response => response.json())
             .then(data => {
                 const tableBody = d3.select("#data");
-                const peopleData = data.results.bindings.map(person => {
+                const scientistsData = data.results.bindings.map(person => {
                     const coords = person.placeCoord.value.replace('Point(', '').replace(')', '').split(' ');
-                    const writerInfo = {
-                        name: person.writerLabel.value,
-                        genre: person.genreLabel.value,
+                    const scientistInfo = {
+                        name: person.scientistLabel.value,
+                        field: person.fieldLabel.value,
                         birthplace: person.placeLabel.value,
                         coordinates: [parseFloat(coords[1]), parseFloat(coords[0])],
                         article: person.article ? person.article.value : null,
                         image: person.image ? person.image.value : null
                     };
                     tableBody.append("tr")
-                        .html(`<td><a href="${writerInfo.article}" target="_blank">${writerInfo.name}</a></td><td>${writerInfo.genre}</td><td>${writerInfo.birthplace}</td>`);
-                    return writerInfo;
+                        .html(`<td><a href="${scientistInfo.article}" target="_blank">${scientistInfo.name}</a></td><td>${scientistInfo.field}</td><td>${scientistInfo.birthplace}</td>`);
+                    return scientistInfo;
                 });
 
                 // Initialize the map
@@ -88,9 +88,9 @@
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(map);
 
-                // Add markers for each writer with images if available
-                peopleData.forEach(person => {
-                    let popupContent = `<b><a href="${person.article}" target="_blank">${person.name}</a></b><br>${person.genre}<br>${person.birthplace}`;
+                // Add markers for each scientist with images if available
+                scientistsData.forEach(person => {
+                    let popupContent = `<b><a href="${person.article}" target="_blank">${person.name}</a></b><br>${person.field}<br>${person.birthplace}`;
                     if (person.image) {
                         popupContent += `<br><img src="${person.image}" alt="${person.name}" style="width:50px;height:50px;">`;
                     }
