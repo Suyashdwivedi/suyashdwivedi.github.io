@@ -15,7 +15,7 @@
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
-            position: relative;
+            position: relative; /* Set relative positioning for the buttons */
         }
         #map {
             width: 100%;
@@ -56,35 +56,37 @@
         th.sortable:hover {
             background-color: #ddd;
         }
+        /* Scroll to Top/Bottom Buttons */
         .scroll-btn {
             position: fixed;
-            right: 20px; 
-            top: 20px; 
+            right: 20px; /* Position to the right */
+            top: 20px; /* Position at the top */
             display: flex;
             flex-direction: column;
-            gap: 10px; 
-            z-index: 1000; 
+            gap: 10px; /* Space between buttons */
+            z-index: 1000; /* Ensure buttons are above other elements */
         }
         .scroll-btn button {
-            width: 50px; 
-            height: 50px; 
-            border-radius: 50%; 
-            background-color: rgba(51, 51, 51, 0.5); 
+            width: 50px; /* Set a fixed width for circular shape */
+            height: 50px; /* Set a fixed height for circular shape */
+            border-radius: 50%; /* Make the button circular */
+            background-color: rgba(51, 51, 51, 0.5); /* 50% transparent background */
             color: white;
             border: none;
             cursor: pointer;
             transition: background-color 0.3s;
-            font-size: 24px; 
+            font-size: 24px; /* Font size for the icon */
         }
         .scroll-btn button:hover {
-            background-color: rgba(51, 51, 51, 0.7); 
+            background-color: rgba(51, 51, 51, 0.7); /* Slightly darker on hover */
         }
+        /* Loading GIF styles */
         #loading {
             position: fixed;
-            top: 20px; 
-            left: 20px; 
-            z-index: 1001; 
-            display: block; 
+            top: 20px; /* Position at the top */
+            left: 20px; /* Position on the left */
+            z-index: 1001; /* Ensure it's above other elements */
+            display: block; /* Show loading GIF */
         }
     </style>
 </head>
@@ -119,30 +121,31 @@
     </table>
 
     <script>
+        // Function to hide loading GIF and show content
         function hideLoading() {
-            document.getElementById('loading').style.display = 'none';
+          document.getElementById('loading').style.display = 'none';
         }
 
         const sparqlQuery = `
           SELECT ?scientist ?scientistLabel ?fieldLabel ?placeLabel ?placeCoord ?article ?image ?countryLabel WHERE {
-              ?scientist wdt:P31 wd:Q5;             
-                          wdt:P106 wd:Q901;           
-                          wdt:P21 wd:Q6581072;        
-                          wdt:P27 ?country;           
-                          wdt:P101 ?field;            
-                          wdt:P19 ?place.             
-              ?place wdt:P625 ?placeCoord.          
+              ?scientist wdt:P31 wd:Q5;             # Entity must be a human
+                          wdt:P106 wd:Q901;           # Occupation must be a scientist
+                          wdt:P21 wd:Q6581072;        # Gender must be female
+                          wdt:P27 ?country;           # Nationality should be from an Asian country
+                          wdt:P101 ?field;           # Field of work property
+                          wdt:P19 ?place.             # Place of birth property
+              ?place wdt:P625 ?placeCoord.          # Get coordinates for the birthplace
               OPTIONAL { ?article schema:about ?scientist ; schema:isPartOf <https://en.wikipedia.org/>. }
-              OPTIONAL { ?scientist wdt:P18 ?image. } 
+              OPTIONAL { ?scientist wdt:P18 ?image. } # Optional image property
               SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
           } LIMIT 500
-        `;
+          `;
 
-        fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparqlQuery) + "&format=json")
+          fetch("https://query.wikidata.org/sparql?query="+ encodeURIComponent(sparqlQuery) + "&format=json")
           .then(response => response.json())
           .then(data => {
               const tableBody = d3.select("#data");
-              const scientistsData = data.results.bindings.map(person => {
+              const scientistsData = data.results.bindings.map((person, index) => {
                   const coords = person.placeCoord.value.replace('Point(', '').replace(')', '').split(' ');
                   return {
                       name : person.scientistLabel.value,
@@ -152,7 +155,7 @@
                       coordinates : [parseFloat(coords[1]), parseFloat(coords[0])],
                       article : person.article ? person.article.value : null,
                       image : person.image ? person.image.value : null,
-                      wikidata : `https://www.wikidata.org/wiki/${person.scientist.value.split('/').pop()}`
+                      wikidata : `https://www.wikidata.org/wiki/${person.scientist.value.split('/').pop()}` // Link to Wikidata
                   };
               });
 
@@ -170,34 +173,36 @@
                           coordinates : scientist.coordinates
                       };
 
-                      // Hyperlink the birthplace to its Wikipedia article
-                      const birthplaceLink = `https://en.wikipedia.org/wiki/${encodeURIComponent(scientist.birthplace.replace(/ /g, '_'))}`;
-
+                      // Append a table row with the serial number, scientist info, field, birthplace, and country
                       tableBody.append("tr")
                         .html(`<td>${index + 1}</td>
                                <td><a href="${scientist.article || '#'}" target="_blank">${scientist.name}</a> (<a href="${scientist.wikidata}" target="_blank">Wikidata</a>)</td>
                                <td>${scientist.field}</td>
-                               <td><a href="${birthplaceLink}" target="_blank">${scientist.birthplace}</a></td> <!-- Hyperlinked Birthplace -->
+                               <td><a href="${`https://en.wikipedia.org/wiki/${encodeURIComponent(scientist.birthplace.replace(/ /g,'_'))}`}" target="_blank">${scientist.birthplace}</a></td> <!-- Hyperlinked Birthplace -->
                                <td>${scientist.country}</td>`);
                   }
               });
 
-              const map = L.map('map').setView([20, 100], 4);
+              // Initialize the map
+              const map = L.map('map').setView([20,100],4); // Centering on Asia
+
+              // Set up the OSM layer
               L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                   maxZoom : 19,
                   attribution : '© OpenStreetMap contributors'
               }).addTo(map);
 
+              // Add markers to the map for each unique scientist
               Object.values(uniqueScientists).forEach(scientist => {
                   const marker = L.marker(scientist.coordinates).addTo(map);
                   
                   // Determine the appropriate Wikipedia link for the article
-                  const wikiLink = scientist.article || `https://en.wikipedia.org/wiki/${encodeURIComponent(scientist.name.replace(/ /g, '_'))}`;
+                  const wikiLink = scientist.article || `https://en.wikipedia.org/wiki/${encodeURIComponent(scientist.name.replace(/ /g,'_'))}`;
 
                   const popupContent = `
                     <b><a href="${wikiLink}" target="_blank">${scientist.name}</a></b><br />
                     ${scientist.field}<br />
-                    <a href="${birthplaceLink}" target="_blank">${scientist.birthplace}</a><br /> <!-- Hyperlinked Birthplace -->
+                    ${scientist.birthplace}<br />
                     ${scientist.country}<br />
                     ${scientist.image ? `<img src="${scientist.image}" alt="${scientist.name}" style="width:auto;height:auto;max-width:150px;">` : 'Image N/A'}<br />
                     (<a href="${scientist.wikidata}" target="_blank">Wikidata</a>)
@@ -205,11 +210,11 @@
                   marker.bindPopup(popupContent);
               });
 
-              hideLoading();
+              hideLoading(); // Hide loading GIF when content is fully loaded
           })
           .catch(error => {
               console.error('Error fetching data:', error);
-              hideLoading();
+              hideLoading(); // Hide loading GIF even if there's an error
           });
 
           function scrollToTop() {
@@ -225,14 +230,14 @@
               const tbody = table.tBodies[0];
               const rows = Array.from(tbody.rows);
               
-              const sortedRows = rows.sort((a, b) => {
+              const sortedRows = rows.sort((a,b) => {
                   const cellA = a.cells[columnIndex].innerText.toLowerCase();
                   const cellB = b.cells[columnIndex].innerText.toLowerCase();
                   return cellA.localeCompare(cellB);
               });
 
-              tbody.innerHTML = "";
-              sortedRows.forEach(row => tbody.appendChild(row));
+              tbody.innerHTML = ""; // Clear existing rows
+              sortedRows.forEach(row => tbody.appendChild(row)); // Append sorted rows
           }
     </script>
 </body>
