@@ -187,8 +187,12 @@
 
               Object.values(uniqueScientists).forEach(scientist => {
                   const marker = L.marker(scientist.coordinates).addTo(map);
+                  
+                  // Determine the appropriate Wikipedia link
+                  const wikiLink = scientist.article || `https://en.wikipedia.org/wiki/${encodeURIComponent(scientist.name.replace(/ /g, '_'))}`;
+
                   const popupContent = `
-                    <b><a href="${scientist.article || '#'}" target="_blank">${scientist.name}</a></b><br />
+                    <b><a href="${wikiLink}" target="_blank">${scientist.name}</a></b><br />
                     ${scientist.field}<br />
                     ${scientist.birthplace}<br />
                     ${scientist.country}<br />
