@@ -9,6 +9,10 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- MarkerCluster CSS and JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -183,7 +187,7 @@
                   }
               });
 
-              // Initialize the map
+              // Initialize the map with marker clustering
               const map = L.map('map').setView([20,100],4); // Centering on Asia
 
               // Set up the OSM layer
@@ -192,23 +196,26 @@
                   attribution : '© OpenStreetMap contributors'
               }).addTo(map);
 
-              // Add markers to the map for each unique scientist
-              Object.values(uniqueScientists).forEach(scientist => {
-                  const marker = L.marker(scientist.coordinates).addTo(map);
-                  
-                  // Determine the appropriate Wikipedia link for the article
-                  const wikiLink = scientist.article || `https://en.wikipedia.org/wiki/${encodeURIComponent(scientist.name.replace(/ /g,'_'))}`;
+              // Create a marker cluster group
+              const markers = L.markerClusterGroup();
+
+              Object.keys(uniqueScientists).forEach((scientistName) => {
+                  const scientist = uniqueScientists[scientistName];
+                  const marker = L.marker(scientist.coordinates);
 
                   const popupContent = `
-                    <b><a href="${wikiLink}" target="_blank">${scientist.name}</a></b><br />
-                    ${scientist.field}<br />
-                    <a href="${birthplaceLink}" target="_blank">${scientist.birthplace}</a><br />
-                    ${scientist.country}<br />
-                    ${scientist.image ? `<img src="${scientist.image}" alt="${scientist.name}" width="100" />` : ''}
-                    (<a href="${scientist.wikidata}" target="_blank">Wikidata</a>)
+                      <b>${scientistName}</b><br/>
+                      Field: ${scientist.field}<br/>
+                      Birthplace: <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(scientist.birthplace.replace(/ /g, '_'))}" target="_blank">${scientist.birthplace}</a>, ${scientist.country}<br/>
+                      ${scientist.image ? `<img src="${scientist.image}" alt="${scientistName}" width="100" />` : ''}
+                      (<a href="${scientist.wikidata}" target="_blank">Wikidata</a>)
                   `;
+
                   marker.bindPopup(popupContent);
+                  markers.addLayer(marker);
               });
+
+              map.addLayer(markers); // Add the marker cluster group to the map
 
               hideLoading(); // Hide the loading indicator once everything has loaded
           });
@@ -231,8 +238,4 @@
           }
 
           function scrollToBottom() {
-              window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-          }
-    </script>
-</body>
-</html>
+              window.scrollTo({ top: document.body.scrollHeight,
