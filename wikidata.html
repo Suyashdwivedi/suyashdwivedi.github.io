@@ -52,7 +52,7 @@
           ?writer wdt:P31 wd:Q5;              # Entity must be a human
                   wdt:P106 wd:Q36180;        # Occupation must be a writer
                   wdt:P21 wd:Q6581072;       # Gender must be female
-                  wdt:P27 wd:Q48;            # Continent must be Asia
+                  wdt:P27 wd:Q15;            # Continent must be Asia
                   wdt:P136 ?genre;           # Genre property
                   wdt:P19 ?place.            # Place of birth property
           ?place wdt:P625 ?placeCoord.       # Get coordinates for the birthplace
@@ -95,24 +95,7 @@
 
                 // Initialize the map
                 const map = L.map('map').setView([20, 100], 3); // Centering on Asia
+                console.log('Map initialized');
 
                 // Set up the OSM layer
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                }).addTo(map);
-
-                // Add markers for each writer with images if available
-                peopleData.forEach(person => {
-                    let popupContent = `<b><a href="${person.article}" target="_blank">${person.name}</a></b><br>${person.genre}<br>${person.birthplace}`;
-                    if (person.image) {
-                        popupContent += `<br><img src="${person.image}" alt="${person.name}" style="width:50px;height:50px;">`;
-                    }
-                    L.marker(person.coordinates)
-                        .addTo(map)
-                        .bindPopup(popupContent);
-                });
-            })
-            .catch(error => console.error('Error fetching or parsing data:', error));
-    </script>
-</body>
-</html>
+                L.tileLayer('https://{s}.tile.open
