@@ -8,6 +8,7 @@
     <script src="https://unpkg.com/topojson@3"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -54,16 +55,13 @@
         th.sortable:hover {
             background-color: #ddd;
         }
-        /* Go to Top/Bottom Buttons */
+        /* Scroll to Top/Bottom Buttons */
         .scroll-btn {
-            position: fixed;
-            bottom: 50px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            text-align: center;
+            margin: 20px 0;
         }
         .scroll-btn button {
+            font-size: 24px;
             padding: 10px 20px;
             background-color: #333;
             color: white;
@@ -71,6 +69,7 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
+            margin: 0 10px;
         }
         .scroll-btn button:hover {
             background-color: #555;
@@ -82,9 +81,13 @@
     <p>This page highlights notable female scientists from Asia, showcasing their fields of expertise, birthplaces, and countries. Below is a map showing their birthplaces, and a sortable table that provides more detailed information about each scientist.</p>
     
     <div class="credentials">
-        Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>, Wikimedia Contributor (You may need to refresh the page once).
+        Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>, Wikimedia Contributor.
     </div>
 
+    <div class="scroll-btn">
+        <button onclick="scrollToTop()">Go to Top <i class='fas fa-arrow-alt-circle-up'></i></button>
+    </div>
+    
     <div id="map"></div>
     
     <table>
@@ -100,10 +103,8 @@
         <tbody id="data"></tbody>
     </table>
 
-    <!-- Scroll to Top and Bottom Buttons -->
     <div class="scroll-btn">
-        <button onclick="scrollToTop()">Go to Top</button>
-        <button onclick="scrollToBottom()">Go to Bottom</button>
+        <button onclick="scrollToBottom()">Go to Bottom <i class='fas fa-arrow-alt-circle-down'></i></button>
     </div>
 
     <script>
