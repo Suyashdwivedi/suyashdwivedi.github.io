@@ -54,6 +54,27 @@
         th.sortable:hover {
             background-color: #ddd;
         }
+        /* Go to Top/Bottom Buttons */
+        .scroll-btn {
+            position: fixed;
+            bottom: 50px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .scroll-btn button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .scroll-btn button:hover {
+            background-color: #555;
+        }
     </style>
 </head>
 <body>
@@ -78,6 +99,12 @@
         </thead>
         <tbody id="data"></tbody>
     </table>
+
+    <!-- Scroll to Top and Bottom Buttons -->
+    <div class="scroll-btn">
+        <button onclick="scrollToTop()">Go to Top</button>
+        <button onclick="scrollToBottom()">Go to Bottom</button>
+    </div>
 
     <script>
         const sparqlQuery = `
@@ -183,6 +210,22 @@
                     }
                 }
             }
+        }
+
+        // Scroll to Top function
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Scroll to Bottom function
+        function scrollToBottom() {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
         }
     </script>
 </body>
