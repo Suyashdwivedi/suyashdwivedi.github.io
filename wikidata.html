@@ -123,7 +123,7 @@
           OPTIONAL { ?scientist wdt:P18 ?image. } # Optional image property
           SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
         }
-        LIMIT 500;
+        LIMIT 100;
 
         fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparqlQuery) + "&format=json")
             .then(response => response.json())
