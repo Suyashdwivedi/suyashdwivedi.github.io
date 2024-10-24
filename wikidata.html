@@ -120,7 +120,7 @@
 
     <script>
         function hideLoading() {
-            document.getElementById('loading').style.display = 'none';
+          document.getElementById('loading').style.display = 'none';
         }
 
         const sparqlQuery = `
@@ -132,28 +132,27 @@
                           wdt:P101 ?field;            
                           wdt:P19 ?place.             
               ?place wdt:P625 ?placeCoord.          
-              ?country wdt:P30 wd:Q48.              
               OPTIONAL { ?article schema:about ?scientist ; schema:isPartOf <https://en.wikipedia.org/>. }
               OPTIONAL { ?scientist wdt:P18 ?image. } 
               SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
           } LIMIT 500
-        `;
+          `;
 
-        fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparqlQuery) + "&format=json")
+          fetch("https://query.wikidata.org/sparql?query="+ encodeURIComponent(sparqlQuery) + "&format=json")
           .then(response => response.json())
           .then(data => {
               const tableBody = d3.select("#data");
-              const scientistsData = data.results.bindings.map((person, index) => {
+              const scientistsData = data.results.bindings.map((person) => {
                   const coords = person.placeCoord.value.replace('Point(', '').replace(')', '').split(' ');
                   return {
-                      name: person.scientistLabel.value,
-                      field: person.fieldLabel.value,
-                      birthplace: person.placeLabel.value,
-                      country: person.countryLabel.value,
-                      coordinates: [parseFloat(coords[1]), parseFloat(coords[0])],
-                      article: person.article ? person.article.value : null,
-                      image: person.image ? person.image.value : null,
-                      wikidata: `https://www.wikidata.org/wiki/${person.scientist.value.split('/').pop()}`
+                      name : person.scientistLabel.value,
+                      field : person.fieldLabel.value,
+                      birthplace : person.placeLabel.value,
+                      country : person.countryLabel.value,
+                      coordinates : [parseFloat(coords[1]), parseFloat(coords[0])],
+                      article : person.article ? person.article.value : null,
+                      image : person.image ? person.image.value : null,
+                      wikidata : `https://www.wikidata.org/wiki/${person.scientist.value.split('/').pop()}` // Link to Wikidata
                   };
               });
 
@@ -162,64 +161,83 @@
                   if (!uniqueScientists[scientist.name]) {
                       uniqueScientists[scientist.name] = {
                           index,
-                          field: scientist.field,
-                          birthplace: scientist.birthplace,
-                          country: scientist.country,
-                          article: scientist.article,
-                          image: scientist.image,
-                          wikidata: scientist.wikidata,
-                          coordinates: scientist.coordinates
+                          field : scientist.field,
+                          birthplace : scientist.birthplace,
+                          country : scientist.country,
+                          article : scientist.article,
+                          image : scientist.image,
+                          wikidata : scientist.wikidata,
+                          coordinates : scientist.coordinates
                       };
+
+                      // Hyperlink the birthplace to its Wikipedia article
+                      const birthplaceLink = `https://en.wikipedia.org/wiki/${encodeURIComponent(scientist.birthplace.replace(/ /g,'_'))}`;
 
                       tableBody.append("tr")
                         .html(`<td>${index + 1}</td>
                                <td><a href="${scientist.article || '#'}" target="_blank">${scientist.name}</a> (<a href="${scientist.wikidata}" target="_blank">Wikidata</a>)</td>
                                <td>${scientist.field}</td>
-                               <td>${scientist.birthplace}</td>
+                               <td><a href="${birthplaceLink}" target="_blank">${scientist.birthplace}</a></td> <!-- Hyperlinked Birthplace -->
                                <td>${scientist.country}</td>`);
                   }
               });
 
-              const map = L.map('map').setView([20, 100], 4);
+              // Initialize the map
+              const map = L.map('map').setView([20,100],4); // Centering on Asia
+
+              // Set up the OSM layer
               L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                  maxZoom: 19,
-                  attribution: '© OpenStreetMap contributors'
+                  maxZoom : 19,
+                  attribution : '© OpenStreetMap contributors'
               }).addTo(map);
 
+              // Add markers to the map for each unique scientist
               Object.values(uniqueScientists).forEach(scientist => {
                   const marker = L.marker(scientist.coordinates).addTo(map);
-                  marker.bindPopup(`<b>${scientist.name}</b><br>${scientist.field}<br>${scientist.birthplace}<br>${scientist.country}`);
+                  
+                  // Determine the appropriate Wikipedia link for the article
+                  const wikiLink = scientist.article || `https://en.wikipedia.org/wiki/${encodeURIComponent(scientist.name.replace(/ /g,'_'))}`;
+
+                  const popupContent = `
+                    <b><a href="${wikiLink}" target="_blank">${scientist.name}</a></b><br />
+                    ${scientist.field}<br />
+                    <a href="${birthplaceLink}" target="_blank">${scientist.birthplace}</a><br /> <!-- Hyperlinked Birthplace -->
+                    ${scientist.country}<br />
+                    ${scientist.image ? `<img src="${scientist.image}" alt="${scientist.name}" style="width:auto;height:auto;max-width:150px;">` : 'Image N/A'}<br />
+                    (<a href="${scientist.wikidata}" target="_blank">Wikidata</a>)
+                  `;
+                  marker.bindPopup(popupContent);
               });
 
-              hideLoading();
+              hideLoading(); // Hide loading GIF when content is fully loaded
           })
           .catch(error => {
               console.error('Error fetching data:', error);
-              hideLoading();
+              hideLoading(); // Hide loading GIF even if there's an error
           });
 
-        function scrollToTop() {
-          window.scrollTo({ top: 0, behavior:'smooth' });
-        }
+          function scrollToTop() {
+              window.scrollTo({ top : 0, behavior:'smooth' });
+          }
 
-        function scrollToBottom() {
-          window.scrollTo({ top : document.body.scrollHeight, behavior:'smooth' });
-        }
+          function scrollToBottom() {
+              window.scrollTo({ top : document.body.scrollHeight, behavior:'smooth' });
+          }
 
-        function sortTable(columnIndex) {
-          const table = document.querySelector("table");
-          const tbody = table.tBodies[0];
-          const rows = Array.from(tbody.rows);
-          
-          const sortedRows = rows.sort((a, b) => {
-              const cellA = a.cells[columnIndex].innerText.toLowerCase();
-              const cellB = b.cells[columnIndex].innerText.toLowerCase();
-              return cellA.localeCompare(cellB);
-          });
+          function sortTable(columnIndex) {
+              const table = document.querySelector("table");
+              const tbody = table.tBodies[0];
+              const rows = Array.from(tbody.rows);
+              
+              const sortedRows = rows.sort((a,b) => {
+                  const cellA = a.cells[columnIndex].innerText.toLowerCase();
+                  const cellB = b.cells[columnIndex].innerText.toLowerCase();
+                  return cellA.localeCompare(cellB);
+              });
 
-          tbody.innerHTML = "";
-          sortedRows.forEach(row => tbody.appendChild(row));
-      }
+              tbody.innerHTML = ""; // Clear existing rows
+              sortedRows.forEach(row => tbody.appendChild(row)); // Append sorted rows
+          }
     </script>
 </body>
 </html>
