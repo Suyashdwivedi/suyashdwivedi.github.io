@@ -188,12 +188,11 @@
               Object.values(uniqueScientists).forEach(scientist => {
                   const marker = L.marker(scientist.coordinates).addTo(map);
                   const popupContent = `
-                    <b>${scientist.name}</b><br />
+                    <b><a href="${scientist.article || '#'}" target="_blank">${scientist.name}</a></b><br />
                     ${scientist.field}<br />
                     ${scientist.birthplace}<br />
                     ${scientist.country}<br />
                     ${scientist.image ? `<img src="${scientist.image}" alt="${scientist.name}" style="width:auto;height:auto;max-width:150px;">` : 'Image N/A'}<br />
-                    ${scientist.article ? `<a href="${scientist.article}" target="_blank">Wikipedia</a>` : ''}
                     (<a href="${scientist.wikidata}" target="_blank">Wikidata</a>)
                   `;
                   marker.bindPopup(popupContent);
