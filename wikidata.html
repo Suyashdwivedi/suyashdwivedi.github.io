@@ -66,14 +66,15 @@
             gap: 10px; /* Space between buttons */
         }
         .scroll-btn button {
-            font-size: 24px;
-            padding: 10px;
+            width: 50px; /* Set a fixed width for circular shape */
+            height: 50px; /* Set a fixed height for circular shape */
+            border-radius: 50%; /* Make the button circular */
             background-color: #333;
             color: white;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
+            font-size: 24px; /* Font size for the icon */
         }
         .scroll-btn button:hover {
             background-color: #555;
@@ -85,7 +86,7 @@
     <p>This page highlights notable female scientists from Asia, showcasing their fields of expertise, birthplaces, and countries. Below is a map showing their birthplaces, and a sortable table that provides more detailed information about each scientist.</p>
     
     <div class="credentials">
-        Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>, Wikimedia Contributor (*You may need wait sor sometime/refres thee page once)..
+        Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>, Wikimedia Contributor (*You may need to wait for sometime/refres thee page once)..
     </div>
 
     <div class="scroll-btn">
@@ -138,13 +139,14 @@
                         country: person.countryLabel.value,
                         coordinates: [parseFloat(coords[1]), parseFloat(coords[0])],
                         article: person.article ? person.article.value : null,
-                        image: person.image ? person.image.value : null
+                        image: person.image ? person.image.value : null,
+                        wikidata: `https://www.wikidata.org/wiki/${person.scientist.value.split('/').pop()}` // Link to Wikidata
                     };
 
                     // Append a table row with the serial number, scientist info, field, birthplace, and country
                     tableBody.append("tr")
                         .html(`<td>${index + 1}</td>
-                               <td><a href="${scientistInfo.article}" target="_blank">${scientistInfo.name}</a></td>
+                               <td><a href="${scientistInfo.article}" target="_blank">${scientistInfo.name}</a> (<a href="${scientistInfo.wikidata}" target="_blank">Wikidata</a>)</td>
                                <td>${scientistInfo.field}</td>
                                <td>${scientistInfo.birthplace}</td>
                                <td>${scientistInfo.country}</td>`);
@@ -161,7 +163,7 @@
 
                 // Add markers for each scientist with images if available
                 scientistsData.forEach(person => {
-                    let popupContent = `<b><a href="${person.article}" target="_blank">${person.name}</a></b><br>${person.field}<br>${person.birthplace}, ${person.country}`;
+                    let popupContent = `<b><a href="${person.article}" target="_blank">${person.name}</a></b> (<a href="${person.wikidata}" target="_blank">Wikidata</a>)<br>${person.field}<br>${person.birthplace}, ${person.country}`;
                     if (person.image) {
                         popupContent += `<br><img src="${person.image}" alt="${person.name}" style="width:50px;height:50px;">`;
                     }
@@ -200,34 +202,26 @@
                         }
                     }
                 }
-
                 if (shouldSwitch) {
                     rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
                     switching = true;
-                    switchcount++;
+                    switchcount++;      
                 } else {
                     if (switchcount === 0 && dir === "asc") {
-                        dir = "desc"; // Set the direction to descending and run the loop again
+                        dir = "desc";
                         switching = true;
                     }
                 }
             }
         }
 
-        // Scroll to Top function
+        // Scroll to top and bottom functions
         function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Scroll to Bottom function
         function scrollToBottom() {
-            window.scrollTo({
-                top: document.body.scrollHeight,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }
     </script>
 </body>
