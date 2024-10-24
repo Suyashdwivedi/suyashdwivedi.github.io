@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asian Female Scientists and Their Birthplaces on Wikidata</title>
+    <title>Asian Female Scientists and Their Birthplaces</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/topojson@3"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -32,6 +32,12 @@
             color: #555;
             margin: 10px 20px;
         }
+        .credentials {
+            text-align: center;
+            font-size: 1em;
+            color: #777;
+            margin: 5px 20px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -53,6 +59,10 @@
 <body>
     <h1>Asian Female Scientists and Their Birthplaces</h1>
     <p>This page highlights notable female scientists from Asia, showcasing their fields of expertise, birthplaces, and countries. Below is a map showing their birthplaces, and a sortable table that provides more detailed information about each scientist.</p>
+    
+    <div class="credentials">
+        Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>, Wikimedia Contributor.
+    </div>
 
     <div id="map"></div>
     
