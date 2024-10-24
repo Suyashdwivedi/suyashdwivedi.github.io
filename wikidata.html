@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asian Female Scientists and Their Birthplaces as per Wikidata</title>
+    <title>1 Asian Female Scientists and Their Birthplaces as per Wikidata</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/topojson@3"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -58,33 +58,33 @@
         }
         .scroll-btn {
             position: fixed;
-            right: 20px; 
-            top: 20px; 
+            right: 20px;
+            top: 20px;
             display: flex;
             flex-direction: column;
-            gap: 10px; 
-            z-index: 1000; 
+            gap: 10px;
+            z-index: 1000;
         }
         .scroll-btn button {
-            width: 50px; 
-            height: 50px; 
-            border-radius: 50%; 
-            background-color: rgba(51, 51, 51, 0.5); 
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(51, 51, 51, 0.5);
             color: white;
             border: none;
             cursor: pointer;
             transition: background-color 0.3s;
-            font-size: 24px; 
+            font-size: 24px;
         }
         .scroll-btn button:hover {
-            background-color: rgba(51, 51, 51, 0.7); 
+            background-color: rgba(51, 51, 51, 0.7);
         }
         #loading {
             position: fixed;
-            top: 20px; 
-            left: 20px; 
-            z-index: 1001; 
-            display: block; 
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            display: block;
         }
     </style>
 </head>
@@ -95,7 +95,7 @@
     <p>This page highlights notable female scientists from Asia, showcasing their fields of expertise, birthplaces, and countries. Below is a map showing their birthplaces, and a sortable table that provides more detailed information about each scientist.</p>
     
     <div class="credentials">
-        Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>, Wikimedia Contributor (*You may need to wait for sometime/refres the page once)..
+        Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>, Wikimedia Contributor (*You may need to wait for some time or refresh the page).
     </div>
 
     <div class="scroll-btn">
@@ -170,38 +170,33 @@
                           coordinates : scientist.coordinates
                       };
 
-                      // Hyperlink the birthplace to its Wikipedia article
                       const birthplaceLink = `https://en.wikipedia.org/wiki/${encodeURIComponent(scientist.birthplace.replace(/ /g,'_'))}`;
 
                       tableBody.append("tr")
                         .html(`<td>${index + 1}</td>
                                <td><a href="${scientist.article || '#'}" target="_blank">${scientist.name}</a> (<a href="${scientist.wikidata}" target="_blank">Wikidata</a>)</td>
                                <td>${scientist.field}</td>
-                               <td><a href="${birthplaceLink}" target="_blank">${scientist.birthplace}</a></td> <!-- Hyperlinked Birthplace -->
+                               <td><a href="${birthplaceLink}" target="_blank">${scientist.birthplace}</a></td>
                                <td>${scientist.country}</td>`);
                   }
               });
 
-              // Initialize the map
-              const map = L.map('map').setView([20,100],4); // Centering on Asia
+              const map = L.map('map').setView([20,100],4);
 
-              // Set up the OSM layer
               L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                   maxZoom : 19,
                   attribution : '© OpenStreetMap contributors'
               }).addTo(map);
 
-              // Add markers to the map for each unique scientist
               Object.values(uniqueScientists).forEach(scientist => {
                   const marker = L.marker(scientist.coordinates).addTo(map);
                   
-                  // Determine the appropriate Wikipedia link for the article
                   const wikiLink = scientist.article || `https://en.wikipedia.org/wiki/${encodeURIComponent(scientist.name.replace(/ /g,'_'))}`;
 
                   const popupContent = `
                     <b><a href="${wikiLink}" target="_blank">${scientist.name}</a></b><br />
                     ${scientist.field}<br />
-                    <a href="${birthplaceLink}" target="_blank">${scientist.birthplace}</a><br /> <!-- Hyperlinked Birthplace -->
+                    <a href="${birthplaceLink}" target="_blank">${scientist.birthplace}</a><br />
                     ${scientist.country}<br />
                     ${scientist.image ? `<img src="${scientist.image}" alt="${scientist.name}" style="width:auto;height:auto;max-width:150px;">` : 'Image N/A'}<br />
                     (<a href="${scientist.wikidata}" target="_blank">Wikidata</a>)
@@ -209,11 +204,11 @@
                   marker.bindPopup(popupContent);
               });
 
-              hideLoading(); // Hide loading GIF when content is fully loaded
+              hideLoading();
           })
           .catch(error => {
               console.error('Error fetching data:', error);
-              hideLoading(); // Hide loading GIF even if there's an error
+              hideLoading();
           });
 
           function scrollToTop() {
@@ -228,15 +223,18 @@
               const table = document.querySelector("table");
               const tbody = table.tBodies[0];
               const rows = Array.from(tbody.rows);
-              
-              const sortedRows = rows.sort((a,b) => {
-                  const cellA = a.cells[columnIndex].innerText.toLowerCase();
-                  const cellB = b.cells[columnIndex].innerText.toLowerCase();
-                  return cellA.localeCompare(cellB);
+
+              const isAscending = tbody.getAttribute("data-sort-dir") === "asc";
+              const sortDir = isAscending ? "desc" : "asc";
+              tbody.setAttribute("data-sort-dir", sortDir);
+
+              rows.sort((rowA, rowB) => {
+                  const cellA = rowA.cells[columnIndex].textContent.trim();
+                  const cellB = rowB.cells[columnIndex].textContent.trim();
+                  return isAscending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
               });
 
-              tbody.innerHTML = ""; // Clear existing rows
-              sortedRows.forEach(row => tbody.appendChild(row)); // Append sorted rows
+              rows.forEach(row => tbody.appendChild(row));
           }
     </script>
 </body>
