@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICS File Generator for Calendars</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        label, .credentials {
+            text-align: center;
+            display: block;
+            font-size: 14px;
+            color: #555;
+        }
+        input, select, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #5cb85c;
+            color: white;
+            font-size: 16px;
+        }
+        .credentials a {
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ICS File Generator for Calendars</h1>
+
+        <label for="event-name">Event Name</label>
+        <input type="text" id="event-name" placeholder="Enter event name" required>
+
+        <label for="timezone">Timezone</label>
+        <select id="timezone" required>
+            <!-- India and UTC options first -->
+            <option value="Asia/Kolkata">(UTC+05:30) Chennai, Kolkata, Mumbai, New Delhi</option>
+            <option value="UTC">(UTC) Coordinated Universal Time</option>
+            <!-- Asia -->
+            <option value="Asia/Tokyo">(UTC+09:00) Tokyo</option>
+            <option value="Asia/Dubai">(UTC+04:00) Dubai</option>
+            <option value="Asia/Shanghai">(UTC+08:00) Shanghai</option>
+            <option value="Asia/Singapore">(UTC+08:00) Singapore</option>
+
+            <!-- Europe -->
+            <option value="Europe/London">(UTC+00:00) London</option>
+            <option value="Europe/Paris">(UTC+01:00) Paris</option>
+            <option value="Europe/Berlin">(UTC+01:00) Berlin</option>
+            <option value="Europe/Moscow">(UTC+03:00) Moscow</option>
+            <option value="Europe/Istanbul">(UTC+03:00) Istanbul</option>
+
+            <!-- North America -->
+            <option value="America/New_York">(UTC-05:00) New York</option>
+            <option value="America/Chicago">(UTC-06:00) Chicago</option>
+            <option value="America/Denver">(UTC-07:00) Denver</option>
+            <option value="America/Los_Angeles">(UTC-08:00) Los Angeles</option>
+            <option value="America/Toronto">(UTC-05:00) Toronto</option>
+
+            <!-- South America -->
+            <option value="America/Sao_Paulo">(UTC-03:00) Sao Paulo</option>
+            <option value="America/Bogota">(UTC-05:00) Bogota</option>
+            <option value="America/Lima">(UTC-05:00) Lima</option>
+            <option value="America/Argentina/Buenos_Aires">(UTC-03:00) Buenos Aires</option>
+            <option value="America/Caracas">(UTC-04:00) Caracas</option>
+
+            <!-- Africa -->
+            <option value="Africa/Johannesburg">(UTC+02:00) Johannesburg</option>
+            <option value="Africa/Cairo">(UTC+02:00) Cairo</option>
+            <option value="Africa/Lagos">(UTC+01:00) Lagos</option>
+            <option value="Africa/Nairobi">(UTC+03:00) Nairobi</option>
+            <option value="Africa/Algiers">(UTC+01:00) Algiers</option>
+
+            <!-- Australia/Oceania -->
+            <option value="Australia/Sydney">(UTC+10:00) Sydney</option>
+            <option value="Australia/Melbourne">(UTC+10:00) Melbourne</option>
+            <option value="Australia/Perth">(UTC+08:00) Perth</option>
+            <option value="Pacific/Auckland">(UTC+13:00) Auckland</option>
+            <option value="Pacific/Fiji">(UTC+12:00) Fiji</option>
+
+            <!-- Antarctica -->
+            <option value="Antarctica/Palmer">(UTC-03:00) Palmer</option>
+            <option value="Antarctica/South_Pole">(UTC+12:00) South Pole</option>
+        </select>
+
+        <label for="start-time">Start Time</label>
+        <input type="datetime-local" id="start-time" required>
+
+        <label for="end-time">End Time</label>
+        <input type="datetime-local" id="end-time" required>
+
+        <label for="location">Location/Online meeting link</label>
+        <input type="text" id="location" placeholder="Enter location" required>
+
+        <label for="description">Description</label>
+        <textarea id="description" placeholder="Enter event description"></textarea>
+
+        <button id="generate-ics">Generate ICS File</button>
+
+        <div class="credentials">
+            <p>Created by: <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></p>
+            <p>License: <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('generate-ics').addEventListener('click', function() {
+            // Get input values
+            const eventName = document.getElementById('event-name').value;
+            const timezone = document.getElementById('timezone').value;
+            const startTime = new Date(document.getElementById('start-time').value);
+            const endTime = new Date(document.getElementById('end-time').value);
+            const location = document.getElementById('location').value;
+            const description = document.getElementById('description').value;
+
+            // Format date to the correct ICS format
+            const formatICSDate = (date) => {
+                return date.toISOString().replace(/-|:|\.\d{3}/g, '');
+            };
+
+            const icsContent = `
+BEGIN:VCALENDAR
+VERSION:2.0
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+SUMMARY:${eventName}
+DTSTART;TZID=${timezone}:${formatICSDate(startTime)}
+DTEND;TZID=${timezone}:${formatICSDate(endTime)}
+LOCATION:${location}
+DESCRIPTION:${description}
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR
+            `.trim();
+
+            // Create a Blob for the ICS file
+            const blob = new Blob([icsContent], { type: 'text/calendar' });
+            const url = URL.createObjectURL(blob);
+
+            // Create a temporary link to trigger download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${eventName.replace(/[^a-zA-Z0-9]/g, '_')}.ics`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>
