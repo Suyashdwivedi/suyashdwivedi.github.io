@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recent Changes - Hindi Wikipedia</title>
+    <link rel="icon" type="image/x-icon" href="favicon1.ico">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #changes { margin-top: 20px; }
+        .change-item { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+        #counter { font-weight: bold; margin-bottom: 10px; }
+        #credit { margin-top: 20px; font-size: small; }
+        button { position: fixed; z-index: 1000; background-color: #007BFF; color: white; border: none; border-radius: 5px; padding: 10px; font-size: 16px; cursor: pointer; }
+        #scrollToTop { top: 20px; right: 20px; }
+        #scrollToBottom { bottom: 20px; right: 20px; }
+    </style>
+</head>
+<body>
+
+<h1>
+    <a href="https://hi.wikipedia.org/w/index.php?hidecategorization=1&hideWikibase=1&hidenewuserlog=1&limit=50&days=14&title=%E0%A4%B5%E0%A4%BF%E0%A4%B6%E0%A5%87%E0%A4%B7:RecentChanges&urlversion=2" target="_blank">
+        Recent Changes - Hindi Wikipedia
+    </a>
+</h1>
+
+<div id="counter">Changes Count: 0</div>
+<div id="changes">
+    <?php
+    // Fetch recent changes from Wikipedia API
+    $apiUrl = "https://hi.wikipedia.org/w/api.php?action=query&list=recentchanges&rcprop=title|timestamp|user|comment|ids|sizes|redirect&rcshow=!bot&hidecategorization=1&hideWikibase=1&hidenewuserlog=1&rclimit=10&format=json";
+    $data = file_get_contents($apiUrl);
+    $changes = json_decode($data, true)['query']['recentchanges'];
+
+    // Display changes in HTML
+    foreach ($changes as $change) {
+        $title = htmlspecialchars($change['title']);
+        $user = htmlspecialchars($change['user'] ?? 'Anonymous');
+        $comment = htmlspecialchars($change['comment'] ?? 'कोई सारांश नहीं');
+        $timestamp = strtotime($change['timestamp']);
+        $utcTime = date('Y-m-d H:i:s', $timestamp);
+        $istTime = date('Y-m-d H:i:s', $timestamp + (5 * 3600 + 1800)); // Convert to IST
+
+        echo "<div class='change-item'>";
+        echo "<strong>पृष्ठ में परिवर्तन:</strong> <a href='https://hi.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history' target='_blank'>$title</a><br>";
+        echo "<strong>संपादक:</strong> <a href='https://hi.wikipedia.org/wiki/विशेष:Contributions/" . urlencode($user) . "' target='_blank'>$user</a><br>";
+        echo "<strong>समय (UTC):</strong> $utcTime<br>";
+        echo "<strong>समय (IST):</strong> $istTime<br>";
+        echo "<strong>सारांश:</strong> $comment<br>";
+        echo "</div>";
+    }
+    ?>
+</div>
+
+<div id="credit">
+    Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>
+</div>
+
+<audio id="beep" preload="auto">
+    <source src="Recent_changes.mp3" type="audio/mp3">
+</audio>
+
+<!-- Scroll to Top Button -->
+<button id="scrollToTop" onclick="scrollToTop()">▲</button>
+
+<!-- Scroll to Bottom Button -->
+<button id="scrollToBottom" onclick="scrollToBottom()">▼</button>
+
+<script>
+    let lastChangeTimestamp = null;
+    let changeCount = <?php echo count($changes); ?>;
+
+    // Update counter on page load
+    document.getElementById('counter').innerText = `Changes Count: ${changeCount}`;
+
+    async function fetchRecentChanges() {
+        const response = await fetch('fetch_changes.php'); // Create a separate PHP script for AJAX calls
+        const changes = await response.json();
+        displayChanges(changes);
+    }
+
+    function displayChanges(changes) {
+        const changesDiv = document.getElementById('changes');
+        changesDiv.innerHTML = ''; // Clear previous changes
+
+        changes.forEach(change => {
+            const changeItem = document.createElement('div');
+            changeItem.className = 'change-item';
+
+            changeItem.innerHTML = `
+                <strong>पृष्ठ में परिवर्तन:</strong> <a href="https://hi.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history" target="_blank">${change.title}</a><br>
+                <strong>संपादक:</strong> <a href="https://hi.wikipedia.org/wiki/विशेष:Contributions/${encodeURIComponent(change.user)}" target="_blank">${change.user || 'Anonymous'}</a><br>
+                <strong>समय (UTC):</strong> ${new Date(change.timestamp).toUTCString()}<br>
+                <strong>समय (IST):</strong> ${new Date(change.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}<br>
+                <strong>सारांश:</strong> ${change.comment || 'कोई सारांश नहीं'}<br>
+            `;
+
+            changesDiv.appendChild(changeItem);
+
+            // Check if this change is new
+            if (!lastChangeTimestamp || new Date(change.timestamp) > lastChangeTimestamp) {
+                changeCount++;
+                lastChangeTimestamp = new Date(change.timestamp);
+                document.getElementById('beep').play(); // Play beep sound
+                showNotification(change.title); // Show notification
+            }
+        });
+
+        // Update the change counter
+        document.getElementById('counter').innerText = `Changes Count: ${changeCount}`;
+    }
+
+    function showNotification(title) {
+        if (Notification.permission === 'granted') {
+            new Notification('नया परिवर्तन', {
+                body: `पृष्ठ "${title}" में परिवर्तन हुआ है!`,
+                icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Wikipedia-logo-v2.svg/1200px-Wikipedia-logo-v2.svg.png'
+            });
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    new Notification('नया परिवर्तन', {
+                        body: `पृष्ठ "${title}" में परिवर्तन हुआ है!`,
+                        icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Wikipedia-logo-v2.svg/1200px-Wikipedia-logo-v2.svg.png'
+                    });
+                }
+            });
+        }
+    }
+
+    function startFetching() {
+        fetchRecentChanges();
+        setInterval(fetchRecentChanges, 5000); // Fetch every 5 seconds
+    }
+
+    startFetching();
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToBottom() {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+</script>
+</body>
+</html>
