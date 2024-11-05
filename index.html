@@ -45,13 +45,13 @@
         }
         
         #scrollToTop {
-            top: 20px;
-            right: 20px;
+            top: 20px; /* Positioning for top button */
+            right: 20px; /* Positioning for top button */
         }
 
         #scrollToBottom {
-            bottom: 20px;
-            right: 20px;
+            bottom: 20px; /* Positioning for bottom button */
+            right: 20px; /* Positioning for bottom button */
         }
     </style>
 </head>
@@ -82,25 +82,6 @@
    <script>
        let lastChangeTimestamp = null;
        let changeCount = 0;
-       let audioEnabled = false;
-
-       // Function to enable audio after user interaction
-       function enableSound() {
-           document.getElementById('beep').play().catch(() => {});
-           audioEnabled = true;
-           document.removeEventListener('click', enableSound);
-           document.removeEventListener('scroll', enableSound);
-       }
-
-       document.addEventListener('click', enableSound, { once: true });
-       document.addEventListener('scroll', enableSound, { once: true });
-
-       // Play beep sound if audio is enabled
-       function playBeep() {
-           if (audioEnabled) {
-               document.getElementById('beep').play();
-           }
-       }
 
        async function fetchRecentChanges() {
            const response = await fetch('https://hi.wikipedia.org/w/api.php?action=query&list=recentchanges&rcprop=title|timestamp|user|comment|ids|sizes|redirect&rcshow=!bot&hidecategorization=1&hideWikibase=1&hidenewuserlog=1&rclimit=500&format=json&origin=*');
@@ -116,37 +97,39 @@
                const changeItem = document.createElement('div');
                changeItem.className = 'change-item';
 
-               changeItem.innerHTML = `
+               changeItem.innerHTML = 
                    <strong>पृष्ठ में परिवर्तन:</strong> <a href="https://hi.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history" target="_blank">${change.title}</a><br>                    
                    <strong>संपादक:</strong> <a href="https://hi.wikipedia.org/wiki/विशेष:Contributions/${encodeURIComponent(change.user)}" target="_blank">${change.user || 'Anonymous'}</a><br>
                    <strong>समय (UTC):</strong> ${new Date(change.timestamp).toUTCString()}<br>
                    <strong>समय (IST):</strong> ${new Date(change.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}<br>
                    <strong>सारांश:</strong> ${change.comment || 'कोई सारांश नहीं'}<br>
-               `;
+               ;
                changesDiv.appendChild(changeItem);
 
+               // Check if this change is new
                if (!lastChangeTimestamp || new Date(change.timestamp) > lastChangeTimestamp) {
                    changeCount++;
                    lastChangeTimestamp = new Date(change.timestamp);
-                   playBeep(); // Play beep sound
+                   document.getElementById('beep').play(); // Play beep sound
                    showNotification(change.title); // Show notification
                }
            });
 
-           document.getElementById('counter').innerText = `Changes Count: ${changeCount}`;
+           // Update the change counter
+           document.getElementById('counter').innerText = Changes Count: ${changeCount};
        }
 
        function showNotification(title) {
            if (Notification.permission === 'granted') {
                new Notification('नया परिवर्तन', {
-                   body: `पृष्ठ "${title}" में परिवर्तन हुआ है!`,
+                   body: पृष्ठ "${title}" में परिवर्तन हुआ है!,
                    icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Wikipedia-logo-v2.svg/1200px-Wikipedia-logo-v2.svg.png'
                });
            } else if (Notification.permission !== 'denied') {
                Notification.requestPermission().then(permission => {
                    if (permission === 'granted') {
                        new Notification('नए परिवर्तन हुए', {
-                           body: `पृष्ठ "${title}" में परिवर्तन हुआ है!`,
+                           body: पृष्ठ "${title}" में परिवर्तन हुआ है!,
                            icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Wikipedia-logo-v2.svg/1200px-Wikipedia-logo-v2.svg.png'
                        });
                    }
