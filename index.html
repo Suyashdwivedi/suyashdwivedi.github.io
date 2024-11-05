@@ -43,7 +43,7 @@
             font-size: 16px;
             cursor: pointer;
         }
-        
+
         #scrollToTop {
             top: 20px; /* Positioning for top button */
             right: 20px; /* Positioning for top button */
@@ -97,13 +97,13 @@
                const changeItem = document.createElement('div');
                changeItem.className = 'change-item';
 
-               changeItem.innerHTML = 
+               changeItem.innerHTML = `
                    <strong>पृष्ठ में परिवर्तन:</strong> <a href="https://hi.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history" target="_blank">${change.title}</a><br>                    
                    <strong>संपादक:</strong> <a href="https://hi.wikipedia.org/wiki/विशेष:Contributions/${encodeURIComponent(change.user)}" target="_blank">${change.user || 'Anonymous'}</a><br>
                    <strong>समय (UTC):</strong> ${new Date(change.timestamp).toUTCString()}<br>
                    <strong>समय (IST):</strong> ${new Date(change.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}<br>
                    <strong>सारांश:</strong> ${change.comment || 'कोई सारांश नहीं'}<br>
-               ;
+               `;
                changesDiv.appendChild(changeItem);
 
                // Check if this change is new
@@ -116,20 +116,20 @@
            });
 
            // Update the change counter
-           document.getElementById('counter').innerText = Changes Count: ${changeCount};
+           document.getElementById('counter').innerText = `Changes Count: ${changeCount}`;
        }
 
        function showNotification(title) {
            if (Notification.permission === 'granted') {
                new Notification('नया परिवर्तन', {
-                   body: पृष्ठ "${title}" में परिवर्तन हुआ है!,
+                   body: `पृष्ठ "${title}" में परिवर्तन हुआ है!`,
                    icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Wikipedia-logo-v2.svg/1200px-Wikipedia-logo-v2.svg.png'
                });
            } else if (Notification.permission !== 'denied') {
                Notification.requestPermission().then(permission => {
                    if (permission === 'granted') {
                        new Notification('नए परिवर्तन हुए', {
-                           body: पृष्ठ "${title}" में परिवर्तन हुआ है!,
+                           body: `पृष्ठ "${title}" में परिवर्तन हुआ है!`,
                            icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Wikipedia-logo-v2.svg/1200px-Wikipedia-logo-v2.svg.png'
                        });
                    }
@@ -156,3 +156,4 @@
    </script>
 </body>
 </html>
+
