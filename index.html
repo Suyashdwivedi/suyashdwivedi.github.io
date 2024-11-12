@@ -192,13 +192,37 @@
         }, 10000); // 10 Seconds
 
         // Go to top and bottom of the page
-        function goToTop() {
+     /*   function goToTop() {
             window.scrollTo(0, -20);
         }
 
         function goToBottom() {
             window.scrollTo(20, document.body.scrollHeight);
         }
+        */
+
+        // Scroll to the top slowly
+function goToTop() {
+    const interval = setInterval(() => {
+        if (window.scrollY === 0) {
+            clearInterval(interval);
+        } else {
+            window.scrollBy(0, -20); // Adjust -20 for a slower or faster scroll
+        }
+    }, 10); // Adjust 10 for speed (higher number = slower)
+}
+
+// Scroll to the bottom slowly
+function goToBottom() {
+    const interval = setInterval(() => {
+        if (window.scrollY + window.innerHeight >= document.body.scrollHeight) {
+            clearInterval(interval);
+        } else {
+            window.scrollBy(0, 20); // Adjust 20 for a slower or faster scroll
+        }
+    }, 10); // Adjust 10 for speed (higher number = slower)
+}
+
 
         // Set default language
         const savedLanguage = localStorage.getItem('selectedLanguage') || 'hi';
