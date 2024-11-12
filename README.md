@@ -54,6 +54,7 @@ The project supports multiple languages, including Hindi, English, and other maj
 - **Persian** (fa)
 - **Malay** (ms)
 - **Thai** (th)
+- **Punjabi** (pa)
 
 ## Installation
 
