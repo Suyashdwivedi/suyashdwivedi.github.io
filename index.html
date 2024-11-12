@@ -197,17 +197,17 @@
         setInterval(() => {
             const selectedLanguage = localStorage.getItem('selectedLanguage') || 'hi';
             fetchChanges(selectedLanguage);
-        }, 10000); // 10 Seconds
+        }, 15000); // 15 Seconds
 
         // Go to top and bottom of the page
-     /*   function goToTop() {
-            window.scrollTo(0, -20);
+          function goToTop() {
+            window.scrollTo(0, 0);
         }
 
         function goToBottom() {
-            window.scrollTo(20, document.body.scrollHeight);
+            window.scrollTo(0, document.body.scrollHeight);
         }
-        */
+     /*
 
         // Scroll to the top slowly
 function goToTop() {
@@ -230,7 +230,7 @@ function goToBottom() {
         }
     }, 10); // Adjust 10 for speed (higher number = slower)
 }
-
+*/
 
         // Set default language
         const savedLanguage = localStorage.getItem('selectedLanguage') || 'hi';
