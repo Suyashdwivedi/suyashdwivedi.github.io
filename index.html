@@ -24,7 +24,21 @@
 
         #counter {
             font-weight: bold;
+            margin-top: 20px;
             margin-bottom: 10px;
+        }
+
+        #localDateTime {
+            font-size: large;
+            font-weight: bold;
+            color: green;
+            margin-top: 10px;
+        }
+
+        #createdBy {
+            font-size: medium;
+            margin-top: 10px;
+            font-weight: bold;
         }
 
         #credit {
@@ -61,6 +75,12 @@
          Recent Changes - Hindi Wikipedia
       </a>
    </h1>
+
+   <!-- Local Date and Time -->
+   <div id="localDateTime">Date: </div>
+   
+   <!-- Created by Suyash Dwivedi -->
+   <div id="createdBy">Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></div>
 
    <div id="counter">Changes Count: 0</div>
    <div id="changes"></div>
@@ -144,6 +164,14 @@
 
        startFetching();
 
+       // Function to update the local date and time every second
+       function updateLocalDateTime() {
+           const now = new Date();
+           const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Kolkata' };
+           document.getElementById('localDateTime').innerText = `Date: ${now.toLocaleString('en-IN', options)}`;
+       }
+       setInterval(updateLocalDateTime, 1000); // Update every second
+
        // Scroll to Top function
        function scrollToTop() {
            window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -156,4 +184,3 @@
    </script>
 </body>
 </html>
-
