@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wikipedia Recent Changes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header, footer {
+            padding: 10px;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .change-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        .date-time {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: green; /* Set the date color to green */
+        }
+        #counter {
+            font-weight: bold;
+        }
+        .nav-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+        .nav-button {
+            margin: 5px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .nav-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Wikipedia Recent Changes</h1>
+        <label for="language-select">Select Language:</label>
+        <select id="language-select">
+            <option value="hi">Hindi</option>
+            <option value="en">English</option>
+            <option value="bn">Bengali</option>
+            <option value="ta">Tamil</option>
+            <option value="te">Telugu</option>
+            <option value="mr">Marathi</option>
+            <option value="kn">Kannada</option>
+            <option value="tcy">Tulu</option> <!-- Added Tulu here -->
+            <option value="ceb">Cebuano</option>
+            <option value="de">German</option>
+            <option value="fr">French</option>
+            <option value="es">Spanish</option>
+            <option value="it">Italian</option>
+            <option value="nl">Dutch</option>
+            <option value="ru">Russian</option>
+            <option value="pl">Polish</option>
+            <option value="pt">Portuguese</option>
+            <option value="ja">Japanese</option>
+            <option value="uk">Ukrainian</option>
+            <option value="zh">Chinese</option>
+            <option value="ar">Arabic</option>
+            <option value="vi">Vietnamese</option>
+            <option value="tr">Turkish</option>
+            <option value="fa">Persian</option>
+            <option value="ms">Malay</option>
+            <option value="th">Thai</option>
+        </select>
+    </header>
+
+    <div id="date-time" class="date-time"></div>
+    <div id="counter">Changes Count: 0</div>
+
+    <div id="changes"></div>
+
+    <footer>
+        <p>Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></p>
+    </footer>
+
+    <audio id="beepHi" preload="auto">
+        <source src="Recent_changes.mp3" type="audio/mp3">
+    </audio>
+
+    <audio id="beepEn" preload="auto">
+        <source src="Recent_changes_en.mp3" type="audio/mp3">
+    </audio>
+
+    <div class="nav-buttons">
+        <button class="nav-button" onclick="goToTop()">Go to Top</button>
+        <button class="nav-button" onclick="goToBottom()">Go to Bottom</button>
+    </div>
+
+    <script>
+        const changesDiv = document.getElementById('changes');
+        const dateDisplay = document.getElementById('date-time');
+        const languageSelect = document.getElementById('language-select');
+        let lastChangeTimestamp = null;
+        let changeCount = 0;
+
+        // Display current date and time
+        function displayDateTime() {
+            const now = new Date();
+            dateDisplay.innerHTML = `Date: ${now.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true, year: 'numeric', month: 'long', day: 'numeric', weekday: 'long', hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+        }
+
+        // Update recent changes for the selected language
+        async function fetchChanges(language) {
+            const response = await fetch(`https://${language}.wikipedia.org/w/api.php?action=query&list=recentchanges&rcprop=title|user|timestamp|comment&rclimit=50&origin=*&format=json`);
+            const data = await response.json();
+            displayChanges(data.query.recentchanges, language);
+        }
+
+        // Display the changes with language-specific content and sound notification
+        function displayChanges(changes, language) {
+            changesDiv.innerHTML = '';
+            const beep = language === 'hi' ? document.getElementById('beepHi') : document.getElementById('beepEn');
+
+            changes.forEach(change => {
+                const changeItem = document.createElement('div');
+                changeItem.className = 'change-item';
+
+                if (language === 'hi') {
+                    changeItem.innerHTML = `
+                        <strong>पृष्ठ में परिवर्तन:</strong> <a href="https://${language}.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history" target="_blank">${change.title}</a><br>
+                        <strong>संपादक:</strong> <a href="https://${language}.wikipedia.org/wiki/विशेष:Contributions/${encodeURIComponent(change.user)}" target="_blank">${change.user || 'Anonymous'}</a><br>
+                        <strong>समय (UTC):</strong> ${new Date(change.timestamp).toUTCString()}<br>
+                        <strong>समय (IST):</strong> ${new Date(change.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}<br>
+                        <strong>सारांश:</strong> ${change.comment || 'कोई सारांश नहीं'}<br>
+                    `;
+                } else if (language === 'en') {
+                    changeItem.innerHTML = `
+                        <strong>Page Changed:</strong> <a href="https://${language}.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history" target="_blank">${change.title}</a><br>
+                        <strong>Editor:</strong> <a href="https://${language}.wikipedia.org/wiki/Special:Contributions/${encodeURIComponent(change.user)}" target="_blank">${change.user || 'Anonymous'}</a><br>
+                        <strong>Time (UTC):</strong> ${new Date(change.timestamp).toUTCString()}<br>
+                        <strong>Time (IST):</strong> ${new Date(change.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}<br>
+                        <strong>Comment:</strong> ${change.comment || 'No summary'}<br>
+                    `;
+                } else {
+                    changeItem.innerHTML = `
+                        <strong>Page Changed:</strong> <a href="https://${language}.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history" target="_blank">${change.title}</a><br>
+                        <strong>Editor:</strong> <a href="https://${language}.wikipedia.org/wiki/Special:Contributions/${encodeURIComponent(change.user)}" target="_blank">${change.user || 'Anonymous'}</a><br>
+                        <strong>Time (UTC):</strong> ${new Date(change.timestamp).toUTCString()}<br>
+                        <strong>Time (IST):</strong> ${new Date(change.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}<br>
+                        <strong>Comment:</strong> ${change.comment || 'No summary'}<br>
+                    `;
+                }
+
+                changesDiv.appendChild(changeItem);
+
+                if (!lastChangeTimestamp || new Date(change.timestamp) > lastChangeTimestamp) {
+                    changeCount++;
+                    lastChangeTimestamp = new Date(change.timestamp);
+                    beep.play();
+                }
+            });
+
+            document.getElementById('counter').innerText = `Changes Count: ${changeCount}`;
+        }
+
+        // Remember language selection
+        languageSelect.addEventListener('change', () => {
+            const selectedLanguage = languageSelect.value;
+            localStorage.setItem('selectedLanguage', selectedLanguage);
+            fetchChanges(selectedLanguage);
+        });
+
+        // Refresh changes every 20 seconds
+        setInterval(() => {
+            const selectedLanguage = localStorage.getItem('selectedLanguage') || 'hi';
+            fetchChanges(selectedLanguage);
+        }, 20000);
+
+        // Go to top and bottom of the page
+        function goToTop() {
+            window.scrollTo(0, 0);
+        }
+
+        function goToBottom() {
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        // Set default language
+        const savedLanguage = localStorage.getItem('selectedLanguage') || 'hi';
+        languageSelect.value = savedLanguage;
+        fetchChanges(savedLanguage);
+
+        // Initialize Date and Time
+        displayDateTime();
+        setInterval(displayDateTime, 1000);
+    </script>
+</body>
+</html>
