@@ -207,7 +207,7 @@ function goToTop() {
         if (window.scrollY === 0) {
             clearInterval(interval);
         } else {
-            window.scrollBy(0, -10); // Adjust -20 for a slower or faster scroll
+            window.scrollBy(0, -50); // Adjust -20 for a slower or faster scroll
         }
     }, 10); // Adjust 10 for speed (higher number = slower)
 }
@@ -218,7 +218,7 @@ function goToBottom() {
         if (window.scrollY + window.innerHeight >= document.body.scrollHeight) {
             clearInterval(interval);
         } else {
-            window.scrollBy(0, 10); // Adjust 20 for a slower or faster scroll
+            window.scrollBy(0, 50); // Adjust 20 for a slower or faster scroll
         }
     }, 10); // Adjust 10 for speed (higher number = slower)
 }
