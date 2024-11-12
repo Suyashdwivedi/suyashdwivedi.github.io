@@ -1,29 +1,98 @@
-<?php
-header('Content-Type: application/json');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wikipedia Recent Changes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
 
-// Set language, defaulting to Hindi if not provided
-$language = isset($_GET['lang']) ? $_GET['lang'] : 'hi';
+        h1 {
+            color: #333;
+        }
 
-// Build URL for API request
-$url = "https://$language.wikipedia.org/w/api.php?action=query&list=recentchanges&rcprop=title|user|timestamp|comment&rclimit=10&format=json";
+        #language-selector {
+            padding: 10px;
+            font-size: 16px;
+        }
 
-try {
-    // Fetch data from Wikipedia API
-    $response = file_get_contents($url);
-    if ($response === false) {
-        throw new Exception("Failed to fetch data.");
-    }
+        #recent-changes {
+            margin-top: 20px;
+            list-style: none;
+            padding: 0;
+        }
 
-    // Decode JSON response
-    $data = json_decode($response, true);
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception("Error decoding JSON response.");
-    }
+        #recent-changes li {
+            background-color: #fff;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
 
-    // Send the data back to the client
-    echo json_encode($data);
-} catch (Exception $e) {
-    // Send error message as JSON
-    echo json_encode(["error" => $e->getMessage()]);
-}
-?>
+        .timestamp {
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wikipedia Recent Changes</h1>
+    <select id="language-selector">
+        <option value="en">English</option>
+        <option value="hi">Hindi</option>
+        <option value="ar">Arabic</option>
+        <!-- Add more languages as needed -->
+    </select>
+
+    <ul id="recent-changes"></ul>
+
+    <script>
+        const sound = new Audio('https://www.soundjay.com/button/beep-07.wav'); // Notification sound
+        const languageSelector = document.getElementById('language-selector');
+        const recentChangesList = document.getElementById('recent-changes');
+
+        const getRecentChanges = async () => {
+            const language = languageSelector.value;
+            const url = `https://${language}.wikipedia.org/w/api.php?action=query&list=recentchanges&format=json&rcprop=title|ids|timestamp|user&rcshow=minor&rcnamespace=0&rclimit=10`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const changes = data.query.recentchanges;
+
+                recentChangesList.innerHTML = ''; // Clear the current list
+
+                changes.forEach(change => {
+                    const li = document.createElement('li');
+                    const timestamp = new Date(change.timestamp);
+                    const dateString = timestamp.toLocaleString();
+
+                    li.innerHTML = `
+                        <strong>${change.title}</strong> by <em>${change.user}</em>
+                        <div class="timestamp">${dateString}</div>
+                    `;
+                    recentChangesList.appendChild(li);
+
+                    // Play sound if new changes are detected
+                    sound.play();
+                });
+            } catch (error) {
+                console.error('Error fetching recent changes:', error);
+            }
+        };
+
+        // Set interval to refresh every 10 seconds
+        setInterval(getRecentChanges, 10000);
+        getRecentChanges(); // Initial call to fetch changes
+
+        // Update changes when the language selector changes
+        languageSelector.addEventListener('change', getRecentChanges);
+    </script>
+</body>
+</html>
