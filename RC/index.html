@@ -3,96 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wikipedia Recent Changes</title>
+    <title>Wikipedia Recent Changes - U:Suyash.dwivedi</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
             margin: 0;
-            padding: 20px;
-        }
-
-        h1 {
-            color: #333;
-        }
-
-        #language-selector {
-            padding: 10px;
-            font-size: 16px;
-        }
-
-        #recent-changes {
-            margin-top: 20px;
-            list-style: none;
             padding: 0;
         }
-
-        #recent-changes li {
-            background-color: #fff;
-            margin: 5px 0;
+        header {
             padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            background-color: #f4f4f4;
+            text-align: center;
+            position: relative;
         }
-
-        .timestamp {
-            font-size: 12px;
-            color: #888;
+        header img {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 50px; /* Adjust size as needed */
+            height: auto;
+        }
+        .change-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        .date-time {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: green; /* Set the date color to green */
+        }
+        #counter {
+            font-weight: bold;
+        }
+        .nav-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+        .nav-button {
+            margin: 5px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .nav-button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <h1>Wikipedia Recent Changes</h1>
-    <select id="language-selector">
-        <option value="en">English</option>
-        <option value="hi">Hindi</option>
-        <option value="ar">Arabic</option>
-        <!-- Add more languages as needed -->
-    </select>
+    <header>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/120px-Wikipedia-logo-v2.svg.png" alt="Wikipedia Logo">
+        <h1>Wikipedia Recent Changes</h1>
+        <p>Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></p>
 
-    <ul id="recent-changes"></ul>
+        <label for="language-select">Select Language:</label>
+        <select id="language-select">
+            <option value="hi">Hindi</option>
+            <option value="en">English</option>
+            <option value="ar">Arabic</option>
+            <option value="awa">Awadhi</option>
+            <option value="bn">Bengali</option>
+            <option value="ceb">Cebuano</option>
+            <option value="zh">Chinese</option>
+            <option value="de">German</option>
+            <option value="es">Spanish</option>
+            <option value="fa">Persian</option>
+            <option value="fr">French</option>
+            <option value="it">Italian</option>
+            <option value="ja">Japanese</option>
+            <option value="kn">Kannada</option>
+            <option value="mr">Marathi</option>
+            <option value="ms">Malay</option>
+            <option value="nl">Dutch</option>
+            <option value="pa">Punjabi</option>
+            <option value="pl">Polish</option>
+            <option value="pt">Portuguese</option>
+            <option value="ru">Russian</option>
+            <option value="ta">Tamil</option>
+            <option value="te">Telugu</option>
+            <option value="tcy">Tulu</option>
+            <option value="th">Thai</option>
+            <option value="tr">Turkish</option>
+            <option value="uk">Ukrainian</option>
+            <option value="vi">Vietnamese</option>
+        </select>
+    </header>
+
+    <main>
+        <div class="date-time">Last Updated: <span id="date-time"></span></div>
+        <div id="recent-changes"></div>
+    </main>
+
+    <div class="nav-buttons">
+        <button class="nav-button" onclick="scrollToTop()">Scroll to Top</button>
+        <button class="nav-button" onclick="scrollToBottom()">Scroll to Bottom</button>
+    </div>
 
     <script>
-        const sound = new Audio('https://www.soundjay.com/button/beep-07.wav'); // Notification sound
-        const languageSelector = document.getElementById('language-selector');
-        const recentChangesList = document.getElementById('recent-changes');
+        // JavaScript to update the date and time
+        document.getElementById('date-time').innerText = new Date().toLocaleString();
 
-        const getRecentChanges = async () => {
-            const language = languageSelector.value;
-            const url = `https://${language}.wikipedia.org/w/api.php?action=query&list=recentchanges&format=json&rcprop=title|ids|timestamp|user&rcshow=minor&rcnamespace=0&rclimit=10`;
+        // JavaScript functions to scroll to top and bottom
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                const changes = data.query.recentchanges;
-
-                recentChangesList.innerHTML = ''; // Clear the current list
-
-                changes.forEach(change => {
-                    const li = document.createElement('li');
-                    const timestamp = new Date(change.timestamp);
-                    const dateString = timestamp.toLocaleString();
-
-                    li.innerHTML = `
-                        <strong>${change.title}</strong> by <em>${change.user}</em>
-                        <div class="timestamp">${dateString}</div>
-                    `;
-                    recentChangesList.appendChild(li);
-
-                    // Play sound if new changes are detected
-                    sound.play();
-                });
-            } catch (error) {
-                console.error('Error fetching recent changes:', error);
-            }
-        };
-
-        // Set interval to refresh every 10 seconds
-        setInterval(getRecentChanges, 10000);
-        getRecentChanges(); // Initial call to fetch changes
-
-        // Update changes when the language selector changes
-        languageSelector.addEventListener('change', getRecentChanges);
+        function scrollToBottom() {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
     </script>
 </body>
 </html>
