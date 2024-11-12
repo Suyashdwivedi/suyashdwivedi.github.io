@@ -59,30 +59,31 @@
         <select id="language-select">
             <option value="hi">Hindi</option>
             <option value="en">English</option>
+            <option value="ar">Arabic</option>
             <option value="bn">Bengali</option>
-            <option value="ta">Tamil</option>
-            <option value="te">Telugu</option>
-            <option value="mr">Marathi</option>
-            <option value="kn">Kannada</option>
-            <option value="tcy">Tulu</option> <!-- Added Tulu here -->
             <option value="ceb">Cebuano</option>
+            <option value="zh">Chinese</option>
             <option value="de">German</option>
-            <option value="fr">French</option>
             <option value="es">Spanish</option>
+            <option value="fa">Persian</option>
+            <option value="fr">French</option>
             <option value="it">Italian</option>
+            <option value="ja">Japanese</option>
+            <option value="kn">Kannada</option>
+            <option value="mr">Marathi</option>
+            <option value="ms">Malay</option>
             <option value="nl">Dutch</option>
-            <option value="ru">Russian</option>
             <option value="pl">Polish</option>
             <option value="pt">Portuguese</option>
-            <option value="ja">Japanese</option>
-            <option value="uk">Ukrainian</option>
-            <option value="zh">Chinese</option>
-            <option value="ar">Arabic</option>
-            <option value="vi">Vietnamese</option>
-            <option value="tr">Turkish</option>
-            <option value="fa">Persian</option>
-            <option value="ms">Malay</option>
+            <option value="ru">Russian</option>
+            <option value="ta">Tamil</option>
+            <option value="te">Telugu</option>
+            <option value="tcy">Tulu</option>
             <option value="th">Thai</option>
+            <option value="tr">Turkish</option>
+            <option value="uk">Ukrainian</option>
+            <option value="vi">Vietnamese</option>
+
         </select>
     </header>
 
@@ -187,7 +188,7 @@
         setInterval(() => {
             const selectedLanguage = localStorage.getItem('selectedLanguage') || 'hi';
             fetchChanges(selectedLanguage);
-        }, 20000);
+        }, 10000); // 10 Seconds
 
         // Go to top and bottom of the page
         function goToTop() {
