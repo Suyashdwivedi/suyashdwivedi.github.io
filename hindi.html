@@ -3,145 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recent Changes - Hindi Wikipedia</title>
-    <link rel="icon" type="image/x-icon" href="favicon1.ico">
+    <title>Wikipedia Recent Changes - U:Suyash.dwivedi</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        #changes { margin-top: 20px; }
-        .change-item { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
-        #counter { font-weight: bold; margin-bottom: 10px; }
-        #credit { margin-top: 20px; font-size: small; }
-        button { position: fixed; z-index: 1000; background-color: #007BFF; color: white; border: none; border-radius: 5px; padding: 10px; font-size: 16px; cursor: pointer; }
-        #scrollToTop { top: 20px; right: 20px; }
-        #scrollToBottom { bottom: 20px; right: 20px; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header, footer {
+            padding: 10px;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .change-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        .date-time {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: green; /* Set the date color to green */
+        }
+        #counter {
+            font-weight: bold;
+        }
+        .nav-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+        .nav-button {
+            margin: 5px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .nav-button:hover {
+            background-color: #45a049;
+        }
+        header img {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 90px; /* Adjust size as needed */
+            height: auto;
+        }
     </style>
 </head>
 <body>
+    <header>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/263px-Wikipedia-logo-v2.svg.png" alt="Wikipedia Logo">
+        <h1>Wikipedia Recent Changes</h1>
+        <p>Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></p>
 
-<h1>
-    <a href="https://hi.wikipedia.org/w/index.php?hidecategorization=1&hideWikibase=1&hidenewuserlog=1&limit=50&days=14&title=%E0%A4%B5%E0%A4%BF%E0%A4%B6%E0%A5%87%E0%A4%B7:RecentChanges&urlversion=2" target="_blank">
-        Recent Changes - Hindi Wikipedia
-    </a>
-</h1>
+        <label for="language-select">Select Language:</label>
+        <select id="language-select">
+            <option value="hi">हिन्दी (Hindi)</option>
+            <option value="en">English</option>
+            <option value="ar">العربية (Arabic)</option>
+            <option value="awa">अवधी (Awadhi)</option>
+            <option value="bn">বাংলা (Bengali)</option>
+            <option value="ceb">Sinugboanon (Cebuano)</option>
+            <option value="zh">中文 (Chinese)</option>
+            <option value="de">Deutsch (German)</option>
+            <option value="es">Español (Spanish)</option>
+            <option value="fa">فارسی (Persian)</option>
+            <option value="fr">Français (French)</option>
+            <option value="it">Italiano (Italian)</option>
+            <option value="ja">日本語 (Japanese)</option>
+            <option value="kn">ಕನ್ನಡ (Kannada)</option>
+            <option value="mr">मराठी (Marathi)</option>
+            <option value="ms">Bahasa Melayu (Malay)</option>
+            <option value="nl">Nederlands (Dutch)</option>
+            <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+            <option value="pl">Polski (Polish)</option>
+            <option value="pt">Português (Portuguese)</option>
+            <option value="ru">Русский (Russian)</option>
+            <option value="ta">தமிழ் (Tamil)</option>
+            <option value="te">తెలుగు (Telugu)</option>
+            <option value="tcy">ತುಳು (Tulu)</option>
+            <option value="th">ไทย (Thai)</option>
+            <option value="tr">Türkçe (Turkish)</option>
+            <option value="uk">Українська (Ukrainian)</option>
+            <option value="vi">Tiếng Việt (Vietnamese)</option>
 
-<div id="counter">Changes Count: 0</div>
-<div id="changes">
-    <?php
-    // Fetch recent changes from Wikipedia API
-    $apiUrl = "https://hi.wikipedia.org/w/api.php?action=query&list=recentchanges&rcprop=title|timestamp|user|comment|ids|sizes|redirect&rcshow=!bot&hidecategorization=1&hideWikibase=1&hidenewuserlog=1&rclimit=10&format=json";
-    $data = file_get_contents($apiUrl);
-    $changes = json_decode($data, true)['query']['recentchanges'];
+        </select>
+    </header>
 
-    // Display changes in HTML
-    foreach ($changes as $change) {
-        $title = htmlspecialchars($change['title']);
-        $user = htmlspecialchars($change['user'] ?? 'Anonymous');
-        $comment = htmlspecialchars($change['comment'] ?? 'कोई सारांश नहीं');
-        $timestamp = strtotime($change['timestamp']);
-        $utcTime = date('Y-m-d H:i:s', $timestamp);
-        $istTime = date('Y-m-d H:i:s', $timestamp + (5 * 3600 + 1800)); // Convert to IST
+    <div id="date-time" class="date-time"></div>
 
-        echo "<div class='change-item'>";
-        echo "<strong>पृष्ठ में परिवर्तन:</strong> <a href='https://hi.wikipedia.org/w/index.php?title=" . urlencode($title) . "&action=history' target='_blank'>$title</a><br>";
-        echo "<strong>संपादक:</strong> <a href='https://hi.wikipedia.org/wiki/विशेष:Contributions/" . urlencode($user) . "' target='_blank'>$user</a><br>";
-        echo "<strong>समय (UTC):</strong> $utcTime<br>";
-        echo "<strong>समय (IST):</strong> $istTime<br>";
-        echo "<strong>सारांश:</strong> $comment<br>";
-        echo "</div>";
-    }
-    ?>
-</div>
+    <div id="counter">Changes Count: 0</div>
 
-<div id="credit">
-    Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>
-</div>
+    <div id="changes"></div>
 
-<audio id="beep" preload="auto">
-    <source src="Recent_changes.mp3" type="audio/mp3">
-</audio>
+    <footer>
+        <p>Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></p>
+    </footer>
 
-<!-- Scroll to Top Button -->
-<button id="scrollToTop" onclick="scrollToTop()">▲</button>
+    <audio id="beepHi" preload="auto">
+        <source src="Recent_changes.mp3" type="audio/mp3">
+    </audio>
 
-<!-- Scroll to Bottom Button -->
-<button id="scrollToBottom" onclick="scrollToBottom()">▼</button>
+    <audio id="beepEn" preload="auto">
+        <source src="Recent_changes_en.mp3" type="audio/mp3">
+    </audio>
 
-<script>
-    let lastChangeTimestamp = null;
-    let changeCount = <?php echo count($changes); ?>;
+    <div class="nav-buttons">
+        <button class="nav-button" onclick="goToTop()">Go to Top</button>
+        <button class="nav-button" onclick="goToBottom()">Go to Bottom</button>
+    </div>
 
-    // Update counter on page load
-    document.getElementById('counter').innerText = `Changes Count: ${changeCount}`;
-
-    async function fetchRecentChanges() {
-        const response = await fetch('fetch_changes.php'); // Create a separate PHP script for AJAX calls
-        const changes = await response.json();
-        displayChanges(changes);
-    }
-
-    function displayChanges(changes) {
+    <script>
         const changesDiv = document.getElementById('changes');
-        changesDiv.innerHTML = ''; // Clear previous changes
+        const dateDisplay = document.getElementById('date-time');
+        const languageSelect = document.getElementById('language-select');
+        let lastChangeTimestamp = null;
+        let changeCount = 0;
 
-        changes.forEach(change => {
-            const changeItem = document.createElement('div');
-            changeItem.className = 'change-item';
+        // Display current date and time
+        function displayDateTime() {
+            const now = new Date();
+            dateDisplay.innerHTML = `Date: ${now.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true, year: 'numeric', month: 'long', day: 'numeric', weekday: 'long', hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+        }
 
-            changeItem.innerHTML = `
-                <strong>पृष्ठ में परिवर्तन:</strong> <a href="https://hi.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history" target="_blank">${change.title}</a><br>
-                <strong>संपादक:</strong> <a href="https://hi.wikipedia.org/wiki/विशेष:Contributions/${encodeURIComponent(change.user)}" target="_blank">${change.user || 'Anonymous'}</a><br>
-                <strong>समय (UTC):</strong> ${new Date(change.timestamp).toUTCString()}<br>
-                <strong>समय (IST):</strong> ${new Date(change.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}<br>
-                <strong>सारांश:</strong> ${change.comment || 'कोई सारांश नहीं'}<br>
-            `;
+        // Update recent changes for the selected language
+        async function fetchChanges(language) {
+            const response = await fetch(`https://${language}.wikipedia.org/w/api.php?action=query&list=recentchanges&rcprop=title|user|timestamp|comment&rclimit=50&origin=*&format=json`);
+            const data = await response.json();
+            displayChanges(data.query.recentchanges, language);
+        }
 
-            changesDiv.appendChild(changeItem);
+        // Display the changes with language-specific content and sound notification
+        function displayChanges(changes, language) {
+            changesDiv.innerHTML = '';
+            const beep = language === 'hi' ? document.getElementById('beepHi') : document.getElementById('beepEn');
 
-            // Check if this change is new
-            if (!lastChangeTimestamp || new Date(change.timestamp) > lastChangeTimestamp) {
-                changeCount++;
-                lastChangeTimestamp = new Date(change.timestamp);
-                document.getElementById('beep').play(); // Play beep sound
-                showNotification(change.title); // Show notification
-            }
-        });
+            changes.forEach(change => {
+                const changeItem = document.createElement('div');
+                changeItem.className = 'change-item';
 
-        // Update the change counter
-        document.getElementById('counter').innerText = `Changes Count: ${changeCount}`;
-    }
+                if (language === 'hi') {
+                    changeItem.innerHTML = `
+                        <strong>पृष्ठ में परिवर्तन:</strong> <a href="https://${language}.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history" target="_blank">${change.title}</a><br>
+                        <strong>संपादक:</strong> <a href="https://${language}.wikipedia.org/wiki/विशेष:Contributions/${encodeURIComponent(change.user)}" target="_blank">${change.user || 'Anonymous'}</a><br>
+                        <strong>समय (UTC):</strong> ${new Date(change.timestamp).toUTCString()}<br>
+                        <strong>समय (IST):</strong> ${new Date(change.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}<br>
+                        <strong>सारांश:</strong> ${change.comment || 'कोई सारांश नहीं'}<br>
+                    `;
+                } else if (language === 'en') {
+                    changeItem.innerHTML = `
+                        <strong>Page Changed:</strong> <a href="https://${language}.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history" target="_blank">${change.title}</a><br>
+                        <strong>Editor:</strong> <a href="https://${language}.wikipedia.org/wiki/Special:Contributions/${encodeURIComponent(change.user)}" target="_blank">${change.user || 'Anonymous'}</a><br>
+                        <strong>Time (UTC):</strong> ${new Date(change.timestamp).toUTCString()}<br>
+                        <strong>Time (IST):</strong> ${new Date(change.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}<br>
+                        <strong>Comment:</strong> ${change.comment || 'No summary'}<br>
+                    `;
+                } else {
+                    changeItem.innerHTML = `
+                        <strong>Page Changed:</strong> <a href="https://${language}.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history" target="_blank">${change.title}</a><br>
+                        <strong>Editor:</strong> <a href="https://${language}.wikipedia.org/wiki/Special:Contributions/${encodeURIComponent(change.user)}" target="_blank">${change.user || 'Anonymous'}</a><br>
+                        <strong>Time (UTC):</strong> ${new Date(change.timestamp).toUTCString()}<br>
+                        <strong>Time (IST):</strong> ${new Date(change.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}<br>
+                        <strong>Comment:</strong> ${change.comment || 'No summary'}<br>
+                    `;
+                }
 
-    function showNotification(title) {
-        if (Notification.permission === 'granted') {
-            new Notification('नया परिवर्तन', {
-                body: `पृष्ठ "${title}" में परिवर्तन हुआ है!`,
-                icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Wikipedia-logo-v2.svg/1200px-Wikipedia-logo-v2.svg.png'
-            });
-        } else if (Notification.permission !== 'denied') {
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') {
-                    new Notification('नया परिवर्तन', {
-                        body: `पृष्ठ "${title}" में परिवर्तन हुआ है!`,
-                        icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Wikipedia-logo-v2.svg/1200px-Wikipedia-logo-v2.svg.png'
-                    });
+                changesDiv.appendChild(changeItem);
+
+                if (!lastChangeTimestamp || new Date(change.timestamp) > lastChangeTimestamp) {
+                    changeCount++;
+                    lastChangeTimestamp = new Date(change.timestamp);
+                    beep.play();
                 }
             });
+
+            document.getElementById('counter').innerText = `Changes Count: ${changeCount}`;
         }
-    }
 
-    function startFetching() {
-        fetchRecentChanges();
-        setInterval(fetchRecentChanges, 5000); // Fetch every 5 seconds
-    }
+        // Remember language selection
+        languageSelect.addEventListener('change', () => {
+            const selectedLanguage = languageSelect.value;
+            localStorage.setItem('selectedLanguage', selectedLanguage);
+            fetchChanges(selectedLanguage);
+        });
 
-    startFetching();
+        // Refresh changes every 20 seconds
+        setInterval(() => {
+            const selectedLanguage = localStorage.getItem('selectedLanguage') || 'hi';
+            fetchChanges(selectedLanguage);
+        }, 15000); // 15 Seconds
 
-    function scrollToTop() {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+        // Go to top and bottom of the page
+          function goToTop() {
+            window.scrollTo(0, 0);
+        }
 
-    function scrollToBottom() {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }
-</script>
+        function goToBottom() {
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+     /*
+
+        // Scroll to the top slowly
+function goToTop() {
+    const interval = setInterval(() => {
+        if (window.scrollY === 0) {
+            clearInterval(interval);
+        } else {
+            window.scrollBy(0, -50); // Adjust -20 for a slower or faster scroll
+        }
+    }, 10); // Adjust 10 for speed (higher number = slower)
+}
+
+// Scroll to the bottom slowly
+function goToBottom() {
+    const interval = setInterval(() => {
+        if (window.scrollY + window.innerHeight >= document.body.scrollHeight) {
+            clearInterval(interval);
+        } else {
+            window.scrollBy(0, 50); // Adjust 20 for a slower or faster scroll
+        }
+    }, 10); // Adjust 10 for speed (higher number = slower)
+}
+*/
+
+        // Set default language
+        const savedLanguage = localStorage.getItem('selectedLanguage') || 'hi';
+        languageSelect.value = savedLanguage;
+        fetchChanges(savedLanguage);
+
+        // Initialize Date and Time
+        displayDateTime();
+        setInterval(displayDateTime, 1000);
+    </script>
 </body>
 </html>
