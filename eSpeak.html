@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>eSpeak NG on GitHub Pages</title>
+    <script src="espeak-ng-wasm.js"></script>
+</head>
+<body>
+    <h1>Text-to-Speech with eSpeak NG</h1>
+    <input type="text" id="text" placeholder="Enter text">
+    <button onclick="speak()">Speak</button>
+
+    <script>
+        async function speak() {
+            const text = document.getElementById('text').value;
+            const espeak = await EspeakNG.load();
+            espeak.speak(text, { voice: 'en' });
+        }
+    </script>
+</body>
+</html>
