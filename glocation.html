@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convert Coordinates</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        #output {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .logo-container img { height: 150px; }
+        .credits {
+            margin-top: 20px;
+            font-size: 14px;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Google_Maps_Logo_2020.svg/267px-Google_Maps_Logo_2020.svg.png" alt="Google Maps Logo">
+        <span style="font-size: 24px;">➡️</span>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Commons-logo-en.svg/182px-Commons-logo-en.svg.png" alt="Commons Logo">
+    </div>
+    
+    <h2>Convert Google Map Coordinates to Commons Location Template</h2>
+    <input type="text" id="coordinateInput" placeholder="Enter coordinates">
+    <button onclick="convertCoordinates()">Convert</button>
+    <div id="output"></div>
+    <button onclick="copyToClipboard()" style="display:none;" id="copyBtn">Copy & Open Commons</button>
+    
+    <p class="credits">Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></p>
+    
+    <script>
+        function convertCoordinates() {
+            let input = document.getElementById("coordinateInput").value.trim();
+            let coords = input.split(",").map(coord => coord.trim());
+            
+            if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
+                let formatted = `{{Location|${coords[0]}|${coords[1]}}}`;
+                document.getElementById("output").innerText = formatted;
+                document.getElementById("copyBtn").style.display = "inline-block";
+            } else {
+                alert("Invalid input. Please enter coordinates in the format: lat, long");
+            }
+        }
+
+        function copyToClipboard() {
+            let outputText = document.getElementById("output").innerText;
+            let tempInput = document.createElement("textarea");
+            tempInput.value = outputText;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+            alert("Copied to clipboard!");
+            
+            // Open Wikimedia Commons edit page for summary section
+            let fileName = prompt("Enter Commons file name (e.g., File:Example.jpg)");
+            if (fileName) {
+                let editUrl = `https://commons.wikimedia.org/w/index.php?title=${encodeURIComponent(fileName)}&action=edit&section=1`;
+                window.open(editUrl, "_blank");
+            }
+        }
+    </script>
+</body>
+</html>
