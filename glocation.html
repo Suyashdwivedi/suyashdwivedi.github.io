@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Convert Coordinates</title>
+    <title>Convert Google Map Coordinates to Commons Location Template</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,7 +27,7 @@
             gap: 15px;
             margin-bottom: 20px;
         }
-        .logo-container img { height: 150px; }
+        .logo-container img { height: 120px; }
         .credits {
             margin-top: 20px;
             font-size: 14px;
@@ -46,9 +46,22 @@
     <input type="text" id="coordinateInput" placeholder="Enter coordinates">
     <button onclick="convertCoordinates()">Convert</button>
     <div id="output"></div>
-    <button onclick="copyToClipboard()" style="display:none;" id="copyBtn">Copy & Open Commons</button>
+    
+    
+    <div style="margin-top: 20px;">
+        <h3>Edit Commons File</h3>
+        <input type="text" id="imageFilename" placeholder="Enter image filename (e.g., Example.jpg)">
+        <button onclick="copyToClipboard()" id="copyBtn">Copy & Open Commons</button>
+    </div>
     
     <p class="credits">Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></p>
+    
+    <div style="margin-top: 20px;">
+        <h3>Google Maps</h3>
+        <iframe id="mapFrame" width="100%" height="300" frameborder="0" style="border:0" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14947035.158454299!2d74.08315859039367!3d23.593682218679184!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x398db18df083dfbf%3A0x3704c52d33a4b8b9!2sMadhya%20Pradesh%2C%20India!5e0!3m2!1sen!2sin!4v1710000000000!5m2!1sen!2sin&z=6"
+            allowfullscreen>
+        </iframe>
+    </div>
     
     <script>
         function convertCoordinates() {
@@ -59,28 +72,33 @@
                 let formatted = `{{Location|${coords[0]}|${coords[1]}}}`;
                 document.getElementById("output").innerText = formatted;
                 document.getElementById("copyBtn").style.display = "inline-block";
+                
+                // Update Google Map with new coordinates
+                let mapSrc = `https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d5000!2d${coords[1]}!3d${coords[0]}!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z${coords[0]},${coords[1]}!5e0!3m2!1sen!2sin!4v1710000000000!5m2!1sen!2sin`;
+                document.getElementById("mapFrame").src = mapSrc;
             } else {
                 alert("Invalid input. Please enter coordinates in the format: lat, long");
             }
         }
 
         function copyToClipboard() {
-            let outputText = document.getElementById("output").innerText;
-            let tempInput = document.createElement("textarea");
-            tempInput.value = outputText;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand("copy");
-            document.body.removeChild(tempInput);
-            alert("Copied to clipboard!");
-            
-            // Open Wikimedia Commons edit page for summary section
-            let fileName = prompt("Enter Commons file name (e.g., File:Example.jpg)");
-            if (fileName) {
-                let editUrl = `https://commons.wikimedia.org/w/index.php?title=${encodeURIComponent(fileName)}&action=edit&section=1`;
-                window.open(editUrl, "_blank");
+            let fileName = document.getElementById("imageFilename").value.trim();
+            if (!fileName) {
+                alert("Please enter a valid filename.");
+                return;
             }
+
+            let outputText = document.getElementById("output").innerText;
+            navigator.clipboard.writeText(outputText).then(() => {
+                alert("Copied to clipboard!");
+                let editUrl = `https://commons.wikimedia.org/w/index.php?title=File:${encodeURIComponent(fileName)}&action=edit&section=1&summary=Location%20added`;
+                window.open(editUrl, "_blank");
+            }).catch(err => {
+                console.error("Clipboard copy failed", err);
+            });
         }
     </script>
+    <p class="credits" id="lastUpdated" style="margin-top: 20px;">Last update: 02//March/2025</p>
+    
 </body>
 </html>
