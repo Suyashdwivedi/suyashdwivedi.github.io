@@ -1,6 +1,6 @@
 # Glocation - Google Maps to Wikimedia Commons Location Converter
 
-![Google Maps Logo](https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Google_Maps_Logo_2020.svg/267px-Google_Maps_Logo_2020.svg.png) ➡️ ![Wikimedia Commons Logo](https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Commons-logo-en.svg/182px-Commons-logo-en.svg.png)
+![Google Maps Logo](https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Google_Maps_Logo_2020.svg/120px-Google_Maps_Logo_2020.svg.png) ➡️ ![Wikimedia Commons Logo](https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Commons-logo-en.svg/120px-Commons-logo-en.svg.png)
 
 ## Overview
 Glocation is a simple tool that helps convert **Google Maps coordinates** into the **Wikimedia Commons** `{{Location|lat|long}}` template. It also allows users to copy the location and open the Commons **file summary section** directly in edit mode.
