@@ -6,11 +6,11 @@
 Glocation is a simple tool that helps convert **Google Maps coordinates** into the **Wikimedia Commons** `{{Location|lat|long}}` template. It also allows users to copy the location and open the Commons **file summary section** directly in edit mode.
 
 ## Features
-- ✅ Convert Google Maps coordinates into the **Commons location template**.
+- ✅ Convert Google Maps coordinates (e.g 23.0000, 77.0000) into the **Commons location template**. like - {{Location|23.0000|77.0000}}
 - ✅ Display the selected coordinates on an embedded **Google Map**.
 - ✅ Copy the formatted output to the clipboard with a single click.
-- ✅ Open the **Wikimedia Commons file summary** section in edit mode with a pre-filled **"Location updated"** edit summary.
-- ✅ Clean and simple UI with Google Maps and Commons logos.
+- ✅ Open the **Wikimedia Commons file summary** section in edit mode with a pre-filled **"Location added"** edit summary.
+- ✅ Easy and tested.
 
 ## Usage
 1. **Enter coordinates** (e.g., `23.194761912658812, 77.43728784758264`).
