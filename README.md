@@ -28,46 +28,46 @@ The project supports multiple languages, including Hindi, English, and other maj
 
 ## Supported Languages (As of 02/March/2025):
 
-1. [हिन्दी (Hindi)](https://hi.wikipedia.org/)
-2. [English](https://en.wikipedia.org/)
-3. [अवधी (Awadhi)](https://awa.wikipedia.org/)
-4. [العربية (Arabic)](https://ar.wikipedia.org/)
-5. [অসমীয়া (Assamese)](https://as.wikipedia.org/)
-6. [भोजपुरी (Bhojpuri)](https://bh.wikipedia.org/)
-7. [বাংলা (Bengali)](https://bn.wikipedia.org/)
-8. [Bikol Central (Central Bikol)](https://bcl.wikipedia.org/)
-9. [中文 (Chinese)](https://zh.wikipedia.org/)
-10. [Dansk (Danish)](https://da.wikipedia.org/)
-11. [Deutsch (German)](https://de.wikipedia.org/)
-12. [Español (Spanish)](https://es.wikipedia.org/)
-13. [فارسی (Persian)](https://fa.wikipedia.org/)
-14. [Français (French)](https://fr.wikipedia.org/)
-15. [Fiji Hindi (Fijian Hindi)](https://hif.wikipedia.org/)
-16. [עברית (Hebrew)](https://he.wikipedia.org/)
-17. [Italiano (Italian)](https://it.wikipedia.org/)
-18. [日本語 (Japanese)](https://ja.wikipedia.org/)
-19. [Basa Jawa (Javanese)](https://jv.wikipedia.org/)
-20. [ಕನ್ನಡ (Kannada)](https://kn.wikipedia.org/)
-21. [한국어 (Korean)](https://ko.wikipedia.org/)
-22. [മലയാളം (Malayalam)](https://ml.wikipedia.org/)
-23. [मराठी (Marathi)](https://mr.wikipedia.org/)
-24. [Bahasa Melayu (Malay)](https://ms.wikipedia.org/)
-25. [नेपाली (Nepali)](https://ne.wikipedia.org/)
-26. [Nederlands (Dutch)](https://nl.wikipedia.org/)
-27. [ਪੰਜਾਬੀ (Punjabi)](https://pa.wikipedia.org/)
-28. [Polski (Polish)](https://pl.wikipedia.org/)
-29. [Português (Portuguese)](https://pt.wikipedia.org/)
-30. [Русский (Russian)](https://ru.wikipedia.org/)
-31. [संस्कृतम् (Sanskrit)](https://sa.wikipedia.org/)
-32. [සිංහල (Sinhala)](https://si.wikipedia.org/)
-33. [தமிழ் (Tamil)](https://ta.wikipedia.org/)
-34. [తెలుగు (Telugu)](https://te.wikipedia.org/)
-35. [ไทย (Thai)](https://th.wikipedia.org/)
-36. [Türkçe (Turkish)](https://tr.wikipedia.org/)
-37. [Українська (Ukrainian)](https://uk.wikipedia.org/)
-38. [اردو (Urdu)](https://ur.wikipedia.org/)
-39. [Oʻzbekcha (Uzbek)](https://uz.wikipedia.org/)
-40. [Tiếng Việt (Vietnamese)](https://vi.wikipedia.org/)
+1. <a href="https://hi.wikipedia.org/" target="_blank">हिन्दी (Hindi)</a>
+2. <a href="https://en.wikipedia.org/" target="_blank">English</a>
+3. <a href="https://awa.wikipedia.org/" target="_blank">अवधी (Awadhi)</a>
+4. <a href="https://ar.wikipedia.org/" target="_blank">العربية (Arabic)</a>
+5. <a href="https://as.wikipedia.org/" target="_blank">অসমীয়া (Assamese)</a>
+6. <a href="https://bh.wikipedia.org/" target="_blank">भोजपुरी (Bhojpuri)</a>
+7. <a href="https://bn.wikipedia.org/" target="_blank">বাংলা (Bengali)</a>
+8. <a href="https://bcl.wikipedia.org/" target="_blank">Bikol Central (Central Bikol)</a>
+9. <a href="https://zh.wikipedia.org/" target="_blank">中文 (Chinese)</a>
+10. <a href="https://da.wikipedia.org/" target="_blank">Dansk (Danish)</a>
+11. <a href="https://de.wikipedia.org/" target="_blank">Deutsch (German)</a>
+12. <a href="https://es.wikipedia.org/" target="_blank">Español (Spanish)</a>
+13. <a href="https://fa.wikipedia.org/" target="_blank">فارسی (Persian)</a>
+14. <a href="https://fr.wikipedia.org/" target="_blank">Français (French)</a>
+15. <a href="https://hif.wikipedia.org/" target="_blank">Fiji Hindi (Fijian Hindi)</a>
+16. <a href="https://he.wikipedia.org/" target="_blank">עברית (Hebrew)</a>
+17. <a href="https://it.wikipedia.org/" target="_blank">Italiano (Italian)</a>
+18. <a href="https://ja.wikipedia.org/" target="_blank">日本語 (Japanese)</a>
+19. <a href="https://jv.wikipedia.org/" target="_blank">Basa Jawa (Javanese)</a>
+20. <a href="https://kn.wikipedia.org/" target="_blank">ಕನ್ನಡ (Kannada)</a>
+21. <a href="https://ko.wikipedia.org/" target="_blank">한국어 (Korean)</a>
+22. <a href="https://ml.wikipedia.org/" target="_blank">മലയാളം (Malayalam)</a>
+23. <a href="https://mr.wikipedia.org/" target="_blank">मराठी (Marathi)</a>
+24. <a href="https://ms.wikipedia.org/" target="_blank">Bahasa Melayu (Malay)</a>
+25. <a href="https://ne.wikipedia.org/" target="_blank">नेपाली (Nepali)</a>
+26. <a href="https://nl.wikipedia.org/" target="_blank">Nederlands (Dutch)</a>
+27. <a href="https://pa.wikipedia.org/" target="_blank">ਪੰਜਾਬੀ (Punjabi)</a>
+28. <a href="https://pl.wikipedia.org/" target="_blank">Polski (Polish)</a>
+29. <a href="https://pt.wikipedia.org/" target="_blank">Português (Portuguese)</a>
+30. <a href="https://ru.wikipedia.org/" target="_blank">Русский (Russian)</a>
+31. <a href="https://sa.wikipedia.org/" target="_blank">संस्कृतम् (Sanskrit)</a>
+32. <a href="https://si.wikipedia.org/" target="_blank">සිංහල (Sinhala)</a>
+33. <a href="https://ta.wikipedia.org/" target="_blank">தமிழ் (Tamil)</a>
+34. <a href="https://te.wikipedia.org/" target="_blank">తెలుగు (Telugu)</a>
+35. <a href="https://th.wikipedia.org/" target="_blank">ไทย (Thai)</a>
+36. <a href="https://tr.wikipedia.org/" target="_blank">Türkçe (Turkish)</a>
+37. <a href="https://uk.wikipedia.org/" target="_blank">Українська (Ukrainian)</a>
+38. <a href="https://ur.wikipedia.org/" target="_blank">اردو (Urdu)</a>
+39. <a href="https://uz.wikipedia.org/" target="_blank">Oʻzbekcha (Uzbek)</a>
+40. <a href="https://vi.wikipedia.org/" target="_blank">Tiếng Việt (Vietnamese)</a>
 
 ## Installation
 
