@@ -26,39 +26,51 @@ The project supports multiple languages, including Hindi, English, and other maj
 
 - **Navigation**: Includes buttons for quick navigation to the top and bottom of the page.
 
-## Supported Languages (As of 12/November/2024)
+## Supported Languages (As of 02/March/2025)
 
-## Language List
+The following languages are supported:
 
-- **Hindi** - हिन्दी (hi) (default)
-- **English** - English (en)
-- **Arabic** - العربية (ar)
-- **Awadhi** - अवधी (awa)
-- **Bengali** - বাংলা (bn)
-- **Cebuano** - Sinugboanon (ceb)
-- **Chinese** - 中文 (zh)
-- **Dutch** - Nederlands (nl)
-- **French** - Français (fr)
-- **German** - Deutsch (de)
-- **Italian** - Italiano (it)
-- **Japanese** - 日本語 (ja)
-- **Kannada** - ಕನ್ನಡ (kn)
-- **Malay** - Bahasa Melayu (ms)
-- **Marathi** - मराठी (mr)
-- **Persian** - فارسی (fa)
-- **Polish** - Polski (pl)
-- **Portuguese** - Português (pt)
-- **Punjabi** - ਪੰਜਾਬੀ (pa)
-- **Russian** - Русский (ru)
-- **Spanish** - Español (es)
-- **Tamil** - தமிழ் (ta)
-- **Telugu** - తెలుగు (te)
-- **Thai** - ไทย (th)
-- **Turkish** - Türkçe (tr)
-- **Tulu** - ತುಳು (tcy)
-- **Ukrainian** - Українська (uk)
-- **Vietnamese** - Tiếng Việt (vi)
-  
+- **हिन्दी (Hindi)**
+- **English**
+- **अवधी (Awadhi)**
+- **العربية (Arabic)**
+- **অসমীয়া (Assamese)**
+- **भोजपुरी (Bhojpuri)**
+- **বাংলা (Bengali)**
+- **Bikol Central (Central Bikol)**
+- **中文 (Chinese)**
+- **Dansk (Danish)**
+- **Deutsch (German)**
+- **Español (Spanish)**
+- **فارسی (Persian)**
+- **Français (French)**
+- **Fiji Hindi (Fijian Hindi)**
+- **עברית (Hebrew)**
+- **Italiano (Italian)**
+- **日本語 (Japanese)**
+- **Basa Jawa (Javanese)**
+- **ಕನ್ನಡ (Kannada)**
+- **한국어 (Korean)**
+- **മലയാളം (Malayalam)**
+- **मराठी (Marathi)**
+- **Bahasa Melayu (Malay)**
+- **नेपाली (Nepali)**
+- **Nederlands (Dutch)**
+- **ਪੰਜਾਬੀ (Punjabi)**
+- **Polski (Polish)**
+- **Português (Portuguese)**
+- **Русский (Russian)**
+- **संस्कृतम् (Sanskrit)**
+- **සිංහල (Sinhala)**
+- **தமிழ் (Tamil)**
+- **తెలుగు (Telugu)**
+- **ไทย (Thai)**
+- **Türkçe (Turkish)**
+- **Українська (Ukrainian)**
+- **اردو (Urdu)**
+- **Oʻzbekcha (Uzbek)**
+- **Tiếng Việt (Vietnamese)**
+
 ## Installation
 
 To use the Wikipedia Recent Changes Viewer locally, follow these steps:
