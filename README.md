@@ -26,50 +26,48 @@ The project supports multiple languages, including Hindi, English, and other maj
 
 - **Navigation**: Includes buttons for quick navigation to the top and bottom of the page.
 
-## Supported Languages (As of 02/March/2025)
+## Supported Languages (As of 02/March/2025):
 
-The following languages are supported:
-
-- **हिन्दी (Hindi)**
-- **English**
-- **अवधी (Awadhi)**
-- **العربية (Arabic)**
-- **অসমীয়া (Assamese)**
-- **भोजपुरी (Bhojpuri)**
-- **বাংলা (Bengali)**
-- **Bikol Central (Central Bikol)**
-- **中文 (Chinese)**
-- **Dansk (Danish)**
-- **Deutsch (German)**
-- **Español (Spanish)**
-- **فارسی (Persian)**
-- **Français (French)**
-- **Fiji Hindi (Fijian Hindi)**
-- **עברית (Hebrew)**
-- **Italiano (Italian)**
-- **日本語 (Japanese)**
-- **Basa Jawa (Javanese)**
-- **ಕನ್ನಡ (Kannada)**
-- **한국어 (Korean)**
-- **മലയാളം (Malayalam)**
-- **मराठी (Marathi)**
-- **Bahasa Melayu (Malay)**
-- **नेपाली (Nepali)**
-- **Nederlands (Dutch)**
-- **ਪੰਜਾਬੀ (Punjabi)**
-- **Polski (Polish)**
-- **Português (Portuguese)**
-- **Русский (Russian)**
-- **संस्कृतम् (Sanskrit)**
-- **සිංහල (Sinhala)**
-- **தமிழ் (Tamil)**
-- **తెలుగు (Telugu)**
-- **ไทย (Thai)**
-- **Türkçe (Turkish)**
-- **Українська (Ukrainian)**
-- **اردو (Urdu)**
-- **Oʻzbekcha (Uzbek)**
-- **Tiếng Việt (Vietnamese)**
+1. [हिन्दी (Hindi)](https://hi.wikipedia.org/)
+2. [English](https://en.wikipedia.org/)
+3. [अवधी (Awadhi)](https://awa.wikipedia.org/)
+4. [العربية (Arabic)](https://ar.wikipedia.org/)
+5. [অসমীয়া (Assamese)](https://as.wikipedia.org/)
+6. [भोजपुरी (Bhojpuri)](https://bh.wikipedia.org/)
+7. [বাংলা (Bengali)](https://bn.wikipedia.org/)
+8. [Bikol Central (Central Bikol)](https://bcl.wikipedia.org/)
+9. [中文 (Chinese)](https://zh.wikipedia.org/)
+10. [Dansk (Danish)](https://da.wikipedia.org/)
+11. [Deutsch (German)](https://de.wikipedia.org/)
+12. [Español (Spanish)](https://es.wikipedia.org/)
+13. [فارسی (Persian)](https://fa.wikipedia.org/)
+14. [Français (French)](https://fr.wikipedia.org/)
+15. [Fiji Hindi (Fijian Hindi)](https://hif.wikipedia.org/)
+16. [עברית (Hebrew)](https://he.wikipedia.org/)
+17. [Italiano (Italian)](https://it.wikipedia.org/)
+18. [日本語 (Japanese)](https://ja.wikipedia.org/)
+19. [Basa Jawa (Javanese)](https://jv.wikipedia.org/)
+20. [ಕನ್ನಡ (Kannada)](https://kn.wikipedia.org/)
+21. [한국어 (Korean)](https://ko.wikipedia.org/)
+22. [മലയാളം (Malayalam)](https://ml.wikipedia.org/)
+23. [मराठी (Marathi)](https://mr.wikipedia.org/)
+24. [Bahasa Melayu (Malay)](https://ms.wikipedia.org/)
+25. [नेपाली (Nepali)](https://ne.wikipedia.org/)
+26. [Nederlands (Dutch)](https://nl.wikipedia.org/)
+27. [ਪੰਜਾਬੀ (Punjabi)](https://pa.wikipedia.org/)
+28. [Polski (Polish)](https://pl.wikipedia.org/)
+29. [Português (Portuguese)](https://pt.wikipedia.org/)
+30. [Русский (Russian)](https://ru.wikipedia.org/)
+31. [संस्कृतम् (Sanskrit)](https://sa.wikipedia.org/)
+32. [සිංහල (Sinhala)](https://si.wikipedia.org/)
+33. [தமிழ் (Tamil)](https://ta.wikipedia.org/)
+34. [తెలుగు (Telugu)](https://te.wikipedia.org/)
+35. [ไทย (Thai)](https://th.wikipedia.org/)
+36. [Türkçe (Turkish)](https://tr.wikipedia.org/)
+37. [Українська (Ukrainian)](https://uk.wikipedia.org/)
+38. [اردو (Urdu)](https://ur.wikipedia.org/)
+39. [Oʻzbekcha (Uzbek)](https://uz.wikipedia.org/)
+40. [Tiếng Việt (Vietnamese)](https://vi.wikipedia.org/)
 
 ## Installation
 
