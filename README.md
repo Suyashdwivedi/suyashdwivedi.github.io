@@ -26,7 +26,7 @@ The project supports multiple languages, including Hindi, English, and other maj
 
 - **Navigation**: Includes buttons for quick navigation to the top and bottom of the page.
 
-## Supported Languages (As of 02/March/2025):
+## Supported Languages (As of 18/March/2025):
 
 1. <a href="https://hi.wikipedia.org/" target="_blank">हिन्दी (Hindi)</a>
 2. <a href="https://en.wikipedia.org/" target="_blank">English</a>
@@ -68,6 +68,8 @@ The project supports multiple languages, including Hindi, English, and other maj
 38. <a href="https://ur.wikipedia.org/" target="_blank">اردو (Urdu)</a>
 39. <a href="https://uz.wikipedia.org/" target="_blank">Oʻzbekcha (Uzbek)</a>
 40. <a href="https://vi.wikipedia.org/" target="_blank">Tiếng Việt (Vietnamese)</a>
+41. <a href="https://gu.wikipedia.org/" target="_blank">ગુજરાતી (Gujarati)</a>
+
 
 ## Installation
 
