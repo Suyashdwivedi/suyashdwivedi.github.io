@@ -127,10 +127,15 @@
     <audio id="beepEn" preload="auto">
         <source src="Recent_changes_en.mp3" type="audio/mp3">
     </audio>
+    
      <audio id="beepGu" preload="auto">
      <source src="RC/પાનાઓમાં_ફેરફાર_થયો_છે_1.mp3" type="audio/mp3">
     </audio>
-
+    
+     <audio id="beepPa" preload="auto">
+     <source src="RC/ਪੰਨਿਆਂ_ਵਿੱਚ_ਬਦਲਾਅ_ਆਇਆ_ਹੈ_2.mp3" type="audio/mp3">
+    </audio>
+    
     <div class="nav-buttons">
         <button class="nav-button" onclick="goToTop()">Go to Top</button>
         <button class="nav-button" onclick="goToBottom()">Go to Bottom</button>
@@ -162,6 +167,7 @@
       // const beep = language === 'hi' ? document.getElementById('beepHi') : document.getElementById('beepEn');
             const beep = language === 'hi' ? document.getElementById('beepHi') : 
              language === 'gu' ? document.getElementById('beepGu') : 
+             language === 'pa' ? document.getElementById('beepPa') :
              document.getElementById('beepEn');
             
             changes.forEach(change => {
