@@ -127,6 +127,9 @@
     <audio id="beepEn" preload="auto">
         <source src="Recent_changes_en.mp3" type="audio/mp3">
     </audio>
+     <audio id="beepGu" preload="auto">
+        <source src="RC/પાનાઓમાં ફેરફાર થયો છે.mp3" type="audio/mp3">
+    </audio>
 
     <div class="nav-buttons">
         <button class="nav-button" onclick="goToTop()">Go to Top</button>
@@ -156,8 +159,11 @@
         // Display the changes with language-specific content and sound notification
         function displayChanges(changes, language) {
             changesDiv.innerHTML = '';
-            const beep = language === 'hi' ? document.getElementById('beepHi') : document.getElementById('beepEn');
-
+      // const beep = language === 'hi' ? document.getElementById('beepHi') : document.getElementById('beepEn');
+            const beep = language === 'hi' ? document.getElementById('beepHi') : 
+             language === 'gu' ? document.getElementById('beepGu') : 
+             document.getElementById('beepEn');
+            
             changes.forEach(change => {
                 const changeItem = document.createElement('div');
                 changeItem.className = 'change-item';
