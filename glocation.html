@@ -12,8 +12,15 @@
         .logo-container img { height: 120px; }
         .credits { margin-top: 20px; font-size: 14px; color: gray; }
         label { font-size: 14px; margin-left: 10px; }
-        .small-text { font-size: 12px; color: gray; margin-top: 5px; display: block; }
+        .small-text { font-size: 12px; color: gray; }
     </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GC8PGC89NB');
+    </script>
 </head>
 <body>
 
@@ -36,142 +43,10 @@
     
     <label for="userIdInput">Wikimedia Username:</label>
     <input type="text" id="userIdInput" placeholder="Enter your Wikimedia username">
-    <br>
-
     <label>
-        <input type="checkbox" id="addLicenseCheckbox"> 
-        Add license (if ID entered)
+        <input type="checkbox" id="addLicenseCheckbox"> Add license (if ID entered)
     </label>
-    <span class="small-text">(You can create your own license template, e.g., <a href="https://commons.wikimedia.org/wiki/Template:Suyash.dwivedi/license" target="_blank">Suyash.dwivedi/license</a>)</span>
-
-    <button onclick="copyToClipboard()" id="copyBtn">Copy & Open Commons</button>
-</div>
-
-<p class="credits">Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></p>
-
-<div style="margin-top: 20px;">
-    <h3>Google Maps</h3>
-    <iframe id="mapFrame" width="100%" height="300" frameborder="0" style="border:0" 
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14947035.158454299!2d74.08315859039367!3d23.593682218679184!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x398db18df083dfbf%3A0x3704c52d33a4b8b9!2sMadhya%20Pradesh%2C%20India!5e0!3m2!1sen!2sin!4v1710000000000!5m2!1sen!2sin&z=6"
-        allowfullscreen>
-    </iframe>
-</div>
-
-<script>
-    // Load stored username from local storage
-    window.onload = function () {
-        const savedUsername = localStorage.getItem('wikimediaUsername');
-        if (savedUsername) {
-            document.getElementById("userIdInput").value = savedUsername;
-        }
-    };
-
-    function convertCoordinates() {
-        let input = document.getElementById("coordinateInput").value.trim();
-        let coords = input.split(",").map(coord => coord.trim());
-
-        if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
-            let formatted = `{{Location|${coords[0]}|${coords[1]}}}`;
-            document.getElementById("output").innerText = formatted;
-
-            // Update Google Map with new coordinates
-            let mapSrc = `https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d5000!2d${coords[1]}!3d${coords[0]}!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z${coords[0]},${coords[1]}!5e0!3m2!1sen!2sin!4v1710000000000!5m2!1sen!2sin`;
-            document.getElementById("mapFrame").src = mapSrc;
-        } else {
-            alert("Invalid input. Please enter coordinates in the format: lat, long");
-        }
-    }
-
-    function copyToClipboard() {
-        let fileName = document.getElementById("imageFilename").value.trim();
-        let userId = document.getElementById("userIdInput").value.trim();
-        let addLicense = document.getElementById("addLicenseCheckbox").checked;
-
-        if (!fileName) {
-            alert("Please enter a valid filename.");
-            return;
-        }
-
-        let outputText = document.getElementById("output").innerText;
-        let licenseText = addLicense && userId ? `\n{{${userId}/license}}` : "";
-
-        // Save the username to local storage for future visits
-        if (userId) {
-            localStorage.setItem('wikimediaUsername', userId);
-        }
-
-        let fullText = `${outputText}${licenseText}`;
-        navigator.clipboard.writeText(fullText).then(() => {
-            alert("Copied to clipboard!");
-
-            // Prepare the edit URL
-            if (!fileName.toLowerCase().startsWith("file:")) {
-                fileName = `File:${fileName}`;
-            }
-
-            let editSummary = `Location added`;
-            if (addLicense && userId) {
-                editSummary += ` + license added`;
-            }
-
-            let editUrl = `https://commons.wikimedia.org/w/index.php?title=${encodeURIComponent(fileName)}&action=edit&section=1&summary=${encodeURIComponent(editSummary)}`;
-            window.open(editUrl, "_blank");
-        }).catch(err => {
-            console.error("Clipboard copy failed", err);
-        });
-    }
-</script>
-
-<p class="credits" id="lastUpdated" style="margin-top: 20px;">Last update: 29/March/2025</p>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Convert Google Map Coordinates to Commons Location Template</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-        input, button { margin: 10px; padding: 10px; font-size: 16px; }
-        #output { margin-top: 20px; font-size: 18px; font-weight: bold; }
-        .logo-container { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .logo-container img { height: 120px; }
-        .credits { margin-top: 20px; font-size: 14px; color: gray; }
-        label { font-size: 14px; margin-left: 10px; }
-        .small-text { font-size: 12px; color: gray; margin-top: 5px; display: block; }
-    </style>
-</head>
-<body>
-
-<div class="logo-container">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Google_Maps_Logo_2020.svg/267px-Google_Maps_Logo_2020.svg.png" alt="Google Maps Logo">
-    <span style="font-size: 24px;">➡️</span>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Commons-logo-en.svg/182px-Commons-logo-en.svg.png" alt="Commons Logo">
-</div>
-
-<h2>Convert Google Map Coordinates to Commons Location Template</h2>
-
-<input type="text" id="coordinateInput" placeholder="Enter coordinates">
-<button onclick="convertCoordinates()">Convert</button>
-<div id="output"></div>
-
-<div style="margin-top: 20px;">
-    <h3>Edit Commons File</h3>
-    <input type="text" id="imageFilename" placeholder="Enter image filename (e.g., Example.jpg)">
-    <br>
-    
-    <label for="userIdInput">Wikimedia Username:</label>
-    <input type="text" id="userIdInput" placeholder="Enter your Wikimedia username">
-    <br>
-
-    <label>
-        <input type="checkbox" id="addLicenseCheckbox"> 
-        Add license (if ID entered)
-    </label>
-    <span class="small-text">(You can create your own license template, e.g., <a href="https://commons.wikimedia.org/wiki/Template:Suyash.dwivedi/license" target="_blank">Suyash.dwivedi/license</a>)</span>
-
+    <div class="small-text">(You can create your own license template, e.g., <a href="https://commons.wikimedia.org/wiki/Template:Suyash.dwivedi/license" target="_blank">Suyash.dwivedi/license</a>)</div>
     <button onclick="copyToClipboard()" id="copyBtn">Copy & Open Commons</button>
 </div>
 
