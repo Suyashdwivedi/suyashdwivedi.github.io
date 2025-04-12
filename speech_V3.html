@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wikipedia Recent Changes (Auto Speak)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #changes {
+            margin-top: 20px;
+        }
+        .change {
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wikipedia Recent Changes (Auto Speaking)</h1>
+    
+    <label for="language">Select Language: </label>
+    <select id="language">
+ <option value="hi">हिन्दी (Hindi)</option>
+            <option value="en">English</option>
+            <option value="awa">अवधी (Awadhi)</option>
+            <option value="ar">العربية (Arabic)</option>
+            <option value="as">অসমীয়া (Assamese)</option>
+            <option value="bh">भोजपुरी (Bhojpuri)</option>
+            <option value="bn">বাংলা (Bengali)</option>
+            <option value="bcl">Bikol Central (Central Bikol)</option>
+            <option value="zh">中文 (Chinese)</option>
+            <option value="da">Dansk (Danish)</option>
+            <option value="de">Deutsch (German)</option>
+            <option value="es">Español (Spanish)</option>
+            <option value="fa">فارسی (Persian)</option>
+            <option value="fr">Français (French)</option>
+            <option value="hif">Fiji Hindi (Fijian Hindi)</option>
+            <option value="gu">ગુજરાતી (Gujarati)</option
+            <option value="he">עברית (Hebrew)</option>           
+            <option value="it">Italiano (Italian)</option>
+            <option value="ja">日本語 (Japanese)</option>
+            <option value="jv">Basa Jawa (Javanese)</option>
+            <option value="kn">ಕನ್ನಡ (Kannada)</option>
+            <option value="ko">한국어 (Korean)</option>
+            <option value="ml">മലയാളം (Malayalam)</option>
+            <option value="mr">मराठी (Marathi)</option>
+            <option value="ms">Bahasa Melayu (Malay)</option>
+            <option value="ne">नेपाली (Nepali)</option>
+            <option value="nl">Nederlands (Dutch)</option>
+            <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+            <option value="pl">Polski (Polish)</option>
+            <option value="pt">Português (Portuguese)</option>
+            <option value="ru">Русский (Russian)</option>
+            <option value="sa">संस्कृतम् (Sanskrit)</option>
+            <option value="si">සිංහල (Sinhala)</option>
+            <option value="ta">தமிழ் (Tamil)</option>
+            <option value="te">తెలుగు (Telugu)</option>
+            <option value="th">ไทย (Thai)</option>
+            <option value="tr">Türkçe (Turkish)</option>
+            <option value="uk">Українська (Ukrainian)</option>
+            <option value="ur">اردو (Urdu)</option>
+            <option value="uz">Oʻzbekcha (Uzbek)</option>
+            <option value="vi">Tiếng Việt (Vietnamese)</option>
+    </select>
+
+    <div id="changes"></div>
+
+    <script>
+        const languageSelect = document.getElementById('language');
+        const changesContainer = document.getElementById('changes');
+        let intervalId;
+
+        function fetchRecentChanges(language) {
+            const apiUrl = `https://${language.split('-')[0]}.wikipedia.org/w/api.php?action=query&format=json&origin=*&list=recentchanges&rcprop=title|user|comment&rclimit=5&rcshow=!bot`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const changes = data.query.recentchanges;
+                    displayChanges(changes);
+                    speakAllChanges(changes);
+                })
+                .catch(error => {
+                    console.error('Error fetching recent changes:', error);
+                });
+        }
+
+        function displayChanges(changes) {
+            changesContainer.innerHTML = '';
+
+            changes.forEach(change => {
+                const title = change.title;
+                const user = change.user || 'Anonymous';
+                const comment = change.comment || 'No summary provided.';
+
+                const changeItem = document.createElement('div');
+                changeItem.className = 'change';
+                changeItem.innerHTML = `
+                    <strong>Page:</strong> ${title}<br>
+                    <strong>User:</strong> ${user}<br>
+                    <strong>Comment:</strong> ${comment}
+                `;
+                changesContainer.appendChild(changeItem);
+            });
+        }
+
+        function speakAllChanges(changes) {
+            const synth = window.speechSynthesis;
+            const langCode = languageSelect.value;
+            const voice = getVoiceForLang(langCode);
+
+            synth.cancel(); // Clear existing queue
+
+            let index = 0;
+
+            function speakNext() {
+                if (index >= changes.length) return;
+
+                const change = changes[index];
+                const title = change.title;
+                const user = change.user || 'Anonymous';
+                const comment = change.comment || 'No summary provided.';
+                const text = `${title}, edited by ${user}. ${comment}`;
+
+                const utterThis = new SpeechSynthesisUtterance(text);
+                utterThis.lang = langCode;
+                if (voice) utterThis.voice = voice;
+                utterThis.rate = 1;
+                utterThis.pitch = 1;
+
+                utterThis.onend = () => {
+                    index++;
+                    speakNext(); // Speak the next one when this ends
+                };
+
+                synth.speak(utterThis);
+            }
+
+            speakNext(); // Start the chain
+        }
+
+        function getVoiceForLang(langCode) {
+            const voices = window.speechSynthesis.getVoices();
+            return voices.find(v => v.lang === langCode) || voices.find(v => v.lang.startsWith(langCode));
+        }
+
+        function startUpdates() {
+            const selectedLang = languageSelect.value;
+            fetchRecentChanges(selectedLang);
+
+            if (intervalId) clearInterval(intervalId);
+            intervalId = setInterval(() => {
+                fetchRecentChanges(selectedLang);
+            }, 15000); // every 15 seconds
+        }
+
+        languageSelect.addEventListener('change', startUpdates);
+
+        // Preload voices
+        window.speechSynthesis.onvoiceschanged = () => {
+            window.speechSynthesis.getVoices();
+        };
+
+        startUpdates(); // Initial load
+    </script>
+</body>
+</html>
