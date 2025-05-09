@@ -206,7 +206,7 @@
     <!-- Map set to Madhya Pradesh -->
     <iframe id="mapFrame" src="https://www.google.com/maps?q=Madhya+Pradesh&z=6&output=embed" allowfullscreen></iframe>
 
-    <p class="footer" id="lastUpdated">Last update: 30/March/2025</p>
+    <p class="footer" id="lastUpdated">Last update: 9/May/2025</p>
 
 </div>
 
@@ -245,7 +245,7 @@
 
         let finalFileName = fileName.match(/^file:/i) ? fileName : `File:${fileName}`;
         let outputText = document.getElementById("output").innerText;
-        let licenseText = addLicense && userId ? `\n{{${userId}/license}}` : "";
+        let licenseText = addLicense && userId ? `\n{{${userId}/license}} \n[[Category:Location added using the Glocation tool]]` : "\n[[Category:Location added using the Glocation tool]]";
         let editSummary = addLicense ? "Location added + license added" : "Location added";
 
         navigator.clipboard.writeText(`${outputText}${licenseText}`).then(() => {
