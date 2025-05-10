@@ -153,7 +153,7 @@
             if (intervalId) clearInterval(intervalId);
             intervalId = setInterval(() => {
                 fetchRecentChanges(selectedLang);
-            }, 15000); // every 15 seconds
+            }, 30000); // every 15 seconds
         }
 
         languageSelect.addEventListener('change', startUpdates);
