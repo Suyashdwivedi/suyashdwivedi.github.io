@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medic Tree Mapping Campaign – WED 2025</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: sans-serif;
+        }
+
+        #map {
+            height: calc(100% - 120px);
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            padding: 10px;
+            background-color: #4caf50;
+            color: white;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        header p {
+            margin: 4px 0 0 0;
+            font-size: 14px;
+        }
+
+        .dropdown-container {
+            position: absolute;
+            top: 70px;
+            left: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 6px rgba(0,0,0,0.3);
+        }
+
+        select {
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        footer {
+            background-color: #f1f1f1;
+            text-align: center;
+            padding: 8px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Medic Tree Mapping Campaign</h1>
+    <p>Mapping medicinal trees through Wikimedia Commons & OpenStreetMap</p>
+</header>
+
+<div class="dropdown-container">
+    <label for="treeCategory"><strong>Select Campaign:</strong></label>
+    <select id="treeCategory" onchange="onCategoryChange(this.value)">
+        <option value="">-- Show All --</option>
+        <option value="Medic_Tree_Mapping_in_Bangladesh_on_WED_2025">Bangladesh</option>
+        <option value="Medic_Tree_Mapping_in_Côte_d'Ivoire_on_WED_2025">Côte d'Ivoire</option>
+        <option value="Medic_Tree_Mapping_in_India_on_WED_2025">India</option>
+        <option value="Medic_Tree_Mapping_in_Indonesia_on_WED_2025">Indonesia</option>
+        <option value="Medic_Tree_Mapping_in_Nigeria_on_WED_2025">Nigeria</option>
+        <option value="Medic_Tree_Mapping_in_Zimbabwe_on_WED_2025">Zimbabwe</option>
+    </select>
+</div>
+
+<div id="map"></div>
+
+<footer>
+    Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> | Last update: 8 June 2025
+</footer>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const map = L.map('map').setView([20, 0], 2);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+let currentMarkers = [];
+
+function clearMarkers() {
+    currentMarkers.forEach(marker => map.removeLayer(marker));
+    currentMarkers = [];
+}
+
+function onCategoryChange(value) {
+    clearMarkers();
+    if (value === "") {
+        loadAllSubcategories('Medic_Tree_Mapping_on_WED_2025', 3);
+    } else {
+        loadCategoryImages(value);
+    }
+}
+
+async function getSubcategories(category, depth = 1, maxDepth = 3, seen = new Set()) {
+    if (depth > maxDepth || seen.has(category)) return [];
+    seen.add(category);
+    let subcats = [category];
+
+    const url = `https://commons.wikimedia.org/w/api.php?action=query&list=categorymembers&cmtitle=Category:${encodeURIComponent(category)}&cmtype=subcat&cmlimit=500&format=json&origin=*`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const members = data.query?.categorymembers || [];
+
+    for (const m of members) {
+        const title = m.title.replace("Category:", "");
+        const children = await getSubcategories(title, depth + 1, maxDepth, seen);
+        subcats.push(...children);
+    }
+
+    return subcats;
+}
+
+async function loadAllSubcategories(rootCategory, maxDepth = 3) {
+    clearMarkers();
+    const allCats = await getSubcategories(rootCategory, 1, maxDepth);
+    const promises = allCats.map(cat => loadCategoryImages(cat, false));
+    await Promise.all(promises);
+    if (currentMarkers.length > 0) {
+        const group = L.featureGroup(currentMarkers);
+        map.fitBounds(group.getBounds().pad(0.2));
+    }
+}
+
+async function loadCategoryImages(category, zoom = true) {
+    const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=categorymembers&gcmtitle=Category:${encodeURIComponent(category)}&gcmtype=file&gcmprop=ids|title&prop=coordinates|imageinfo&iiprop=url&iiurlwidth=200&format=json&origin=*`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const pages = data.query?.pages || {};
+
+        for (const pageId in pages) {
+            const page = pages[pageId];
+            if (page.coordinates && page.imageinfo) {
+                const coord = page.coordinates[0];
+                const imgUrl = page.imageinfo[0].thumburl || page.imageinfo[0].url;
+                const title = page.title;
+                const link = `https://commons.wikimedia.org/wiki/${encodeURIComponent(title)}`;
+
+                const marker = L.marker([coord.lat, coord.lon])
+                    .addTo(map)
+                    .bindPopup(`<a href="${link}" target="_blank"><img src="${imgUrl}" width="150"><br>${title}</a>`);
+                
+                currentMarkers.push(marker);
+            }
+        }
+
+        if (zoom && currentMarkers.length > 0) {
+            const group = L.featureGroup(currentMarkers);
+            map.fitBounds(group.getBounds().pad(0.2));
+        }
+    } catch (e) {
+        console.error("Failed to load images for category:", category, e);
+    }
+}
+
+// Load everything by default on page load
+window.onload = () => {
+    loadAllSubcategories('Medic_Tree_Mapping_on_WED_2025', 3);
+};
+</script>
+
+</body>
+</html>
