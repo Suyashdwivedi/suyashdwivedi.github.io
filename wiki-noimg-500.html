@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Indian Wikipedia Articles Without Images</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #3366cc;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    main {
+      padding: 20px;
+    }
+    h1 {
+      font-size: 22px;
+    }
+    select, button {
+      margin: 10px 0;
+      padding: 6px;
+      font-size: 16px;
+    }
+    #status {
+      margin-bottom: 15px;
+      font-style: italic;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .grid-item {
+      background: #f8f8f8;
+      border: 1px solid #ccc;
+      padding: 6px;
+      border-radius: 4px;
+    }
+    .grid-item a {
+      text-decoration: none;
+      color: #0645AD;
+    }
+    footer {
+      background: #f0f0f0;
+      padding: 12px;
+      text-align: center;
+      font-size: 14px;
+      margin-top: 30px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Indian Wikipedia Articles Without Images</h1>
+ 
+  </header>
+
+  <main>
+    <label for="langSelect">Select a language:</label>
+    <select id="langSelect">
+      <option value="awa">Awadhi</option>
+      <option value="hi">Hindi</option>
+      <option value="bn">Bangla</option>
+      <option value="gu">Gujarati</option>
+      <option value="kn">Kannada</option>
+      <option value="ml">Malayalam</option>
+      <option value="mr">Marathi</option>
+      <option value="ne">Nepali</option>
+      <option value="or">Odia</option>
+      <option value="pa">Punjabi</option>
+      <option value="sa">Sanskrit</option>
+      <option value="ta">Tamil</option>
+      <option value="te">Telugu</option>
+      <option value="ur">Urdu</option>
+    </select>
+
+    <button onclick="runQuery()">Check Articles Without Images</button>
+    <div id="status">Select a language and click the button to start.</div>
+
+    <div class="grid-container" id="results"></div>
+  </main>
+
+  <footer>
+    Last updated on <span id="lastUpdate"></span> • Contact: <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash.dwivedi</a>
+  </footer>
+
+  <script>
+    const resultsDiv = document.getElementById("results");
+    const statusDiv = document.getElementById("status");
+    document.getElementById("lastUpdate").textContent = new Date().toLocaleDateString();
+
+    async function getAllPages(apiUrl) {
+      let allPages = [];
+      let apcontinue = "";
+      do {
+        const params = new URLSearchParams({
+          action: "query",
+          list: "allpages",
+          apnamespace: "0",
+          aplimit: "max",
+          format: "json",
+        });
+        if (apcontinue) params.append("apcontinue", apcontinue);
+        const response = await fetch(`${apiUrl}&${params.toString()}`);
+        const data = await response.json();
+        allPages.push(...data.query.allpages);
+        apcontinue = data.continue?.apcontinue || "";
+      } while (apcontinue && allPages.length < 500);
+      return allPages.slice(0, 500);
+    }
+
+    async function checkNoImage(apiUrl, title) {
+      const params = new URLSearchParams({
+        action: "query",
+        prop: "pageimages",
+        titles: title,
+        piprop: "thumbnail",
+        format: "json",
+      });
+      const response = await fetch(`${apiUrl}&${params.toString()}`);
+      const data = await response.json();
+      const pages = data.query.pages;
+      for (let key in pages) {
+        if (pages[key].thumbnail) return false; // Image exists
+      }
+      return true; // No image found
+    }
+
+    async function runQuery() {
+      resultsDiv.innerHTML = "";
+      const lang = document.getElementById("langSelect").value;
+      const apiBase = `https://${lang}.wikipedia.org/w/api.php?origin=*`;
+      const wikiBase = `https://${lang}.wikipedia.org/wiki/`;
+
+      statusDiv.textContent = `Fetching up to 500 pages from ${lang}.wikipedia.org...`;
+
+      try {
+        const pages = await getAllPages(apiBase);
+        statusDiv.textContent = `Checking ${pages.length} articles for missing images...`;
+        let count = 0;
+        let serial = 1;
+
+        for (const page of pages) {
+          const hasNoImage = await checkNoImage(apiBase, page.title);
+          if (hasNoImage) {
+            const div = document.createElement("div");
+            div.className = "grid-item";
+            div.innerHTML = `<strong>${serial++}.</strong> <a href="${wikiBase + encodeURIComponent(page.title)}" target="_blank">${page.title}</a>`;
+            resultsDiv.appendChild(div);
+            count++;
+          }
+        }
+
+        statusDiv.textContent = `Found ${count} articles without images.`;
+      } catch (err) {
+        statusDiv.textContent = `Error: ${err.message}`;
+      }
+    }
+  </script>
+</body>
+</html>
