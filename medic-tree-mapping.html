@@ -225,7 +225,7 @@ async function getSubcategories(category, depth = 1, maxDepth = 3, seen = new Se
     seen.add(category);
     let subcats = [category];
 
-    const url = `https://commons.wikimedia.org/w/api.php?action=query&list=categorymembers&cmtitle=Category:${encodeURIComponent(category)}&cmtype=subcat&cmlimit=500&format=json&origin=*`;
+    const url = `https://commons.wikimedia.org/w/api.php?action=query&list=categorymembers&cmtitle=Category:${encodeURIComponent(category)}&cmtype=subcat&cmlimit=1000&format=json&origin=*`;
     const res = await fetch(url);
     const data = await res.json();
     const members = data.query?.categorymembers || [];
