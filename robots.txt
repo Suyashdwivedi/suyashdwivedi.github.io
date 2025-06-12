@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://suyashdwivedi.github.io/sitemap.xml
