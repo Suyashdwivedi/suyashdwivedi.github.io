@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body, html { height: 100%; margin: 0; font-family: sans-serif; }
-        #map { height: calc(100% - 120px); width: 100%; }
+        #map { height: calc(100% - 150px); width: 100%; } /* Adjusted map height */
         header {
             text-align: center; padding: 10px;
             background-color: #4caf50; color: white; position: relative;
@@ -17,10 +17,28 @@
         .logo-left, .logo-right { position: absolute; top: 5px; }
         .logo-left { left: 10px; }
         .logo-right { right: 10px; }
+        .controls-container { /* New container for dropdown and image count */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f8f8f8; /* Light background for the controls */
+            border-bottom: 1px solid #ddd;
+        }
         .dropdown-container {
-            position: absolute; top: 70px; left: 10px; z-index: 1000;
-            background: white; padding: 10px; border-radius: 8px;
-            box-shadow: 0 0 6px rgba(0,0,0,0.3);
+            position: static; /* Removed absolute positioning */
+            background: none;
+            padding: 0;
+            box-shadow: none;
+        }
+        #imageCount {
+            position: static; /* Removed absolute positioning */
+            background: none;
+            padding: 0;
+            box-shadow: none;
+            color: #333;
+            font-size: 14px;
+            font-weight: bold;
         }
         select { padding: 5px; font-size: 14px; }
         footer {
@@ -35,7 +53,7 @@
 
 <header>
     <a class="logo-left" href="https://commons.wikimedia.org/wiki/Commons:Commons_Photographers_User_Group" target="_blank">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Commons-Photographers_User_Group-logo-en.svg/250px-Commons-Photographers_User_Group-logo-en.svg.png" alt="CPUG logo" style="height: 75px;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Commons-Photographers_User_Group-logo-en.svg/250px-Commons_Photographers_User_Group-logo-en.svg.png" alt="CPUG logo" style="height: 75px;">
     </a>
     <a class="logo-right" href="https://meta.wikimedia.org/wiki/Wiki_Club_SATI/Events/World_Environment_Day_2025" target="_blank">
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/WIKI_CLUB_SATI_Logo_White.svg/250px-WIKI_CLUB_SATI_Logo_White.svg.png" alt="WIKI CLUB SATI logo" style="height: 75px;">
@@ -45,113 +63,114 @@
     Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>
 </header>
 
-<div class="dropdown-container">
-    <label for="treeCategory"><strong>Select Campaign:</strong></label>
-    <select id="treeCategory" onchange="onCategoryChange(this.value)">
-        <option value="">-- Show All --</option>
-		
-        <option value="Medic_Tree_Mapping_in_India_on_WED_2025">India</option>
-        <option value="Medic_Tree_Mapping_in_Algeria_on_WED_2025">Algeria</option>
-        <option value="Medic_Tree_Mapping_in_Angola_on_WED_2025">Angola</option>
-        <option value="Medic_Tree_Mapping_in_Argentina_on_WED_2025">Argentina</option>
-        <option value="Medic_Tree_Mapping_in_Australia_on_WED_2025">Australia</option>
-        <option value="Medic_Tree_Mapping_in_Benin_on_WED_2025">Benin</option>
-        <option value="Medic_Tree_Mapping_in_Botswana_on_WED_2025">Botswana</option>
-        <option value="Medic_Tree_Mapping_in_Brazil_on_WED_2025">Brazil</option>
-        <option value="Medic_Tree_Mapping_in_Brunei_on_WED_2025">Brunei</option>
-        <option value="Medic_Tree_Mapping_in_Burkina_Faso_on_WED_2025">Burkina Faso</option>
-        <option value="Medic_Tree_Mapping_in_Cambodia_on_WED_2025">Cambodia</option>
-        <option value="Medic_Tree_Mapping_in_Cameroon_on_WED_2025">Cameroon</option>
-        <option value="Medic_Tree_Mapping_in_Canada_on_WED_2025">Canada</option>
-        <option value="Medic_Tree_Mapping_in_Chile_on_WED_2025">Chile</option>
-        <option value="Medic_Tree_Mapping_in_China_on_WED_2025">China</option>
-        <option value="Medic_Tree_Mapping_in_Colombia_on_WED_2025">Colombia</option>
-        <option value="Medic_Tree_Mapping_in_Côte_d'Ivoire_on_WED_2025">Côte d'Ivoire</option>
-        <option value="Medic_Tree_Mapping_in_Democratic_Republic_of_the_Congo_on_WED_2025">DRC</option>
-        <option value="Medic_Tree_Mapping_in_Egypt_on_WED_2025">Egypt</option>
-        <option value="Medic_Tree_Mapping_in_Ethiopia_on_WED_2025">Ethiopia</option>
-        <option value="Medic_Tree_Mapping_in_Fiji_on_WED_2025">Fiji</option>
-        <option value="Medic_Tree_Mapping_in_France_on_WED_2025">France</option>
-        <option value="Medic_Tree_Mapping_in_Gabon_on_WED_2025">Gabon</option>
-        <option value="Medic_Tree_Mapping_in_Gambia_on_WED_2025">Gambia</option>
-        <option value="Medic_Tree_Mapping_in_Germany_on_WED_2025">Germany</option>
-        <option value="Medic_Tree_Mapping_in_Ghana_on_WED_2025">Ghana</option>
-		<option value="Medic_Tree_Mapping_in_Hong_Kong_on_WED_2025">Hong Kong</option>
-        <option value="Medic_Tree_Mapping_in_India_on_WED_2025">India</option>
-        <option value="Medic_Tree_Mapping_in_Indonesia_on_WED_2025">Indonesia</option>
-        <option value="Medic_Tree_Mapping_in_Iran_on_WED_2025">Iran</option>
-        <option value="Medic_Tree_Mapping_in_Iraq_on_WED_2025">Iraq</option>
-        <option value="Medic_Tree_Mapping_in_Israel_on_WED_2025">Israel</option>
-        <option value="Medic_Tree_Mapping_in_Italy_on_WED_2025">Italy</option>
-        <option value="Medic_Tree_Mapping_in_Japan_on_WED_2025">Japan</option>
-        <option value="Medic_Tree_Mapping_in_Kazakhstan_on_WED_2025">Kazakhstan</option>
-        <option value="Medic_Tree_Mapping_in_Kenya_on_WED_2025">Kenya</option>
-        <option value="Medic_Tree_Mapping_in_Kiribati_on_WED_2025">Kiribati</option>
-        <option value="Medic_Tree_Mapping_in_Kyrgyzstan_on_WED_2025">Kyrgyzstan</option>
-        <option value="Medic_Tree_Mapping_in_Laos_on_WED_2025">Laos</option>
-        <option value="Medic_Tree_Mapping_in_Lesotho_on_WED_2025">Lesotho</option>
-        <option value="Medic_Tree_Mapping_in_Madagascar_on_WED_2025">Madagascar</option>
-        <option value="Medic_Tree_Mapping_in_Malawi_on_WED_2025">Malawi</option>
-        <option value="Medic_Tree_Mapping_in_Malaysia_on_WED_2025">Malaysia</option>
-        <option value="Medic_Tree_Mapping_in_Mali_on_WED_2025">Mali</option>
-        <option value="Medic_Tree_Mapping_in_Marshall_Islands_on_WED_2025">Marshall Islands</option>
-        <option value="Medic_Tree_Mapping_in_Mauritania_on_WED_2025">Mauritania</option>
-        <option value="Medic_Tree_Mapping_in_Mexico_on_WED_2025">Mexico</option>
-        <option value="Medic_Tree_Mapping_in_Micronesia_on_WED_2025">Micronesia</option>
-        <option value="Medic_Tree_Mapping_in_Mongolia_on_WED_2025">Mongolia</option>
-        <option value="Medic_Tree_Mapping_in_Morocco_on_WED_2025">Morocco</option>
-        <option value="Medic_Tree_Mapping_in_Mozambique_on_WED_2025">Mozambique</option>
-        <option value="Medic_Tree_Mapping_in_Myanmar_on_WED_2025">Myanmar</option>
-        <option value="Medic_Tree_Mapping_in_Namibia_on_WED_2025">Namibia</option>
-        <option value="Medic_Tree_Mapping_in_Nauru_on_WED_2025">Nauru</option>
-        <option value="Medic_Tree_Mapping_in_Nepal_on_WED_2025">Nepal</option>
-        <option value="Medic_Tree_Mapping_in_New_Zealand_on_WED_2025">New Zealand</option>
-        <option value="Medic_Tree_Mapping_in_Nigeria_on_WED_2025">Nigeria</option>
-        <option value="Medic_Tree_Mapping_in_Pakistan_on_WED_2025">Pakistan</option>
-        <option value="Medic_Tree_Mapping_in_Palau_on_WED_2025">Palau</option>
-        <option value="Medic_Tree_Mapping_in_Papua_New_Guinea_on_WED_2025">Papua New Guinea</option>
-        <option value="Medic_Tree_Mapping_in_Peru_on_WED_2025">Peru</option>
-        <option value="Medic_Tree_Mapping_in_Philippines_on_WED_2025">Philippines</option>
-        <option value="Medic_Tree_Mapping_in_Qatar_on_WED_2025">Qatar</option>
-        <option value="Medic_Tree_Mapping_in_Rwanda_on_WED_2025">Rwanda</option>
-        <option value="Medic_Tree_Mapping_in_Russia_on_WED_2025">Russia</option>
-        <option value="Medic_Tree_Mapping_in_Saudi_Arabia_on_WED_2025">Saudi Arabia</option>
-        <option value="Medic_Tree_Mapping_in_Samoa_on_WED_2025">Samoa</option>
-        <option value="Medic_Tree_Mapping_in_Senegal_on_WED_2025">Senegal</option>
-        <option value="Medic_Tree_Mapping_in_Singapore_on_WED_2025">Singapore</option>
-        <option value="Medic_Tree_Mapping_in_Solomon_Islands_on_WED_2025">Solomon Islands</option>
-        <option value="Medic_Tree_Mapping_in_South_Africa_on_WED_2025">South Africa</option>
-        <option value="Medic_Tree_Mapping_in_South_Korea_on_WED_2025">South Korea</option>
-        <option value="Medic_Tree_Mapping_in_Spain_on_WED_2025">Spain</option>
-        <option value="Medic_Tree_Mapping_in_Sudan_on_WED_2025">Sudan</option>
-        <option value="Medic_Tree_Mapping_in_Taiwan_on_WED_2025">Taiwan</option>
-        <option value="Medic_Tree_Mapping_in_Tajikistan_on_WED_2025">Tajikistan</option>
-        <option value="Medic_Tree_Mapping_in_Tanzania_on_WED_2025">Tanzania</option>
-        <option value="Medic_Tree_Mapping_in_Thailand_on_WED_2025">Thailand</option>
-        <option value="Medic_Tree_Mapping_in_Timor_Leste_on_WED_2025">Timor-Leste</option>
-        <option value="Medic_Tree_Mapping_in_Togo_on_WED_2025">Togo</option>
-        <option value="Medic_Tree_Mapping_in_Tonga_on_WED_2025">Tonga</option>
-        <option value="Medic_Tree_Mapping_in_Tunisia_on_WED_2025">Tunisia</option>
-        <option value="Medic_Tree_Mapping_in_Turkey_on_WED_2025">Turkey</option>
-        <option value="Medic_Tree_Mapping_in_Turkmenistan_on_WED_2025">Turkmenistan</option>
-        <option value="Medic_Tree_Mapping_in_Tuvalu_on_WED_2025">Tuvalu</option>
-        <option value="Medic_Tree_Mapping_in_Uganda_on_WED_2025">Uganda</option>
-        <option value="Medic_Tree_Mapping_in_United_Arab_Emirates_on_WED_2025">United Arab Emirates</option>
-        <option value="Medic_Tree_Mapping_in_United_Kingdom_on_WED_2025">United Kingdom</option>
-        <option value="Medic_Tree_Mapping_in_United_States_on_WED_2025">United States</option>
-        <option value="Medic_Tree_Mapping_in_Uzbekistan_on_WED_2025">Uzbekistan</option>
-        <option value="Medic_Tree_Mapping_in_Vanuatu_on_WED_2025">Vanuatu</option>
-        <option value="Medic_Tree_Mapping_in_Vietnam_on_WED_2025">Vietnam</option>
-        <option value="Medic_Tree_Mapping_in_Zambia_on_WED_2025">Zambia</option>
-        <option value="Medic_Tree_Mapping_in_Zimbabwe_on_WED_2025">Zimbabwe</option>
+<div class="controls-container"> <div class="dropdown-container">
+        <label for="treeCategory"><strong>Select Campaign:</strong></label>
+        <select id="treeCategory" onchange="onCategoryChange(this.value)">
+            <option value="">-- Show All --</option>
+            
+            <option value="Medic_Tree_Mapping_in_India_on_WED_2025">India</option>
+            <option value="Medic_Tree_Mapping_in_Algeria_on_WED_2025">Algeria</option>
+            <option value="Medic_Tree_Mapping_in_Angola_on_WED_2025">Angola</option>
+            <option value="Medic_Tree_Mapping_in_Argentina_on_WED_2025">Argentina</option>
+            <option value="Medic_Tree_Mapping_in_Australia_on_WED_2025">Australia</option>
+            <option value="Medic_Tree_Mapping_in_Benin_on_WED_2025">Benin</option>
+            <option value="Medic_Tree_Mapping_in_Botswana_on_WED_2025">Botswana</option>
+            <option value="Medic_Tree_Mapping_in_Brazil_on_WED_2025">Brazil</option>
+            <option value="Medic_Tree_Mapping_in_Brunei_on_WED_2025">Brunei</option>
+            <option value="Medic_Tree_Mapping_in_Burkina_Faso_on_WED_2025">Burkina Faso</option>
+            <option value="Medic_Tree_Mapping_in_Cambodia_on_WED_2025">Cambodia</option>
+            <option value="Medic_Tree_Mapping_in_Cameroon_on_WED_2025">Cameroon</option>
+            <option value="Medic_Tree_Mapping_in_Canada_on_WED_2025">Canada</option>
+            <option value="Medic_Tree_Mapping_in_Chile_on_WED_2025">Chile</option>
+            <option value="Medic_Tree_Mapping_in_China_on_WED_2025">China</option>
+            <option value="Medic_Tree_Mapping_in_Colombia_on_WED_2025">Colombia</option>
+            <option value="Medic_Tree_Mapping_in_Côte_d'Ivoire_on_WED_2025">Côte d'Ivoire</option>
+            <option value="Medic_Tree_Mapping_in_Democratic_Republic_of_the_Congo_on_WED_2025">DRC</option>
+            <option value="Medic_Tree_Mapping_in_Egypt_on_WED_2025">Egypt</option>
+            <option value="Medic_Tree_Mapping_in_Ethiopia_on_WED_2025">Ethiopia</option>
+            <option value="Medic_Tree_Mapping_in_Fiji_on_WED_2025">Fiji</option>
+            <option value="Medic_Tree_Mapping_in_France_on_WED_2025">France</option>
+            <option value="Medic_Tree_Mapping_in_Gabon_on_WED_2025">Gabon</option>
+            <option value="Medic_Tree_Mapping_in_Gambia_on_WED_2025">Gambia</option>
+            <option value="Medic_Tree_Mapping_in_Germany_on_WED_2025">Germany</option>
+            <option value="Medic_Tree_Mapping_in_Ghana_on_WED_2025">Ghana</option>
+            <option value="Medic_Tree_Mapping_in_Hong_Kong_on_WED_2025">Hong Kong</option>
+            <option value="Medic_Tree_Mapping_in_India_on_WED_2025">India</option>
+            <option value="Medic_Tree_Mapping_in_Indonesia_on_WED_2025">Indonesia</option>
+            <option value="Medic_Tree_Mapping_in_Iran_on_WED_2025">Iran</option>
+            <option value="Medic_Tree_Mapping_in_Iraq_on_WED_2025">Iraq</option>
+            <option value="Medic_Tree_Mapping_in_Israel_on_WED_2025">Israel</option>
+            <option value="Medic_Tree_Mapping_in_Italy_on_WED_2025">Italy</option>
+            <option value="Medic_Tree_Mapping_in_Japan_on_WED_2025">Japan</option>
+            <option value="Medic_Tree_Mapping_in_Kazakhstan_on_WED_2025">Kazakhstan</option>
+            <option value="Medic_Tree_Mapping_in_Kenya_on_WED_2025">Kenya</option>
+            <option value="Medic_Tree_Mapping_in_Kiribati_on_WED_2025">Kiribati</option>
+            <option value="Medic_Tree_Mapping_in_Kyrgyzstan_on_WED_2025">Kyrgyzstan</option>
+            <option value="Medic_Tree_Mapping_in_Laos_on_WED_2025">Laos</option>
+            <option value="Medic_Tree_Mapping_in_Lesotho_on_WED_2025">Lesotho</option>
+            <option value="Medic_Tree_Mapping_in_Madagascar_on_WED_2025">Madagascar</option>
+            <option value="Medic_Tree_Mapping_in_Malawi_on_WED_2025">Malawi</option>
+            <option value="Medic_Tree_Mapping_in_Malaysia_on_WED_2025">Malaysia</option>
+            <option value="Medic_Tree_Mapping_in_Mali_on_WED_2025">Mali</option>
+            <option value="Medic_Tree_Mapping_in_Marshall_Islands_on_WED_2025">Marshall Islands</option>
+            <option value="Medic_Tree_Mapping_in_Mauritania_on_WED_2025">Mauritania</option>
+            <option value="Medic_Tree_Mapping_in_Mexico_on_WED_2025">Mexico</option>
+            <option value="Medic_Tree_Mapping_in_Micronesia_on_WED_2025">Micronesia</option>
+            <option value="Medic_Tree_Mapping_in_Mongolia_on_WED_2025">Mongolia</option>
+            <option value="Medic_Tree_Mapping_in_Morocco_on_WED_2025">Morocco</option>
+            <option value="Medic_Tree_Mapping_in_Mozambique_on_WED_2025">Mozambique</option>
+            <option value="Medic_Tree_Mapping_in_Myanmar_on_WED_2025">Myanmar</option>
+            <option value="Medic_Tree_Mapping_in_Namibia_on_WED_2025">Namibia</option>
+            <option value="Medic_Tree_Mapping_in_Nauru_on_WED_2025">Nauru</option>
+            <option value="Medic_Tree_Mapping_in_Nepal_on_WED_2025">Nepal</option>
+            <option value="Medic_Tree_Mapping_in_New_Zealand_on_WED_2025">New Zealand</option>
+            <option value="Medic_Tree_Mapping_in_Nigeria_on_WED_2025">Nigeria</option>
+            <option value="Medic_Tree_Mapping_in_Pakistan_on_WED_2025">Pakistan</option>
+            <option value="Medic_Tree_Mapping_in_Palau_on_WED_2025">Palau</option>
+            <option value="Medic_Tree_Mapping_in_Papua_New_Guinea_on_WED_2025">Papua New Guinea</option>
+            <option value="Medic_Tree_Mapping_in_Peru_on_WED_2025">Peru</option>
+            <option value="Medic_Tree_Mapping_in_Philippines_on_WED_2025">Philippines</option>
+            <option value="Medic_Tree_Mapping_in_Qatar_on_WED_2025">Qatar</option>
+            <option value="Medic_Tree_Mapping_in_Rwanda_on_WED_2025">Rwanda</option>
+            <option value="Medic_Tree_Mapping_in_Russia_on_WED_2025">Russia</option>
+            <option value="Medic_Tree_Mapping_in_Saudi_Arabia_on_WED_2025">Saudi Arabia</option>
+            <option value="Medic_Tree_Mapping_in_Samoa_on_WED_2025">Samoa</option>
+            <option value="Medic_Tree_Mapping_in_Senegal_on_WED_2025">Senegal</option>
+            <option value="Medic_Tree_Mapping_in_Singapore_on_WED_2025">Singapore</option>
+            <option value="Medic_Tree_Mapping_in_Solomon_Islands_on_WED_2025">Solomon Islands</option>
+            <option value="Medic_Tree_Mapping_in_South_Africa_on_WED_2025">South Africa</option>
+            <option value="Medic_Tree_Mapping_in_South_Korea_on_WED_2025">South Korea</option>
+            <option value="Medic_Tree_Mapping_in_Spain_on_WED_2025">Spain</option>
+            <option value="Medic_Tree_Mapping_in_Sudan_on_WED_2025">Sudan</option>
+            <option value="Medic_Tree_Mapping_in_Taiwan_on_WED_2025">Taiwan</option>
+            <option value="Medic_Tree_Mapping_in_Tajikistan_on_WED_2025">Tajikistan</option>
+            <option value="Medic_Tree_Mapping_in_Tanzania_on_WED_2025">Tanzania</option>
+            <option value="Medic_Tree_Mapping_in_Thailand_on_WED_2025">Thailand</option>
+            <option value="Medic_Tree_Mapping_in_Timor_Leste_on_WED_2025">Timor-Leste</option>
+            <option value="Medic_Tree_Mapping_in_Togo_on_WED_2025">Togo</option>
+            <option value="Medic_Tree_Mapping_in_Tonga_on_WED_2025">Tonga</option>
+            <option value="Medic_Tree_Mapping_in_Tunisia_on_WED_2025">Tunisia</option>
+            <option value="Medic_Tree_Mapping_in_Turkey_on_WED_2025">Turkey</option>
+            <option value="Medic_Tree_Mapping_in_Turkmenistan_on_WED_2025">Turkmenistan</option>
+            <option value="Medic_Tree_Mapping_in_Tuvalu_on_WED_2025">Tuvalu</option>
+            <option value="Medic_Tree_Mapping_in_Uganda_on_WED_2025">Uganda</option>
+            <option value="Medic_Tree_Mapping_in_United_Arab_Emirates_on_WED_2025">United Arab Emirates</option>
+            <option value="Medic_Tree_Mapping_in_United_Kingdom_on_WED_2025">United Kingdom</option>
+            <option value="Medic_Tree_Mapping_in_United_States_on_WED_2025">United States</option>
+            <option value="Medic_Tree_Mapping_in_Uzbekistan_on_WED_2025">Uzbekistan</option>
+            <option value="Medic_Tree_Mapping_in_Vanuatu_on_WED_2025">Vanuatu</option>
+            <option value="Medic_Tree_Mapping_in_Vietnam_on_WED_2025">Vietnam</option>
+            <option value="Medic_Tree_Mapping_in_Zambia_on_WED_2025">Zambia</option>
+            <option value="Medic_Tree_Mapping_in_Zimbabwe_on_WED_2025">Zimbabwe</option>
 
-    </select>
-</div>
+        </select>
+    </div>
+    <div id="imageCount"></div> </div>
 
 <div id="map"></div>
 
 <footer>
-    Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> | Last update: 11 June 2025
+    Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> | Last update: 14 June 2025
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -162,10 +181,17 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 let currentMarkers = [];
+let totalImageCount = 0; // Global variable to store total image count
+
+function updateImageCountDisplay(count) {
+    document.getElementById('imageCount').innerText = `Trees Mapped: ${count}`;
+}
 
 function clearMarkers() {
     currentMarkers.forEach(marker => map.removeLayer(marker));
     currentMarkers = [];
+    totalImageCount = 0; // Reset count when clearing markers
+    updateImageCountDisplay(totalImageCount); // Update display
 }
 
 function onCategoryChange(value) {
@@ -173,7 +199,7 @@ function onCategoryChange(value) {
     if (value === "") {
         loadAllSubcategories('Medic_Tree_Mapping_on_WED_2025', 3);
     } else {
-        loadCategoryImages(value);
+        loadCategoryImages(value, true); // Pass true to zoom and update count for a single category
     }
 }
 
@@ -197,16 +223,19 @@ async function getSubcategories(category, depth = 1, maxDepth = 3, seen = new Se
 async function loadAllSubcategories(rootCategory, maxDepth = 3) {
     clearMarkers();
     const allCats = await getSubcategories(rootCategory, 1, maxDepth);
-    const promises = allCats.map(cat => loadCategoryImages(cat, false));
+    totalImageCount = 0; // Reset count for "Show All"
+    const promises = allCats.map(cat => loadCategoryImages(cat, false)); // Don't zoom for individual categories when loading all
     await Promise.all(promises);
     if (currentMarkers.length > 0) {
         const group = L.featureGroup(currentMarkers);
         map.fitBounds(group.getBounds().pad(0.2));
     }
+    updateImageCountDisplay(totalImageCount); // Update total count after all promises resolve
 }
 
 async function loadCategoryImages(category, zoom = true) {
     let gcmcontinue = null;
+    let categoryImageCount = 0; // Count for the current category being loaded
     do {
         const params = new URLSearchParams({
             action: 'query',
@@ -242,6 +271,7 @@ async function loadCategoryImages(category, zoom = true) {
                         .bindPopup(`<a href="${link}" target="_blank"><img src="${imgUrl}" width="150"><br>${title}</a>`);
 
                     currentMarkers.push(marker);
+                    categoryImageCount++;
                 }
             }
 
@@ -252,9 +282,13 @@ async function loadCategoryImages(category, zoom = true) {
         }
     } while (gcmcontinue);
 
-    if (zoom && currentMarkers.length > 0) {
-        const group = L.featureGroup(currentMarkers);
-        map.fitBounds(group.getBounds().pad(0.2));
+    totalImageCount += categoryImageCount; // Add to global total
+    if (zoom) { // Only update display immediately if a single category is selected
+        updateImageCountDisplay(totalImageCount);
+        if (currentMarkers.length > 0) {
+            const group = L.featureGroup(currentMarkers);
+            map.fitBounds(group.getBounds().pad(0.2));
+        }
     }
 }
 
@@ -263,7 +297,6 @@ window.onload = () => {
 };
 
 </script>
-<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
