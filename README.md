@@ -107,7 +107,7 @@ This project is licensed under the [CC BY-SA 4.0](https://creativecommons.org/li
 
 ## Credits
 
-Special thanks to the [Wikipedia](https://www.wikipedia.org/) for the public API and the data used in this project.
+Thanks to the [Wikipedia](https://www.wikipedia.org/) for the public API and the data used in this project.
 
 ## Acknowledgments
 
