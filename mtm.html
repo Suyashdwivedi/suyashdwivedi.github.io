@@ -21,6 +21,10 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+    }
+    #campaign {
+      margin-left: 5px;
     }
   </style>
 </head>
@@ -40,9 +44,7 @@
       <option value="Medic_Tree_Mapping_in_Angola_on_WED_2025">Angola</option>
       <option value="Medic_Tree_Mapping_in_Egypt_on_WED_2025">Egypt</option>
       <option value="Medic_Tree_Mapping_in_South_Africa_on_WED_2025">South Africa</option>
-      <!-- Add more as needed -->
     </select>
-
     <div id="tree-count">Trees Mapped: 0</div>
   </div>
 
@@ -57,14 +59,19 @@
     let geoLayer;
 
     function loadData(category) {
-      const apiUrl = category
-        ? `https://wikimap.toolforge.org/api.php?cat=${category}`
-        : `https://wikimap.toolforge.org/api.php?cat=Medic_Tree_Mapping_on_WED_2025`;
+      const baseCat = "Medic_Tree_Mapping_on_WED_2025";
+      const apiCat = category ? category : baseCat;
+      const apiUrl = `https://wikimap.toolforge.org/api.php?cat=${encodeURIComponent(apiCat)}`;
 
       fetch(apiUrl)
         .then(res => res.json())
         .then(data => {
           if (geoLayer) map.removeLayer(geoLayer);
+
+          if (!data.features || data.features.length === 0) {
+            document.getElementById("tree-count").innerText = "Trees Mapped: 0";
+            return;
+          }
 
           geoLayer = L.geoJSON(data, {
             onEachFeature: function (feature, layer) {
@@ -74,7 +81,6 @@
             }
           }).addTo(map);
 
-          // Fit bounds to markers
           if (geoLayer.getBounds().isValid()) {
             map.fitBounds(geoLayer.getBounds());
           }
@@ -87,10 +93,10 @@
         });
     }
 
-    // Load initial data (all)
+    // Load initial data
     loadData("");
 
-    // Handle dropdown changes
+    // Handle dropdown
     document.getElementById("campaign").addEventListener("change", function () {
       loadData(this.value);
     });
