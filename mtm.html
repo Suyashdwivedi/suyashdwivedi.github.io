@@ -65,7 +65,7 @@
 
     function loadData(category) {
       const apiCat = category || "Medic_Tree_Mapping_on_WED_2025";
-      const apiUrl = `https://wikimap.toolforge.org/api.php?cat=${encodeURIComponent(apiCat)}&subcats=1`;
+      const apiUrl = `https://wikimap.toolforge.org/api.php?cat=${encodeURIComponent(apiCat)}&subcats=5`;
 
       fetch(apiUrl)
         .then(res => res.json())
