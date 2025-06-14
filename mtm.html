@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Medic Tree Mapping Campaign</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <style>
+    #map { height: 85vh; width: 100%; }
+    body { font-family: sans-serif; margin: 0; }
+    header {
+      background: #4CAF50;
+      color: white;
+      padding: 10px;
+      text-align: center;
+    }
+    .controls {
+      padding: 10px;
+      background: #f9f9f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Medic Tree Mapping Campaign</h2>
+    <p>Mapping medicinal trees through Wikimedia Commons & OpenStreetMap<br>
+    Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" style="color:white;text-decoration:underline;">Suyash Dwivedi</a></p>
+  </header>
+
+  <div class="controls">
+    <label for="campaign">Select Campaign:</label>
+    <select id="campaign">
+      <option value="">-- Show All --</option>
+      <option value="Medic_Tree_Mapping_in_India_on_WED_2025">India</option>
+      <option value="Medic_Tree_Mapping_in_Algeria_on_WED_2025">Algeria</option>
+      <option value="Medic_Tree_Mapping_in_Angola_on_WED_2025">Angola</option>
+      <option value="Medic_Tree_Mapping_in_Egypt_on_WED_2025">Egypt</option>
+      <option value="Medic_Tree_Mapping_in_South_Africa_on_WED_2025">South Africa</option>
+      <!-- Add more as needed -->
+    </select>
+
+    <div id="tree-count">Trees Mapped: 0</div>
+  </div>
+
+  <div id="map"></div>
+
+  <script>
+    const map = L.map('map').setView([20, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18
+    }).addTo(map);
+
+    let geoLayer;
+
+    function loadData(category) {
+      const apiUrl = category
+        ? `https://wikimap.toolforge.org/api.php?cat=${category}`
+        : `https://wikimap.toolforge.org/api.php?cat=Medic_Tree_Mapping_on_WED_2025`;
+
+      fetch(apiUrl)
+        .then(res => res.json())
+        .then(data => {
+          if (geoLayer) map.removeLayer(geoLayer);
+
+          geoLayer = L.geoJSON(data, {
+            onEachFeature: function (feature, layer) {
+              const title = feature.properties.title;
+              const commonsUrl = `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(title)}`;
+              layer.bindPopup(`<strong>${title}</strong><br><a href="${commonsUrl}" target="_blank">View on Commons</a>`);
+            }
+          }).addTo(map);
+
+          // Fit bounds to markers
+          if (geoLayer.getBounds().isValid()) {
+            map.fitBounds(geoLayer.getBounds());
+          }
+
+          document.getElementById("tree-count").innerText = "Trees Mapped: " + data.features.length;
+        })
+        .catch(err => {
+          console.error("Error loading data:", err);
+          document.getElementById("tree-count").innerText = "Trees Mapped: 0";
+        });
+    }
+
+    // Load initial data (all)
+    loadData("");
+
+    // Handle dropdown changes
+    document.getElementById("campaign").addEventListener("change", function () {
+      loadData(this.value);
+    });
+  </script>
+</body>
+</html>
