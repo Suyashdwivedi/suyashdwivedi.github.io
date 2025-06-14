@@ -5,10 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <style>
     #map { height: 85vh; width: 100%; }
     body { font-family: sans-serif; margin: 0; }
@@ -24,10 +21,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-    }
-    #tree-count {
-      font-weight: bold;
     }
   </style>
 </head>
@@ -48,6 +41,7 @@
       <option value="Medic_Tree_Mapping_in_Egypt_on_WED_2025">Egypt</option>
       <option value="Medic_Tree_Mapping_in_South_Africa_on_WED_2025">South Africa</option>
     </select>
+
     <div id="tree-count">Trees Mapped: 0</div>
   </div>
 
@@ -55,43 +49,31 @@
 
   <script>
     const map = L.map('map').setView([20, 0], 2);
-
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '© OpenStreetMap contributors'
+      maxZoom: 18
     }).addTo(map);
 
-    let markerCluster;
+    let geoLayer;
 
     function loadData(category) {
       const apiCat = category || "Medic_Tree_Mapping_on_WED_2025";
-      const apiUrl = `https://wikimap.toolforge.org/api.php?cat=${encodeURIComponent(apiCat)}&subcats=5`;
+      const apiUrl = `https://wikimap.toolforge.org/api.php?cat=${encodeURIComponent(apiCat)}&subcats=3`;
 
       fetch(apiUrl)
         .then(res => res.json())
         .then(data => {
-          if (markerCluster) {
-            map.removeLayer(markerCluster);
-          }
+          if (geoLayer) map.removeLayer(geoLayer);
 
-          markerCluster = L.markerClusterGroup();
-
-          const geoJsonLayer = L.geoJSON(data, {
+          geoLayer = L.geoJSON(data, {
             onEachFeature: function (feature, layer) {
               const title = feature.properties.title;
               const commonsUrl = `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(title)}`;
               layer.bindPopup(`<strong>${title}</strong><br><a href="${commonsUrl}" target="_blank">View on Commons</a>`);
-            },
-            pointToLayer: function (feature, latlng) {
-              return L.marker(latlng);
             }
-          });
+          }).addTo(map);
 
-          markerCluster.addLayer(geoJsonLayer);
-          map.addLayer(markerCluster);
-
-          if (geoJsonLayer.getBounds().isValid()) {
-            map.fitBounds(geoJsonLayer.getBounds());
+          if (geoLayer.getBounds().isValid()) {
+            map.fitBounds(geoLayer.getBounds());
           }
 
           document.getElementById("tree-count").innerText = "Trees Mapped: " + data.features.length;
@@ -102,8 +84,10 @@
         });
     }
 
+    // Initial load with all
     loadData("");
 
+    // Change event on dropdown
     document.getElementById("campaign").addEventListener("change", function () {
       loadData(this.value);
     });
