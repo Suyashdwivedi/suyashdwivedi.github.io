@@ -162,6 +162,7 @@
             <option value="Medic_Tree_Mapping_in_Vietnam_on_WED_2025">Vietnam</option>
             <option value="Medic_Tree_Mapping_in_Zambia_on_WED_2025">Zambia</option>
             <option value="Medic_Tree_Mapping_in_Zimbabwe_on_WED_2025">Zimbabwe</option>
+    
 
         </select>
     </div>
@@ -170,11 +171,18 @@
 <div id="map"></div>
 
 <footer>
-    Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> | Last update: 15 June 2025
+    Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> | Last update: 16 June 2025
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+const treeIcon = L.icon({
+    iconUrl: 'https://suyashdwivedi.github.io/tree.png',
+    iconSize: [25, 25],
+    iconAnchor: [12.5, 41],
+    popupAnchor: [0, -41]
+});
+
 const map = L.map('map').setView([20, 0], 2);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
@@ -266,7 +274,7 @@ async function loadCategoryImages(category, zoom = true) {
                     const title = page.title;
                     const link = `https://commons.wikimedia.org/wiki/${encodeURIComponent(title)}`;
 
-                    const marker = L.marker([coord.lat, coord.lon])
+                    const marker = L.marker([coord.lat, coord.lon], { icon: treeIcon })
                         .addTo(map)
                         .bindPopup(`<a href="${link}" target="_blank"><img src="${imgUrl}" width="150"><br>${title}</a>`);
 
