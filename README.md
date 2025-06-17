@@ -1,3 +1,8 @@
+ 🚫 **Important Notice**  
+ Forking this repository is not permitted without written permission from the author.  
+ Please respect the license and terms of use outlined in the LICENSE file.
+![No Forking Allowed](https://img.shields.io/badge/Forking-Not%20Allowed-red)
+
 # Wikipedia Recent Changes Viewer
 
 This project allows you to view the recent changes made across different Wikipedia languages in real time. It fetches recent changes through Wikipedia's API and displays information about the changes, including the title of the page, the editor's username, timestamp, and comments. The data is refreshed every 20 seconds, ensuring the information stays up-to-date.
