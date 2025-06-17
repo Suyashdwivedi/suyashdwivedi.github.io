@@ -1,6 +1,6 @@
  🚫 **Important Notice**  
  Forking this repository is not permitted without written permission from the author.  
- Please respect the license and terms of use outlined in the LICENSE file.
+ Please respect the license and terms of use outlined in the LICENSE file. 
 ![No Forking Allowed](https://img.shields.io/badge/Forking-Not%20Allowed-red)
 
 # Wikipedia Recent Changes Viewer
