@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>एम्स भोपाल - पीत ज्वर टीकाकरण (Yellow Fever Vaccination) सूचना पोर्टल</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Light grays, blues, and a soft white background) -->
+    <!-- Application Structure Plan: The application is designed as a single-page portal with a fixed top navigation for easy access to key sections. This task-oriented structure prioritizes user goals, such as understanding the process, checking if they are exempt, or finding the list of endemic countries. I chose this over a linear report format to allow users to quickly find specific information without scrolling through irrelevant text. Key information is highlighted in cards, the process is a visual step-by-step guide, and the country list is made interactive with a search filter for maximum usability. -->
+    <!-- Visualization & Content Choices: 
+        - Key Facts (Timing, Fee, Validity) -> Goal: Inform quickly -> Presentation: Info Cards with Icons -> Interaction: Hover effects -> Justification: Highlights the most critical, frequently-asked information upfront in a visually appealing and digestible format. Method: HTML/Tailwind.
+        - Vaccination Process -> Goal: Guide user -> Presentation: Numbered step-by-step guide with accordions -> Interaction: Clicking a step reveals detailed information (like documents needed) -> Justification: Breaks down a multi-step process into manageable parts, preventing information overload. Method: HTML/JS.
+        - Exemption Criteria -> Goal: Inform about exceptions -> Presentation: A clear table -> Interaction: None needed -> Justification: A table is the most effective way to present structured criteria against required proof documents. Method: HTML/Tailwind.
+        - Endemic Countries -> Goal: Help user check their travel destination -> Presentation: Two searchable lists (Africa/Americas) -> Interaction: User types in a search box to filter the country list instantly -> Justification: Far more user-friendly and faster than manually scanning a static list of 42 countries. Method: HTML/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+        }
+        .active-nav {
+            font-weight: 700;
+            color: #2563eb;
+            border-bottom: 2px solid #2563eb;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .step-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+        }
+        .step-open .step-content {
+            max-height: 500px; /* Adjust as needed */
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        .step-open .step-arrow {
+            transform: rotate(180deg);
+        }
+        .step-arrow {
+            transition: transform 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-xl md:text-2xl font-bold text-blue-800">एम्स भोपाल: पीत ज्वर टीकाकरण (Yellow Fever Vaccination)</h1>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#main-info" class="nav-link text-gray-600 hover:text-blue-600 pb-1">मुख्य जानकारी</a>
+                    <a href="#process" class="nav-link text-gray-600 hover:text-blue-600 pb-1">प्रक्रिया</a>
+                    <a href="#exemption" class="nav-link text-gray-600 hover:text-blue-600 pb-1">छूट</a>
+                    <a href="#countries" class="nav-link text-gray-600 hover:text-blue-600 pb-1">स्थानिक देश</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <!-- Main Info Section -->
+        <section id="main-info" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center text-blue-900 mb-2">पीत ज्वर टीकाकरण सुविधा</h2>
+            <p class="text-center text-lg text-gray-600 mb-10">एम्स भोपाल, मध्य प्रदेश में पीत ज्वर टीकाकरण के लिए एकमात्र नामित केंद्र है।</p>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="font-bold text-xl mb-3 text-blue-700">समय और दिन</h3>
+                    <p class="text-gray-700">टीकाकरण प्रत्येक <span class="font-semibold">बुधवार</span> (राजपत्रित अवकाशों को छोड़कर) <span class="font-semibold">सुबह 9 बजे से दोपहर 1 बजे</span> तक किया जाता है।</p>
+                    <p class="mt-2 text-sm text-red-600">यात्रियों को अपनी यात्रा से कम से कम <span class="font-bold">10 दिन पहले</span> टीका लगवाना होगा।</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="font-bold text-xl mb-3 text-blue-700">वैक्सीन और वैधता</h3>
+                    <p class="text-gray-700">पीत ज्वर वैक्सीन की <span class="font-semibold">एकल खुराक (0.5 मिली)</span> आजीवन प्रतिरक्षा प्रदान करती है। बूस्टर खुराक की आवश्यकता नहीं है।</p>
+                     <p class="mt-2 text-sm text-green-700">प्रमाणपत्र टीकाकरण के 10 दिन बाद से <span class="font-bold">आजीवन मान्य</span> होता है।</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 md:col-span-2 lg:col-span-1">
+                    <h3 class="font-bold text-xl mb-3 text-blue-700">शुल्क और संपर्क</h3>
+                    <p class="text-gray-700">टीकाकरण का शुल्क <span class="font-semibold">₹300</span> है।</p>
+                    <p class="mt-2 text-sm text-gray-600">नोडल अधिकारी: <span class="font-bold">डॉ. सूर्य बाली</span>, प्रोफेसर, सामुदायिक एवं परिवार चिकित्सा विभाग, एम्स भोपाल।</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Process Section -->
+        <section id="process" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center text-blue-900 mb-2">टीकाकरण की प्रक्रिया</h2>
+            <p class="text-center text-lg text-gray-600 mb-10">एम्स भोपाल में टीका लगवाने की पूरी प्रक्रिया को समझने के लिए इन चरणों का पालन करें।</p>
+            <div id="process-steps" class="space-y-4 max-w-4xl mx-auto">
+                <!-- Steps will be generated by JS -->
+            </div>
+        </section>
+
+        <!-- Exemption Section -->
+        <section id="exemption" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center text-blue-900 mb-2">टीकाकरण से छूट</h2>
+            <p class="text-center text-lg text-gray-600 mb-10">कुछ व्यक्ति जिन्हें टीका नहीं लग सकता, वे छूट प्रमाण पत्र प्राप्त कर सकते हैं।</p>
+            <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                <h3 class="font-bold text-2xl mb-6 text-blue-800">छूट के लिए मानदंड और आवश्यक दस्तावेज़</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-blue-100">
+                            <tr>
+                                <th class="p-4 font-bold border-b-2 border-blue-200">मानदंड</th>
+                                <th class="p-4 font-bold border-b-2 border-blue-200">आवश्यक प्रमाण</th>
+                            </tr>
+                        </thead>
+                        <tbody id="exemption-criteria">
+                           <!-- Criteria will be generated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-8">
+                    <h4 class="font-bold text-xl mb-3 text-blue-700">छूट प्रमाण पत्र प्राप्त करने की प्रक्रिया:</h4>
+                    <ul id="exemption-process" class="list-disc list-inside space-y-2 text-gray-700">
+                        <!-- Process steps will be generated by JS -->
+                    </ul>
+                </div>
+                 <div class="mt-8">
+                    <h4 class="font-bold text-xl mb-3 text-red-700">डुप्लिकेट कार्ड प्राप्त करने की प्रक्रिया:</h4>
+                    <p class="text-gray-700 mb-3">जिन यात्रियों ने अपना मूल प्रमाणपत्र खो दिया है, वे निम्नलिखित दस्तावेज प्रस्तुत करके डुप्लिकेट प्रमाणपत्र प्राप्त कर सकते हैं:</p>
+                    <ul id="duplicate-process" class="list-disc list-inside space-y-2 text-gray-700">
+                        <!-- Duplicate process steps will be generated by JS -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Countries Section -->
+        <section id="countries" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center text-blue-900 mb-2">पीत ज्वर स्थानिक देश</h2>
+            <p class="text-center text-lg text-gray-600 mb-10">इन देशों की यात्रा के लिए टीकाकरण अनिवार्य है। अपनी यात्रा के देश की जाँच करें।</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="font-bold text-2xl mb-4 text-center text-blue-800">अफ्रीका</h3>
+                    <input type="text" id="search-africa" placeholder="अफ्रीकी देश खोजें..." class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <ul id="africa-list" class="bg-white p-4 rounded-lg shadow-md h-96 overflow-y-auto space-y-2">
+                        <!-- Africa list will be generated by JS -->
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-2xl mb-4 text-center text-blue-800">मध्य और दक्षिण अमेरिका</h3>
+                    <input type="text" id="search-america" placeholder="अमेरिकी देश खोजें..." class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <ul id="america-list" class="bg-white p-4 rounded-lg shadow-md h-96 overflow-y-auto space-y-2">
+                        <!-- America list will be generated by JS -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center">
+            <p>2025 <a href="https://aiimsbhopal.edu.in/index_controller/index" class="text-blue-300 hover:text-blue-100 underline" target="_blank">एम्स भोपाल पीत ज्वर टीकाकरण सूचना पोर्टल</a>।</p>
+            <p class="text-sm text-gray-400 mt-1">यह एक सूचनात्मक पोर्टल है। आधिकारिक जानकारी के लिए कृपया <a href="https://aiimsbhopal.edu.in/index_controller/test?id=106#SHTM" class="text-blue-300 hover:text-blue-100 underline" target="_blank">एम्स भोपाल</a> से संपर्क करें।</p>
+            <p class="text-sm text-gray-400 mt-1">Updated On: 29/June/2025</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const processData = [
+                {
+                    title: "चरण 1: पंजीकरण",
+                    content: `लाभार्थी एम्स भोपाल की वेबसाइट (aiimsbhopal.edu.in) या ORS पोर्टल (ors.gov.in) के माध्यम से सीएफएम ओपीडी की ऑनलाइन अपॉइंटमेंट प्राप्त कर सकते हैं। इसके बाद पंजीकरण क्षेत्र से ओपीडी कार्ड प्राप्त करें।`
+                },
+                {
+                    title: "चरण 2: पात्रता जाँच और दस्तावेज़ जमा करना",
+                    content: `सीएफएम ओपीडी में पात्रता का आकलन कराएं। पात्र पाए जाने पर, सहमति और घोषणा पत्र भरें।<br><strong class="font-semibold text-gray-900 mt-2 block">आवश्यक दस्तावेज़:</strong><ul class="list-disc list-inside mt-1 ml-4"><li>मूल पासपोर्ट</li><li>पासपोर्ट की स्व-सत्यापित प्रति</li><li>हवाई टिकट / नौकरी पत्र / वीजा की स्व-सत्यापित प्रति</li></ul>`
+                },
+                {
+                    title: "चरण 3: शुल्क का भुगतान",
+                    content: `दस्तावेज़ जाँच के बाद, बिलिंग काउंटर पर ₹300 का शुल्क चुकाएं और रसीद प्राप्त करें।`
+                },
+                {
+                    title: "चरण 4: टीकाकरण",
+                    content: `टीकाकरण क्लिनिक में भुगतान रसीद प्रस्तुत करें। टीके 2 या 5-खुराक की शीशियों में दिए जाते हैं, इसलिए यात्रियों को गुणकों में टीका लगाया जाएगा। टीकाकरण के बाद 30 मिनट तक निगरानी में रखा जाता है।`
+                },
+                {
+                    title: "चरण 5: प्रमाणपत्र जारी करना",
+                    content: `नर्सिंग स्टाफ संबंधित अधिकारी द्वारा हस्ताक्षरित अंतर्राष्ट्रीय प्रमाणपत्र प्रदान करेगा। यह आमतौर पर सीएफएम ओपीडी फ़ोयर से वितरित किया जाता है।`
+                }
+            ];
+
+            const exemptionCriteriaData = [
+                { criteria: "9 महीने से कम या 65 वर्ष से अधिक आयु", proof: "वैध भारतीय पासपोर्ट" },
+                { criteria: "गर्भावस्था और स्तनपान", proof: "उपचार कर रहे स्त्री रोग विशेषज्ञ या पंजीकृत चिकित्सक से प्रमाण पत्र" },
+                { criteria: "अंडे से एलर्जी का सिद्ध इतिहास", proof: "किसी मान्यता प्राप्त प्रयोगशाला से अंडे से एलर्जी के बारे में प्रमाण पत्र/रिपोर्ट" },
+                { criteria: "दवा या बीमारी से प्रतिरक्षी कमी", proof: "उपचार कर रहे पंजीकृत चिकित्सक से प्रमाण पत्र" },
+                { criteria: "रोगसूचक एचआईवी संक्रमण", proof: "उपचार कर रहे पंजीकृत चिकित्सक से प्रमाण पत्र" }
+            ];
+
+            const exemptionProcessData = [
+                "दस्तावेजों के सत्यापन के माध्यम से गैर-पात्रता का आकलन।",
+                "छूट प्रमाण पत्र और भारत लौटने पर 6 दिनों के लिए संगरोध/अलगाव की आवश्यकता का स्पष्टीकरण।",
+                "प्रमाण पत्र का प्रावधान।"
+            ];
+            
+            const duplicateProcessData = [
+                "अनुरोध पत्र (टीकाकरण क्लिनिक में प्रदान किया जाएगा)।",
+                "गुम/चोरी हुए मूल प्रमाण पत्र के बारे में एफ.आई.आर. की प्रति।",
+                "पासपोर्ट की प्रति (सत्यापन के लिए मूल साथ लाएं)।",
+                "पुराने पीत ज्वर टीकाकरण प्रमाण पत्र की प्रति।"
+            ];
+
+            const africaCountries = ["अंगोला", "बेनिन", "बुर्किना फासो", "बुरुंडी", "कैमरून", "मध्य अफ्रीकी गणराज्य", "चाड", "कांगो", "कोटे डी'आईवोर", "कांगो लोकतांत्रिक गणराज्य", "इक्वेटोरियल गिनी", "इथियोपिया", "गैबॉन", "गाम्बिया", "घाना", "गिनी", "गिनी-बिसाऊ", "केन्या", "लाइबेरिया", "माली", "मॉरिटानिया", "नाइजर", "नाइजीरिया", "सेनेगल", "सिएरा लियोन", "सूडान", "दक्षिण सूडान", "टोगो", "युगांडा"];
+            const americaCountries = ["अर्जेंटीना", "बोलीविया", "ब्राजील", "कोलंबिया", "इक्वाडोर", "फ्रेंच गुयाना", "गुयाना", "पनामा", "पैराग्वे", "पेरू", "सूरीनाम", "त्रिनिदाद और टोबैगो", "वेनेजुएला"];
+
+            const processContainer = document.getElementById('process-steps');
+            processData.forEach((step, index) => {
+                const stepEl = document.createElement('div');
+                stepEl.className = 'border border-gray-200 rounded-lg bg-white step-item';
+                stepEl.innerHTML = `
+                    <button class="w-full text-left p-4 flex justify-between items-center focus:outline-none">
+                        <span class="text-lg font-semibold text-blue-800">${step.title}</span>
+                        <span class="step-arrow text-blue-600 text-2xl transform transition-transform duration-300">&darr;</span>
+                    </button>
+                    <div class="step-content px-4 text-gray-700">
+                        <p>${step.content}</p>
+                    </div>
+                `;
+                processContainer.appendChild(stepEl);
+            });
+
+            processContainer.addEventListener('click', function(e) {
+                const button = e.target.closest('button');
+                if (button) {
+                    const stepItem = button.parentElement;
+                    stepItem.classList.toggle('step-open');
+                    document.querySelectorAll('.step-item').forEach(item => {
+                        if (item !== stepItem) {
+                            item.classList.remove('step-open');
+                        }
+                    });
+                }
+            });
+
+            const exemptionTableBody = document.getElementById('exemption-criteria');
+            exemptionCriteriaData.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-200';
+                row.innerHTML = `
+                    <td class="p-4">${item.criteria}</td>
+                    <td class="p-4">${item.proof}</td>
+                `;
+                exemptionTableBody.appendChild(row);
+            });
+            
+            const exemptionProcessList = document.getElementById('exemption-process');
+            exemptionProcessData.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                exemptionProcessList.appendChild(li);
+            });
+            
+            const duplicateProcessList = document.getElementById('duplicate-process');
+            duplicateProcessData.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                duplicateProcessList.appendChild(li);
+            });
+
+            const africaListEl = document.getElementById('africa-list');
+            const americaListEl = document.getElementById('america-list');
+            const searchAfrica = document.getElementById('search-africa');
+            const searchAmerica = document.getElementById('search-america');
+
+            function populateList(list, element) {
+                element.innerHTML = '';
+                list.forEach(country => {
+                    const li = document.createElement('li');
+                    li.textContent = country;
+                    li.className = 'p-2 rounded hover:bg-gray-100 cursor-pointer';
+                    element.appendChild(li);
+                });
+            }
+
+            populateList(africaCountries, africaListEl);
+            populateList(americaCountries, americaListEl);
+
+            function filterList(event, countryList, listElement) {
+                const searchTerm = event.target.value.toLowerCase();
+                const filteredList = countryList.filter(country => 
+                    country.toLowerCase().includes(searchTerm)
+                );
+                populateList(filteredList, listElement);
+            }
+
+            searchAfrica.addEventListener('input', (e) => filterList(e, africaCountries, africaListEl));
+            searchAmerica.addEventListener('input', (e) => filterList(e, americaCountries, americaListEl));
+
+            // Smooth scrolling for nav links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Active nav link on scroll
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('nav a');
+
+            window.onscroll = () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) { // 80px for header height offset
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active-nav');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active-nav');
+                    }
+                });
+            };
+
+        });
+    </script>
+	   <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GC8PGC89NB');
+</script>
+</body>
+</html>
