@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wiki Club SATI Public Calendar</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.13/main.min.css" rel="stylesheet" />
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px; /* Wider for the calendar */
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 2.5em;
+        }
+        .subscribe-links {
+            text-align: center;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+        .subscribe-links a {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            min-width: 200px; /* Ensure buttons are somewhat consistent */
+        }
+        .subscribe-links a:hover {
+            background-color: #0056b3;
+        }
+        .subscribe-links p {
+            margin: 0;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        /* FullCalendar specific styling adjustments */
+        #calendar {
+            max-width: 900px; /* Adjust as needed */
+            margin: 0 auto;
+            font-size: 14px; /* Adjust font size for better fit */
+        }
+        .fc .fc-toolbar-title {
+            font-size: 1.8em; /* Make title bigger */
+        }
+        .fc .fc-button {
+            background-color: #5cb85c;
+            border-color: #5cb85c;
+            color: white;
+        }
+        .fc .fc-button:hover {
+            background-color: #4cae4c;
+            border-color: #4cae4c;
+        }
+        .fc .fc-event {
+            background-color: #007bff; /* Default event color */
+            border-color: #007bff;
+            font-size: 0.85em; /* Smaller event text */
+            padding: 2px 4px;
+        }
+        /* Custom colors for different calendars (optional) */
+        .fc-event.wikiclub-sati {
+            background-color: #28a745; /* Green for Wiki Club SATI */
+            border-color: #28a745;
+        }
+        .fc-event.wikimedia-diff {
+            background-color: #fd7e14; /* Orange for Wikimedia Diff */
+            border-color: #fd7e14;
+        }
+        .fc-event-title-container a {
+            color: white; /* Ensure link text is visible */
+            text-decoration: none;
+        }
+        .fc-event-title-container a:hover {
+            text-decoration: underline;
+        }
+        .credentials {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 13px;
+            color: #555;
+        }
+        .credentials a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .credentials a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Wiki Club SATI Public Calendar</h1>
+        <p style="text-align: center; margin-bottom: 30px; font-size: 1.1em; color: #555;">
+            Find upcoming events from Wiki Club SATI and the broader Wikimedia community.
+        </p>
+
+        <div class="subscribe-links">
+            <div>
+                <p>Subscribe to Wiki Club SATI Events:</p>
+                <a href="YOUR_WIKI_CLUB_SATI_GOOGLE_CALENDAR_PUBLIC_ICS_URL" target="_blank">
+                    Subscribe to Wiki Club SATI
+                </a>
+            </div>
+            <div>
+                <p>Subscribe to Wikimedia Diff Calendar:</p>
+                <a href="https://diff.wikimedia.org/calendar/?action=raw&templates=expand" target="_blank">
+                    Subscribe to Diff Calendar
+                </a>
+            </div>
+        </div>
+
+        <div id="calendar"></div>
+
+        <div class="credentials">
+            <p>Calendar powered by <a href="https://fullcalendar.io/" target="_blank">FullCalendar</a>.</p>
+            <p>Wikimedia events from <a href="https://diff.wikimedia.org/calendar/" target="_blank">diff.wikimedia.org/calendar/</a>.</p>
+            <p>Page created by: <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></p>
+            <p>License: <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.13/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/ical@6.1.13/index.global.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+
+            // --- Configuration for your Wiki Club SATI Google Calendar ---
+            // IMPORTANT: Replace this placeholder with the actual public ICS URL from your Google Calendar
+            const wikiClubSatiCalendarIcsUrl = 'YOUR_WIKI_CLUB_SATI_GOOGLE_CALENDAR_PUBLIC_ICS_URL'; 
+
+            // --- Wikimedia Diff Calendar URL ---
+            // A CORS proxy is still needed for fetching external ICS feeds in the browser
+            const wikimediaDiffCalendarUrl = 'https://corsproxy.io/?https%3A%2F%2Fdiff.wikimedia.org%2Fcalendar%2F%3Faction%3Draw%26templates%3Dexpand';
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                // Initial View
+                initialView: 'dayGridMonth',
+
+                // Header Toolbar (buttons and title)
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+
+                // Event Sources
+                eventSources: [
+                    {
+                        // Wiki Club SATI Events (from Google Calendar ICS)
+                        url: wikiClubSatiCalendarIcsUrl,
+                        format: 'ics', // Specify that it's an ICS feed
+                        color: '#28a745', // Green color for your club's events
+                        textColor: 'white',
+                        classNames: ['wikiclub-sati'], // Add a class for custom styling
+                        failure: function() {
+                            console.error('Error fetching Wiki Club SATI calendar. Please check the URL and its public sharing settings.');
+                            alert('Could not load Wiki Club SATI events. Please ensure the calendar URL is correct and public.');
+                        }
+                    },
+                    {
+                        // Wikimedia Diff Events (from their public ICS)
+                        url: wikimediaDiffCalendarUrl,
+                        format: 'ics', // Specify that it's an ICS feed
+                        color: '#fd7e14', // Orange color for Wikimedia Diff events
+                        textColor: 'white',
+                        classNames: ['wikimedia-diff'], // Add a class for custom styling
+                        failure: function() {
+                            console.error('Error fetching Wikimedia Diff calendar. This might be due to CORS issues or a problem with the source.');
+                            alert('Could not load Wikimedia Diff events. This might be a temporary issue or a CORS restriction.');
+                        }
+                    }
+                ],
+
+                // Event Display & Interaction
+                eventDidMount: function(info) {
+                    // This function can be used to modify event rendering,
+                    // e.g., adding tooltips or custom content.
+                },
+                eventClick: function(info) {
+                    // Open event URL if available, otherwise show alert with details
+                    if (info.event.url) {
+                        window.open(info.event.url);
+                    } else {
+                        let details = `
+                            Event: ${info.event.title}
+                            Start: ${info.event.start.toLocaleString()}
+                            End: ${info.event.end ? info.event.end.toLocaleString() : 'N/A'}
+                            Location: ${info.event.extendedProps.location || 'N/A'}
+                            Description: ${info.event.extendedProps.description || 'N/A'}
+                        `.trim();
+                        alert(details);
+                    }
+                    info.jsEvent.preventDefault(); // Prevent default browser action
+                },
+
+                // Other options for customization
+                weekends: true, // Show weekends
+                editable: false, // Events cannot be dragged/resized on this public calendar
+                dayMaxEvents: true, // Allow "more" link when too many events
+                height: 'auto', // Calendar height adjusts to content
+                locale: 'en', // Set locale if needed (e.g., 'es', 'fr')
+                firstDay: 0, // Start week on Sunday (0=Sunday, 1=Monday)
+            });
+
+            calendar.render();
+        });
+
+        // Google Analytics
+        (function() {
+            const gaScript = document.createElement('script');
+            gaScript.async = true;
+            gaScript.src = "https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB";
+            document.head.appendChild(gaScript);
+
+            gaScript.onload = function() {
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-GC8PGC89NB');
+            };
+        })();
+    </script>
+</body>
+</html>
