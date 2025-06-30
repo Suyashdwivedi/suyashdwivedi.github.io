@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wiki Club SATI Public Calendar</title> <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.13/main.min.css" rel="stylesheet" />
-    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/0/0e/Calendar_-_2.png" />
+    <title>Wiki Club SATI Public Calendar</title> <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/0/0e/Calendar_-_2.png" />
 
     <style>
         body {
@@ -37,7 +36,6 @@
         .header-logo {
             height: 70px; /* Adjust size of the logo */
             width: auto; /* Maintain aspect ratio */
-            /* Add any other styling for the logo here if needed, e.g., margin-right */
         }
 
         .subscribe-links {
@@ -68,46 +66,16 @@
             color: #555;
         }
 
-        /* FullCalendar specific styling adjustments */
-        #calendar {
-            max-width: 900px; /* Adjust as needed */
-            margin: 0 auto;
-            font-size: 14px; /* Adjust font size for better fit */
+        /* Styling for the embedded Google Calendar iframe */
+        .google-calendar-embed {
+            display: block; /* Ensures it takes full width and centers with margin auto */
+            margin: 20px auto; /* Centers the iframe */
+            max-width: 100%; /* Ensures responsiveness */
+            border: 1px solid #ccc; /* Add a subtle border around the iframe */
+            border-radius: 8px; /* Match container border-radius */
+            overflow: hidden; /* Ensures border-radius applies nicely */
         }
-        .fc .fc-toolbar-title {
-            font-size: 1.8em; /* Make title bigger */
-        }
-        .fc .fc-button {
-            background-color: #5cb85c;
-            border-color: #5cb85c;
-            color: white;
-        }
-        .fc .fc-button:hover {
-            background-color: #4cae4c;
-            border-color: #4cae4c;
-        }
-        .fc .fc-event {
-            background-color: #007bff; /* Default event color */
-            border-color: #007bff;
-            font-size: 0.85em; /* Smaller event text */
-            padding: 2px 4px;
-        }
-        /* Custom colors for different calendars (optional) */
-        .fc-event.wikiclub-sati {
-            background-color: #28a745; /* Green for Wiki Club SATI */
-            border-color: #28a745;
-        }
-        .fc-event.wikimedia-diff {
-            background-color: #fd7e14; /* Orange for Wikimedia Diff */
-            border-color: #fd7e14;
-        }
-        .fc-event-title-container a {
-            color: white; /* Ensure link text is visible */
-            text-decoration: none;
-        }
-        .fc-event-title-container a:hover {
-            text-decoration: underline;
-        }
+
         .credentials {
             text-align: center;
             margin-top: 30px;
@@ -148,111 +116,27 @@
             </div>
         </div>
 
-        <div id="calendar"></div>
+        <iframe src="https://calendar.google.com/calendar/embed?src=bb45fab52d7db348d7ceb75532ee9d43ff622c8833d3412580308495a187cc6f%40group.calendar.google.com&ctz=Asia%2FKolkata"
+                style="border: 0"
+                width="800"
+                height="600"
+                frameborder="0"
+                scrolling="no"
+                class="google-calendar-embed"></iframe>
 
         <div class="credentials">
-            <p>Calendar powered by <a href="https://fullcalendar.io/" target="_blank">FullCalendar</a>.</p>
+            <p>Wiki Club SATI Calendar powered by <a href="https://calendar.google.com/" target="_blank">Google Calendar</a>.</p>
             <p>Wikimedia events from <a href="https://diff.wikimedia.org/calendar/" target="_blank">diff.wikimedia.org/calendar/</a>.</p>
             <p>Page created by: <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></p>
             <p>License: <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a></p>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.13/index.global.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/ical@6.1.13/index.global.min.js"></script>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const calendarEl = document.getElementById('calendar');
-
-            // --- Configuration for your Wiki Club SATI Google Calendar ---
-            // Using the provided Google Calendar ICS URL directly
-            const wikiClubSatiCalendarIcsUrl = 'https://calendar.google.com/calendar/ical/bb45fab52d7db348d7ceb75532ee9d43ff622c8833d3412580308495a187cc6f%40group.calendar.google.com/public/basic.ics'; 
-
-            // --- Wikimedia Diff Calendar URL ---
-            // A CORS proxy is still needed for fetching external ICS feeds in the browser
-            const wikimediaDiffCalendarUrl = 'https://corsproxy.io/?https%3A%2F%2Fdiff.wikimedia.org%2Fcalendar%2F%3Faction%3Draw%26templates%3Dexpand';
-
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                // Initial View
-                initialView: 'dayGridMonth',
-
-                // Header Toolbar (buttons and title)
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
-
-                // Event Sources
-                eventSources: [
-                    {
-                        // Wiki Club SATI Events (from Google Calendar ICS)
-                        url: wikiClubSatiCalendarIcsUrl,
-                        format: 'ics', // Specify that it's an ICS feed
-                        color: '#28a745', // Green color for your club's events
-                        textColor: 'white',
-                        classNames: ['wikiclub-sati'], // Add a class for custom styling
-                        failure: function() {
-                            console.error('Error fetching Wiki Club SATI calendar. Please check the URL and its public sharing settings.');
-                            // You might want a more subtle error message or log to console for users
-                        }
-                    },
-                    {
-                        // Wikimedia Diff Events (from their public ICS)
-                        url: wikimediaDiffCalendarUrl,
-                        format: 'ics', // Specify that it's an ICS feed
-                        color: '#fd7e14', // Orange color for Wikimedia Diff events
-                        textColor: 'white',
-                        classNames: ['wikimedia-diff'], // Add a class for custom styling
-                        failure: function() {
-                            console.error('Error fetching Wikimedia Diff calendar. This might be due to CORS issues or a problem with the source.');
-                            // You might want a more subtle error message or log to console for users
-                        }
-                    }
-                ],
-
-                // Event Display & Interaction
-                eventDidMount: function(info) {
-                    // This function can be used to modify event rendering,
-                    // e.g., adding tooltips or custom content.
-                },
-                eventClick: function(info) {
-                    // Open event URL if available, otherwise show alert with details
-                    if (info.event.url) {
-                        window.open(info.event.url, '_blank'); // Open in new tab
-                    } else {
-                        let details = `
-                            Event: ${info.event.title}
-                            Start: ${info.event.start.toLocaleString()}
-                            End: ${info.event.end ? info.event.end.toLocaleString() : 'N/A'}
-                            Location: ${info.event.extendedProps.location || 'N/A'}
-                            Description: ${info.event.extendedProps.description || 'N/A'}
-                        `.trim();
-                        alert(details);
-                    }
-                    info.jsEvent.preventDefault(); // Prevent default browser action
-                },
-
-                // Other options for customization
-                weekends: true, // Show weekends
-                editable: false, // Events cannot be dragged/resized on this public calendar
-                dayMaxEvents: true, // Allow "more" link when too many events
-                height: 'auto', // Calendar height adjusts to content
-                locale: 'en', // Set locale if needed (e.g., 'es', 'fr')
-                firstDay: 0, // Start week on Sunday (0=Sunday, 1=Monday)
-                
-                // Set initial date to current date in Bhopal, India
-                // FullCalendar handles timezones relatively well if dates are UTC or ISO strings
-                // For 'today' button to work correctly, FullCalendar uses client's locale.
-                initialDate: '2025-07-01' // Set to current date as per prompt
-            });
-
-            calendar.render();
-        });
-
+        // All FullCalendar related JavaScript has been removed as we are now embedding
+        // Google Calendar directly. The Google Analytics script is below.
+        
         // Google Analytics
-        // Correct and singular inclusion of Google Analytics script
         (function() {
             const gaScript = document.createElement('script');
             gaScript.async = true;
