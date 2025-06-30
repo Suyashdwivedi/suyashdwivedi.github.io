@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wiki Club SATI Public Calendar</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.13/main.min.css" rel="stylesheet" />
+    <title>Wiki Club SATI Public Calendar</title> <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.13/main.min.css" rel="stylesheet" />
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/0/0e/Calendar_-_2.png" />
 
     <style>
         body {
@@ -25,11 +24,22 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         h1 {
-            text-align: center;
             color: #2c3e50;
             margin-bottom: 25px;
             font-size: 2.5em;
+
+            /* Flexbox for centering logo and text within the H1 */
+            display: flex;
+            align-items: center; /* Vertically align */
+            justify-content: center; /* Horizontally center */
+            gap: 15px; /* Space between logo and text */
         }
+        .header-logo {
+            height: 70px; /* Adjust size of the logo */
+            width: auto; /* Maintain aspect ratio */
+            /* Add any other styling for the logo here if needed, e.g., margin-right */
+        }
+
         .subscribe-links {
             text-align: center;
             margin-bottom: 30px;
@@ -115,7 +125,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>Wiki Club SATI Public Calendar</h1>
+        <h1>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/WIKI_CLUB_SATI_Logo.svg/250px-WIKI_CLUB_SATI_Logo.svg.png" alt="Wiki Club SATI Logo" class="header-logo">
+            Wiki Club SATI Public Calendar
+        </h1>
         <p style="text-align: center; margin-bottom: 30px; font-size: 1.1em; color: #555;">
             Find upcoming events from Wiki Club SATI and the broader Wikimedia community.
         </p>
@@ -123,7 +136,7 @@
         <div class="subscribe-links">
             <div>
                 <p>Subscribe to Wiki Club SATI Events:</p>
-                <a href="YOUR_WIKI_CLUB_SATI_GOOGLE_CALENDAR_PUBLIC_ICS_URL" target="_blank">
+                <a href="https://calendar.google.com/calendar/ical/bb45fab52d7db348d7ceb75532ee9d43ff622c8833d3412580308495a187cc6f%40group.calendar.google.com/public/basic.ics" target="_blank">
                     Subscribe to Wiki Club SATI
                 </a>
             </div>
@@ -153,8 +166,8 @@
             const calendarEl = document.getElementById('calendar');
 
             // --- Configuration for your Wiki Club SATI Google Calendar ---
-            // IMPORTANT: Replace this placeholder with the actual public ICS URL from your Google Calendar
-            const wikiClubSatiCalendarIcsUrl = 'YOUR_WIKI_CLUB_SATI_GOOGLE_CALENDAR_PUBLIC_ICS_URL'; 
+            // Using the provided Google Calendar ICS URL directly
+            const wikiClubSatiCalendarIcsUrl = 'https://calendar.google.com/calendar/ical/bb45fab52d7db348d7ceb75532ee9d43ff622c8833d3412580308495a187cc6f%40group.calendar.google.com/public/basic.ics'; 
 
             // --- Wikimedia Diff Calendar URL ---
             // A CORS proxy is still needed for fetching external ICS feeds in the browser
@@ -182,7 +195,7 @@
                         classNames: ['wikiclub-sati'], // Add a class for custom styling
                         failure: function() {
                             console.error('Error fetching Wiki Club SATI calendar. Please check the URL and its public sharing settings.');
-                            alert('Could not load Wiki Club SATI events. Please ensure the calendar URL is correct and public.');
+                            // You might want a more subtle error message or log to console for users
                         }
                     },
                     {
@@ -194,7 +207,7 @@
                         classNames: ['wikimedia-diff'], // Add a class for custom styling
                         failure: function() {
                             console.error('Error fetching Wikimedia Diff calendar. This might be due to CORS issues or a problem with the source.');
-                            alert('Could not load Wikimedia Diff events. This might be a temporary issue or a CORS restriction.');
+                            // You might want a more subtle error message or log to console for users
                         }
                     }
                 ],
@@ -207,7 +220,7 @@
                 eventClick: function(info) {
                     // Open event URL if available, otherwise show alert with details
                     if (info.event.url) {
-                        window.open(info.event.url);
+                        window.open(info.event.url, '_blank'); // Open in new tab
                     } else {
                         let details = `
                             Event: ${info.event.title}
@@ -228,12 +241,18 @@
                 height: 'auto', // Calendar height adjusts to content
                 locale: 'en', // Set locale if needed (e.g., 'es', 'fr')
                 firstDay: 0, // Start week on Sunday (0=Sunday, 1=Monday)
+                
+                // Set initial date to current date in Bhopal, India
+                // FullCalendar handles timezones relatively well if dates are UTC or ISO strings
+                // For 'today' button to work correctly, FullCalendar uses client's locale.
+                initialDate: '2025-07-01' // Set to current date as per prompt
             });
 
             calendar.render();
         });
 
         // Google Analytics
+        // Correct and singular inclusion of Google Analytics script
         (function() {
             const gaScript = document.createElement('script');
             gaScript.async = true;
