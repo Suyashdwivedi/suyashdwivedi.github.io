@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Locate Photo in WikiMap</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/a/aa/Paomedia_small-n-flat_map-map-marker.svg" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+      color: #1f2937;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    iframe {
+      border: 1px solid #d1d5db;
+      border-radius: 0.75rem;
+      min-height: 400px;
+      background-color: #ffffff;
+      width: 100%;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                  0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    @media (max-width: 640px) {
+      .input-section {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .input-section button {
+        margin-top: 0.5rem;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <!-- Main Content -->
+  <main class="container mx-auto p-4 flex flex-col items-center w-full">
+
+    <!-- Logo and Title -->
+    <div class="flex items-center justify-center mb-4 gap-4">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/WIKI_CLUB_SATI_Logo.svg/250px-WIKI_CLUB_SATI_Logo.svg.png" alt="WCS Logo" class="h-16 w-16 rounded-full shadow-md">
+      <div class="text-center">
+        <h2 class="text-3xl font-bold text-gray-800">Locate Photos in Commons Category</h2>
+        <p class="text-md text-gray-600">
+          Developed by
+          <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" class="text-blue-600 hover:underline font-medium">Suyash Dwivedi</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Category Input -->
+    <div class="w-full max-w-2xl bg-white p-6 rounded-xl shadow-lg mb-6">
+      <label for="categoryInput" class="block text-lg font-semibold text-gray-700 mb-3">
+        Enter Commons Category
+      </label>
+      <div class="flex flex-col sm:flex-row gap-4 input-section">
+        <input
+          type="text"
+          id="categoryInput"
+          placeholder="e.g., Medic_Tree_Mapping_on_WED_2025 or full URL"
+          class="flex-grow p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+        />
+        <button
+          id="loadMapButton"
+          class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition transform hover:scale-105"
+        >
+          Load Map
+        </button>
+      </div>
+      <p class="text-sm text-gray-500 mt-2">
+        Enter a Wikimedia Commons category name or full category URL.
+      </p>
+    </div>
+
+    <!-- WikiMap Iframe -->
+    <iframe
+      id="wikimapIframe"
+      src="https://wikimap.toolforge.org/"
+      title="WikiMap"
+      allowfullscreen
+    ></iframe>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full bg-gray-200 text-gray-700 text-center p-4 mt-auto shadow-inner text-sm">
+    Developed by
+    <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" class="text-blue-600 hover:underline">Suyash Dwivedi</a>
+    | Last updated: 30 June 2025
+  </footer>
+
+  <!-- Alert Sound -->
+  <audio id="alertSound" src="https://raw.githubusercontent.com/Suyashdwivedi/suyashdwivedi.github.io/main/alert.mp3" preload="auto"></audio>
+
+  <!-- JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const categoryInput = document.getElementById('categoryInput');
+      const loadMapButton = document.getElementById('loadMapButton');
+      const wikimapIframe = document.getElementById('wikimapIframe');
+      const alertSound = document.getElementById('alertSound');
+
+      function extractCategoryName(input) {
+        let cleanedInput = input.trim();
+        const urlRegex = /https:\/\/commons\.wikimedia\.org\/wiki\/Category:(.*)/;
+        const urlMatch = cleanedInput.match(urlRegex);
+        if (urlMatch && urlMatch[1]) return urlMatch[1];
+        if (cleanedInput.startsWith('Category:')) return cleanedInput.substring('Category:'.length);
+        return cleanedInput;
+      }
+
+      function loadWikiMap() {
+        const rawInput = categoryInput.value;
+        const category = extractCategoryName(rawInput);
+        if (category) {
+          wikimapIframe.src = `https://wikimap.toolforge.org/?cat=${encodeURIComponent(category)}`;
+          alertSound.play().catch((e) => console.log("Autoplay blocked:", e));
+        } else {
+          wikimapIframe.src = "https://wikimap.toolforge.org/";
+          console.log("No valid Commons category entered.");
+        }
+      }
+
+      loadMapButton.addEventListener('click', loadWikiMap);
+      categoryInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') loadWikiMap();
+      });
+    });
+  </script>
+   <!-- Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GC8PGC89NB');
+</script>
+</body>
+</html>
