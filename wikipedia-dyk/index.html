@@ -1,352 +1,438 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Wikipedia DYK Share Tool</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
-  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png" />
-  <style>
-    body {
-      font-family: "Segoe UI", Roboto, sans-serif;
-      background-color: #f9f9f9;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      background-color: #ffffff;
-      padding: 10px 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    header img {
-      height: 50px;
-      margin-right: 12px;
-    }
-
-    main {
-      max-width: 900px;
-      margin: auto;
-      padding: 20px;
-      background: #fff;
-      margin-top: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.05);
-    }
-
-    h2 {
-      margin: 0;
-    }
-
-    .input-block {
-      margin: 15px 0;
-    }
-
-    input, button, select {
-      font-size: 16px;
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-
-    #articleContainer {
-      background-color: #fcfcfc;
-      border: 1px solid #ddd;
-      padding: 15px;
-      border-radius: 6px;
-      max-height: 400px;
-      overflow-y: auto;
-      margin-top: 20px;
-    }
-
-    canvas {
-      border: 1px solid #ccc;
-      margin-top: 20px;
-      border-radius: 4px;
-      display: none;
-    }
-
-    #shareButton, #downloadButton {
-      display: none;
-      margin: 10px 5px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 10px;
-      color: #666;
-      font-size: 14px;
-      margin-top: 40px;
-    }
-
-    #credit {
-      font-size: 15px;
-      color: #666;
-      margin-top: 5px;
-    }
-
-    #credit a {
-      color: #0074cc;
-      text-decoration: none;
-    }
-
-    #credit a:hover {
-      text-decoration: underline;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png" alt="Wikipedia Logo">
-    <div>
-      <h2>Wikipedia Article to Shareable DYK Image</h2>
-      <div id="credit">📸 Created by: <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></div>
-    </div>
-  </header>
-
-  <main>
-    <div class="input-block">
-      <input type="text" id="wikiURL" placeholder="Paste any Wikipedia article URL" size="80">
-      <button onclick="loadArticle()">🔍 Load</button>
-    </div>
-
-    <div id="articleContainer" onmouseup="checkSelection()"></div>
-
-    <div class="input-block">
-      <label><b>Choose Platform:</b></label>
-      <select id="platformSize" onchange="updateCanvasSize()">
-        <option value="facebook">Facebook (1200x630)</option>
-        <option value="x">X / Twitter (1200x675)</option>
-        <option value="instagram">Instagram (1080x1080)</option>
-        <option value="linkedin">LinkedIn (1200x627)</option>
-      </select>
-    </div>
-
-    <canvas id="previewCanvas"></canvas>
-
-    <div>
-      <button id="shareButton" onclick="generateShareImage()">📷 Generate Image</button>
-      <button id="downloadButton" onclick="downloadImage()">⬇️ Download Image</button>
-    </div>
-  </main>
-
-  <footer>
-    Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a><br>
-    <span id="lastModifiedDisplay">(Updated: --)</span><br>
-    Page Updated on: 27/June/2025
-  </footer>
-
-  <script>
-    let selectedText = "";
-    let currentArticleURL = "";
-    let mainImageURL = "";
-    let wikiLogoURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/40px-Wikipedia-logo-v2.svg.png";
-
-    function updateCanvasSize() {
-      const canvas = document.getElementById("previewCanvas");
-      const platform = document.getElementById("platformSize").value;
-      const sizes = {
-        facebook: [1200, 630],
-        x: [1200, 675],
-        instagram: [1080, 1080],
-        linkedin: [1200, 627]
-      };
-      const [w, h] = sizes[platform];
-      canvas.width = w;
-      canvas.height = h;
-    }
-
-    function loadArticle() {
-      const urlInput = document.getElementById("wikiURL").value.trim();
-      if (!urlInput.includes("wikipedia.org")) {
-        alert("Please enter a valid Wikipedia URL.");
-        return;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wikipedia DYK Share Tool</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <link
+      rel="icon"
+      href="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", Roboto, sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
       }
-
-      const url = new URL(urlInput);
-      const lang = url.hostname.split('.')[0];
-      const title = decodeURIComponent(url.pathname.split('/').pop());
-      const hash = url.hash.replace("#", "").trim();
-      currentArticleURL = url.href;
-
-      const contentAPI = `https://${lang}.wikipedia.org/w/api.php?origin=*&action=parse&page=${title}&prop=text&formatversion=2&format=json`;
-      const imageAPI = `https://${lang}.wikipedia.org/w/api.php?origin=*&format=json&action=query&prop=pageimages&titles=${title}&pithumbsize=800`;
-      const metaAPI = `https://${lang}.wikipedia.org/w/api.php?origin=*&format=json&action=query&prop=revisions&rvprop=timestamp&titles=${title}`;
-
-      fetch(contentAPI).then(res => res.json()).then(data => {
-        const container = document.getElementById("articleContainer");
-        container.innerHTML = data.parse.text;
-        if (hash) {
-          setTimeout(() => {
-            const sectionElem = container.querySelector(`[id="${hash}"]`);
-            if (sectionElem) {
-              sectionElem.scrollIntoView({ behavior: "smooth" });
-              let sibling = sectionElem.nextElementSibling;
-              while (sibling) {
-                const img = sibling.querySelector("img");
-                if (img && img.src) {
-                  mainImageURL = img.src;
-                  break;
-                }
-                sibling = sibling.nextElementSibling;
-              }
-            }
-          }, 300);
-        }
-      });
-
-      fetch(imageAPI).then(res => res.json()).then(data => {
-        const page = Object.values(data.query.pages)[0];
-        const fallback = page.thumbnail?.source;
-        if (!mainImageURL) mainImageURL = fallback;
-      });
-
-      fetch(metaAPI).then(res => res.json()).then(data => {
-        const page = Object.values(data.query.pages)[0];
-        const timestamp = page.revisions[0].timestamp;
-        const dt = new Date(timestamp);
-        const formatted = dt.toLocaleDateString("en-GB", { day: '2-digit', month: 'long', year: 'numeric' });
-        document.getElementById("lastModifiedDisplay").textContent = `(Updated: ${formatted})`;
-      });
-
-      document.getElementById("shareButton").style.display = "none";
-      document.getElementById("downloadButton").style.display = "none";
-      document.getElementById("previewCanvas").style.display = "none";
-    }
-
-    function checkSelection() {
-      const selection = window.getSelection().toString().trim();
-      if (selection.length > 0) {
-        selectedText = selection;
-        document.getElementById("shareButton").style.display = "inline-block";
+      header {
+        display: flex;
+        align-items: center;
+        background-color: #ffffff;
+        padding: 10px 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
-    }
+      header img {
+        height: 50px;
+        margin-right: 12px;
+      }
+      main {
+        max-width: 900px;
+        margin: auto;
+        padding: 20px;
+        background: #fff;
+        margin-top: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 12px rgba(0, 0, 0, 0.025);
+      }
+      .input-block {
+        margin: 15px 0;
+      }
+      input,
+      button,
+      select {
+        font-size: 16px;
+        padding: 8px;
+        margin-top: 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+      }
+      #articleContainer {
+        background-color: #fcfcfc;
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 6px;
+        max-height: 400px;
+        overflow-y: auto;
+        margin-top: 20px;
+      }
+      canvas {
+        border: 1px solid #ccc;
+        margin-top: 20px;
+        border-radius: 4px;
+        display: none;
+      }
+      #shareButton,
+      #downloadButton {
+        display: none;
+        margin: 10px 5px;
+      }
+      footer {
+        text-align: center;
+        padding: 10px;
+        color: #666;
+        font-size: 14px;
+        margin-top: 40px;
+      }
+      #credit {
+        font-size: 15px;
+        color: #666;
+        margin-top: 5px;
+      }
+      #credit a {
+        color: #0074cc;
+        text-decoration: none;
+      }
+      #credit a:hover {
+        text-decoration: underline;
+      }
+      .social-share-buttons {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+      }
+      .social-share-buttons button {
+        background-color: #0074cc;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .social-share-buttons button:hover {
+        background-color: #005fa3;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png"
+        alt="Wikipedia Logo"
+      />
+      <div>
+        <h2>Wikipedia Article to Shareable DYK Image</h2>
+        <div id="credit">
+          📸 Created by:
+          <a
+            href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi"
+            target="_blank"
+            >Suyash Dwivedi</a
+          >
+        </div>
+      </div>
+    </header>
 
-    function generateShareImage() {
-      updateCanvasSize();
-      const canvas = document.getElementById("previewCanvas");
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    <main>
+      <div class="input-block">
+        <input
+          type="text"
+          id="wikiURL"
+          placeholder="Paste any Wikipedia article URL"
+          size="80"
+        />
+        <button onclick="loadArticle()">🔍 Load</button>
+        <div class="input-block">
+          <button id="shareButton" onclick="generateShareImage()">
+            📷 Generate Image
+          </button>
+        </div>
+      </div>
 
-      const drawText = () => {
-        ctx.fillStyle = "rgba(255,255,255,0.85)";
-        ctx.fillRect(0, canvas.height - 240, canvas.width, 240);
+      <div id="articleContainer" onmouseup="checkSelection()"></div>
 
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
-        gradient.addColorStop("0", "#ff007f");
-        gradient.addColorStop("0.5", "#7f00ff");
-        gradient.addColorStop("1.0", "#00bfff");
+      <div class="social-share-buttons">
+        <button id="shareFacebook" onclick="shareToPlatform('facebook')">
+          Share to Facebook
+        </button>
+        <button id="shareInstagram" onclick="shareToPlatform('instagram')">
+          Share to Instagram
+        </button>
+        <button id="shareX" onclick="shareToPlatform('x')">Share to X</button>
+      </div>
 
-        ctx.shadowColor = "rgba(0,0,0,0.3)";
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
-        ctx.shadowBlur = 4;
+      <canvas id="previewCanvas"></canvas>
 
-        const fontSize = getFittingFontSize(selectedText, ctx, canvas.width - 80, 40, 22);
-        ctx.font = `bold ${fontSize}px sans-serif`;
-        ctx.fillStyle = gradient;
-        wrapText(ctx, "Did You Know? " + selectedText, 40, canvas.height - 180, canvas.width - 80, fontSize + 10);
+      <div>
+        <button id="downloadButton" onclick="downloadImage()">
+          ⬇️ Download Image
+        </button>
+      </div>
+    </main>
 
-        ctx.shadowColor = "transparent";
-        ctx.fillStyle = "#333";
-        ctx.font = "16px sans-serif";
-        ctx.fillText("🔗 Read more: " + currentArticleURL, 40, canvas.height - 30);
+    <footer>
+      Created by
+      <a
+        href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi"
+        target="_blank"
+        >Suyash Dwivedi</a
+      ><br />
+      <span id="lastModifiedDisplay">(Updated: --)</span><br />
+      Page Updated on: 27/June/2025
+    </footer>
 
-        const qrCanvas = document.createElement("canvas");
-        qrCanvas.width = 150;
-        qrCanvas.height = 150;
-        QRCode.toCanvas(qrCanvas, currentArticleURL, { width: 150 }, () => {
-          ctx.drawImage(qrCanvas, canvas.width - 160, 20, 140, 140);
-          const logoImg = new Image();
-          logoImg.crossOrigin = "anonymous";
-          logoImg.onload = () => {
-            const centerX = canvas.width - 90;
-            const centerY = 90;
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, 20, 0, 2 * Math.PI);
-            ctx.clip();
-            ctx.drawImage(logoImg, centerX - 20, centerY - 20, 40, 40);
-            ctx.restore();
-            ctx.fillStyle = "#000";
-            ctx.font = "bold 14px sans-serif";
-            ctx.fillText("📱 Scan to read more", canvas.width - 185, 180);
-          };
-          logoImg.src = wikiLogoURL;
-        });
+    <script>
+      let selectedText = "";
+      let currentArticleURL = "";
+      let mainImageURL = "";
+      let wikiLogoURL =
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/40px-Wikipedia-logo-v2.svg.png";
 
-        canvas.style.display = "block";
-        document.getElementById("downloadButton").style.display = "inline-block";
-
-        if (navigator.clipboard && window.ClipboardItem) {
-          canvas.toBlob(blob => {
-            navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-          });
-        }
-      };
-
-      if (mainImageURL) {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.onload = () => {
-          const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
-          const w = img.width * scale;
-          const h = img.height * scale;
-          const x = (canvas.width - w) / 2;
-          const y = (canvas.height - h) / 2;
-          ctx.globalAlpha = 0.75;
-          ctx.drawImage(img, x, y, w, h);
-          ctx.globalAlpha = 1.0;
-          drawText();
+      function updateCanvasSize() {
+        const canvas = document.getElementById("previewCanvas");
+        const platform = document.getElementById("platformSize")
+          ? document.getElementById("platformSize").value
+          : "facebook";
+        const sizes = {
+          facebook: [1200, 630],
+          x: [1200, 675],
+          instagram: [1080, 1080],
+          linkedin: [1200, 627],
         };
-        img.src = mainImageURL;
-      } else {
-        drawText();
+        const [w, h] = sizes[platform];
+        canvas.width = w;
+        canvas.height = h;
       }
-    }
 
-    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-      const words = text.split(" ");
-      let line = "";
-      for (let i = 0; i < words.length; i++) {
-        const testLine = line + words[i] + " ";
-        const testWidth = ctx.measureText(testLine).width;
-        if (testWidth > maxWidth && i > 0) {
-          ctx.fillText(line, x, y);
-          line = words[i] + " ";
-          y += lineHeight;
-        } else {
-          line = testLine;
+      function loadArticle() {
+        const urlInput = document.getElementById("wikiURL").value.trim();
+        if (!urlInput.includes("wikipedia.org")) {
+          alert("Please enter a valid Wikipedia URL.");
+          return;
+        }
+        const url = new URL(urlInput);
+        const lang = url.hostname.split(".")[0];
+        const title = decodeURIComponent(url.pathname.split("/").pop());
+        const hash = url.hash.replace("#", "").trim();
+        currentArticleURL = url.href;
+
+        const contentAPI = `https://${lang}.wikipedia.org/w/api.php?origin=*&action=parse&page=${title}&prop=text&formatversion=2&format=json`;
+        const imageAPI = `https://${lang}.wikipedia.org/w/api.php?origin=*&format=json&action=query&prop=pageimages&titles=${title}&pithumbsize=800`;
+        const metaAPI = `https://${lang}.wikipedia.org/w/api.php?origin=*&format=json&action=query&prop=revisions&rvprop=timestamp&titles=${title}`;
+
+        fetch(contentAPI)
+          .then((res) => res.json())
+          .then((data) => {
+            const container = document.getElementById("articleContainer");
+            container.innerHTML = data.parse.text;
+            if (hash) {
+              setTimeout(() => {
+                const sectionElem = container.querySelector(`[id="${hash}"]`);
+                if (sectionElem) {
+                  sectionElem.scrollIntoView({ behavior: "smooth" });
+                  let sibling = sectionElem.nextElementSibling;
+                  while (sibling) {
+                    const img = sibling.querySelector("img");
+                    if (img && img.src) {
+                      mainImageURL = img.src;
+                      break;
+                    }
+                    sibling = sibling.nextElementSibling;
+                  }
+                }
+              }, 300);
+            }
+          });
+        fetch(imageAPI)
+          .then((res) => res.json())
+          .then((data) => {
+            const page = Object.values(data.query.pages)[0];
+            const fallback = page.thumbnail?.source;
+            if (!mainImageURL) mainImageURL = fallback;
+          });
+        fetch(metaAPI)
+          .then((res) => res.json())
+          .then((data) => {
+            const page = Object.values(data.query.pages)[0];
+            const dt = new Date(page.revisions[0].timestamp);
+            document.getElementById(
+              "lastModifiedDisplay"
+            ).textContent = `(Updated: ${dt.toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+            })})`;
+          });
+
+        document.getElementById("shareButton").style.display = "inline-block";
+        document.getElementById("downloadButton").style.display = "none";
+        document.getElementById("previewCanvas").style.display = "none";
+      }
+
+      function checkSelection() {
+        const selection = window.getSelection().toString().trim();
+        if (selection.length > 0) {
+          selectedText = selection;
+          document.getElementById("shareButton").style.display = "inline-block";
         }
       }
-      ctx.fillText(line, x, y);
-    }
 
-    function getFittingFontSize(text, ctx, maxWidth, maxFontSize, minFontSize) {
-      let fontSize = maxFontSize;
-      ctx.font = `bold ${fontSize}px sans-serif`;
-      while (fontSize > minFontSize && ctx.measureText(text).width > maxWidth) {
-        fontSize -= 2;
-        ctx.font = `bold ${fontSize}px sans-serif`;
+      function generateShareImage() {
+        updateCanvasSize();
+        const canvas = document.getElementById("previewCanvas");
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const drawText = () => {
+          ctx.fillStyle = "rgba(255,255,255,0.25)";
+          ctx.fillRect(0, canvas.height - 140, canvas.width, 240);
+
+          const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+          gradient.addColorStop("0", "#ff007f");
+          gradient.addColorStop("0.5", "#7f00ff");
+          gradient.addColorStop("1.0", "#00bfff");
+
+          ctx.shadowColor = "rgba(0,0,0,0.3)";
+          ctx.shadowOffsetX = 2;
+          ctx.shadowOffsetY = 2;
+          ctx.shadowBlur = 4;
+
+          const fontSize = getFittingFontSize(
+            selectedText,
+            ctx,
+            canvas.width - 80,
+            72,
+            16
+          );
+          ctx.font = `bold ${fontSize}px sans-serif`;
+          ctx.fillStyle = gradient;
+          ctx.textAlign = "center";
+
+          wrapTextCenter(
+            ctx,
+            "“" + selectedText + "”",
+            canvas.width / 2,
+            canvas.height - 80,
+            canvas.width - 80,
+            fontSize + 10
+          );
+
+          ctx.shadowColor = "transparent";
+          ctx.fillStyle = "#000";
+          ctx.font = "16px sans-serif";
+          ctx.fillText(
+            "🔗 " + currentArticleURL,
+            canvas.width / 2,
+            canvas.height - 30
+          );
+
+          const qrCanvas = document.createElement("canvas");
+          qrCanvas.width = 150;
+          qrCanvas.height = 150;
+          QRCode.toCanvas(qrCanvas, currentArticleURL, { width: 150 }, () => {
+            ctx.drawImage(qrCanvas, canvas.width - 160, 20, 140, 140);
+
+            const logoImg = new Image();
+            logoImg.crossOrigin = "anonymous";
+            logoImg.onload = () => {
+              const centerX = canvas.width - 90;
+              const centerY = 90;
+              ctx.save();
+              ctx.beginPath();
+              ctx.arc(centerX, centerY, 20, 0, 2 * Math.PI);
+              ctx.clip();
+              ctx.drawImage(logoImg, centerX - 20, centerY - 20, 40, 40);
+              ctx.restore();
+              ctx.fillStyle = "#000";
+              ctx.font = "bold 14px sans-serif";
+              ctx.textAlign = "right";
+              ctx.fillText("📱 Scan to read more", canvas.width - 20, 180);
+            };
+            logoImg.src = wikiLogoURL;
+          });
+
+          canvas.style.display = "block";
+          document.getElementById("downloadButton").style.display =
+            "inline-block";
+        };
+
+        if (mainImageURL) {
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = () => {
+            const scale = Math.max(
+              canvas.width / img.width,
+              canvas.height / img.height
+            );
+            const w = img.width * scale;
+            const h = img.height * scale;
+            const x = (canvas.width - w) / 2;
+            const y = 0; // ✅ Align top
+            ctx.globalAlpha = 0.75;
+            ctx.drawImage(img, x, y, w, h);
+            ctx.globalAlpha = 1.0;
+            drawText();
+          };
+          img.src = mainImageURL;
+        } else {
+          drawText();
+        }
       }
-      return fontSize;
-    }
 
-    function downloadImage() {
-      const canvas = document.getElementById("previewCanvas");
-      const a = document.createElement("a");
-      a.download = "wikipedia_dyk_share.png";
-      a.href = canvas.toDataURL("image/png");
-      a.click();
-    }
+      function wrapTextCenter(ctx, text, centerX, startY, maxWidth, lineHeight) {
+        const words = text.split(" ");
+        let line = "";
+        for (let i = 0; i < words.length; i++) {
+          const testLine = line + words[i] + " ";
+          const testWidth = ctx.measureText(testLine).width;
+          if (testWidth > maxWidth && i > 0) {
+            ctx.fillText(line, centerX, startY);
+            line = words[i] + " ";
+            startY += lineHeight;
+          } else {
+            line = testLine;
+          }
+        }
+        ctx.fillText(line, centerX, startY);
+      }
 
-    window.onload = updateCanvasSize;
-  </script>
-  <!-- Google Analytics -->
+      function getFittingFontSize(text, ctx, maxWidth, maxFontSize, minFontSize) {
+        let fontSize = maxFontSize;
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        while (fontSize > minFontSize && ctx.measureText(text).width > maxWidth) {
+          fontSize -= 2;
+          ctx.font = `bold ${fontSize}px sans-serif`;
+        }
+        return fontSize;
+      }
+
+      function downloadImage() {
+        const canvas = document.getElementById("previewCanvas");
+        const a = document.createElement("a");
+        a.download = "wikipedia_dyk_share.png";
+        a.href = canvas.toDataURL("image/png");
+        a.click();
+      }
+
+      function shareToPlatform(platform) {
+        const canvas = document.getElementById("previewCanvas");
+        const imageURL = canvas.toDataURL("image/png");
+        if (platform === "facebook") {
+          window.open(
+            `https://www.facebook.com/sharer/sharer.php?u=${currentArticleURL}&quote=${encodeURIComponent(
+              selectedText
+            )}`,
+            "_blank"
+          );
+        } else if (platform === "instagram") {
+          alert(
+            "Instagram sharing is currently not supported via direct link sharing."
+          );
+        } else if (platform === "x") {
+          window.open(
+            `https://twitter.com/intent/tweet?url=${currentArticleURL}&text=${encodeURIComponent(
+              selectedText
+            )}`,
+            "_blank"
+          );
+        }
+      }
+
+      window.onload = updateCanvasSize;
+    </script>
+          <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
 <script>
     window.dataLayer = window.dataLayer || [];
@@ -354,5 +440,5 @@
     gtag('js', new Date());
     gtag('config', 'G-GC8PGC89NB');
 </script>
-</body>
+  </body>
 </html>
