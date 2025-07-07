@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Root Pages -->
+  <url>
+    <loc>https://suyashdwivedi.github.io/</loc>
+    <lastmod>2025-07-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://suyashdwivedi.github.io/index_hi.html</loc>
+    <lastmod>2025-07-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://suyashdwivedi.github.io/fetch.html</loc>
+    <lastmod>2025-07-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://suyashdwivedi.github.io/parivartak.html</loc>
+    <lastmod>2025-07-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://suyashdwivedi.github.io/Google_event_creator.html</loc>
+    <lastmod>2025-07-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://suyashdwivedi.github.io/Wiki%20URL%20Shortener.html</loc>
+    <lastmod>2025-07-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://suyashdwivedi.github.io/wikidata.html</loc>
+    <lastmod>2025-07-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://suyashdwivedi.github.io/glocation.html</loc>
+    <lastmod>2025-07-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://suyashdwivedi.github.io/hindi.html</loc>
+    <lastmod>2025-07-07</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Audio -->
+  <url>
+    <loc>https://suyashdwivedi.github.io/Recent_changes_en.mp3</loc>
+    <lastmod>2025-07-07</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://suyashdwivedi.github.io/Recent_changes.mp3</loc>
+    <lastmod>2025-07-07</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <!-- Subfolder Pages -->
+
+  <!-- /map/ -->
+  <url>
+    <loc>https://suyashdwivedi.github.io/map/locate_commons_photos.html</loc>
+    <lastmod>2025-06-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- /wcs/ -->
+  <url>
+    <loc>https://suyashdwivedi.github.io/wcs/WCS_Calendar.html</loc>
+    <lastmod>2025-07-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- /wikipedia-dyk/ -->
+  <url>
+    <loc>https://suyashdwivedi.github.io/wikipedia-dyk/index.html</loc>
+    <lastmod>2025-07-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- /RC/ (Generic folder – assuming multiple HTMLs or resources) -->
+  <url>
+    <loc>https://suyashdwivedi.github.io/RC/</loc>
+    <lastmod>2025-04-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+</urlset>
