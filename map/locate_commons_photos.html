@@ -2,10 +2,38 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Locate Photo in WikiMap</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Locate Commons Photos – Map Wikimedia Images</title>
+  <meta name="description" content="Enter a Wikimedia Commons category and visualize geolocated images on an interactive map. Built by Suyash Dwivedi using WikiMap.">
+  <meta name="keywords" content="Wikimedia Commons, Commons photos, WikiMap, geolocation, map images, Wikimedia tools, locate photos, open source, Suyash Dwivedi">
+  <meta name="author" content="Suyash Dwivedi">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:title" content="Locate Commons Photos – Map Wikimedia Images" />
+  <meta property="og:description" content="Visualize Wikimedia Commons category photos on a map using geolocation metadata." />
+  <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/WIKI_CLUB_SATI_Logo.svg/300px-WIKI_CLUB_SATI_Logo.svg.png" />
+  <meta property="og:url" content="https://suyashdwivedi.github.io/map/locate_commons_photos.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="en_IN" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Locate Commons Photos – Map Wikimedia Images" />
+  <meta name="twitter:description" content="Explore Wikimedia Commons category photos on a map using WikiMap tool." />
+  <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/WIKI_CLUB_SATI_Logo.svg/300px-WIKI_CLUB_SATI_Logo.svg.png" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://suyashdwivedi.github.io/map/locate_commons_photos.html" />
+
+  <!-- Favicon -->
   <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/a/aa/Paomedia_small-n-flat_map-map-marker.svg" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -16,7 +44,6 @@
       flex-direction: column;
       min-height: 100vh;
     }
-
     iframe {
       border: 1px solid #d1d5db;
       border-radius: 0.75rem;
@@ -26,7 +53,6 @@
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
                   0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
-
     @media (max-width: 640px) {
       .input-section {
         flex-direction: column;
@@ -39,6 +65,7 @@
     }
   </style>
 </head>
+
 <body class="flex flex-col min-h-screen">
 
   <!-- Main Content -->
