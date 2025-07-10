@@ -1,266 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Map ➡️ Commons Location Template</title>
-    <style>
-        /* --- General Styles --- */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #f5f5f5;
-            color: #333;
-            text-align: center;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        .container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 30px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
+  <!-- ✅ SEO Meta Tags -->
+  <title>Google Map ➡️ Commons Location Template</title>
+  <meta name="description" content="Convert Google Map coordinates to Wikimedia Commons Location template easily. Developed by Wikimedian Suyash Dwivedi.">
+  <meta name="keywords" content="Commons location template, Google Maps, GPS to Wikimedia, geo coordinates, location template tool, Suyash Dwivedi, Wikimedia">
+  <meta name="author" content="Suyash Dwivedi">
 
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
+  <!-- ✅ Open Graph Tags -->
+  <meta property="og:title" content="Google Map ➡️ Commons Location Template – by Suyash Dwivedi">
+  <meta property="og:description" content="Paste GPS coordinates from Google Maps and generate Wikimedia Commons Location template instantly.">
+  <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Suyash_Dwivedi_01%28cropped%29.jpg/180px-Suyash_Dwivedi_01%28cropped%29.jpg">
+  <meta property="og:url" content="https://suyashdwivedi.github.io/glocation.html">
+  <meta property="og:type" content="website">
 
-        .logo-container img {
-            height: 120px;
-            width: auto;
-        }
+  <!-- ✅ Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Google Map ➡️ Commons Location Tool – by Suyash Dwivedi">
+  <meta name="twitter:description" content="Create Commons Location template from coordinates.">
+  <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Suyash_Dwivedi_01%28cropped%29.jpg/180px-Suyash_Dwivedi_01%28cropped%29.jpg">
 
-        h1, h2 {
-            font-size: 32px;
-            color: #222;
-            margin: 20px 0;
-        }
+  <!-- ✅ Favicon and Canonical -->
+  <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://suyashdwivedi.github.io/glocation.html" />
 
-        label, input, button {
-            display: block;
-            width: 100%;
-            max-width: 600px;
-            margin: 10px auto;
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      color: #333;
+      text-align: center;
+    }
 
-        input, button {
-            border: 1px solid #ccc;
-        }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
 
-        button {
-            background: #007BFF;
-            color: white;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
 
-        button:hover {
-            background: #0056b3;
-        }
+    .logo-container img {
+      height: 120px;
+      width: auto;
+    }
 
-        .btn-group {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin: 20px 0;
-        }
+    h1, h2 {
+      font-size: 32px;
+      color: #222;
+      margin: 20px 0;
+    }
 
-        .btn-group button {
-            flex: 1;
-        }
+    label, input, button {
+      display: block;
+      width: 100%;
+      max-width: 600px;
+      margin: 10px auto;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
 
-        #output {
-            font-size: 18px;
-            font-weight: bold;
-            color: #28a745;
-            margin: 20px 0;
-            white-space: pre-wrap;
-        }
+    input, button {
+      border: 1px solid #ccc;
+    }
 
-        iframe {
-            width: 100%;
-            height: 400px;
-            border: 0;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
+    button {
+      background: #007BFF;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
 
-        .footer {
-            font-size: 14px;
-            color: gray;
-            margin-top: 20px;
-        }
+    button:hover {
+      background: #0056b3;
+    }
 
-        .credits a {
-            color: #007BFF;
-            text-decoration: none;
-        }
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 20px 0;
+    }
 
-        .credits a:hover {
-            text-decoration: underline;
-        }
+    .btn-group button {
+      flex: 1;
+    }
 
-        .license-tip {
-            font-size: 14px;
-            color: #555;
-            margin-top: 10px;
-        }
+    #output {
+      font-size: 18px;
+      font-weight: bold;
+      color: #28a745;
+      margin: 20px 0;
+      white-space: pre-wrap;
+    }
 
-        /* --- Responsive Design --- */
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
+    iframe {
+      width: 100%;
+      height: 400px;
+      border: 0;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
 
-            iframe {
-                height: 300px;
-            }
+    .footer {
+      font-size: 14px;
+      color: gray;
+      margin-top: 20px;
+    }
 
-            h1, h2 {
-                font-size: 26px;
-            }
+    .credits a {
+      color: #007BFF;
+      text-decoration: none;
+    }
 
-            button, input {
-                font-size: 14px;
-            }
+    .credits a:hover {
+      text-decoration: underline;
+    }
 
-            .btn-group {
-                flex-direction: column;
-            }
+    .license-tip {
+      font-size: 14px;
+      color: #555;
+      margin-top: 10px;
+    }
 
-            .logo-container img {
-                height: 60px;
-            }
-        }
-    </style>
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
 
-    <!-- Google Analytics -->
+      iframe {
+        height: 300px;
+      }
+
+      h1, h2 {
+        font-size: 26px;
+      }
+
+      button, input {
+        font-size: 14px;
+      }
+
+      .btn-group {
+        flex-direction: column;
+      }
+
+      .logo-container img {
+        height: 60px;
+      }
+    }
+  </style>
+
+  <!-- ✅ Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
-<script>
+  <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-GC8PGC89NB');
-</script>
+  </script>
+  <script src="https://cdn.counter.dev/script.js" 
+          data-id="cc7a036d-a904-4d76-bcac-37ea4196c014" 
+          data-utcoffset="6">
+  </script>
 </head>
 
 <body>
 
 <div class="container">
 
-    <div class="logo-container">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Google_Maps_Logo_2020.svg/267px-Google_Maps_Logo_2020.svg.png" alt="Google Maps Logo">
-        <span style="font-size: 32px;">➡️</span>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Commons-logo-en.svg/182px-Commons-logo-en.svg.png" alt="Commons Logo">
-    </div>
+  <div class="logo-container">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Google_Maps_Logo_2020.svg/267px-Google_Maps_Logo_2020.svg.png" alt="Google Maps Logo">
+    <span style="font-size: 32px;">➡️</span>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Commons-logo-en.svg/182px-Commons-logo-en.svg.png" alt="Commons Logo">
+  </div>
 
-    <!-- Centered Page Title -->
-    <h1>Google Map ➡️ Commons Location Template</h1>
+  <h1>Google Map ➡️ Commons Location Template</h1>
 
-    <p class="credits">
-        Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>
-    </p>
+  <p class="credits">
+    Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>
+  </p>
 
-    <label for="coordinateInput">Enter Coordinates (lat, long) <br> <a href="https://www.google.com/maps" target="_blank">Google Map</a>
-</label>
-    <input type="text" id="coordinateInput" placeholder="23.247087, 77.392092">
+  <label for="coordinateInput">Enter Coordinates (lat, long) <br> <a href="https://www.google.com/maps" target="_blank">Google Map</a></label>
+  <input type="text" id="coordinateInput" placeholder="23.247087, 77.392092">
 
-    <div class="btn-group">
-        <button onclick="convertCoordinates()">Convert</button>
-        <button onclick="clearFields()">Clear</button>
-    </div>
+  <div class="btn-group">
+    <button onclick="convertCoordinates()">Convert</button>
+    <button onclick="clearFields()">Clear</button>
+  </div>
 
-    <div id="output"></div>
+  <div id="output"></div>
 
-    <h3>Edit Commons File</h3>
+  <h3>Edit Commons File</h3>
 
-    <label for="imageFilename">Image Filename:</label>
-    <input type="text" id="imageFilename" placeholder="File:Example.jpg or Example.jpg">
+  <label for="imageFilename">Image Filename:</label>
+  <input type="text" id="imageFilename" placeholder="File:Example.jpg or Example.jpg">
 
-    <label for="userIdInput">Wikimedia Username:</label>
-    <input type="text" id="userIdInput" placeholder="Enter your Wikimedia username">
+  <label for="userIdInput">Wikimedia Username:</label>
+  <input type="text" id="userIdInput" placeholder="Enter your Wikimedia username">
 
-    <label>
-        <input type="checkbox" id="addLicenseCheckbox"> Add license (if ID entered)
-    </label>
+  <label>
+    <input type="checkbox" id="addLicenseCheckbox"> Add license (if ID entered)
+  </label>
 
-    <p class="license-tip">
-        (You can create your own license template, e.g., 
-        <a href="https://commons.wikimedia.org/wiki/Template:Suyash.dwivedi/license" target="_blank">Suyash.dwivedi/license</a>)
-    </p>
+  <p class="license-tip">
+    (You can create your own license template, e.g., 
+    <a href="https://commons.wikimedia.org/wiki/Template:Suyash.dwivedi/license" target="_blank">Suyash.dwivedi/license</a>)
+  </p>
 
-    <div class="btn-group">
-        <button onclick="copyToClipboard()">Copy & Open Commons</button>
-    </div>
+  <div class="btn-group">
+    <button onclick="copyToClipboard()">Copy & Open Commons</button>
+  </div>
 
-    <!-- Map set to Madhya Pradesh -->
-    <iframe id="mapFrame" src="https://www.google.com/maps?q=Madhya+Pradesh&z=6&output=embed" allowfullscreen></iframe>
+  <iframe id="mapFrame" src="https://www.google.com/maps?q=Madhya+Pradesh&z=6&output=embed" allowfullscreen></iframe>
 
-    <p class="footer" id="lastUpdated">Last update: 11/May/2025</p>
+  <p class="footer" id="lastUpdated">Last update: 10/July/2025</p>
 
 </div>
 
 <script>
-    window.onload = function () {
-        const savedUsername = localStorage.getItem('wikimediaUsername');
-        if (savedUsername) {
-            document.getElementById("userIdInput").value = savedUsername;
-        }
-    };
+  window.onload = function () {
+    const savedUsername = localStorage.getItem('wikimediaUsername');
+    if (savedUsername) {
+      document.getElementById("userIdInput").value = savedUsername;
+    }
+  };
 
-    function convertCoordinates() {
-        let input = document.getElementById("coordinateInput").value.trim();
-        let coords = input.split(",").map(coord => coord.trim());
+  function convertCoordinates() {
+    let input = document.getElementById("coordinateInput").value.trim();
+    let coords = input.split(",").map(coord => coord.trim());
 
-        if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
-            let formatted = `{{Location|${coords[0]}|${coords[1]}}}`;
-            document.getElementById("output").innerText = formatted;
+    if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
+      let formatted = `{{Location|${coords[0]}|${coords[1]}}}`;
+      document.getElementById("output").innerText = formatted;
 
-            let mapSrc = `https://www.google.com/maps?q=${coords[0]},${coords[1]}&z=15&output=embed`;
-            document.getElementById("mapFrame").src = mapSrc;
-        } else {
-            alert("Invalid input. Please enter coordinates in the format: lat, long");
-        }
+      let mapSrc = `https://www.google.com/maps?q=${coords[0]},${coords[1]}&z=15&output=embed`;
+      document.getElementById("mapFrame").src = mapSrc;
+    } else {
+      alert("Invalid input. Please enter coordinates in the format: lat, long");
+    }
+  }
+
+  function copyToClipboard() {
+    let fileName = document.getElementById("imageFilename").value.trim();
+    let userId = document.getElementById("userIdInput").value.trim();
+    let addLicense = document.getElementById("addLicenseCheckbox").checked;
+
+    if (!fileName) {
+      alert("Please enter a valid filename.");
+      return;
     }
 
-    function copyToClipboard() {
-        let fileName = document.getElementById("imageFilename").value.trim();
-        let userId = document.getElementById("userIdInput").value.trim();
-        let addLicense = document.getElementById("addLicenseCheckbox").checked;
+    let finalFileName = fileName.match(/^file:/i) ? fileName : `File:${fileName}`;
+    let outputText = document.getElementById("output").innerText;
+    let licenseText = addLicense && userId ? `\n{{${userId}/license}} \n[[Category:Location added using the Glocation tool]]` : "\n[[Category:Location added using the Glocation tool]]";
+    let editSummary = addLicense ? "Location added + license added" : "Location added";
 
-        if (!fileName) {
-            alert("Please enter a valid filename.");
-            return;
-        }
+    navigator.clipboard.writeText(`${outputText}${licenseText}`).then(() => {
+      alert("Copied to clipboard!");
+      let editURL = `https://commons.wikimedia.org/w/index.php?title=${encodeURIComponent(finalFileName)}&action=edit&section=1&summary=${encodeURIComponent(editSummary)}`;
+      window.open(editURL, "_blank");
+    });
+  }
 
-        let finalFileName = fileName.match(/^file:/i) ? fileName : `File:${fileName}`;
-        let outputText = document.getElementById("output").innerText;
-        let licenseText = addLicense && userId ? `\n{{${userId}/license}} \n[[Category:Location added using the Glocation tool]]` : "\n[[Category:Location added using the Glocation tool]]";
-        let editSummary = addLicense ? "Location added + license added" : "Location added";
-
-        navigator.clipboard.writeText(`${outputText}${licenseText}`).then(() => {
-            alert("Copied to clipboard!");
-            let editURL = `https://commons.wikimedia.org/w/index.php?title=${encodeURIComponent(finalFileName)}&action=edit&section=1&summary=${encodeURIComponent(editSummary)}`;
-            window.open(editURL, "_blank");
-        });
-    }
-
-    function clearFields() {
-        document.getElementById("coordinateInput").value = "";
-        document.getElementById("imageFilename").value = "";
-        document.getElementById("output").innerText = "";
-    }
+  function clearFields() {
+    document.getElementById("coordinateInput").value = "";
+    document.getElementById("imageFilename").value = "";
+    document.getElementById("output").innerText = "";
+  }
 </script>
 
 </body>
