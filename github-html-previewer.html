@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ✅ SEO Meta Tags -->
+  <title>GitHub HTML Previewer – Developed by Suyash Dwivedi</title>
+  <meta name="description" content="Preview raw HTML files hosted on GitHub directly in your browser. Developed by Wikimedian Suyash Dwivedi.">
+  <meta name="keywords" content="GitHub HTML Previewer, HTML viewer, GitHub Pages, raw HTML preview, blob HTML, Suyash Dwivedi, Wikimedia">
+  <meta name="author" content="Suyash Dwivedi">
+
+  <!-- ✅ Open Graph (for Facebook, LinkedIn) -->
+  <meta property="og:title" content="GitHub HTML Previewer – Developed by Suyash Dwivedi">
+  <meta property="og:description" content="Paste a GitHub blob URL and instantly preview HTML in your browser.">
+  <meta property="og:image" content="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">
+  <meta property="og:url" content="https://suyashdwivedi.github.io/html-previewer.html">
+  <meta property="og:type" content="website">
+
+  <!-- ✅ Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="GitHub HTML Previewer">
+  <meta name="twitter:description" content="Instantly preview raw HTML files from GitHub repositories.">
+  <meta name="twitter:image" content="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">
+
+  <!-- ✅ Favicon and Canonical -->
+  <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://suyashdwivedi.github.io/html-previewer.html" />
+
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #24292e;
+      color: white;
+      padding: 30px 20px 20px;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 32px;
+      margin: 0;
+      font-weight: bold;
+    }
+    header p {
+      margin: 8px 0 0;
+      font-size: 14px;
+    }
+    header a {
+      color: #58a6ff;
+      text-decoration: none;
+    }
+    header a:hover {
+      text-decoration: underline;
+    }
+    main {
+      max-width: 900px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      background-color: #2ea44f;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #279644;
+    }
+    iframe {
+      width: 100%;
+      height: 500px;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    footer {
+      text-align: center;
+      padding: 15px;
+      margin-top: 40px;
+      font-size: 14px;
+      color: #666;
+    }
+    footer a {
+      color: #2e86c1;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>GitHub HTML Previewer</h1>
+  <p>Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></p>
+</header>
+
+<main>
+  <p>Paste a GitHub HTML file URL (must include <code>/blob/</code>):</p>
+  <input type="text" id="githubUrl" placeholder="e.g. https://github.com/user/repo/blob/main/page.html" />
+  <button onclick="preview()">Preview</button>
+
+  <iframe id="previewFrame" title="GitHub HTML Output Preview"></iframe>
+</main>
+
+<footer>
+  Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a><br>
+  Updated on: 10 July 2025
+</footer>
+
+<script>
+  function preview() {
+    const inputUrl = document.getElementById('githubUrl').value.trim();
+    if (!inputUrl.includes('github.com') || !inputUrl.includes('/blob/')) {
+      alert('Please enter a valid GitHub blob URL.');
+      return;
+    }
+    const previewUrl = `https://htmlpreview.github.io/?${inputUrl}`;
+    document.getElementById('previewFrame').src = previewUrl;
+  }
+</script>
+   <!-- Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GC8PGC89NB');
+</script>
+	</script>
+	<script src="https://cdn.counter.dev/script.js" 
+        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014" 
+        data-utcoffset="6">
+</script>
+</body>
+</html>
