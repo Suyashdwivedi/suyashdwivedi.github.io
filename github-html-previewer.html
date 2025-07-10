@@ -119,6 +119,7 @@
   <p>Paste a GitHub HTML file URL (must include <code>/blob/</code>):</p>
   <input type="text" id="githubUrl" placeholder="e.g. https://github.com/user/repo/blob/main/page.html" />
   <button onclick="preview()">Preview</button>
+  <button onclick="clearPreview()" style="background-color:#d73a49;margin-left:10px;">Clear</button>
 
   <iframe id="previewFrame" title="GitHub HTML Output Preview"></iframe>
 </main>
@@ -168,6 +169,14 @@
       console.error("Error playing sound:", e);
     }
   };
+</script>
+
+<!-- ✅ Clear Preview Function -->
+<script>
+  function clearPreview() {
+    document.getElementById('githubUrl').value = '';
+    document.getElementById('previewFrame').src = '';
+  }
 </script>
 
 </body>
