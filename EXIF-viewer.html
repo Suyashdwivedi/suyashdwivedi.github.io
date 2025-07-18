@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXIF Data Viewer online Free no signup</title>
+
+    <!-- ✅ SEO Meta Tags -->
+    <meta name="description" content="Check image EXIF, megapixels and file size instantly. Upload or paste an image URL to get EXIF, MP value, and preview.">
+    <meta name="keywords" content="image megapixel checker, EXIF, image megapixel checker online free,Google map, image size, photo dimensions, Photoshop, image resolution, image MB size, commons upload helper, Suyash Dwivedi, image metadata, Wikimedia tool, Pro online Free no signup">
+    <meta name="author" content="Suyash Dwivedi">
+
+    <!-- ✅ Open Graph Meta Tags -->
+    <meta property="og:title" content="📷 Image EXIF and Megapixel Checker – online Free no signup">
+    <meta property="og:description" content="Quickly check EXIF, megapixels and size from file or URL, Pro online Free no signup.">
+    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/5/59/Exif_Metadata_logo.svg">
+    <meta property="og:url" content="https://suyashdwivedi.github.io/EXIF-viewer.html">
+    <meta property="og:type" content="website"> 
+
+    <!-- ✅ Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="📷 Image EXIF and Megapixel Checker – online Free no signup">
+    <meta name="twitter:description" content="Quickly check EXIF, megapixels and size from file or URL, Pro online Free no signup.">
+    <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/5/59/Exif_Metadata_logo.svg">
+
+    <!-- ✅ Favicon and Canonical -->
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/5/59/Exif_Metadata_logo.svg" />
+    <link rel="canonical" href="https://suyashdwivedi.github.io/EXIF-viewer.html" />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- EXIF.js CDN for reading EXIF data -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.min.js"></script>
+    <!-- Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GC8PGC89NB');
+    </script>
+	<script src="https://cdn.counter.dev/script.js"
+        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
+        data-utcoffset="6">
+    </script>
+    <style>
+        /* Custom font for better aesthetics */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Hide file input visually but keep it accessible */
+        .hidden-file-input {
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            position: absolute;
+            z-index: -1;
+        }
+        /* Footer styling for full width and centered text */
+        footer {
+            margin-top: 40px;
+            width: 100%; /* Ensure footer spans full width */
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+            padding-bottom: 20px; /* Add some padding at the bottom */
+        }
+        /* Header styling for the logo */
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px; /* Space between logo and text */
+            margin-bottom: 20px;
+        }
+        .main-header img {
+            height: 50px; /* Adjust size as needed */
+            width: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
+    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl border border-gray-200">
+        <div class="main-header">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Exif_Metadata_logo.svg" alt="EXIF Logo">
+            <h1 class="text-3xl font-bold text-center text-gray-800">EXIF Data Viewer</h1>
+        </div>
+
+        <!-- Input Section -->
+        <div class="mb-8 space-y-6">
+            <!-- File Upload Section -->
+            <div class="flex flex-col items-center justify-center p-6 border-2 border-dashed border-blue-300 rounded-lg bg-blue-50 hover:bg-blue-100 transition duration-300 ease-in-out">
+                <label for="imageUpload" class="cursor-pointer flex flex-col items-center text-blue-600">
+                    <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                    <span class="text-lg font-semibold">Upload Local Image</span>
+                    <span class="text-sm text-gray-500 mt-1">Drag & drop or click to select a file</span>
+                </label>
+                <input type="file" id="imageUpload" accept="image/*" class="hidden-file-input">
+            </div>
+
+            <div class="relative flex items-center">
+                <div class="flex-grow border-t border-gray-300"></div>
+                <span class="flex-shrink mx-4 text-gray-500">OR</span>
+                <div class="flex-grow border-t border-gray-300"></div>
+            </div>
+
+            <!-- URL Input Section -->
+            <div class="flex flex-col gap-2">
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <input type="text" id="imageUrl" placeholder="Enter image URL (e.g., https://example.com/image.jpg or Wikimedia Commons page)"
+                           class="flex-grow p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <button id="processUrl"
+                            class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300 ease-in-out">
+                        Load Image from URL
+                    </button>
+                </div>
+                <p class="text-sm text-gray-500 mt-1">
+                    You can now directly paste Wikimedia Commons file page links (e.g., `https://commons.wikimedia.org/wiki/File:Panjurali_Metal_Mask_01.jpg`).
+                </p>
+            </div>
+        </div>
+
+        <!-- Message Box -->
+        <div id="messageBox" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+            <strong class="font-bold">Error!</strong>
+            <span class="block sm:inline" id="messageText"></span>
+            <span class="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer" onclick="document.getElementById('messageBox').classList.add('hidden');">
+                <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 2.651a1.2 1.2 0 1 1-1.697-1.697L8.303 10l-2.651-2.651a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-2.651a1.2 1.2 0 1 1 1.697 1.697L11.697 10l2.651 2.651a1.2 1.2 0 0 1 0 1.698z"/></svg>
+            </span>
+        </div>
+
+        <!-- Preview and EXIF Data Section -->
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Image Preview -->
+            <div class="lg:w-1/2 flex flex-col items-center justify-center p-4 border border-gray-300 rounded-lg bg-gray-50 min-h-[250px]">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4" id="imagePreviewTitle">Image Preview</h2>
+                <p id="imageFileSize" class="mt-1 text-gray-600 text-sm hidden"></p> <!-- New element for file size -->
+                <img id="imagePreview" src="https://placehold.co/400x300/e2e8f0/64748b?text=Image+Preview" alt="Image Preview" class="max-w-full max-h-[400px] rounded-md shadow-md object-contain border border-gray-200">
+                <p id="reductionPercentage" class="mt-3 text-gray-600 text-sm hidden">
+                    Scaled to <span class="font-bold">400px</span> (original size reduced by <span class="font-bold text-blue-600">0%</span>)
+                </p>
+                <div id="geolocationInfo" class="mt-3 text-gray-700 text-sm"></div>
+            </div>
+
+            <!-- EXIF Data Display -->
+            <div class="lg:w-1/2 p-4 border border-gray-300 rounded-lg bg-gray-50 overflow-auto max-h-[500px]">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">EXIF Data</h2>
+                <div id="exifData" class="bg-gray-100 p-4 rounded-md text-sm text-gray-800 whitespace-pre-wrap break-words">
+                    <p class="text-center text-red-600">No EXIF data found or no image loaded yet.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const imageUpload = document.getElementById('imageUpload');
+        const imageUrlInput = document.getElementById('imageUrl');
+        const processUrlButton = document.getElementById('processUrl');
+        const imagePreview = document.getElementById('imagePreview');
+        const imagePreviewTitle = document.getElementById('imagePreviewTitle');
+        const imageFileSize = document.getElementById('imageFileSize');
+        const reductionPercentage = document.getElementById('reductionPercentage');
+        const geolocationInfo = document.getElementById('geolocationInfo');
+        const exifDataDisplay = document.getElementById('exifData');
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+
+        // Function to display messages
+        function showMessage(message, type = 'error') {
+            messageText.textContent = message;
+            messageBox.classList.remove('hidden');
+            if (type === 'error') {
+                messageBox.classList.remove('bg-green-100', 'border-green-400', 'text-green-700');
+                messageBox.classList.add('bg-red-100', 'border-red-400', 'text-red-700');
+            } else {
+                messageBox.classList.remove('bg-red-100', 'border-red-400', 'text-green-700');
+                messageBox.classList.add('bg-green-100', 'border-green-400', 'text-green-700');
+            }
+        }
+
+        // Function to clear messages
+        function clearMessage() {
+            messageBox.classList.add('hidden');
+        }
+
+        // Helper function to convert GPS coordinates to decimal degrees
+        function convertDMSToDD(dms, ref) {
+            let degrees = dms[0] + dms[1] / 60 + dms[2] / 3600;
+            if (ref === 'S' || ref === 'W') {
+                degrees *= -1;
+            }
+            return degrees;
+        }
+
+        // Function to convert EXIF tag values to human-readable format
+        function formatExifValue(key, value) {
+            switch (key) {
+                case 'Orientation':
+                    const orientations = {
+                        1: 'Top-left', 2: 'Top-right', 3: 'Bottom-right', 4: 'Bottom-left',
+                        5: 'Left-top', 6: 'Right-top', 7: 'Right-bottom', 8: 'Left-bottom'
+                    };
+                    return orientations[value] || value;
+                case 'ExposureProgram':
+                    const exposurePrograms = {
+                        0: 'Not Defined', 1: 'Manual', 2: 'Normal program', 3: 'Aperture priority',
+                        4: 'Shutter priority', 5: 'Creative program (biased toward depth of field)',
+                        6: 'Action program (biased toward fast shutter speed)', 7: 'Portrait mode',
+                        8: 'Landscape mode'
+                    };
+                    return exposurePrograms[value] || value;
+                case 'MeteringMode':
+                    const meteringModes = {
+                        0: 'Unknown', 1: 'Average', 2: 'CenterWeightedAverage', 3: 'Spot',
+                        4: 'MultiSpot', 5: 'Pattern', 6: 'Partial', 255: 'Other'
+                    };
+                    return meteringModes[value] || value;
+                case 'Flash':
+                    const flashModes = {
+                        0x00: 'Flash did not fire',
+                        0x01: 'Flash fired',
+                        0x05: 'Flash fired, return light detected',
+                        0x07: 'Flash fired, return light not detected',
+                        0x08: 'Compulsory flash mode',
+                        0x09: 'Flash did not fire, compulsory flash mode',
+                        0x0D: 'Flash fired, compulsory flash mode, return light detected',
+                        0x0F: 'Flash fired, compulsory flash mode, return light not detected',
+                        0x10: 'Red-eye reduction mode',
+                        0x18: 'Red-eye reduction mode, compulsory flash mode',
+                        0x19: 'Flash fired, Red-eye reduction mode',
+                        0x1D: 'Flash fired, Red-eye reduction mode, return light detected',
+                        0x1F: 'Flash fired, Red-eye reduction mode, return light not detected',
+                        0x20: 'Off',
+                        0x30: 'No flash function',
+                        0x41: 'Flash fired, auto mode',
+                        0x45: 'Flash fired, auto mode, return light detected',
+                        0x47: 'Flash fired, auto mode, return light not detected',
+                        0x49: 'No flash, auto mode',
+                        0x4D: 'Flash fired, auto mode, red-eye reduction mode, return light detected',
+                        0x4F: 'Flash fired, auto mode, red-eye reduction mode, return light not detected',
+                        0x50: 'No flash, red-eye reduction mode',
+                        0x58: 'Auto mode, red-eye reduction mode',
+                        0x59: 'Flash fired, auto mode, red-eye reduction mode',
+                        0x5D: 'Flash fired, auto mode, red-eye reduction mode, return light detected',
+                        0x5F: 'Flash fired, auto mode, red-eye reduction mode, return light not detected'
+                    };
+                    return flashModes[value] || value;
+                case 'ColorSpace':
+                    return value === 1 ? 'sRGB' : 'Uncalibrated';
+                case 'SensingMethod':
+                    const sensingMethods = {
+                        1: 'Not Defined', 2: 'One-chip color area sensor', 3: 'Two-chip color area sensor',
+                        4: 'Three-chip color area sensor', 5: 'Color sequential area sensor',
+                        7: 'Trilinear sensor', 8: 'Color sequential linear sensor'
+                    };
+                    return sensingMethods[value] || value;
+                case 'CustomRendered':
+                    return value === 0 ? 'Normal process' : 'Custom process';
+                case 'ExposureMode':
+                    return value === 0 ? 'Auto exposure' : (value === 1 ? 'Manual exposure' : 'Auto bracket');
+                case 'WhiteBalance':
+                    return value === 0 ? 'Auto white balance' : 'Manual white balance';
+                case 'SceneCaptureType':
+                    const sceneCaptureTypes = {
+                        0: 'Standard', 1: 'Landscape', 2: 'Portrait', 3: 'Night scene'
+                    };
+                    return sceneCaptureTypes[value] || value;
+                case 'GainControl':
+                    const gainControls = {
+                        0: 'None', 1: 'Low gain up', 2: 'High gain up', 3: 'Low gain down', 4: 'High gain down'
+                    };
+                    return gainControls[value] || value;
+                case 'Contrast':
+                case 'Saturation':
+                case 'Sharpness':
+                    const adjustValues = {
+                        0: 'Normal', 1: 'Low', 2: 'High'
+                    };
+                    return adjustValues[value] || value;
+                case 'SubjectDistanceRange':
+                    const subjectDistanceRanges = {
+                        0: 'Unknown', 1: 'Macro', 2: 'Close view', 3: 'Distant view'
+                    };
+                    return subjectDistanceRanges[value] || value;
+                case 'UserComment':
+                    // Attempt to convert ASCII array to string
+                    try {
+                        const comment = String.fromCharCode.apply(null, value.slice(8)); // Skip ASCII header
+                        return comment.trim() || 'No comment';
+                    } catch (e) {
+                        return value.toString(); // Fallback if not ASCII
+                    }
+                case 'FNumber':
+                    return `f/${value}`;
+                case 'ExposureTime':
+                    return `1/${Math.round(1 / value)} sec`;
+                case 'ISOSpeedRatings':
+                    return `ISO ${value}`;
+                case 'FocalLength':
+                    return `${value} mm`;
+                case 'FocalLengthIn35mmFilm':
+                    return `${value} mm (35mm equivalent)`;
+                case 'DateTime':
+                case 'DateTimeOriginal':
+                case 'DateTimeDigitized':
+                    return value.replace(/:(\d{2}):/, '-$1-').replace(' ', ' at '); // Format date/time
+                case 'GPSVersionID':
+                    return Array.isArray(value) ? value.join('.') : value;
+                case 'BitsPerSample':
+                    return Array.isArray(value) ? value.join(', ') : value;
+                case 'undefined': // Exclude internal tags
+                case 'ExifIFDPointer':
+                case 'GPSInfoIFDPointer':
+                case 'thumbnail':
+                case 'blob':
+                case 'InteroperabilityIFDPointer':
+                case 'ComponentsConfiguration':
+                case 'YCbCrPositioning':
+                case 'FileSource':
+                case 'SceneType':
+                case 'CFAPattern':
+                    return null; // Exclude these from display
+                default:
+                    return value;
+            }
+        }
+
+        // Function to process an image (local file or URL)
+        async function processImage(imageSrc, fileSize = null) { // Added fileSize parameter
+            clearMessage();
+            exifDataDisplay.innerHTML = '<p class="text-center text-gray-600">Loading EXIF data...</p>';
+            reductionPercentage.classList.add('hidden');
+            geolocationInfo.innerHTML = ''; // Clear previous geolocation info
+            imagePreviewTitle.textContent = 'Image Preview'; // Reset title
+            imageFileSize.classList.add('hidden'); // Hide file size initially
+            imagePreview.src = 'https://placehold.co/400x300/e2e8f0/64748b?text=Loading...'; // Show loading placeholder
+
+            const img = new Image();
+            img.onload = function() {
+                // Set preview image source
+                imagePreview.src = imageSrc;
+
+                // Calculate megapixels
+                const originalWidth = img.naturalWidth;
+                const originalHeight = img.naturalHeight;
+                const megapixels = (originalWidth * originalHeight) / 1_000_000;
+                imagePreviewTitle.textContent = `Image Preview (${megapixels.toFixed(2)} MP)`; // Update title with megapixels
+
+                // Display file size if available
+                if (fileSize) {
+                    imageFileSize.textContent = `File Size: ${fileSize}`;
+                    imageFileSize.classList.remove('hidden');
+                } else {
+                    imageFileSize.classList.add('hidden');
+                }
+
+                // Calculate reduction percentage for preview
+                const maxDim = 400; // Max dimension for preview
+
+                let scaleFactor = 1;
+                if (originalWidth > maxDim || originalHeight > maxDim) {
+                    scaleFactor = Math.min(maxDim / originalWidth, maxDim / originalHeight);
+                    const reduction = (1 - scaleFactor) * 100;
+                    reductionPercentage.querySelector('span:nth-of-type(2)').textContent = `${reduction.toFixed(2)}%`;
+                    reductionPercentage.classList.remove('hidden');
+                } else {
+                    reductionPercentage.classList.add('hidden');
+                }
+
+                // Extract EXIF data
+                EXIF.getData(img, function() {
+                    const allTags = EXIF.getAllTags(this);
+                    let exifHtml = '<ul class="list-disc pl-5 space-y-2">';
+                    let hasExif = false;
+
+                    // Check for geolocation data and display link
+                    if (allTags.GPSLatitude && allTags.GPSLongitude) {
+                        const lat = convertDMSToDD(allTags.GPSLatitude, allTags.GPSLatitudeRef);
+                        const lon = convertDMSToDD(allTags.GPSLongitude, allTags.GPSLongitudeRef);
+                        const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+                        geolocationInfo.innerHTML = `<p><strong>Geolocation:</strong> <a href="${googleMapsLink}" target="_blank" class="text-blue-600 hover:underline">View on Google Maps</a></p>`;
+                    } else {
+                        geolocationInfo.innerHTML = ''; // Clear if no geolocation
+                    }
+
+                    // Define a more human-readable order and labels for common tags
+                    const displayOrder = [
+                        'Make', 'Model', 'DateTimeOriginal', 'DateTime', 'Software',
+                        'ImageWidth', 'ImageHeight', 'PixelXDimension', 'PixelYDimension',
+                        'FocalLength', 'FocalLengthIn35mmFilm', 'ExposureTime', 'FNumber',
+                        'ISOSpeedRatings', 'ExposureProgram', 'ExposureMode', 'Flash',
+                        'MeteringMode', 'WhiteBalance', 'Orientation', 'ColorSpace',
+                        'SensingMethod', 'SceneCaptureType', 'GainControl', 'Contrast',
+                        'Saturation', 'Sharpness', 'SubjectDistanceRange', 'ExposureBias',
+                        'MaxApertureValue', 'GPSVersionID', 'UserComment'
+                    ];
+
+                    // Process tags in a preferred order
+                    displayOrder.forEach(key => {
+                        if (allTags.hasOwnProperty(key)) {
+                            const formattedValue = formatExifValue(key, allTags[key]);
+                            if (formattedValue !== null) { // Only display if not explicitly excluded
+                                exifHtml += `<li class="flex justify-between items-start py-1 border-b border-gray-200 last:border-b-0">
+                                                <span class="font-medium text-gray-700">${key.replace(/([A-Z])/g, ' $1').trim()}:</span>
+                                                <span class="text-gray-900 text-right ml-4">${formattedValue}</span>
+                                            </li>`;
+                                hasExif = true;
+                            }
+                        }
+                    });
+
+                    // Add any remaining tags not in the displayOrder
+                    for (const key in allTags) {
+                        if (allTags.hasOwnProperty(key) && !displayOrder.includes(key)) {
+                            const formattedValue = formatExifValue(key, allTags[key]);
+                            if (formattedValue !== null) {
+                                exifHtml += `<li class="flex justify-between items-start py-1 border-b border-gray-200 last:border-b-0">
+                                                <span class="font-medium text-gray-700">${key.replace(/([A-Z])/g, ' $1').trim()}:</span>
+                                                <span class="text-gray-900 text-right ml-4">${formattedValue}</span>
+                                            </li>`;
+                                hasExif = true;
+                            }
+                        }
+                    }
+
+                    exifHtml += '</ul>';
+
+                    if (hasExif) {
+                        exifDataDisplay.innerHTML = exifHtml;
+                    } else {
+                        exifDataDisplay.innerHTML = '<p class="text-center text-red-600">No EXIF data found for this image.</p>';
+                    }
+                });
+            };
+
+            img.onerror = function() {
+                exifDataDisplay.innerHTML = '<p class="text-center text-red-600">Could not load image or extract EXIF data.</p>';
+                imagePreview.src = 'https://placehold.co/400x300/e2e8f0/64748b?text=Error+Loading+Image';
+                imagePreviewTitle.textContent = 'Image Preview'; // Reset title on error
+                imageFileSize.classList.add('hidden'); // Hide file size on error
+                geolocationInfo.innerHTML = ''; // Clear geolocation on error
+                showMessage('Failed to load image. Please check the URL or try another file.', 'error');
+            };
+
+            img.crossOrigin = 'anonymous'; // Required for EXIF.js to read data from cross-origin images
+            img.src = imageSrc;
+        }
+
+        // Event listener for local file upload
+        imageUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (!file.type.startsWith('image/')) {
+                    showMessage('Please upload an image file (e.g., JPG, PNG, GIF).', 'error');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const sizeMB = (file.size / 1_048_576).toFixed(2) + " MB";
+                    processImage(e.target.result, sizeMB); // Pass file size
+                };
+                reader.onerror = function() {
+                    showMessage('Failed to read the file.', 'error');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Event listener for URL processing button
+        processUrlButton.addEventListener('click', async function() {
+            const url = imageUrlInput.value.trim();
+            if (!url) {
+                showMessage('Please enter an image URL.', 'error');
+                return;
+            }
+
+            // Check if it's a Wikimedia Commons file page URL
+            const commonsRegex = /https:\/\/commons\.wikimedia\.org\/wiki\/File:(.+)/;
+            const match = url.match(commonsRegex);
+
+            let processedUrl = url;
+            let fileSize = null; // Initialize file size for URL
+
+            if (match && match[1]) {
+                // It's a Wikimedia Commons file page. Try to get the direct image URL via API.
+                const filename = decodeURIComponent(match[1]); // Decode filename
+                const apiFilename = `File:${filename}`; // API expects "File:Filename.jpg" format
+                const apiUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(apiFilename)}&prop=imageinfo&iiprop=url|size&format=json&origin=*`; // Request 'size'
+
+                exifDataDisplay.innerHTML = '<p class="text-center text-gray-600">Fetching direct image URL and size from Wikimedia Commons API...</p>';
+                imagePreview.src = 'https://placehold.co/400x300/e2e8f0/64748b?text=Loading...'; // Show loading placeholder
+                imagePreviewTitle.textContent = 'Image Preview'; // Reset title
+                imageFileSize.classList.add('hidden'); // Hide file size
+                geolocationInfo.innerHTML = ''; // Clear geolocation
+
+                try {
+                    const response = await fetch(apiUrl);
+                    const data = await response.json();
+
+                    const pages = data.query.pages;
+                    const pageId = Object.keys(pages)[0]; // Get the first (and usually only) page ID
+                    const imageInfo = pages[pageId].imageinfo;
+
+                    if (imageInfo && imageInfo.length > 0 && imageInfo[0].url) {
+                        processedUrl = imageInfo[0].url; // Use the direct image URL
+                        if (imageInfo[0].size) {
+                            fileSize = (imageInfo[0].size / 1_048_576).toFixed(2) + " MB";
+                        }
+                    } else {
+                        showMessage('Could not find direct image URL from Wikimedia Commons API. Please ensure the link is correct.', 'error');
+                        exifDataDisplay.innerHTML = '<p class="text-center text-red-600">Failed to retrieve image URL.</p>';
+                        imagePreview.src = 'https://placehold.co/400x300/e2e8f0/64748b?text=Error+Loading+Image';
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Error fetching Wikimedia Commons API:', error);
+                    showMessage('Error fetching data from Wikimedia Commons API. Please try again later.', 'error');
+                    exifDataDisplay.innerHTML = '<p class="text-center text-red-600">API request failed.</p>';
+                    imagePreview.src = 'https://placehold.co/400x300/e2e8f0/64748b?text=Error+Loading+Image';
+                    return;
+                }
+            } else {
+                // It's a regular URL, attempt to fetch HEAD request for size
+                try {
+                    new URL(url); // Check if it's a valid URL format
+                    const headResponse = await fetch(url, { method: 'HEAD' });
+                    const contentLength = headResponse.headers.get('Content-Length');
+                    if (contentLength) {
+                        fileSize = (parseInt(contentLength) / 1_048_576).toFixed(2) + " MB";
+                    } else {
+                        fileSize = "Unavailable (CORS or no Content-Length header)";
+                    }
+                } catch (e) {
+                    fileSize = "Unavailable (CORS or network error)";
+                    // Do not show error message here, let img.onerror handle it if image itself fails to load
+                }
+            }
+            processImage(processedUrl, fileSize); // Pass processed URL and file size
+        });
+
+        // Allow pressing Enter in the URL input to trigger processing
+        imageUrlInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                processUrlButton.click();
+            }
+        });
+
+        // Handle drag and drop for file upload
+        const dropArea = document.querySelector('.border-dashed');
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropArea.classList.add('border-blue-500', 'bg-blue-100');
+        }
+
+        function unhighlight() {
+            dropArea.classList.remove('border-blue-500', 'bg-blue-100');
+        }
+
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                imageUpload.files = files; // Assign files to the input
+                const event = new Event('change');
+                imageUpload.dispatchEvent(event); // Trigger the change event
+            }
+        }
+    </script>
+    <footer>
+        <p>Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" class="text-blue-600 hover:underline">Suyash Dwivedi</a> | Updated on: 18 July 2025</p>
+    </footer>
+</body>
+</html>
