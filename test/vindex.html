@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Wikipedia Recent Changes - U:Suyash.dwivedi</title>
 
-  <!-- ✅ SEO Meta Tags -->
-  <meta name="description" content="Track Wikipedia Recent Changes across 42 languages with speech alerts, dark mode, and time-based filters. Created by Wikimedian Suyash Dwivedi.">
+<!-- ✅ SEO Meta Tags -->
+  <meta name="description" content="Track Wikipedia Recent Changes across 42 languages with live updates, audio alerts, dark mode, and time-based filters. Created by Wikimedian Suyash Dwivedi.">
   <meta name="keywords" content="Wikipedia recent changes, multilingual RC, Wikimedian tool, live Wikipedia monitor, Suyash Dwivedi, Wikimedia tools">
   <meta name="author" content="Suyash Dwivedi">
 
-  <!-- ✅ Open Graph Meta -->
+  <!-- ✅ Open Graph -->
   <meta property="og:title" content="Wikipedia Recent Changes by Suyash Dwivedi">
-  <meta property="og:description" content="Live Wikipedia edit monitor with voice alerts. Dark mode and multilingual support included.">
+  <meta property="og:description" content="Live monitor for Wikipedia edits in 42+ languages. Listen to RC alerts with audio notifications.">
   <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Suyash_Dwivedi_01%28cropped%29.jpg/180px-Suyash_Dwivedi_01%28cropped%29.jpg">
   <meta property="og:url" content="https://suyashdwivedi.github.io/">
   <meta property="og:type" content="website">
@@ -20,11 +20,15 @@
   <!-- ✅ Twitter Card -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Wikipedia RC Monitor – by Suyash Dwivedi">
-  <meta name="twitter:description" content="Listen to Wikipedia edits with speech alerts in multiple languages.">
+  <meta name="twitter:description" content="Watch real-time Wikipedia edits with audio alerts.">
   <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Suyash_Dwivedi_01%28cropped%29.jpg/180px-Suyash_Dwivedi_01%28cropped%29.jpg">
 
-  <!-- ✅ Favicon and Theme -->
-  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/8/80/Wikipedia-logo-v2.svg" type="image/svg+xml" />
+  <!-- ✅ Favicon and Canonical -->
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/8/80/Wikipedia-logo-v2.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://suyashdwivedi.github.io/" />
+
+  <!-- ✅ PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#4CAF50" />
 
   <style>
@@ -52,6 +56,7 @@
       }
     }
     .change-item {
+      margin-bottom: 10px;
       padding: 10px;
       border-bottom: 1px solid #ccc;
     }
@@ -59,26 +64,11 @@
       text-align: center;
       font-size: 18px;
       font-weight: bold;
+      margin: 10px 0;
       color: green;
     }
-    #toggle-theme, #voice-toggle {
-      position: absolute;
-      top: 10px;
-      padding: 6px 12px;
-      border: none;
-      border-radius: 18px;
-      cursor: pointer;
-      z-index: 10;
-    }
-    #toggle-theme {
-      right: 10px;
-      background: #222;
-      color: #ffd700;
-    }
-    #voice-toggle {
-      right: 120px;
-      background: #007BFF;
-      color: white;
+    #counter {
+      font-weight: bold;
     }
     .nav-buttons {
       position: fixed;
@@ -92,42 +82,104 @@
       background-color: #4CAF50;
       color: white;
       border: none;
-      border-radius: 5px;
       cursor: pointer;
+      border-radius: 5px;
+    }
+    .nav-button:hover {
+      background-color: #45a049;
+    }
+    #toggle-theme {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 8px 14px;
+      background: #222;
+      color: #ffd700;
+      border: none;
+      border-radius: 18px;
+      font-size: 15px;
+      cursor: pointer;
+      z-index: 120;
+      transition: background 0.2s, color 0.2s;
+    }
+    #toggle-theme.light {
+      background: #e0e0e0;
+      color: #333;
     }
     body.dark-mode {
-      background-color: #1a1a1a;
-      color: #f0f0f0;
+      background-color: #121212;
+      color: #f4f4f4;
     }
     body.dark-mode header,
     body.dark-mode footer {
-      background-color: #121212;
+      background-color: #191919;
+      color: #eee;
     }
     body.dark-mode .change-item {
-      background-color: #2a2a2a;
-      border-color: #444;
+      border-bottom: 1px solid #444;
+      background-color: #181818;
+    }
+    body.dark-mode select,
+    body.dark-mode .nav-button {
+      background-color: #222;
+      color: #f4f4f4;
+    }
+    body.dark-mode a {
+      color: #6cf;
     }
   </style>
 </head>
 <body>
-
   <header>
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/263px-Wikipedia-logo-v2.svg.png" alt="Wikipedia Logo">
-    <button id="toggle-theme">🌙 Dark Mode</button>
-    <button id="voice-toggle">🔊 Voice: On</button>
+    <button id="toggle-theme" aria-label="Switch Dark/Light Theme">🌙 Dark Mode</button>
     <h1>Wikipedia Recent Changes</h1>
-    <p>Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> (in 42 languages)</p>
-    <label for="language-select">Select Language: </label>
+    <p>Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> (in 43 languages)</p>
+    <label for="language-select">Select Language:</label>
     <select id="language-select">
       <option value="hi">हिन्दी (Hindi)</option>
       <option value="en">English</option>
-      <option value="gu">ગુજરાતી (Gujarati)</option>
-      <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
-      <option value="fr">Français (French)</option>
+      <option value="awa">अवधी (Awadhi)</option>
+      <option value="ar">العربية (Arabic)</option>
+      <option value="as">অসমীয়া (Assamese)</option>
+      <option value="bh">भोजपुरी (Bhojpuri)</option>
+      <option value="bn">বাংলা (Bengali)</option>
+      <option value="bcl">Bikol Central (Central Bikol)</option>
+      <option value="zh">中文 (Chinese)</option>
+      <option value="da">Dansk (Danish)</option>
       <option value="de">Deutsch (German)</option>
       <option value="es">Español (Spanish)</option>
+      <option value="fa">فارسی (Persian)</option>
+      <option value="fr">Français (French)</option>
+      <option value="hif">Fiji Hindi (Fijian Hindi)</option>
+      <option value="gu">ગુજરાતી (Gujarati)</option>
+      <option value="he">עברית (Hebrew)</option>
       <option value="it">Italiano (Italian)</option>
+      <option value="ja">日本語 (Japanese)</option>
+      <option value="jv">Basa Jawa (Javanese)</option>
+      <option value="kn">ಕನ್ನಡ (Kannada)</option>
+      <option value="ko">한국어 (Korean)</option>
+      <option value="mai">मैथिली (Maithili)</option>
+      <option value="ml">മലയാളം (Malayalam)</option>
+      <option value="mr">मराठी (Marathi)</option>
+      <option value="ms">Bahasa Melayu (Malay)</option>
+      <option value="ne">नेपाली (Nepali)</option>
+      <option value="nl">Nederlands (Dutch)</option>
+      <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+      <option value="pl">Polski (Polish)</option>
+      <option value="pt">Português (Portuguese)</option>
       <option value="ru">Русский (Russian)</option>
+      <option value="sa">संस्कृतम् (Sanskrit)</option>
+      <option value="si">සිංහල (Sinhala)</option>
+      <option value="sw">Kiswahili (Swahili)</option>
+      <option value="ta">தமிழ் (Tamil)</option>
+      <option value="te">తెలుగు (Telugu)</option>
+      <option value="th">ไทย (Thai)</option>
+      <option value="tr">Türkçe (Turkish)</option>
+      <option value="uk">Українська (Ukrainian)</option>
+      <option value="ur">اردو (Urdu)</option>
+      <option value="uz">Oʻzbekcha (Uzbek)</option>
+      <option value="vi">Tiếng Việt (Vietnamese)</option>
     </select>
   </header>
 
@@ -136,8 +188,7 @@
   <div id="changes"></div>
 
   <footer>
-    Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> |
-    Updated on: 22 July 2025
+    Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> | Updated on: 22 July 2025
   </footer>
 
   <div class="nav-buttons">
@@ -145,147 +196,187 @@
     <button class="nav-button" onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })">Go to Bottom</button>
   </div>
 
-<script>
-const changesDiv = document.getElementById('changes');
-const dateDisplay = document.getElementById('date-time');
-const languageSelect = document.getElementById('language-select');
+  <script>
+    const languageSelect = document.getElementById("language-select");
+    const themeToggle = document.getElementById("toggle-theme");
+    const counterDisplay = document.getElementById("counter");
+    const dateDisplay = document.getElementById("date-time");
+    const changesDiv = document.getElementById("changes");
 
-let changeCount = 0;
-let spokenTimestamps = new Set();
-let voiceEnabled = localStorage.getItem('voiceEnabled') !== 'false';
+    let currentLang = localStorage.getItem("selectedLanguage") || "hi";
+    let changeCount = 0; 
+    let intervalCount = 0;
+    let previousChangeIDs = [];
+    let spokenQueue = [];
+    const REFRESH_INTERVAL = 20000; 
+    let fetchIntervalId; 
 
-const langMap = {
-  en: 'en-US', hi: 'hi-IN', gu: 'gu-IN', pa: 'pa-IN',
-  fr: 'fr-FR', de: 'de-DE', es: 'es-ES', it: 'it-IT', ru: 'ru-RU'
-};
+    const langMap = {
+      en: "en-US", hi: "hi-IN", awa: "awa-IN", ar: "ar-SA", as: "as-IN", bh: "bh-IN", bn: "bn-IN", bcl: "bcl-PH",
+      zh: "zh-CN", da: "da-DK", de: "de-DE", es: "es-ES", fa: "fa-IR", fr: "fr-FR", hif: "hif-FJ", gu: "gu-IN",
+      he: "he-IL", it: "it-IT", ja: "ja-JP", jv: "jv-ID", kn: "kn-IN", ko: "ko-KR", mai: "mai-IN", ml: "ml-IN", mr: "mr-IN",
+      ms: "ms-MY", ne: "ne-NP", nl: "nl-NL", pa: "pa-IN", pl: "pl-PL", pt: "pt-PT", ru: "ru-RU", sa: "sa-IN",
+      si: "si-LK", sw: "sw-KE", ta: "ta-IN", te: "te-IN", th: "th-TH", tr: "tr-TR", uk: "uk-UA", ur: "ur-PK",
+      uz: "uz-UZ", vi: "vi-VN"
+    };
 
-function displayDateTime() {
-  const now = new Date();
-  dateDisplay.innerHTML = `Date: ${now.toLocaleString(undefined, {
-    hour12: true,
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    weekday: 'long',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  })}`;
-}
-
-function isIPAddress(user) {
-  return /^(\d{1,3}\.){3}\d{1,3}$/.test(user) || /^[a-fA-F0-9:]+$/.test(user);
-}
-
-function speak(text, lang) {
-  if (!voiceEnabled) return;
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = langMap[lang] || 'en-US';
-  speechSynthesis.speak(utterance);
-}
-
-function displayChanges(changes, language) {
-  changesDiv.innerHTML = '';
-  changes.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-  changes.forEach((change) => {
-    const ts = change.timestamp;
-    const changeTime = new Date(ts);
-
-    const div = document.createElement('div');
-    div.className = 'change-item';
-    div.innerHTML = `
-      <strong>Page Changed:</strong> <a href="https://${language}.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history" target="_blank">${change.title}</a><br>
-      <strong>Editor:</strong> <a href="https://${language}.wikipedia.org/wiki/Special:Contributions/${encodeURIComponent(change.user)}" target="_blank">${change.user || 'Anonymous'}</a><br>
-      <strong>Time (Local):</strong> ${changeTime.toLocaleString()}<br>
-      <strong>Comment:</strong> ${change.comment || 'No summary'}<br>
-    `;
-    changesDiv.appendChild(div);
-
-    if (!spokenTimestamps.has(ts)) {
-      let speech = `Page Changed: ${change.title}. `;
-      if (!change.user) {
-        speech += "Edited by anonymous.";
-      } else if (isIPAddress(change.user)) {
-        speech += "Edited by IP address.";
-      } else {
-        speech += `Editor: ${change.user}.`;
-      }
-      speak(speech, language);
-      spokenTimestamps.add(ts);
-      changeCount++;
+    function displayDateTime() {
+      const now = new Date();
+      const localTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const formattedLocal = now.toLocaleString(undefined, {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true,
+        timeZoneName: 'short'
+      });
+      dateDisplay.textContent = `Current Local Time: ${formattedLocal} (${localTimeZoneName})`;
     }
-  });
+    setInterval(displayDateTime, 1000);
+    displayDateTime();
 
-  document.getElementById('counter').innerText = `Changes Count: ${changeCount}`;
-}
+    function isIPAddress(user) {
+      return /^(\d{1,3}\.){3}\d{1,3}$/.test(user)
+        || /^[a-fA-F0-9:]+$/.test(user)
+        || (user && user.startsWith("~"));
+    }
 
-async function fetchChanges(lang) {
-  try {
-    const res = await fetch(`https://${lang}.wikipedia.org/w/api.php?action=query&list=recentchanges&rcprop=title|user|timestamp|comment&rclimit=50&origin=*&format=json`);
-    const data = await res.json();
-    displayChanges(data.query.recentchanges, lang);
-  } catch (e) {
-    console.error("Fetch error:", e);
-  }
-}
+    function speakQueue(queue) {
+        if (!queue || queue.length === 0) {
+            return;
+        }
+        speechSynthesis.cancel(); 
 
-// Init logic
-displayDateTime();
-setInterval(displayDateTime, 1000);
+        let utteranceIndex = 0;
+        const speakNext = () => {
+            if (utteranceIndex < queue.length) {
+                const msg = queue[utteranceIndex];
+                const utterance = new SpeechSynthesisUtterance(msg);
+                utterance.lang = langMap[currentLang] || "en-US";
+                utterance.onend = () => {
+                    utteranceIndex++;
+                    setTimeout(speakNext, 400); 
+                };
+                utterance.onerror = (event) => {
+                    console.error('SpeechSynthesisUtterance.onerror', event);
+                };
+                speechSynthesis.speak(utterance);
+            }
+        };
+        speakNext(); 
+    }
 
-// Theme init
-if (localStorage.getItem('theme') === 'dark') {
-  document.body.classList.add('dark-mode');
-  document.getElementById('toggle-theme').textContent = '☀️ Light Mode';
-}
+    async function fetchChanges() {
+      try {
+        const res = await fetch(`https://${currentLang}.wikipedia.org/w/api.php?action=query&list=recentchanges&rcprop=title|user|timestamp|comment|ids&rclimit=50&origin=*&format=json`);
+        const json = await res.json();
+        const changes = json.query.recentchanges.reverse(); 
 
-document.getElementById('toggle-theme').onclick = () => {
-  document.body.classList.toggle('dark-mode');
-  const isDark = document.body.classList.contains('dark-mode');
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  document.getElementById('toggle-theme').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
-};
+        const newChanges = changes.filter(change => !previousChangeIDs.includes(change.rcid));
 
-// Voice toggle
-function updateVoiceLabel() {
-  document.getElementById('voice-toggle').textContent = voiceEnabled ? '🔊 Voice: On' : '🔇 Voice: Off';
-}
-updateVoiceLabel();
-document.getElementById('voice-toggle').onclick = () => {
-  voiceEnabled = !voiceEnabled;
-  localStorage.setItem('voiceEnabled', voiceEnabled);
-  updateVoiceLabel();
-};
+        let voiceBatch = [];
+        for (let i = newChanges.length - 1; i >= 0; i--) {
+            const change = newChanges[i];
+            voiceBatch.push(`Page Changed: ${change.title}. Editor: ${isIPAddress(change.user) ? "IP address" : (change.user || "Anonymous")}.`);
+        }
 
-// Init fetch and polling
-const lang = localStorage.getItem('selectedLanguage') || 'hi';
-languageSelect.value = lang;
-fetchChanges(lang);
-setInterval(() => fetchChanges(languageSelect.value), 10000);
+        newChanges.forEach(change => { 
+          const timeUTC = new Date(change.timestamp).toUTCString();
+          const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          const timeLocal = new Date(change.timestamp).toLocaleString(undefined, {
+            year: "numeric", month: "2-digit", day: "2-digit",
+            hour: "2-digit", minute: "2-digit", second: "2-digit",
+            hour12: true,
+          });
+          const timeIST = new Date(change.timestamp).toLocaleString("en-IN", {
+            timeZone: "Asia/Kolkata",
+            year: "numeric", month: "numeric", day: "numeric",
+            hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true
+          });
 
-languageSelect.addEventListener('change', () => {
-  const newLang = languageSelect.value;
-  localStorage.setItem('selectedLanguage', newLang);
-  spokenTimestamps.clear();
-  changeCount = 0;
-  fetchChanges(newLang);
-});
+          const comment = change.comment || "—";
+          const titleLink = `https://${currentLang}.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history`;
+          const userLink = `https://${currentLang}.wikipedia.org/wiki/Special:Contributions/${encodeURIComponent(change.user || "")}`;
+          const editorDisplay = isIPAddress(change.user) ? "IP address" : (change.user || "Anonymous");
+
+          const newItemDiv = document.createElement('div');
+          newItemDiv.classList.add('change-item');
+          newItemDiv.innerHTML = `
+            <strong>Page Changed:</strong> <a href="${titleLink}" target="_blank">${change.title}</a><br>
+            <strong>Editor:</strong> <a href="${userLink}" target="_blank">${editorDisplay}</a><br>
+            <strong>Time (UTC):</strong> ${timeUTC}<br>
+            <strong>Time (Local):</strong> ${timeLocal} (${localTimeZone})<br>
+            <strong>Comment:</strong> ${comment}<br>
+          `;
+          changesDiv.prepend(newItemDiv);
+        });
+
+        while (changesDiv.children.length > 25) {
+            changesDiv.removeChild(changesDiv.lastChild);
+        }
+        previousChangeIDs = changes.map(change => change.rcid);
+
+        changeCount = newChanges.length;
+        intervalCount++;
+        counterDisplay.textContent = `Changes Count: ${intervalCount} (Changes detected: ${changeCount})`;
+
+        if (voiceBatch.length > 0) {
+          spokenQueue = voiceBatch; 
+          speakQueue(spokenQueue);
+        }
+
+      } catch (e) {
+        console.error("Failed to fetch:", e);
+      }
+    }
+
+    languageSelect.value = currentLang;
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark-mode");
+      themeToggle.textContent = "☀️ Light Mode";
+    }
+
+    themeToggle.onclick = () => {
+      document.body.classList.toggle("dark-mode");
+      const mode = document.body.classList.contains("dark-mode") ? "dark" : "light";
+      themeToggle.textContent = mode === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode";
+      localStorage.setItem("theme", mode);
+    };
+
+    languageSelect.onchange = () => {
+      currentLang = languageSelect.value;
+      localStorage.setItem("selectedLanguage", currentLang);
+      
+      changeCount = 0; 
+      intervalCount = 0; 
+      counterDisplay.textContent = "Changes Count: 0";
+      changesDiv.innerHTML = ""; 
+      previousChangeIDs = []; 
+      spokenQueue = []; 
+      speechSynthesis.cancel(); 
+
+      clearInterval(fetchIntervalId);
+      fetchChanges(); 
+      fetchIntervalId = setInterval(fetchChanges, REFRESH_INTERVAL);
+    };
+
+    window.onload = () => {
+      changeCount = 0; 
+      intervalCount = 0; 
+      counterDisplay.textContent = "Changes Count: 0";
+      fetchChanges(); 
+      fetchIntervalId = setInterval(fetchChanges, REFRESH_INTERVAL); 
+    };
+  </script>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GC8PGC89NB');
+  </script>
+  <script src="https://cdn.counter.dev/script.js"
+        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
+        data-utcoffset="6">
 </script>
-
-<!-- ✅ Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-GC8PGC89NB');
-</script>
-
-<!-- ✅ Counter.dev -->
-<script src="https://cdn.counter.dev/script.js"
-    data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
-    data-utcoffset="6"></script>
-
 </body>
 </html>
