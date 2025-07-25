@@ -1,183 +1,1050 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>हिन्दी भाषा का शुद्धिकरण </title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="index, follow" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-  <!-- ✅ SEO Meta Tags -->
-  <title>GitHub HTML Previewer – Developed by Suyash Dwivedi</title>
-  <meta name="description" content="Preview raw HTML files hosted on GitHub directly in your browser. Developed by Wikimedian Suyash Dwivedi.">
-  <meta name="keywords" content="GitHub HTML Previewer, HTML viewer, GitHub Pages, raw HTML preview, blob HTML, Suyash Dwivedi, Wikimedia">
-  <meta name="author" content="Suyash Dwivedi">
+<title>Parivartak – हिन्दी भाषा शुद्धिकरण उपकरण</title>
+<meta name="description" content="Parivartak एक नि:शुल्क हिन्दी भाषा शुद्धिकरण उपकरण है जो आपको अशुद्ध या हिंग्लिश शब्दों को शुद्ध हिन्दी में बदलने में सहायता करता है।">
+<meta name="keywords" content="हिन्दी, भाषा शुद्धिकरण, Parivartak, Hinglish, देवनागरी, हिंदी सुधार, शुद्ध हिन्दी, टेक्स्ट कन्वर्टर, Suyash Dwivedi">
+<meta name="author" content="Suyash Dwivedi">
 
-  <!-- ✅ Open Graph (for Facebook, LinkedIn) -->
-  <meta property="og:title" content="GitHub HTML Previewer – Developed by Suyash Dwivedi">
-  <meta property="og:description" content="Paste a GitHub blob URL and instantly preview HTML in your browser.">
-  <meta property="og:image" content="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">
-  <meta property="og:url" content="https://suyashdwivedi.github.io/github-html-previewer.html">
-  <meta property="og:type" content="website">
+<meta property="og:title" content="Parivartak – हिन्दी भाषा शुद्धिकरण उपकरण">
+<meta property="og:description" content="हिन्दी टेक्स्ट को अशुद्ध या हिंग्लिश शब्दों से शुद्ध और मानक हिन्दी में बदलिए। एक सरल, ऑनलाइन टूल – Parivartak.">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Suyash_Dwivedi_01%28cropped%29.jpg/600px-Suyash_Dwivedi_01%28cropped%29.jpg">
+<meta property="og:url" content="https://suyashdwivedi.github.io/parivartak.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="hi_IN">
 
-  <!-- ✅ Twitter Card -->
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="GitHub HTML Previewer">
-  <meta name="twitter:description" content="Instantly preview raw HTML files from GitHub repositories.">
-  <meta name="twitter:image" content="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Parivartak – हिन्दी भाषा शुद्धिकरण उपकरण">
+<meta name="twitter:description" content="Parivartak टूल से अशुद्ध हिन्दी या हिंग्लिश टेक्स्ट को शुद्ध और मानक हिन्दी में बदलिए।">
+<meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Suyash_Dwivedi_01%28cropped%29.jpg/600px-Suyash_Dwivedi_01%28cropped%29.jpg">
 
-  <!-- ✅ Favicon and Canonical -->
-  <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg" type="image/svg+xml">
-  <link rel="canonical" href="https://suyashdwivedi.github.io/github-html-previewer.html" />
+<link rel="canonical" href="https://suyashdwivedi.github.io/parivartak.html">
 
   <style>
     body {
-      font-family: "Segoe UI", sans-serif;
-      background-color: #f4f4f4;
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      text-align: center;
       margin: 0;
       padding: 0;
+      transition: background-color 0.3s ease;
     }
-    header {
-      background-color: #24292e;
-      color: white;
-      padding: 30px 20px 20px;
-      text-align: center;
+
+    body.dark-mode {
+      background-color: #333;
+      color: #eee;
     }
-    header h1 {
-      font-size: 32px;
-      margin: 0;
-      font-weight: bold;
-    }
-    header p {
-      margin: 8px 0 0;
-      font-size: 14px;
-    }
-    header a {
-      color: #58a6ff;
+
+    a.home-link {
+      display: block;
+      margin-top: 20px;
+      font-size: 22px;
+      color: blue;
       text-decoration: none;
     }
-    header a:hover {
-      text-decoration: underline;
+
+    .dark-mode a.home-link {
+      color: #add8e6;
     }
-    main {
-      max-width: 900px;
+
+    .container {
+      background-color: white;
+      max-width: 800px;
       margin: 30px auto;
-      background: #fff;
-      padding: 20px 30px;
+      padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
-    input[type="text"] {
+
+    .dark-mode .container {
+      background-color: #444;
+      color: #eee;
+      box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+    }
+
+    textarea {
       width: 100%;
-      padding: 12px;
       font-size: 16px;
-      margin-bottom: 10px;
+      padding: 10px;
+      margin: 10px 0;
+      box-sizing: border-box;
+      resize: vertical;
       border: 1px solid #ccc;
-      border-radius: 6px;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
+
+    .dark-mode textarea {
+      background-color: #555;
+      color: #eee;
+      border-color: #777;
+    }
+
     button {
-      background-color: #2ea44f;
-      color: white;
-      border: none;
       padding: 10px 20px;
       font-size: 16px;
-      border-radius: 6px;
+      margin: 8px;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
+      color: white;
+      transition: background-color 0.3s ease;
     }
-    button:hover {
-      background-color: #279644;
-    }
-    iframe {
-      width: 100%;
-      height: 500px;
-      margin-top: 20px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
+
+    .red { background-color: #d9534f; }
+    .green { background-color: #5cb85c; }
+    .blue { background-color: #0275d8; }
+    .night-mode-button { background-color: #6c757d; position: absolute; top: 10px; right: 10px; }
+
+    .red:hover { background-color: #c9302c; }
+    .green:hover { background-color: #449d44; }
+    .blue:hover { background-color: #025aa5; }
+    .night-mode-button:hover { background-color: #5a6268; }
+
     footer {
-      text-align: center;
-      padding: 15px;
-      margin-top: 40px;
+      margin: 20px auto;
       font-size: 14px;
-      color: #666;
+      color: #555;
+      transition: color 0.3s ease;
     }
+
+    .dark-mode footer {
+      color: #aaa;
+    }
+
     footer a {
-      color: #2e86c1;
+      color: #007bff;
       text-decoration: none;
-      font-weight: 600;
     }
+
+    .dark-mode footer a {
+      color: #add8e6;
+    }
+
     footer a:hover {
       text-decoration: underline;
     }
   </style>
 </head>
 <body>
+  <button class="night-mode-button" onclick="toggleNightMode()">Night Mode</button>
 
-<header>
-  <h1>GitHub HTML Previewer</h1>
-  <p>Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></p>
-</header>
+  <a class="home-link" href="https://suyashdwivedi.github.io/">Home</a>
+<p style="font-size: 16px; color: #333; margin-top: 5px;" class="normal-text">
+   <b>हिन्दी भाषा का शुद्धिकरण</b>: नीचे दिए गए बॉक्स में अपना टेक्स्ट लिखें और <b>"Replace Words"</b> बटन पर क्लिक करें<br>
+   उदाहरण: <i>“ज़िम्मेदारी” या “1” अपने आप “उत्तरदायित्व” या “१” में बदल जाएगा</i>, फिर <b>"Copy Output Text"</b> पर क्लिक करें<br>
+   आउटपुट भी अपने आप कॉपी हो जाएगा बस आप वाँछित स्थान पर इसे पेस्ट कर दें!
+</p>
+<p style="font-size: 16px; color: #eee; margin-top: 5px; display: none;" class="dark-text">
+   <b>हिन्दी भाषा का शुद्धिकरण</b>: नीचे दिए गए बॉक्स में अपना टेक्स्ट लिखें और <b>"Replace Words"</b> बटन पर क्लिक करें<br>
+   उदाहरण: <i>“ज़िम्मेदारी” या “1” अपने आप “उत्तरदायित्व” या “१” में बदल जाएगा</i>, फिर <b>"Copy Output Text"</b> पर क्लिक करें<br>
+   आउटपुट भी अपने आप कॉपी हो जाएगा बस आप वाँछित स्थान पर इसे पेस्ट कर दें!
+</p>
 
-<main>
-  <p>Paste a GitHub HTML file URL (must include <code>/blob/</code>):</p>
-  <input type="text" id="githubUrl" placeholder="e.g. https://github.com/user/repo/blob/main/page.html" />
-  <button onclick="preview()">Preview</button>
-  <button onclick="clearPreview()" style="background-color:#d73a49;margin-left:10px;">Clear</button>
+  <div class="container">
+    <textarea id="paragraph" rows="5" placeholder="Enter your text here..."></textarea>
 
-  <iframe id="previewFrame" title="GitHub HTML Output Preview"></iframe>
-</main>
+    <button class="red" onclick="replaceWords()">Replace Words</button>
 
-<footer>
-  Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a><br>
-  Updated on: 10 July 2025
-</footer>
+    <textarea id="output" rows="5" placeholder="Replaced text will appear here..." readonly></textarea>
 
-<script>
-  function preview() {
-    const inputUrl = document.getElementById('githubUrl').value.trim();
-    if (!inputUrl.includes('github.com') || !inputUrl.includes('/blob/')) {
-      alert('Please enter a valid GitHub blob URL.');
-      return;
+    <button class="green" onclick="copyOutput()">Copy Output Text</button>
+    <button class="blue" onclick="scrollToTop()">Go to Top</button>
+  </div>
+
+  <footer>
+    <p>Last modified: 26 July 2025</p>
+    <p>Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></p>
+  </footer>
+
+  <audio id="beep" src="https://suyashdwivedi.github.io/beep.mp3" preload="auto"></audio>
+
+  <script>
+    // Function to apply night mode based on stored preference
+    function applyNightModePreference() {
+      const isNightMode = localStorage.getItem('nightMode') === 'enabled';
+      const body = document.body;
+      const normalText = document.querySelector('.normal-text');
+      const darkText = document.querySelector('.dark-text');
+
+      if (isNightMode) {
+        body.classList.add('dark-mode');
+        normalText.style.display = 'none';
+        darkText.style.display = 'block';
+      } else {
+        body.classList.remove('dark-mode');
+        normalText.style.display = 'block';
+        darkText.style.display = 'none';
+      }
     }
-    const previewUrl = `https://htmlpreview.github.io/?${inputUrl}`;
-    document.getElementById('previewFrame').src = previewUrl;
-  }
-</script>
 
-<!-- ✅ Analytics -->
+    // Call the function on page load to apply the preference
+    document.addEventListener('DOMContentLoaded', applyNightModePreference);
+
+
+    function replaceWords() {
+      let text = document.getElementById("paragraph").value;
+
+      const replacements = {
+        // Numbers without leading '$'
+        "0": { replace: "०", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"1": { replace: "१", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"2": { replace: "२", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"3": { replace: "३", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"4": { replace: "४", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"5": { replace: "५", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"6": { replace: "६", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"7": { replace: "७", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"8": { replace: "८", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"9": { replace: "९", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+        "Œ": { replace: "०", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"ƒ": { replace: "१", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"„": { replace: "२", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"…": { replace: "३", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"†": { replace: "४", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"‡": { replace: "५", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"ˆ": { replace: "६", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"‰": { replace: "७", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"Š": { replace: "८", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+		"‹": { replace: "९", condition: (val, index, fullText) => (index === 0 || fullText[index - 1] !== '$') && !/\d/.test(fullText[index-1])},
+
+		// Other replacements (no special condition needed)
+		"Aug": "अगस्त",
+		"Dec": "दिसंबर",
+		"Feb": "फरवरी",
+		"Jan": "जनवरी",
+		"July": "जुलाई",
+		"Jun": "जून",
+		"Mar": "मार्च",
+		"May": "मई",
+		"Nov": "नवंबर",
+		"Oct": "अक्टूबर",
+		"Sep": "सितंबर",
+		"अलावा": "अतिरिक्त",
+		"काम": "कार्य",
+		"करने के लिए": "हेतु",
+		"खुद": "स्वयं",
+		"ढांचा": "ढाँचा",
+		"ढांचे": "ढाँचे",
+		"ढूंढ": "ढूँढ़",
+		"दस्तावेज़": "आलेख",
+		"दुनिया": "विश्व",
+		"जवाब": "उत्तर",
+		"जहां": "जहाँ",
+		"जिम्मेदारियां": "उत्तरदायित्व",
+		"जिम्मेदारियों": "उत्तरदायित्वों",
+		"जांच": "जाँच",
+		"जरूरत": "आवश्यकता",
+		"जरूरतें": "आवश्यकताएँ",
+		"शामिल": "सम्मिलित",
+		"शुरुआत": "प्रारम्भ",
+		"शुरू": "प्रारम्भ",
+		"सवाल": "प्रश्न",
+		"सवालों": "प्रश्नो",
+		"साल": "वर्ष",
+		"सिफारिश": "अनुशंसा",
+		"सिफारिशों": "अनुशंसाओं",
+		"संरचनाएं": "संरचनाएँ",
+		"तरीके": "उपाए",
+		"मदद": "सहयता",
+		"मजबूत": "सशक्त",
+		"मंजूरी": "अनुमति",
+		"मुफ़्त": "निःशुल्क",
+		"मुफ्त": "निःशुल्क",
+		"मौजूद": "उपलब्ध",
+		"हालांकि": "हालाँकी",
+		"हमेशा": "सदैव",
+		"हिस्सा": "भाग",
+		"हिस्से": "भाग",
+		"हूं": "हूँ",
+		"पहुंच": "पहुँच",
+		"पहुंचेगा": "पहुँचेगा",
+		"पहुंचते": "पहुँचते",
+		"पहुंचने": "पहुँचने",
+		"उगाहने": "संग्रहण",
+		"परियोजनाएं": "परियोजनाएँ",
+		"बढ़ाएं": "बढ़ाएँ",
+		"बनाएंगे": "बनाएँगे",
+		"बनाएंगी": "बनाएँगी",
+		"नीतियां": "नीतियाँ",
+		"अंगुर":"अंगूर",
+		"अकांक्षा":"आकांक्षा",
+		"अतिथी":"अतिथि",
+		"अत्मा":"आत्मा",
+		"सुर्य":"सूर्य",
+		"शांती":"शांति",
+		"लड़ायी":"लड़ाई",
+		"मुनी":"मुनि",
+		"पोधा":"पौधा",
+		"पत्नि":"पत्नी",
+		"देस":"देश",
+		"दवाइ":"दवाई",
+		"तिथी":"तिथि",
+		"ठिक":"ठीक",
+		"जरुरी":"जरूरी",
+		"घनटे":"घंटे",
+		"गनित":"गणित",
+		"प्रतिनिध":"प्रतिनिधि",
+		"अप्रसंगिक":"अप्रासंगिक",
+		"अनाधिकार":"अनधिकार",
+		"अनेकों":"अनेक",
+		"अन्तःराष्ट्रीय":"अन्तर्राष्ट्रीय",
+		"अन्तराष्ट्रीय":"अन्तरराष्ट्रीय",
+		"अन्तरजाल":"अन्तर्जाल",
+		"उज्जवल":"उज्ज्वल",
+		"चिन्ह":"चिह्न",
+		"अहिल्या":"अहल्या",
+		"पूज्यनीय":"पूजनीय",
+		"पूज्यास्पद":"पूजास्पद",
+		"पुरुस्कार":"पुरस्कार",
+		"सप्ताहिक":"साप्ताहिक",
+		"अतिश्योक्ति":"अतिशयोक्ति",
+		"आर्शीवाद":"आशीर्वाद",
+		"मैंनें":"मैंने",
+		"रूपया":"रुपया",
+		"रुप":"रूप",
+		"क्रपा":"कृपा",
+		"विरहणी":"विरहिणी",
+		"शुश्रुषा":"शुश्रूषा",
+		"सूर्पनखा":"शूर्पनखा",
+		"सम्राज्य":"साम्राज्य",
+		"सहस्त्र":"सहस्र (हजार)",
+		"शारिरिक":"शारीरिक",
+		"देहिक":"दैहिक",
+		"अध्यात्मिक":"आध्यात्मिक",
+		"वृष्टी":"वृष्टि",
+		"निरपराधी":"निरपराध",
+		"प्रमाणिक":"प्रामाणिक",
+		"माधुर्यता":"माधुर्य",
+		"राजनैतिक":"राजनीतिक",
+		"व्यवहरित":"व्यवहृत",
+		"वैधव्यता":"वैधव्य",
+		"षष्ठम":"षष्ठ",
+		"सौन्दर्यता":"सुन्दरता",
+		"केन्द्रिय":"केन्द्रीय",
+		"सौजन्यता":"सौजन्य",
+		"अन्तर्ध्यान":"अन्तर्धान",
+		"उपलक्ष":"उपलक्ष्य",
+		"घनिष्ट":"घनिष्ठ",
+		"अत्याधिक":"अत्यधिक",
+		"अगामी":"आगामी",
+		"आद्र":"आर्द्र",
+		"वाल्मीकी":"वाल्मीकि",
+		"बिमार":"बीमार",
+		"अध्यन":"अध्ययन",
+		"मैथली":"मैथिली",
+		"पुन्य":"पुण्य",
+		"संसारिक":"सांसारिक",
+		"अन्ताक्षरी":"अन्त्याक्षरी",
+		"परिक्षा":"परीक्षा",
+		"प्रोद्योगिकी":"प्रोद्यौगिकी",
+		"भगीरथी":"भागीरथी",
+		"राज्यमहल":"राजमहल",
+		"रावन":"रावण",
+		"पहूँचना":"पहुँचना",
+		"महत्वपूर्ण":"महत्त्वपूर्ण",
+		"हिन्दु":"हिन्दू",
+		"उपरोक्त":"उपर्युक्त",
+		"कालीदास":"कालिदास",
+		"पत्नि":"पत्नी",
+		"उन्नती":"उन्नति",
+		"परिस्थिती":"परिस्थिति",
+		"प्रसंशा":"प्रशंसा",
+		"ब्रम्ह":"ब्रह्म",
+		"भैय्या":"भैया",
+		"परिक्षा":"परीक्षा",
+		"प्रदर्शिनी":"प्रदर्शनी",
+		"भाष्कर":"भास्कर",
+		"सुर्य":"सूर्य",
+		"गोपिनी":"गोपी",
+		"भुजंगिनी":"भुजंगी *",
+		"अनाथिनी":"अनाथा",
+		"सुलोचनी":"सुलोचना",
+		"सुस्वागत":"स्वागत",
+		"निरपराधी":"निरपराध",
+		"विहंगिनी":"विहंगी *",
+		"शताब्दि":"शताब्दी",
+		"अक्षोहिणी":"अक्षौहिणी",
+		"निर्दोषी":"निर्दोष",
+		"निर्दयी":"निर्दय",
+		"निर्guṇī":"निर्गुण",
+		"आंख":"आँख",
+		"सन्यासी":"संन्यासी",
+		"श्रीमति":"श्रीमती",
+		"कृप्या":"कृपया",
+		"इंजनियरिंग, इंजिनीयरंग":"इंजीनियरिंग (अभियान्त्रिकी)",
+		"बढाकर":"बढ़ाकर",
+		"ब्लाग":"ब्लॉग",
+		"बाक्स":"बॉक्स",
+		"पन्डित":"पण्डित",
+		"विन्डो":"विण्डो",
+		"विन्डोज़":"विण्डोज़",
+		"फॉन्ट":"फॉण्ट",
+		"कल्ब":"क्लब",
+		"दवाईयाँ":"दवाइयाँ",
+		"रोड़":"रोड",
+		"मोबाईल":"मोबाइल",
+		"हस्पताल":"अस्पताल",
+		"आईना":"आइना",
+		"आईफोन":"आइफोन",
+		"आईपैड":"आइपैड",
+		"विकीपीडिया":"विकिपीडिया",
+		"गल्ती":"गलती",
+		"ढ़ाबा":"ढाबा",
+		"कृप्या":"कृपया",
+		"श्रृंखला":"शृंखला",
+		"श्रृंगार":"शृंगार",
+		"ग्यान":"ज्ञान",
+		"स्त्रोत":"स्रोत",
+		"स्त्रोत":"स्तोत्र",
+		"आफ":"ऑफ",
+		"कोलेज":"कॉलेज",
+		"लाइनेक्स":"लिनक्स",
+		"शिर्षक":"शीर्षक",
+		"पुरे":"पूरे",
+		"सुरक्षीत":"सुरक्षित",
+		"स्मसान":"श्मशान",
+		"सन्मान":"सम्मान",
+		"स्वास्थ":"स्वास्थ्य",
+		"प्राप्ती":"प्राप्ति",
+		"तृप्ती":"तृप्ति",
+		"शक्ती":"शक्ति",
+		"अतिथी":"अतिथि",
+		"मिस्लिम":"मुस्लिम",
+		"पुर्व":"पूर्व",
+		"काफि":"काफी",
+		"लागु":"लागू",
+		"टुल्स":"टूल्स",
+		"गुरू":"गुरु",
+		"हात":"हाथ",
+		"हिंदु":"हिंदू",
+		"वापिस":"वापस",
+		"पढाई":"पढ़ाई",
+		"त्यौहार":"त्योहार",
+		"त्यौहार":"त्योहार",
+		"अधार":"आधार",
+		"अगामी":"आगामी",
+		"अतिथी":"अतिथि",
+		"ग्रहणी":"गृहिणी",
+		"आर्दश":"आदर्श",
+		"दिवार":"दीवार",
+		"जबाब":"जवाब",
+		"हिंदु":"हिंदू",
+		"दांत":"दाँत",
+		"नर्क":"नरक",
+		"पती":"पति",
+		"उपर":"ऊपर",
+		"चढना":"चढ़ना",
+		"पत्नि":"पत्नी",
+		"धोका":"धोखा",
+		"इश्वर":"ईश्वर",
+		"इसाई":"ईसाई",
+		"इस्कूल":"स्कूल",
+		"ईच्छा":"इच्छा",
+		"ईमारत":"इमारत",
+		"ईसलिए":"इसलिए",
+		"उंगली":"ऊँगली",
+		"उंतीस":"उनतीस",
+		"उज्वल":"उज्जवल",
+		"उदघाटन":"उद्घाटन",
+		"उद्दत":"उद्यत",
+		"उधम":"ऊधम",
+		"उधाहरण":"उदाहरण",
+		"उनंचास":"उनचास",
+		"उपजाउ":"उपजाऊ",
+		"उपरोक्त":"उपयुर्क्त",
+		"उपलक्ष":"उपलक्ष्य",
+		"उमरना":"उमड़ना",
+		"उष्मा":"ऊष्मा",
+		"उहापोह":"ऊहापोह",
+		"ऊँगलियाँ":"उँगलियाँ",
+		"एंकर":"ऐंकर",
+		"एंजसी":"एजेंसी",
+		"एंपायर":"अंपायर",
+		"एकत्रित":"एकत्र",
+		"एक्ट":"ऐक्ट",
+		"एच्छिक":"ऐच्छिक",
+		"एतिहासिक":"ऐतिहासिक",
+		"एनकाउन्टर":"एनकाउंटर",
+		"ऐहतियात":"एहतियात",
+		"ऒपचारिक":"औपचारिक",
+		"कंप्युटर":"कंप्यूटर",
+		"कठिनाईयाँ":"कठिनाइयाँ",
+		"कनिष्ट":"कनिष्ठ",
+		"करिएगा":"कीजिएगा",
+		"करीए":"कीजिए",
+		"कवियत्री":"कवयित्री",
+		"कवी":"कवि",
+		"कसोटी":"कसौटी",
+		"काग़ज़ातों":"काग़ज़ात",
+		"काबिलयत":"क़ाबिलियत",
+		"काराग्रह":"कारागृह",
+		"कार्यवाई":"कार्रवाई",
+		"कालीदास":"कालिदास",
+		"कुमुदनी":"कुमुसिनी",
+		"कूआँ":"कुआँ",
+		"कूबत":"क़ूवत",
+		"कृत्यकृत्य":"कृतकृत्य",
+		"कृप्या":"कृपया",
+		"केंद्रिय":"केंद्रीय",
+		"केबिनेट":"कैबिनेट",
+		"केस":"केश",
+		"कोटी":"कोटि",
+		"कौव्वा":"कौआ",
+		"क्योंकी":"क्योंकि",
+		"क्षत्रीय":"क्षत्रिय",
+		"क्षमत":"क्षमता",
+		"खटायी":"खटाई",
+		"ख़बरनबीस":"ख़बरनवीस",
+		"खरोच":"खरोंच",
+		"खlवाट":"खल्वाट",
+		"ख़ुबानी":"ख़ूबानी",
+		"खूँखर":"खूँखार",
+		"ख्याल":"ख़याल",
+		"गँठजोड":"गठजोड",
+		"गदगद":"गद्गद",
+		"गनित":"गणित",
+		"गलाघोंटू":"गलघोंटू",
+		"गवाँना":"/",
+		"गीतांजली":"गीतांजलि",
+		"गीनती":"गिनती",
+		"गुरू":"गुरु",
+		"गृहणी":"गृहिणी",
+		"गैरसम्मानजनक":"असम्मानजनक",
+		"गोड़ा":"घोड़ा",
+		"ग्रहकार्य":"गृहकार्य",
+		"घनिष्ट":"घनिष्ठ",
+		"घन्टे":"घंटे",
+		"घबड़ाना":"घबराना",
+		"घरोंदा":"घरौंदा",
+		"घूट":"घूँट",
+		"चहिए":"चाहिए",
+		"चारागाह":"चरागाह",
+		"चित":"चित्त",
+		"चिन्ह":"चिह्न",
+		"चेष्ठा":"चेष्टा",
+		"छिपकिली":"छिपकली",
+		"छूआछूत":"छुआछूत",
+		"छेंड़छाड़":"/",
+		"जंडा":"झंड़ा",
+		"जबाव":"जवाब",
+		"जमीन":"ज़मीन",
+		"जयंति":"जयंती",
+		"ज़रुरी":"आवश्यक",
+		"जाँति-":"पाँति",
+		"जीर्णोंद्धार":"जीर्णोद्धार",
+		"जुआड़ी":"जुआरी",
+		"ज्योतिषि":"ज्योतिषी",
+		"ज्योत्सना":"ज्योत्स्ना",
+		"झपना":"झँपना",
+		"झाँग":"झाग",
+		"झुझलाना":"झुँझलाना",
+		"झूठा":"(खाना)",
+		"झोका":"झोंका",
+		"झौपड़ी":"झोंपडी",
+		"टिप्पड़ी":"टिप्पणी",
+		"टेलिविज़न":"टेलीविज़न",
+		"ठिक":"ठीक",
+		"डाकूओं":"डाकुओं",
+		"ड्राईवर":"ड्राइवर",
+		"ढकेला":"धकेला",
+		"ढाँकना":"ढाँकना",
+		"ढूँढना":"ढूँढ़ना",
+		"तत्कालिक":"तात्कालिक",
+		"तत्व":"तत्त्व",
+		"तत्वाधान":"तत्त्वावधान",
+		"तबियत":"तबीयत",
+		"ताकी":"ताकि",
+		"ताबुत":"ताबूत",
+		"तिथी":"तिथि",
+		"तिलस्म":"तिलिस्म",
+		"तीनतरफा":"तिनतरफ़ा",
+		"तुफान":"तूफ़ान",
+		"तुम्हारे":"को",
+		"तुष्टिकरण":"तुष्टीकरण",
+		"तृकालदर्शी":"त्रिकालदर्शी",
+		"तैतीस":"तैंतीस",
+		"त्योरी":"त्यौरी",
+		"त्यौहार":"त्योहार",
+		"त्रितीय":"तृतीय",
+		"थरमाकोल":"थर्माकोल",
+		"थिगली":"थेगली",
+		"थिसिस":"थीसीस",
+		"थुकना":"थूकना",
+		"थुत्कार":"थूत्कार",
+		"थ्यौरी":"थ्योरी",
+		"थ्रीलर":"थ्रिलर",
+		"दंपत्ति":"दंपति",
+		"दमाद":"दामाद",
+		"दयालू":"दयालु",
+		"दरियायी":"दरियाई",
+		"दवाइ":"दवाई",
+		"दवाईयाँ":"दवाइयाँ",
+		"दस्ताबेज":"दस्तावेज़",
+		"दायित्त्व":"दायित्व",
+		"दावपेच":"दाँवपेंच",
+		"दिजिए":"दीजिए",
+		"दिपक":"दीपक",
+		"दिवानगी":"दीवानगी",
+		"दिवाली":"दीवाली",
+		"दुकाने":"दुकानें",
+		"दुनियाँ":"दुनिया",
+		"दुरदर्शन":"दूरदर्शन",
+		"दुरावस्था":"दुरवस्था",
+		"duruupyog":"दुरुपयोग",
+		"duruuh":"दुरूह",
+		"dulhe":"दूल्हे",
+		"dusare":"दूसरे",
+		"drashta":"द्रष्टा",
+		"drasya":"दृश्य",
+		"des":"देश",
+		"dopahiya":"दुपहिया",
+		"dvand":"द्वंद्व",
+		"dhaatuven":"धातुएँ",
+		"dhuramdar":"धुरंधर",
+		"dhaukanee":"धौंकनी",
+		"dhaus":"धौंस",
+		"dhraree":"धरती",
+		"dhrupad":"ध्रुपद",
+		"nakara":"नाकारा",
+		"nakshart":"नक्षत्र",
+		"nagad":"नक़द",
+		"nadaan":"नादान",
+		"napathy":"नेपथ्य",
+		"nabab":"नवाब",
+		"nayee":"नई",
+		"naraj":"नाराज़",
+		"nark":"नरक",
+		"navaratri":"नवरात्र",
+		"nahee":"नहीं",
+		"nakodam":"नाकोदम",
+		"naas":"नाश",
+		"niramal":"निर्मल",
+		"niruupam":"निरुपम",
+		"nirog":"नीरोग",
+		"nirmaanadheen":"निर्माणाधीन",
+		"nilambit":"निलंबित",
+		"nishulk":"नि:शुल्क",
+		"nuksanadey":"नुकसानदेह",
+		"nupur":"नूपुर",
+		"nestanaboot":"नेस्तनाबूद",
+		"nokaree":"नौकरी",
+		"nauseekhiya":"नौसिखिया",
+		"nyalay":"न्यायालय",
+		"nyauchhawar":"न्योछावर",
+		"nyota":"न्योता",
+		"pakshigan":"पक्षिगण",
+		"pajama":"पाजामा",
+		"pados":"पड़ोस",
+		"patni":"पत्नी",
+		"parakhachche":"परखचे",
+		"paranaam":"प्रणाम",
+		"paralaukik":"पारलौकिक",
+		"paripakshy":"परिप्रेक्ष्य",
+		"parivarika":"पारिवारिक",
+		"parishisht":"परिशिष्ट",
+		"paristhit":"परिस्थिति",
+		"pareeksha":"परीक्षा",
+		"parichay":"परिचय",
+		"pareevaar":"परिवार",
+		"pardesh":"प्रदेश",
+		"pashchaataap":"पश्चात्ताप",
+		"paanchavaan":"पाँचवाँ",
+		"paande":"पांडेय",
+		"pitaambar":"पीतांबर",
+		"puurṇima":"पूर्णिमा",
+		"punarjanm":"पुनर्जन्म",
+		"punarmatadaan":"पुनर्मतदान",
+		"punarvas":"पुनर्वास",
+		"punarutthan":"पुनरुत्थान",
+		"pushpanjali":"पुष्पांजलि",
+		"pusatak":"पुस्तक",
+		"poochhkar":"पूछकर",
+		"poochhna":"पूछना",
+		"poojyaneey":"पूजनीय",
+		"puurtee":"पूर्ति",
+		"poorvard":"पूर्वार्ध",
+		"pencheeda":"पेचीदा",
+		"podha":"पौधा",
+		"prakartik":"प्राकृतिक",
+		"prakrti":"प्रकृति",
+		"prateeksha":"प्रतीक्षा",
+		"pradarshini":"प्रदर्शनी",
+		"prades":"प्रदेश",
+		"pramaanik":"प्रामाणिक",
+		"paramaatma":"परमात्मा",
+		"pradarshan":"प्रदर्शन",
+		"praveen":"प्रवीण",
+		"pravisht":"प्रविष्ट",
+		"prasamskrit":"प्रसंस्कृत",
+		"prachinatam":"प्राचीनतम",
+		"praan":"प्राण",
+		"praudh":"प्रौढ़",
+		"phaasee":"फाँसी",
+		"phit":"फुट",
+		"feharisht":"फ़ेहरिस्त",
+		"bangala":"बांग्ला",
+		"bandarbant":"बंदरबाँट",
+		"baimaan":"बेईमान",
+		"baqaayada":"बाक़ायदा",
+		"bajaay":"बजाय",
+		"bazaar":"बाज़ार",
+		"badhotaree":"बढ़ोतरी",
+		"badam":"बादाम",
+		"banisbat":"बनिस्बत",
+		"bardasht":"बरदाश्त",
+		"balv":"बल्ब",
+		"bahuvrihi":"बहुव्रीहि",
+		"banar":"वानर",
+		"barat":"बरात",
+		"baarish":"बारिश",
+		"baavat":"बाबत",
+		"vikaraal":"विकराल",
+		"bimar":"बीमार",
+		"viyog":"वियोग",
+		"vilas":"विलास",
+		"bisva":"बिस्वा",
+		"bihaar":"विहार",
+		"beevi":"बीवी",
+		"bechana":"बेचना",
+		"befazul":"फ़ज़ूल",
+		"brahm":"ब्रह्म",
+		"braahman":"ब्राह्मण",
+		"bhadakaau":"भड़काऊ",
+		"bhagavatprem":"भगवत्प्रेम",
+		"bhageedaree":"भागीदारी",
+		"bharatiy":"भारतीय",
+		"bhartiy":"भारतीय",
+		"bhaaluon":"भालुओं",
+		"bhashaen":"भाषाएँ",
+		"bhaskar":"भास्कर",
+		"bhaaskar":"भास्कर",
+		"bhukhamaree":"भुखमरी",
+		"bhed":"भेड़",
+		"bhaunk":"भौंक",
+		"manju":"मंजु",
+		"mantriparishad":"मंत्रिपरिषद",
+		"mantrochar":"मंत्रोच्चार",
+		"mahange":"महँगा",
+		"majaboor":"मज़बूर",
+		"manushy":"मनुष्य",
+		"mastak":"मस्तक",
+		"mahattv":"महत्त्व",
+		"mahaabali":"महाबली",
+		"mahaarat":"महारत",
+		"maans":"मांस",
+		"makhaul":"मखौल",
+		"maalin":"मालिन",
+		"maloom":"मालूम",
+		"mithaiyan":"मिठाइयाँ",
+		"mishtaan":"मिष्टान्न",
+		"mitr":"मित्र",
+		"mukund":"मुकुंद",
+		"mukadame":"मुकदमे",
+		"mukhalafat":"मुख़ालफ़त",
+		"muni":"मुनि",
+		"muninaṇ":"मुनिनण",
+		"muly":"मूल्य",
+		"mulyankan":"मूल्यांकन",
+		"muhuurt":"मुहूर्त",
+		"maithili":"मैथिली",
+		"maulavee":"मौलवी",
+		"yathavat":"यथावत्",
+		"yatheshth":"यथेष्ट",
+		"yathochit":"यथोचित",
+		"yani":"यानी",
+		"yogiraj":"योगिराज",
+		"ranabakure":"रणबाँकुरे",
+		"rabindr":"रवींद्र",
+		"ravivar":"रविवार",
+		"rasayanik":"रासायनिक",
+		"rajasthan":"राजस्थान",
+		"ratri":"रात्रि",
+		"ramayan":"रामायण",
+		"raamaayan":"रामायण",
+		"rashifal":"राशिफल",
+		"rashtriy":"राष्ट्रीय",
+		"rookha":"रूखा",
+		"rooth":"रूठ",
+		"rupaye":"रूपए",
+		"rupahala":"रुपहला",
+		"renu":"रेणु",
+		"retila":"रेतीला",
+		"restaran":"रेस्तराँ",
+		"lakshadeep":"लक्षद्वीप",
+		"ladai":"लड़ाई",
+		"labdhapratishthit":"लब्धप्रतिष्ठ",
+		"lahuluhaan":"लहूलुहान",
+		"lakhon":"लाखों",
+		"lipee":"लिपि",
+		"levar":"लीवर",
+		"lekin":"लेकिन",
+		"laish":"लैस",
+		"lokasabha":"लोकसभा",
+		"vadhu":"वधू",
+		"varsh":"वर्ष",
+		"varishth":"वरिष्ठ",
+		"varun":"वरुण",
+		"varsha":"वर्षा",
+		"varshaganth":"वर्षगाँठ",
+		"vastuon":"वस्तुओं",
+		"vaapas":"वापस",
+		"valmiki":"वाल्मीकि",
+		"vietanam":"वियतनाम",
+		"vijayee":"विजयी",
+		"vigyanik":"वैज्ञानिक",
+		"vipatti":"विपत्ति",
+		"vrkash":"वृक्ष",
+		"virahinee":"विरहिणी",
+		"virajaman":"विराजमान",
+		"vishay":"विषय",
+		"vishesh":"विशेष",
+		"vishwas":"विश्वास",
+		"vijay":"विजय",
+		"vraj":"व्रज",
+		"veshyagaman":"वेश्यागमन",
+		"veshabhoosha":"वेशभूषा",
+		"vyakaran":"व्याकरण",
+		"vyakti":"व्यक्ति",
+		"vyavasaayik":"व्यावसायिक",
+		"shambhu":"शंभु",
+		"shakti":"शक्ति",
+		"shamshan":"श्मशान",
+		"shashikant":"शशिकांत",
+		"shaantimay":"शांतिमय",
+		"shanti":"शांति",
+		"sharirik":"शारीरिक",
+		"shikhir":"शिखर",
+		"shivira":"शिविर",
+		"shishu":"शिशु",
+		"sheershak":"शीर्षक",
+		"shighrata":"शीघ्रता",
+		"ashirvad":"आशीर्वाद",
+		"shunya":"शून्य",
+		"shuruaat":"शुरुआत",
+		"shayya":"शय्या",
+		"shrimati":"श्रीमती",
+		"shrngar":"श्रृंगार",
+		"shadyantra":"षड्यंत्र",
+		"shashthi":"षष्टि",
+		"shashthipoorti":"षष्टिपूर्ति",
+		"sankhya":"संख्या",
+		"sangrahit":"संग्रहीत",
+		"satraansha":"सत्रांश",
+		"sandesh":"संदेश",
+		"sampatti":"संपत्ति",
+		"samman":"सम्मान",
+		"sanvardhan":"संवर्धन",
+		"sansarik":"सांसारिक",
+		"sadrsha":"सदृश",
+		"sannyas":"संन्यास",
+		"sanyaasee":"संन्यासी",
+		"sansar":"संसार",
+		"sampadak":"संपादक",
+		"saptahik":"साप्ताहिक",
+		"samadhi":"समाधि",
+		"saamaan":"सामान",
+		"samalingi":"समलिंगी",
+		"sammanit":"सम्मानित",
+		"samvaad":"संवाद",
+		"sarvanam":"सर्वनाम",
+		"shareer":"शरीर",
+		"satark":"सतर्क",
+		"sashaktikaran":"सशक्तीकरण",
+		"saibar":"साइबर",
+		"sahityik":"साहित्यिक",
+		"sadhu":"साधु",
+		"samarthy":"सामर्थ्य",
+		"saikal":"साइकिल",
+		"shasak":"शासक",
+		"simhavahini":"सिंहवाहिनी",
+		"sikai":"सिंकाई",
+		"seemit":"सीमित",
+		"shishya":"शिष्य",
+		"series":"सिरीज़",
+		"sucharu":"सुचारु",
+		"sunana":"सुनना",
+		"soobedar":"सूबेदार",
+		"sumeru":"सुमेरु",
+		"suraj":"सूरज",
+		"surya":"सूर्य",
+		"suchi":"सूची",
+		"suchibaddh":"सूचीबद्ध",
+		"sunasaan":"सुनसान",
+		"tsunami":"सुनामी",
+		"sevanivrtt":"सेवानिवृत्त",
+		"sochenge":"सोचेंगे",
+		"saundarya":"सौंदर्य",
+		"skool":"स्कूल",
+		"stabdhata":"स्तब्धता",
+		"sthayi":"स्थायी",
+		"sthiti":"स्थिति",
+		"smaran":"स्मरण",
+		"swachchh":"स्वच्छ",
+		"svapnadrashta":"स्वप्नद्रष्टा",
+		"svavalamban":"स्वावलंबन",
+		"svavalambi":"स्वावलंबी",
+		"svaasthy":"स्वास्थ्य",
+		"svaasthya":"स्वास्थ्य",
+		"heroine":"हेरोइन",
+		"hashra":"हश्र",
+		"house":"हाउस",
+		"hathi":"हाथी",
+		"hatini":"हथिनी",
+		"hindi":"हिंदी",
+		"hinduon":"हिंदुओं",
+		"hinsa":"हिंसा",
+		"himachal":"हिमाचल",
+		"hrday":"हृदय",
+		"hetu":"हेतु",
+		"upalabdhiyan":"उपलब्धियाँ",
+		"unchai":"ऊँचाई",
+		"vikimeediya": "Wikimedia",
+		"phaundeshan": "foundation",
+		"aandolan": "Movement",
+		"nyaasee bord": "Board of Trustees",
+		"wmf": "WMF",
+		"svayansevakon": "volunteers",
+		"entarapraiz": "Enterprise",
+		"tredamaark": "trademarks",
+		"sahayogiyon": "affiliate",
+		"chaartar": "Charter",
+		"hai": "hae",
+		"sakata": "sake",
+		"sadasyon": "members",
+		"hub": "Hubs",
+		"sadasyata": "membership",
+		"sahayogee": "affiliates",
+		"chaeptar": "Chapter",
+		"global kaunsil": "Global Council",
+		"vaishvik parishad": "Global Council",
+		"vikimeediya": "Wikimedia",
+		"phaundeshan": "foundation",
+		"aandolan": "Movement",
+		"nyaasee bord": "Board of Trustees",
+		"wmf": "WMF",
+		"svayansevakon": "volunteers",
+		"entarapraiz": "Enterprise",
+		"tredamaark": "trademarks",
+		"sahayogiyon": "affiliate",
+		"chaartar": "Charter",
+		"hai": "hae",
+		"sakata": "sake",
+		"sadasyon": "members",
+		"hub": "Hubs",
+		"sadasyata": "membership",
+		"sahayogee": "affiliates",
+		"chaeptar": "Chapter",
+		"global kaunsil": "Global Council",
+		"vaishvik parishad": "Global Council",
+		"तैनात": "लागू",
+		"तैनाती": "लागू",
+		"ज़िम्मेदारी": "उत्तरदायित्व",
+		"जिम्मेदार": "उत्तरदायी",
+		"ज़िम्मेदार": "उत्तरदायी",
+		"ज़रूरतों": "आवश्यकताओं",
+		"जरूरतों": "आवश्यकताओं",
+		"जाएंगे": "जाएँगे",
+		"यहां": "यहाँ", 
+		"मसौदे": "प्रारूप",
+		"मसौदा": "प्रारूप", 
+		"प्रक्रियाएं": "प्रक्रियाएँ",
+		"ज्यादा": "अधिक",
+		"चूंकि": "चूँकि",
+		"ज़्यादा": "अधिक",
+		"मज़बूत": "सशक्त",
+		"इस्तेमाल": "उपयोग",
+		"ज़रूरत": "आवश्यकता",
+		"मुश्किल": "कठिन",
+		"नज़र": "दॄष्टि",
+	    "बनाएं": "बनाएँ",
+	    "समितियां": "समितियाँ", 
+	    "भूमिकाएं": "भूमिकाएँ",
+	    "मांग": "माँग",
+	    "संरचना": "सँरचना",
+	  	"आवश्यकताएं": "आवश्यकताएँ",
+	  	"वहां": "वहाँ",
+	      
+		"हिंदी": "हिन्दी"
+      };
+
+      let outputText = text;
+      for (const key in replacements) {
+        const replacement = replacements[key];
+        if (typeof replacement === 'object' && replacement.condition) {
+          // Use a regular expression to find all occurrences of the key
+          // The 'g' flag ensures all matches are found.
+          // The 'i' flag (optional) ensures case-insensitive matching if needed.
+          const regex = new RegExp(key, 'g');
+          outputText = outputText.replace(regex, (match, offset, fullText) => {
+            // Apply the condition check
+            if (replacement.condition(match, offset, fullText)) {
+              return replacement.replace;
+            }
+            return match; // If condition is false, return the original match (do not replace)
+          });
+        } else {
+          // Handle standard replacements
+          const regex = new RegExp(key, 'g');
+          outputText = outputText.replace(regex, replacement);
+        }
+      }
+
+      document.getElementById("output").value = outputText;
+    }
+
+    function copyOutput() {
+      const output = document.getElementById("output");
+      const text = output.value.trim();
+
+      if (text !== "") {
+        output.select();
+        document.execCommand("copy");
+        document.getElementById("beep").play();
+        document.getElementById("paragraph").value = "";
+      }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleNightMode() {
+      const body = document.body;
+      const normalText = document.querySelector('.normal-text');
+      const darkText = document.querySelector('.dark-text');
+
+      body.classList.toggle('dark-mode');
+
+      // Store the preference in localStorage
+      if (body.classList.contains('dark-mode')) {
+        localStorage.setItem('nightMode', 'enabled');
+        normalText.style.display = 'none';
+        darkText.style.display = 'block';
+      } else {
+        localStorage.setItem('nightMode', 'disabled');
+        normalText.style.display = 'block';
+        darkText.style.display = 'none';
+      }
+    }
+  </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
 <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-GC8PGC89NB');
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-GC8PGC89NB');
 </script>
 <script src="https://cdn.counter.dev/script.js" 
         data-id="cc7a036d-a904-4d76-bcac-37ea4196c014" 
         data-utcoffset="6">
 </script>
-
-<!-- ✅ Play alert.mp3 when preview iframe loads -->
-<audio id="previewSound" src="https://suyashdwivedi.github.io/alert.mp3" preload="auto"></audio>
-<script>
-  const frame = document.getElementById('previewFrame');
-  const sound = document.getElementById('previewSound');
-
-  frame.onload = function () {
-    try {
-      sound.play().catch(err => {
-        console.warn("Sound autoplay blocked by browser:", err);
-      });
-    } catch (e) {
-      console.error("Error playing sound:", e);
-    }
-  };
-</script>
-
-<!-- ✅ Clear Preview Function -->
-<script>
-  function clearPreview() {
-    document.getElementById('githubUrl').value = '';
-    document.getElementById('previewFrame').src = '';
-  }
-</script>
-
 </body>
 </html>
