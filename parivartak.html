@@ -183,16 +183,29 @@
       let text = document.getElementById("paragraph").value;
 
       const replacements = {
-       "0": "०",
-		"1": "१",
-		"2": "२",
-		"3": "३",
-		"4": "४",
-		"5": "५",
-		"6": "६",
-		"7": "७",
-		"8": "८",
-		"9": "९",
+        // Numbers without leading '$'
+        "0": { replace: "०", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"1": { replace: "१", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"2": { replace: "२", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"3": { replace: "३", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"4": { replace: "४", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"5": { replace: "५", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"6": { replace: "६", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"7": { replace: "७", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"8": { replace: "८", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"9": { replace: "९", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+        "Œ": { replace: "०", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"ƒ": { replace: "१", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"„": { replace: "२", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"…": { replace: "३", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"†": { replace: "४", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"‡": { replace: "५", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"ˆ": { replace: "६", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"‰": { replace: "७", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"Š": { replace: "८", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+		"‹": { replace: "९", condition: (val, index, fullText) => fullText[index - 1] !== '$' },
+
+		// Other replacements (no special condition needed)
 		"Aug": "अगस्त",
 		"Dec": "दिसंबर",
 		"Feb": "फरवरी",
@@ -204,16 +217,6 @@
 		"Nov": "नवंबर",
 		"Oct": "अक्टूबर",
 		"Sep": "सितंबर",
-		"Œ": "०",
-		"ƒ": "१",
-		"„": "२",
-		"…": "३",
-		"†": "४",
-		"‡": "५",
-		"ˆ": "६",
-		"‰": "७",
-		"Š": "८",
-		"‹": "९",
 		"अलावा": "अतिरिक्त",
 		"काम": "कार्य",
 		"करने के लिए": "हेतु",
@@ -615,7 +618,7 @@
 		"नास":"नाश",
 		"निरमल":"निर्मल",
 		"निरूपम":"निरुपम",
-		"निरोग":"नीरोग",
+		"निरog":"नीरोग",
 		"निर्माणधीन":"निर्माणाधीन",
 		"निलंवित":"निलंबित",
 		"निशुल्क":"नि:शुल्क",
@@ -951,23 +954,37 @@
 		"ज़रूरत": "आवश्यकता",
 		"मुश्किल": "कठिन",
 		"नज़र": "दॄष्टि",
-	  "बनाएं": "बनाएँ",
-	  "समितियां": "समितियाँ", 
-	  "भूमिकाएं": "भूमिकाएँ",
-	  "मांग": "माँग",
-	  "संरचना": "सँरचना",
-	  "आवश्यकताएं": "आवश्यकताएँ",
-	  "वहां": "वहाँ",	      
+	    "बनाएं": "बनाएँ",
+	    "समितियां": "समितियाँ", 
+	    "भूमिकाएं": "भूमिकाएँ",
+	    "मांग": "माँग",
+	    "संरचना": "सँरचना",
+	  	"आवश्यकताएं": "आवश्यकताएँ",
+	  	"वहां": "वहाँ",
+	      
 		"हिंदी": "हिन्दी"
-			
       };
 
-      for (let key in replacements) {
-        const re = new RegExp(key, 'g');
-        text = text.replace(re, replacements[key]);
+      let outputText = text;
+      for (const key in replacements) {
+        const replacement = replacements[key];
+        if (typeof replacement === 'object' && replacement.condition) {
+          // Handle replacements with conditions (like numbers preceded by '$')
+          const regex = new RegExp(key, 'g');
+          outputText = outputText.replace(regex, (match, offset, fullText) => {
+            if (replacement.condition(match, offset, fullText)) {
+              return replacement.replace;
+            }
+            return match; // If condition is false, return the original match
+          });
+        } else {
+          // Handle standard replacements
+          const regex = new RegExp(key, 'g');
+          outputText = outputText.replace(regex, replacement);
+        }
       }
 
-      document.getElementById("output").value = text;
+      document.getElementById("output").value = outputText;
     }
 
     function copyOutput() {
