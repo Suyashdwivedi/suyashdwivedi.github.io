@@ -1,812 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wikipedia Shareable Image Creator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png" />
-    <style>
-        :root {
-            --primary-blue: #007bff;
-            --secondary-gray: #6c757d;
-            --light-gray: #f8f9fa;
-            --dark-gray: #343a40;
-            --wikipedia-blue: #0645ad; /* Official Wikipedia link blue */
-            --gradient-start: #ff7e5f;
-            --gradient-end: #feb47b;
-            --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: var(--light-gray);
-            color: var(--dark-gray);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        header {
-            background-color: #fff;
-            padding: 15px 20px;
-            box-shadow: var(--box-shadow);
-            display: flex;
-            align-items: center;
-            justify-content: center; /* Center horizontally */
-            position: relative;
-            flex-wrap: wrap; /* Allow wrapping for smaller screens */
-            gap: 10px;
-        }
-
-        .header-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-grow: 1;
-            position: relative; /* For absolute positioning of logo */
-        }
-
-        .wikipedia-logo {
-            position: absolute;
-            left: 20px;
-            height: 40px; /* Adjust as needed */
-            width: auto;
-        }
-
-        header h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8em;
-            color: var(--wikipedia-blue);
-            margin: 0;
-            text-align: center;
-            flex-grow: 1; /* Allow title to take available space */
-        }
-
-        main {
-            flex-grow: 1;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 20px auto;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: var(--box-shadow);
-        }
-
-        .input-section {
-            margin-bottom: 25px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .input-section input[type="text"] {
-            flex-grow: 1;
-            padding: 12px;
-            border: 1px solid #ced4da;
-            border-radius: 5px;
-            font-size: 1em;
-            min-width: 250px;
-        }
-
-        .input-section button {
-            padding: 12px 20px;
-            background-color: var(--primary-blue);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s ease;
-        }
-
-        .input-section button:hover {
-            background-color: #0056b3;
-        }
-
-        .article-display {
-            border: 1px solid #e9ecef;
-            padding: 20px;
-            border-radius: 5px;
-            background-color: #fdfdff;
-            min-height: 300px;
-            max-height: 600px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-            position: relative; /* For loading indicator */
-        }
-
-        .article-display h2 {
-            color: var(--wikipedia-blue);
-            margin-top: 0;
-            font-family: 'Playfair Display', serif;
-        }
-
-        .article-display p {
-            margin-bottom: 1em;
-        }
-
-        .article-display a {
-            color: var(--wikipedia-blue);
-            text-decoration: none;
-        }
-
-        .article-display a:hover {
-            text-decoration: underline;
-        }
-
-        .article-display .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.2em;
-            color: var(--secondary-gray);
-            z-index: 10;
-        }
-
-        .controls-section {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .controls-section button {
-            padding: 12px 25px;
-            background-color: #28a745; /* Green for generate */
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: background-color 0.3s ease;
-        }
-
-        .controls-section button:hover {
-            background-color: #218838;
-        }
-
-        .image-preview-section {
-            margin-top: 30px;
-            text-align: center;
-        }
-
-        #generatedImageContainer {
-            position: relative;
-            display: inline-block; /* To center the image */
-            box-shadow: var(--box-shadow);
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            overflow: hidden; /* Ensures contents stay within bounds */
-            background-color: #eee; /* Fallback background */
-        }
-
-        #generatedImageContainer canvas {
-            display: block; /* Remove extra space below canvas */
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px; /* For the canvas itself */
-        }
-
-        .image-actions {
-            margin-top: 15px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .image-actions button {
-            padding: 10px 20px;
-            background-color: var(--primary-blue);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.95em;
-            transition: background-color 0.3s ease;
-        }
-
-        .image-actions button:hover {
-            background-color: #0056b3;
-        }
-
-        .image-actions button.copy-btn {
-            background-color: #17a2b8; /* Info blue */
-        }
-        .image-actions button.copy-btn:hover {
-            background-color: #138496;
-        }
-
-        footer {
-            margin-top: 40px;
-            padding: 20px;
-            background-color: var(--dark-gray);
-            color: white;
-            text-align: center;
-            font-size: 0.9em;
-            border-top: 5px solid var(--wikipedia-blue);
-        }
-
-        footer p {
-            margin: 5px 0;
-        }
-
-        .colorful-text {
-            background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-            display: inline-block; /* Needed for text-fill-color */
-        }
-
-        .error-message {
-            color: #dc3545;
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                padding: 10px;
-            }
-
-            .wikipedia-logo {
-                position: static; /* Remove absolute positioning */
-                margin-bottom: 10px;
-            }
-
-            header h1 {
-                font-size: 1.5em;
-            }
-
-            main {
-                padding: 15px;
-                margin: 15px auto;
-            }
-
-            .input-section {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .input-section input[type="text"] {
-                min-width: unset;
-            }
-
-            .controls-section button,
-            .image-actions button {
-                width: 100%;
-                margin-bottom: 10px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Wikipedia DYK Share Tool</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url('https://picsum.photos/1600/900');
+      background-position: center top;
+      background-size: cover;
+      background-attachment: fixed;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    textarea, input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-bottom: 10px;
+      display: block;
+      width: 100%;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    #articleContent {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background: #fff;
+      min-height: 200px;
+      overflow-y: auto;
+      max-height: 400px;
+    }
+    #articleContent span {
+      color: #e74c3c; /* Red for selected text */
+    }
+    #articleContent p, #articleContent div {
+      font-weight: bold;
+      background: linear-gradient(90deg, #e74c3c, #3498db, #2ecc71, #f1c40f, #9b59b6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 18px;
+    }
+    .share-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      justify-content: center;
+    }
+    .share-buttons a {
+      padding: 8px 12px;
+      border-radius: 5px;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .share-buttons a.facebook {
+      background: #3b5998;
+    }
+    .share-buttons a.twitter {
+      background: #1da1f2;
+    }
+    .share-buttons a.instagram {
+      background: #e1306c;
+    }
+    #generateImageBtn {
+      display: none;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Wikipedia DYK Share Tool</h1>
+    <input type="text" id="wikipediaUrl" placeholder="Paste Wikipedia URL or short URL here" value="">
+    <button id="loadArticleBtn">Load Article</button>
+    <button id="generateImageBtn">Generate Shareable Image</button>
+    <div id="articleContent"></div>
+    <div class="share-buttons">
+      <a href="#" class="facebook" id="shareFb">Share on Facebook</a>
+      <a href="#" class="twitter" id="shareX">Share on X</a>
+      <a href="#" class="instagram" id="shareIg">Share on Instagram</a>
+    </div>
+  </div>
 
-    <header>
-        <div class="header-content">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Wikipedia-logo-v2-en.svg/1024px-Wikipedia-logo-v2-en.svg.png" alt="Wikipedia Logo" class="wikipedia-logo">
-            <h1>Wikipedia Shareable Image Creator</h1>
-        </div>
-    </header>
+  <script>
+    document.getElementById('loadArticleBtn').addEventListener('click', loadArticle);
+    document.getElementById('generateImageBtn').addEventListener('click', generateImage);
 
-    <main>
-        <div class="input-section">
-            <input type="text" id="wikipediaUrl" placeholder="Enter Wikipedia article URL (e.g., https://en.wikipedia.org/wiki/Artificial_intelligence)">
-            <button id="loadArticleBtn">Load Article</button>
-        </div>
+    function loadArticle() {
+      let url = document.getElementById('wikipediaUrl').value.trim();
+      if (!url) {
+        alert('Please enter a Wikipedia URL or short URL.');
+        return;
+      }
 
-        <div class="error-message" id="errorMessage"></div>
+      // Handle short URLs (like w.wiki)
+      if (url.includes('w.wiki') || url.startsWith('https://w.wiki')) {
+        // Try to resolve short URL to get the real Wikipedia URL (in practice, you may need a backend service for this)
+        // For demo, just treat as is and hope for the best.
+        // In a real app, use fetch or a proxy to resolve the URL.
+        alert('Short URL detected. Note: Some features may not work with short URLs directly.');
+      }
 
-        <div class="article-display" id="articleDisplay">
-            <div class="loading-overlay" id="loadingOverlay" style="display: none;">Loading article...</div>
-            <p>Paste a Wikipedia URL above and click "Load Article" to view its content.</p>
-            <p>Once loaded, select any text within this box and click "Generate Shareable Image".</p>
-        </div>
-
-        <div class="controls-section">
-            <button id="generateImageBtn">Generate Shareable Image</button>
-        </div>
-
-        <div class="image-preview-section">
-            <h3>Generated Image Preview</h3>
-            <div id="generatedImageContainer">
-                </div>
-            <div class="image-actions" id="imageActions" style="display: none;">
-                <button id="downloadImageBtn">Download Image</button>
-                <button id="copyImageBtn" class="copy-btn">Copy Image to Clipboard</button>
-            </div>
-        </div>
-    </main>
-
-    <footer>
-        <p>📸 Created by: Suyash Dwivedi</p>
-        <p id="lastModifiedDate"></p>
-        <p id="currentPageUpdateDate"></p>
-    </footer>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script> <script>
-        const wikipediaUrlInput = document.getElementById('wikipediaUrl');
-        const loadArticleBtn = document.getElementById('loadArticleBtn');
-        const articleDisplay = document.getElementById('articleDisplay');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const errorMessage = document.getElementById('errorMessage');
-        const generateImageBtn = document.getElementById('generateImageBtn');
-        const generatedImageContainer = document.getElementById('generatedImageContainer');
-        const downloadImageBtn = document.getElementById('downloadImageBtn');
-        const copyImageBtn = document.getElementById('copyImageBtn');
-        const imageActions = document.getElementById('imageActions');
-        const lastModifiedDateElem = document.getElementById('lastModifiedDate');
-        const currentPageUpdateDateElem = document.getElementById('currentPageUpdateDate');
-
-        let articleMainImageUrl = '';
-        let articleFullUrl = ''; // Store the canonical URL for QR and image text
-
-        // Set initial page update date
-        currentPageUpdateDateElem.textContent = `Page Updated on: ${new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}`;
-
-        loadArticleBtn.addEventListener('click', loadWikipediaArticle);
-        generateImageBtn.addEventListener('click', generateShareableImage);
-
-        async function loadWikipediaArticle() {
-            const url = wikipediaUrlInput.value.trim();
-            errorMessage.textContent = '';
-            articleDisplay.innerHTML = '';
-            articleDisplay.scrollTop = 0; // Reset scroll position
-            imageActions.style.display = 'none'; // Hide image actions on new load
-
-            if (!url) {
-                errorMessage.textContent = 'Please enter a Wikipedia URL.';
-                return;
-            }
-
-            let articleTitle;
-            let sectionHash = '';
-            try {
-                const urlObj = new URL(url);
-                const pathParts = urlObj.pathname.split('/');
-                articleTitle = pathParts[pathParts.length - 1];
-                if (urlObj.hash) {
-                    sectionHash = urlObj.hash;
-                }
-                // Decode URI component to handle titles with spaces like "Artificial_intelligence"
-                articleTitle = decodeURIComponent(articleTitle).replace(/_/g, ' ');
-
-                if (!articleTitle) {
-                    throw new Error('Invalid Wikipedia URL format.');
-                }
-            } catch (e) {
-                errorMessage.textContent = 'Invalid Wikipedia URL. Please ensure it is a valid format.';
-                console.error('URL parsing error:', e);
-                return;
-            }
-
-            loadingOverlay.style.display = 'flex';
-
-            try {
-                // Fetch article content
-                const contentResponse = await fetch(`https://en.wikipedia.org/w/api.php?action=parse&page=${encodeURIComponent(articleTitle)}&format=json&prop=text|externallinks|displaytitle|revid&origin=*`);
-                const contentData = await contentResponse.json();
-
-                if (contentData.error) {
-                    errorMessage.textContent = `Error: ${contentData.error.info}`;
-                    loadingOverlay.style.display = 'none';
-                    return;
-                }
-
-                if (!contentData.parse || !contentData.parse.text) {
-                    errorMessage.textContent = 'Could not find article content. Please check the URL.';
-                    loadingOverlay.style.display = 'none';
-                    return;
-                }
-
-                // Fetch main image and last modified date
-                const queryResponse = await fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(articleTitle)}&prop=pageimages|revisions&pithumbsize=500&rvprop=timestamp&format=json&origin=*`);
-                const queryData = await queryResponse.json();
-
-                const pages = queryData.query.pages;
-                const pageId = Object.keys(pages)[0];
-                const pageInfo = pages[pageId];
-
-                if (pageInfo.missing) {
-                    errorMessage.textContent = 'Article not found. Please check the URL or title.';
-                    loadingOverlay.style.display = 'none';
-                    return;
-                }
-
-                articleMainImageUrl = pageInfo.thumbnail ? pageInfo.thumbnail.source : '';
-                articleFullUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(pageInfo.title.replace(/ /g, '_'))}`;
-
-                if (pageInfo.revisions && pageInfo.revisions.length > 0) {
-                    const timestamp = pageInfo.revisions[0].timestamp;
-                    const date = new Date(timestamp);
-                    lastModifiedDateElem.textContent = `Last Modified: ${date.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`;
-                } else {
-                    lastModifiedDateElem.textContent = 'Last Modified: N/A';
-                }
-
-                // Display article content
-                const articleHTML = contentData.parse.text['*'];
-
-                // Create a temporary div to parse the HTML and extract the relevant section
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = articleHTML;
-
-                let contentToDisplay = tempDiv;
-                let sectionImage = '';
-
-                if (sectionHash) {
-                    const targetId = sectionHash.substring(1); // Remove '#'
-                    const sectionElement = tempDiv.querySelector(`#${CSS.escape(targetId)}`);
-
-                    if (sectionElement) {
-                        // Find the parent section or element that contains the heading and its content
-                        let currentElement = sectionElement.parentElement;
-                        let sectionContent = [];
-                        let foundHeading = false;
-
-                        // Navigate up to find the closest common section element (e.g., div, section)
-                        // Or collect siblings until next heading
-                        while (currentElement && !currentElement.matches('body')) { // Limit search to avoid entire body
-                            if (currentElement.tagName.match(/^H[1-6]$/) && currentElement !== sectionElement) {
-                                // If we hit another heading before finding relevant content, break
-                                break;
-                            }
-                            if (currentElement.classList.contains('mw-parser-output')) {
-                                break; // We reached the main content container
-                            }
-                            currentElement = currentElement.parentElement;
-                        }
-
-                        if (currentElement && currentElement.classList.contains('mw-parser-output')) {
-                            // Now iterate through children of mw-parser-output starting from the section element
-                            let startNode = sectionElement;
-                            while(startNode && startNode.previousElementSibling && !startNode.previousElementSibling.matches('h1, h2, h3, h4, h5, h6')) {
-                                startNode = startNode.previousElementSibling;
-                            }
-                            // If the actual header is a sibling before the first actual content, we need to grab that
-                            if(startNode && startNode.tagName.match(/^H[1-6]$/)) {
-                                sectionContent.push(startNode.outerHTML);
-                            } else {
-                                startNode = sectionElement; // Default to starting from the section link itself
-                            }
-
-
-                            let node = sectionElement;
-                             // Find the actual heading element associated with the anchor
-                            let actualHeading = null;
-                            if (sectionElement.tagName === 'SPAN' && sectionElement.parentElement.tagName.match(/^H[1-6]$/)) {
-                                actualHeading = sectionElement.parentElement;
-                            } else if (sectionElement.tagName.match(/^H[1-6]$/)) {
-                                actualHeading = sectionElement;
-                            }
-
-                            if(actualHeading) {
-                                sectionContent.push(actualHeading.outerHTML);
-                                node = actualHeading.nextElementSibling;
-                            } else {
-                                node = sectionElement.nextElementSibling;
-                            }
-
-
-                            while (node && !node.tagName.match(/^H[1-6]$/) && !node.classList.contains('mw-editsection')) {
-                                sectionContent.push(node.outerHTML);
-                                // Check for images within this specific content segment
-                                if (!sectionImage) { // Only take the first image found
-                                    const img = node.querySelector('img.mw-file-element');
-                                    if (img && img.src) {
-                                        sectionImage = img.src;
-                                    }
-                                }
-                                node = node.nextElementSibling;
-                            }
-                        }
-
-                        if (sectionContent.length > 0) {
-                            contentToDisplay = document.createElement('div');
-                            contentToDisplay.innerHTML = sectionContent.join('');
-                            console.log('Using section content:', contentToDisplay.innerHTML);
-                        } else {
-                            // If section content parsing failed, display full article
-                            console.warn('Could not extract specific section content. Displaying full article.');
-                            contentToDisplay = tempDiv;
-                        }
-                    } else {
-                        errorMessage.textContent = `Section "${sectionHash}" not found. Displaying full article.`;
-                        console.warn(`Section "${sectionHash}" not found. Displaying full article.`);
-                        contentToDisplay = tempDiv;
-                    }
-                }
-
-                // Prioritize section image if found, else use main article image
-                articleMainImageUrl = sectionImage || articleMainImageUrl;
-
-                // Remove problematic elements like edit buttons, coordinates, table of contents etc.
-                contentToDisplay.querySelectorAll('.mw-editsection, .mw-cite-backlink, .mw-references-columns, .mw-parser-output .plainlinks, .coordinates, .toc, .portal').forEach(el => el.remove());
-
-                // Optional: Replace relative URLs with absolute for images if needed (MediaWiki API usually gives absolute)
-                contentToDisplay.querySelectorAll('img').forEach(img => {
-                    if (img.src && img.src.startsWith('//')) {
-                        img.src = 'https:' + img.src;
-                    }
-                });
-
-                articleDisplay.innerHTML = contentToDisplay.innerHTML;
-                articleDisplay.prepend(document.createElement('h2').textContent = pageInfo.title); // Add title at top
-                if (sectionHash && contentToDisplay.querySelector(`[id="${CSS.escape(sectionHash.substring(1))}"]`)) {
-                     // Scroll to the section if it exists in the rendered content
-                    const targetSection = articleDisplay.querySelector(`[id="${CSS.escape(sectionHash.substring(1))}"]`);
-                    if (targetSection) {
-                        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                }
-
-
-            } catch (error) {
-                errorMessage.textContent = `Failed to load article: ${error.message}. Please try again or check the URL.`;
-                console.error('API or network error:', error);
-            } finally {
-                loadingOverlay.style.display = 'none';
-            }
+      // Handle Hindi Wikipedia and other non-English URLs
+      // The Wikipedia API should handle these, but the fetch may be blocked by CORS.
+      // For demo, we just use the URL as is.
+      document.getElementById('articleContent').innerHTML = '<p>Loading article content...</p>';
+      
+      // Extract page title from URL for API call
+      let pageTitle;
+      try {
+        if (url.includes('wikipedia.org/wiki/')) {
+          pageTitle = decodeURIComponent(url.split('/wiki/')[1].split('#')[0].split('?')[0]);
+        } else {
+          pageTitle = url.split('/').pop();
         }
+      } catch (e) {
+        alert('Error parsing URL. Please use a valid Wikipedia URL.');
+        return;
+      }
 
-        async function generateShareableImage() {
-            errorMessage.textContent = '';
-            const selection = window.getSelection();
-            if (!selection || selection.rangeCount === 0 || selection.toString().trim() === '') {
-                errorMessage.textContent = 'Please select some text from the article first.';
-                return;
-            }
+      // Use Wikipedia API (note: CORS issues may arise with certain languages)
+      fetch(`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=true&explaintext=true&titles=${encodeURIComponent(pageTitle)}&origin=*`)
+        .then(response => response.json())
+        .then(data => {
+          const pages = data.query.pages;
+          const pageId = Object.keys(pages)[0];
+          const content = pages[pageId].extract;
+          if (content) {
+            document.getElementById('articleContent').innerHTML = `<p>${content.replace(/\n/g, '<br>')}</p>`;
+            document.getElementById('generateImageBtn').style.display = 'block';
+          } else {
+            document.getElementById('articleContent').innerHTML = '<p>Article not found or content unavailable.</p>';
+          }
+        })
+        .catch(error => {
+          document.getElementById('articleContent').innerHTML = `<p>Error loading article: ${error.message}</p>`;
+          alert('Failed to load article. Please check the URL and try again.');
+        });
+    }
 
-            const selectedText = selection.toString();
-            if (selectedText.length > 500) { // Limit text length for better image aesthetics
-                errorMessage.textContent = 'Selected text is too long. Please select a shorter passage (max 500 characters).';
-                return;
-            }
+    function generateImage() {
+      let content = document.getElementById('articleContent').innerHTML;
+      // In a real app, use a library like html2canvas to generate an image from the content
+      // For demo, alert the user
+      alert('Shareable image would be generated here. In a real app, use html2canvas or similar.');
+      // Example: window.open('data:image/png;base64,...');
+    }
 
-            // Create a temporary element to render for html2canvas
-            const tempCanvasContainer = document.createElement('div');
-            tempCanvasContainer.style.width = '1200px'; // Common wide share size
-            tempCanvasContainer.style.height = '630px'; // Standard aspect ratio for social media link previews
-            tempCanvasContainer.style.position = 'relative';
-            tempCanvasContainer.style.backgroundColor = '#f0f0f0'; // Fallback background
-            tempCanvasContainer.style.overflow = 'hidden';
-            tempCanvasContainer.style.fontFamily = 'Roboto, sans-serif';
-            tempCanvasContainer.style.display = 'flex';
-            tempCanvasContainer.style.flexDirection = 'column';
-            tempCanvasContainer.style.justifyContent = 'space-between';
-
-
-            // Background Image
-            if (articleMainImageUrl) {
-                const img = new Image();
-                img.crossOrigin = 'Anonymous'; // Crucial for html2canvas to work with external images
-                img.src = articleMainImageUrl;
-                img.onload = () => {
-                    const aspectRatio = img.width / img.height;
-                    const containerAspectRatio = 1200 / 630;
-                    let bgWidth, bgHeight, bgLeft, bgTop;
-
-                    if (aspectRatio > containerAspectRatio) { // Image is wider than container
-                        bgHeight = 630;
-                        bgWidth = img.width * (630 / img.height);
-                        bgLeft = (1200 - bgWidth) / 2;
-                        bgTop = 0;
-                    } else { // Image is taller or same aspect ratio
-                        bgWidth = 1200;
-                        bgHeight = img.height * (1200 / img.width);
-                        bgTop = (630 - bgHeight) / 2;
-                        bgLeft = 0;
-                    }
-
-                    const bgImageDiv = document.createElement('div');
-                    bgImageDiv.style.position = 'absolute';
-                    bgImageDiv.style.top = bgTop + 'px';
-                    bgImageDiv.style.left = bgLeft + 'px';
-                    bgImageDiv.style.width = bgWidth + 'px';
-                    bgImageDiv.style.height = bgHeight + 'px';
-                    bgImageDiv.style.backgroundImage = `url('${img.src}')`;
-                    bgImageDiv.style.backgroundSize = 'cover';
-                    bgImageDiv.style.backgroundPosition = 'center';
-                    bgImageDiv.style.opacity = '0.75'; /* Transparency from 50% to 75% -> 0.65 */
-                    tempCanvasContainer.appendChild(bgImageDiv);
-
-                    createOverlayContent(tempCanvasContainer, selectedText, articleFullUrl);
-                    renderCanvas(tempCanvasContainer);
-                };
-                img.onerror = () => {
-                    console.warn('Could not load main article image. Generating without background.');
-                    createOverlayContent(tempCanvasContainer, selectedText, articleFullUrl);
-                    renderCanvas(tempCanvasContainer);
-                };
-            } else {
-                console.warn('No main article image found. Generating without background.');
-                createOverlayContent(tempCanvasContainer, selectedText, articleFullUrl);
-                renderCanvas(tempCanvasContainer);
-            }
-        }
-
-        function createOverlayContent(container, selectedText, articleUrl) {
-            // Text overlay
-            const textOverlay = document.createElement('div');
-            textOverlay.style.position = 'absolute';
-            textOverlay.style.top = '0';
-            textOverlay.style.left = '0';
-            textOverlay.style.width = '100%';
-            textOverlay.style.height = '100%';
-            textOverlay.style.display = 'flex';
-            textOverlay.style.flexDirection = 'column';
-            textOverlay.style.justifyContent = 'space-between';
-            textOverlay.style.padding = '40px';
-            textOverlay.style.boxSizing = 'border-box';
-            textOverlay.style.textShadow = '1px 1px 3px rgba(0,0,0,0.7)'; // For better readability
-
-            const quoteContent = document.createElement('p');
-            quoteContent.innerHTML = `“${selectedText}”`;
-            quoteContent.style.color = 'white';
-            quoteContent.style.textAlign = 'center';
-            quoteContent.style.margin = 'auto'; // Center text
-            quoteContent.style.fontSize = getFontSizeForText(selectedText.length); // Auto font size
-            quoteContent.style.fontWeight = 'bold';
-            quoteContent.style.fontFamily = 'Playfair Display, serif';
-
-            const footerContent = document.createElement('div');
-            footerContent.style.display = 'flex';
-            footerContent.style.justifyContent = 'space-between';
-            footerContent.style.alignItems = 'flex-end';
-            footerContent.style.width = '100%';
-            footerContent.style.marginTop = '20px';
-
-            // Article URL
-            const urlText = document.createElement('span');
-            urlText.textContent = articleUrl;
-            urlText.style.color = 'white';
-            urlText.style.fontSize = '18px';
-            urlText.style.whiteSpace = 'nowrap';
-            urlText.style.overflow = 'hidden';
-            urlText.style.textOverflow = 'ellipsis';
-            urlText.style.maxWidth = '60%'; // Limit width to make space for QR
-
-            // QR Code with Wikipedia Logo
-            const qrCodeWrapper = document.createElement('div');
-            qrCodeWrapper.style.display = 'flex';
-            qrCodeWrapper.style.flexDirection = 'column';
-            qrCodeWrapper.style.alignItems = 'center';
-            qrCodeWrapper.style.gap = '5px';
-
-            const qrCanvas = document.createElement('canvas');
-            qrCanvas.width = 120;
-            qrCanvas.height = 120;
-
-            try {
-                 const qr = new QRious({
-                    element: qrCanvas,
-                    value: articleUrl,
-                    size: 120,
-                    level: 'H', // High error correction for logo
-                    foreground: '#000', // Black QR code
-                    background: '#fff' // White background for QR code
-                });
-
-                // Draw Wikipedia logo on QR code (simple overlay, not embedded within QR algorithm)
-                const ctx = qrCanvas.getContext('2d');
-                const wikiLogo = new Image();
-                wikiLogo.crossOrigin = 'Anonymous';
-                wikiLogo.src = 'https://upload.wikimedia.org/wikipedia/commons/b/b3/Wikipedia-logo-v2-en.svg'; // Smaller version
-                wikiLogo.onload = () => {
-                    const logoSize = 30; // Size of the logo in the center of QR
-                    const x = (qrCanvas.width - logoSize) / 2;
-                    const y = (qrCanvas.height - logoSize) / 2;
-                    ctx.drawImage(wikiLogo, x, y, logoSize, logoSize);
-                };
-                wikiLogo.onerror = () => {
-                    console.warn('Could not load Wikipedia logo for QR code.');
-                };
-
-            } catch (e) {
-                console.error('QR code generation failed:', e);
-                const qrError = document.createElement('span');
-                qrError.textContent = 'QR Error';
-                qrError.style.color = 'white';
-                qrCodeWrapper.appendChild(qrError);
-            }
-
-            const qrText = document.createElement('span');
-            qrText.textContent = 'Scan to read more';
-            qrText.style.color = 'white';
-            qrText.style.fontSize = '14px';
-
-            qrCodeWrapper.appendChild(qrCanvas);
-            qrCodeWrapper.appendChild(qrText);
-
-
-            footerContent.appendChild(urlText);
-            footerContent.appendChild(qrCodeWrapper);
-
-            textOverlay.appendChild(quoteContent);
-            textOverlay.appendChild(footerContent);
-            container.appendChild(textOverlay);
-        }
-
-        function getFontSizeForText(textLength) {
-            // Simple heuristic for font size adjustment
-            if (textLength < 50) return '50px';
-            if (textLength < 100) return '40px';
-            if (textLength < 200) return '35px';
-            if (textLength < 300) return '30px';
-            return '25px';
-        }
-
-
-        async function renderCanvas(tempContainer) {
-            generatedImageContainer.innerHTML = ''; // Clear previous image
-
-            // Append the temporary container to the DOM to allow html2canvas to render it
-            // It's hidden but needs to be in the document flow for correct rendering
-            document.body.appendChild(tempContainer);
-            tempContainer.style.position = 'absolute';
-            tempContainer.style.left = '-9999px'; // Hide it off-screen
-
-            try {
-                const canvas = await html2canvas(tempContainer, {
-                    useCORS: true, // Crucial if images are from external sources (though still limited by server CORS)
-                    allowTaint: true, // Allows tainted canvases but won't let you read pixel data later
-                    backgroundColor: null // Set to null to keep existing background
-                });
-
-                generatedImageContainer.innerHTML = '';
-                generatedImageContainer.appendChild(canvas);
-                imageActions.style.display = 'flex'; // Show download/copy buttons
-
-                downloadImageBtn.onclick = () => {
-                    const link = document.createElement('a');
-                    link.download = 'wikipedia_share.png';
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                };
-
-                copyImageBtn.onclick = async () => {
-                    try {
-                        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                        await navigator.clipboard.write([
-                            new ClipboardItem({ 'image/png': blob })
-                        ]);
-                        alert('Image copied to clipboard!');
-                    } catch (err) {
-                        console.error('Failed to copy image:', err);
-                        alert('Failed to copy image to clipboard. Your browser might not support this, or you need to grant permission. Please use the "Download Image" button instead.');
-                    }
-                };
-
-            } catch (error) {
-                errorMessage.textContent = 'Error generating image. This might be due to browser security restrictions (CORS) on Wikipedia images. Please try with a simpler article or download manually.';
-                console.error('HTML2Canvas error:', error);
-            } finally {
-                // Remove the temporary container from the DOM
-                document.body.removeChild(tempContainer);
-            }
-        }
-    </script>
-      <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-GC8PGC89NB');
-</script>
+    // Social media share links
+    document.getElementById('shareFb').addEventListener('click', function(e) {
+      e.preventDefault();
+      let url = encodeURIComponent(document.getElementById('wikipediaUrl').value || window.location.href);
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
+    });
+    document.getElementById('shareX').addEventListener('click', function(e) {
+      e.preventDefault();
+      let url = encodeURIComponent(document.getElementById('wikipediaUrl').value || window.location.href);
+      window.open(`https://twitter.com/intent/tweet?url=${url}`, '_blank', 'width=600,height=400');
+    });
+    document.getElementById('shareIg').addEventListener('click', function(e) {
+      e.preventDefault();
+      // Instagram does not support direct sharing of links via web, so open a new window with a message
+      window.open('https://www.instagram.com/', '_blank', 'width=600,height=400');
+      alert('Instagram does not support direct link sharing. You can copy the link and post it manually.');
+    });
+  </script>
 </body>
 </html>
