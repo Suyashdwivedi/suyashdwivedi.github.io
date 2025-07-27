@@ -1,199 +1,393 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Wikipedia DYK Share Tool</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-image: url('https://picsum.photos/1600/900');
-      background-position: center top;
-      background-size: cover;
-      background-attachment: fixed;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
-    .container {
-      max-width: 700px;
-      margin: 0 auto;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    }
-    h1 {
-      color: #2c3e50;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    textarea, input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-    button {
-      background-color: #3498db;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      margin-bottom: 10px;
-      display: block;
-      width: 100%;
-    }
-    button:hover {
-      background-color: #2980b9;
-    }
-    #articleContent {
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      padding: 15px;
-      margin-bottom: 15px;
-      background: #fff;
-      min-height: 200px;
-      overflow-y: auto;
-      max-height: 400px;
-    }
-    #articleContent span {
-      color: #e74c3c; /* Red for selected text */
-    }
-    #articleContent p, #articleContent div {
-      font-weight: bold;
-      background: linear-gradient(90deg, #e74c3c, #3498db, #2ecc71, #f1c40f, #9b59b6);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      font-size: 18px;
-    }
-    .share-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-      justify-content: center;
-    }
-    .share-buttons a {
-      padding: 8px 12px;
-      border-radius: 5px;
-      color: white;
-      text-decoration: none;
-      font-size: 14px;
-    }
-    .share-buttons a.facebook {
-      background: #3b5998;
-    }
-    .share-buttons a.twitter {
-      background: #1da1f2;
-    }
-    .share-buttons a.instagram {
-      background: #e1306c;
-    }
-    #generateImageBtn {
-      display: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wikipedia DYK Share Tool</title>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GC8PGC89NB');
+    </script>
+    <script src="https://cdn.counter.dev/script.js"
+            data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
+            data-utcoffset="6">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.7/dayjs.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://picsum.photos/1600/900');
+            background-position: center top;
+            background-size: cover;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.night-mode {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            background-image: none; /* Remove background image in night mode */
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        body.night-mode .container {
+            background: rgba(44, 62, 80, 0.9);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        body.night-mode h1 {
+            color: #3498db;
+        }
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #fff;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+        body.night-mode textarea, body.night-mode input[type="text"] {
+            background-color: #3b5998;
+            color: #ecf0f1;
+            border-color: #555;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 10px;
+            display: block;
+            width: 100%;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        body.night-mode button {
+            background-color: #1da1f2;
+        }
+        body.night-mode button:hover {
+            background-color: #0c85d0;
+        }
+        #articleContent {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #fff;
+            min-height: 200px;
+            overflow-y: auto;
+            max-height: 400px;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        body.night-mode #articleContent {
+            background: #4a6c8e;
+            border-color: #555;
+        }
+        #articleContent p {
+            font-weight: normal; /* Changed from bold */
+            color: #333; /* Default text color */
+            font-size: 16px; /* Default font size */
+        }
+        body.night-mode #articleContent p {
+            color: #ecf0f1;
+        }
+        #articleContent span {
+            color: #e74c3c; /* Red for selected text */
+        }
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+            flex-wrap: wrap; /* Allow buttons to wrap */
+        }
+        .share-buttons a {
+            padding: 8px 12px;
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .share-buttons a.facebook {
+            background: #3b5998;
+        }
+        .share-buttons a.facebook:hover {
+            background: #2d4373;
+        }
+        .share-buttons a.twitter {
+            background: #1da1f2;
+        }
+        .share-buttons a.twitter:hover {
+            background: #0c85d0;
+        }
+        .share-buttons a.instagram {
+            background: #e1306c;
+        }
+        .share-buttons a.instagram:hover {
+            background: #c20f4c;
+        }
+        #generateImageBtn {
+            display: none; /* Hidden by default */
+        }
+        .night-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+        .night-mode-toggle:hover {
+            background-color: #e67e22;
+        }
+        #dateTime {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        body.night-mode #dateTime {
+            color: #bbb;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Wikipedia DYK Share Tool</h1>
-    <input type="text" id="wikipediaUrl" placeholder="Paste Wikipedia URL or short URL here" value="">
-    <button id="loadArticleBtn">Load Article</button>
-    <button id="generateImageBtn">Generate Shareable Image</button>
-    <div id="articleContent"></div>
-    <div class="share-buttons">
-      <a href="#" class="facebook" id="shareFb">Share on Facebook</a>
-      <a href="#" class="twitter" id="shareX">Share on X</a>
-      <a href="#" class="instagram" id="shareIg">Share on Instagram</a>
+    <button id="nightModeToggle" class="night-mode-toggle">Night Mode</button>
+    <div class="container">
+        <h1>Wikipedia DYK Share Tool</h1>
+        <div id="dateTime"></div>
+        <input type="text" id="wikipediaUrl" placeholder="Paste Wikipedia URL or short URL here" value="">
+        <button id="loadArticleBtn">Load Article</button>
+        <button id="generateImageBtn">Generate Shareable Image</button>
+        <div id="articleContent"></div>
+        <div class="share-buttons">
+            <a href="#" class="facebook" id="shareFb">Share on Facebook</a>
+            <a href="#" class="twitter" id="shareX">Share on X</a>
+            <a href="#" class="instagram" id="shareIg">Share on Instagram</a>
+        </div>
     </div>
-  </div>
 
-  <script>
-    document.getElementById('loadArticleBtn').addEventListener('click', loadArticle);
-    document.getElementById('generateImageBtn').addEventListener('click', generateImage);
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const wikipediaUrlInput = document.getElementById('wikipediaUrl');
+            const loadArticleBtn = document.getElementById('loadArticleBtn');
+            const generateImageBtn = document.getElementById('generateImageBtn');
+            const articleContentDiv = document.getElementById('articleContent');
+            const shareFb = document.getElementById('shareFb');
+            const shareX = document.getElementById('shareX');
+            const shareIg = document.getElementById('shareIg');
+            const nightModeToggle = document.getElementById('nightModeToggle');
+            const dateTimeDisplay = document.getElementById('dateTime');
 
-    function loadArticle() {
-      let url = document.getElementById('wikipediaUrl').value.trim();
-      if (!url) {
-        alert('Please enter a Wikipedia URL or short URL.');
-        return;
-      }
+            // --- Night Mode Logic ---
+            const enableNightMode = () => {
+                document.body.classList.add('night-mode');
+                nightModeToggle.textContent = 'Day Mode';
+                Cookies.set('nightMode', 'enabled', { expires: 365 });
+            };
 
-      // Handle short URLs (like w.wiki)
-      if (url.includes('w.wiki') || url.startsWith('https://w.wiki')) {
-        // Try to resolve short URL to get the real Wikipedia URL (in practice, you may need a backend service for this)
-        // For demo, just treat as is and hope for the best.
-        // In a real app, use fetch or a proxy to resolve the URL.
-        alert('Short URL detected. Note: Some features may not work with short URLs directly.');
-      }
+            const disableNightMode = () => {
+                document.body.classList.remove('night-mode');
+                nightModeToggle.textContent = 'Night Mode';
+                Cookies.set('nightMode', 'disabled', { expires: 365 });
+            };
 
-      // Handle Hindi Wikipedia and other non-English URLs
-      // The Wikipedia API should handle these, but the fetch may be blocked by CORS.
-      // For demo, we just use the URL as is.
-      document.getElementById('articleContent').innerHTML = '<p>Loading article content...</p>';
-      
-      // Extract page title from URL for API call
-      let pageTitle;
-      try {
-        if (url.includes('wikipedia.org/wiki/')) {
-          pageTitle = decodeURIComponent(url.split('/wiki/')[1].split('#')[0].split('?')[0]);
-        } else {
-          pageTitle = url.split('/').pop();
-        }
-      } catch (e) {
-        alert('Error parsing URL. Please use a valid Wikipedia URL.');
-        return;
-      }
+            // Check for saved night mode preference
+            if (Cookies.get('nightMode') === 'enabled') {
+                enableNightMode();
+            }
 
-      // Use Wikipedia API (note: CORS issues may arise with certain languages)
-      fetch(`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=true&explaintext=true&titles=${encodeURIComponent(pageTitle)}&origin=*`)
-        .then(response => response.json())
-        .then(data => {
-          const pages = data.query.pages;
-          const pageId = Object.keys(pages)[0];
-          const content = pages[pageId].extract;
-          if (content) {
-            document.getElementById('articleContent').innerHTML = `<p>${content.replace(/\n/g, '<br>')}</p>`;
-            document.getElementById('generateImageBtn').style.display = 'block';
-          } else {
-            document.getElementById('articleContent').innerHTML = '<p>Article not found or content unavailable.</p>';
-          }
-        })
-        .catch(error => {
-          document.getElementById('articleContent').innerHTML = `<p>Error loading article: ${error.message}</p>`;
-          alert('Failed to load article. Please check the URL and try again.');
+            nightModeToggle.addEventListener('click', () => {
+                if (document.body.classList.contains('night-mode')) {
+                    disableNightMode();
+                } else {
+                    enableNightMode();
+                }
+            });
+
+            // --- Date and Time Display ---
+            const updateDateTime = () => {
+                dateTimeDisplay.textContent = dayjs().format('MMMM D, YYYY h:mm:ss A [IST]');
+            };
+            setInterval(updateDateTime, 1000); // Update every second
+            updateDateTime(); // Initial call
+
+            // --- Load Article Logic ---
+            loadArticleBtn.addEventListener('click', loadArticle);
+
+            async function loadArticle() {
+                let url = wikipediaUrlInput.value.trim();
+                if (!url) {
+                    alert('Please enter a Wikipedia URL or short URL.');
+                    return;
+                }
+
+                articleContentDiv.innerHTML = '<p>Loading article content...</p>';
+                generateImageBtn.style.display = 'none'; // Hide image button while loading
+
+                let pageTitle;
+                let lang = 'en'; // Default language
+
+                try {
+                    const urlObj = new URL(url);
+                    let hostname = urlObj.hostname;
+                    if (hostname.includes('wikipedia.org')) {
+                        const parts = hostname.split('.');
+                        if (parts.length >= 3 && parts[0] !== 'www') {
+                            lang = parts[0]; // e.g., 'en', 'hi', 'es'
+                        }
+                        const pathSegments = urlObj.pathname.split('/wiki/');
+                        if (pathSegments.length > 1) {
+                            pageTitle = decodeURIComponent(pathSegments[1].split('#')[0].split('?')[0]);
+                        } else {
+                            throw new Error('Invalid Wikipedia URL format.');
+                        }
+                    } else if (url.includes('w.wiki')) {
+                        alert('Short URL detected. Attempting to resolve, but direct API lookup might fail.');
+                        pageTitle = url.split('/').pop(); // Fallback for short URLs
+                    } else {
+                        throw new Error('Not a recognized Wikipedia or w.wiki URL.');
+                    }
+                } catch (e) {
+                    articleContentDiv.innerHTML = `<p>Error parsing URL: ${e.message}. Please use a valid Wikipedia URL.</p>`;
+                    alert(`Error: ${e.message}`);
+                    return;
+                }
+
+                // Use Wikipedia API for the detected language
+                const apiUrl = `https://${lang}.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=true&explaintext=true&titles=${encodeURIComponent(pageTitle)}&origin=*`;
+
+                try {
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+
+                    const pages = data.query.pages;
+                    const pageId = Object.keys(pages)[0];
+                    const content = pages[pageId].extract;
+
+                    if (content) {
+                        articleContentDiv.innerHTML = `<p>${content.replace(/\n/g, '<br>')}</p>`;
+                        generateImageBtn.style.display = 'block';
+                    } else {
+                        articleContentDiv.innerHTML = '<p>Article not found or content unavailable. Please ensure the URL is correct and the article exists.</p>';
+                    }
+                } catch (error) {
+                    articleContentDiv.innerHTML = `<p>Error loading article: ${error.message}. This might be due to an invalid URL, network issues, or CORS restrictions for certain languages.</p>`;
+                    alert(`Failed to load article: ${error.message}`);
+                }
+            }
+
+            // --- Generate Image Logic ---
+            generateImageBtn.addEventListener('click', generateShareableImage);
+
+            function generateShareableImage() {
+                const container = document.querySelector('.container');
+                if (!container) {
+                    alert('Error: Could not find content to capture for image.');
+                    return;
+                }
+
+                // Temporarily hide elements not desired in the image
+                const elementsToHide = [loadArticleBtn, wikipediaUrlInput, shareFb.parentElement, nightModeToggle, dateTimeDisplay];
+                elementsToHide.forEach(el => {
+                    if (el) el.style.display = 'none';
+                });
+
+                // Set a temporary fixed width for consistent image generation
+                const originalContainerWidth = container.style.width;
+                container.style.width = '700px'; // Match max-width
+
+                // Capture the div using html2canvas
+                html2canvas(container, {
+                    scale: 2, // Increase scale for better quality
+                    useCORS: true, // Important if background image is from external domain
+                    allowTaint: true // Allows cross-origin images to be rendered (may not work with all browsers/CORS configs)
+                }).then(canvas => {
+                    // Restore hidden elements and original width
+                    elementsToHide.forEach(el => {
+                        if (el) el.style.display = ''; // Restore original display property
+                    });
+                    container.style.width = originalContainerWidth; // Restore original width
+
+                    // Create a download link for the image
+                    const image = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.href = image;
+                    link.download = 'wikipedia_dyk_share.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    alert('Shareable image generated and downloaded!');
+                }).catch(error => {
+                    console.error('Error generating image:', error);
+                    alert('Failed to generate image. Please try again. (Check console for details)');
+                    // Ensure elements are restored even if there's an error
+                    elementsToHide.forEach(el => {
+                        if (el) el.style.display = '';
+                    });
+                    container.style.width = originalContainerWidth;
+                });
+            }
+
+            // --- Social Media Share Links ---
+            shareFb.addEventListener('click', function(e) {
+                e.preventDefault();
+                let url = encodeURIComponent(wikipediaUrlInput.value || window.location.href);
+                window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
+            });
+
+            shareX.addEventListener('click', function(e) {
+                e.preventDefault();
+                let url = encodeURIComponent(wikipediaUrlInput.value || window.location.href);
+                let text = encodeURIComponent("Check out this interesting Wikipedia fact!");
+                window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank', 'width=600,height=400');
+            });
+
+            shareIg.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Instagram does not support direct link sharing from websites. Please save the generated image and post it manually on Instagram, or copy the URL and paste it into your Instagram story/bio.');
+                // Optionally open Instagram in a new tab
+                window.open('https://www.instagram.com/', '_blank');
+            });
         });
-    }
-
-    function generateImage() {
-      let content = document.getElementById('articleContent').innerHTML;
-      // In a real app, use a library like html2canvas to generate an image from the content
-      // For demo, alert the user
-      alert('Shareable image would be generated here. In a real app, use html2canvas or similar.');
-      // Example: window.open('data:image/png;base64,...');
-    }
-
-    // Social media share links
-    document.getElementById('shareFb').addEventListener('click', function(e) {
-      e.preventDefault();
-      let url = encodeURIComponent(document.getElementById('wikipediaUrl').value || window.location.href);
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
-    });
-    document.getElementById('shareX').addEventListener('click', function(e) {
-      e.preventDefault();
-      let url = encodeURIComponent(document.getElementById('wikipediaUrl').value || window.location.href);
-      window.open(`https://twitter.com/intent/tweet?url=${url}`, '_blank', 'width=600,height=400');
-    });
-    document.getElementById('shareIg').addEventListener('click', function(e) {
-      e.preventDefault();
-      // Instagram does not support direct sharing of links via web, so open a new window with a message
-      window.open('https://www.instagram.com/', '_blank', 'width=600,height=400');
-      alert('Instagram does not support direct link sharing. You can copy the link and post it manually.');
-    });
-  </script>
+    </script>
 </body>
 </html>
