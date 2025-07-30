@@ -40,10 +40,24 @@
       padding: 30px 20px 20px;
       text-align: center;
     }
-    header h1 {
+    .header-flex {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+    .header-flex img {
+      width: 100px;
+      height: auto;
+      margin: 0;
+      display: inline-block;
+    }
+    .header-flex h1 {
       font-size: 32px;
       margin: 0;
       font-weight: bold;
+      display: inline-block;
+      vertical-align: middle;
     }
     header p {
       margin: 8px 0 0;
@@ -106,17 +120,15 @@
     footer a:hover {
       text-decoration: underline;
     }
-    header img {
-      max-width: 250px;
-      margin-bottom: 15px;
-    }
   </style>
 </head>
 <body>
 
 <header>
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Wiki%27s_Lazy_Coders.png/250px-Wiki%27s_Lazy_Coders.png" alt="Wiki's Lazy Coders" />
-  <h1>GitHub HTML Previewer</h1>
+  <div class="header-flex">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Wiki%27s_Lazy_Coders.png/250px-Wiki%27s_Lazy_Coders.png" alt="Wiki's Lazy Coders" />
+    <h1>GitHub HTML Previewer</h1>
+  </div>
   <p>Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></p>
 </header>
 
