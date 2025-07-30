@@ -1,182 +1,246 @@
-<!DOCTYPE html> 
+<!DOCTYPE html> 
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- ✅ SEO Meta Tags -->
-  <title>GitHub HTML Previewer – Developed by Suyash Dwivedi</title>
-  <meta name="description" content="Preview raw HTML files hosted on GitHub directly in your browser. Developed by Wikimedian Suyash Dwivedi.">
-  <meta name="keywords" content="GitHub HTML Previewer, HTML viewer, GitHub Pages, raw HTML preview, blob HTML, Suyash Dwivedi, Wikimedia">
-  <meta name="author" content="Suyash Dwivedi">
+    <title>GitHub HTML Previewer – Developed by Suyash Dwivedi</title>
+  <meta name="description" content="Preview raw HTML files hosted on GitHub directly in your browser. Developed by Wikimedian Suyash Dwivedi.">
+  <meta name="keywords" content="GitHub HTML Previewer, HTML viewer, GitHub Pages, raw HTML preview, blob HTML, Suyash Dwivedi, Wikimedia">
+  <meta name="author" content="Suyash Dwivedi">
 
-  <!-- ✅ Open Graph (for Facebook, LinkedIn) -->
-  <meta property="og:title" content="GitHub HTML Previewer – Developed by Suyash Dwivedi">
-  <meta property="og:description" content="Paste a GitHub blob URL and instantly preview HTML in your browser.">
-  <meta property="og:image" content="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">
-  <meta property="og:url" content="https://suyashdwivedi.github.io/github-html-previewer.html">
-  <meta property="og:type" content="website">
+    <meta property="og:title" content="GitHub HTML Previewer – Developed by Suyash Dwivedi">
+  <meta property="og:description" content="Paste a GitHub blob URL and instantly preview HTML in your browser.">
+  <meta property="og:image" content="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">
+  <meta property="og:url" content="https://suyashdwivedi.github.io/github-html-previewer.html">
+  <meta property="og:type" content="website">
 
-  <!-- ✅ Twitter Card -->
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="GitHub HTML Previewer">
-  <meta name="twitter:description" content="Instantly preview raw HTML files from GitHub repositories.">
-  <meta name="twitter:image" content="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">
+    <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="GitHub HTML Previewer">
+  <meta name="twitter:description" content="Instantly preview raw HTML files from GitHub repositories.">
+  <meta name="twitter:image" content="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">
 
-  <!-- ✅ Favicon and Canonical -->
-  <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg" type="image/svg+xml">
-  <link rel="canonical" href="https://suyashdwivedi.github.io/github-html-previewer.html" />
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://suyashdwivedi.github.io/github-html-previewer.html" />
 
-  <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .dark-mode {
+      background-color: #222;
+      color: #eee;
     }
-    header {
-      background-color: #24292e;
-      color: white;
-      padding: 30px 20px 20px;
-      text-align: center;
+    header {
+      background-color: #24292e;
+      color: white;
+      padding: 30px 20px 20px;
+      text-align: center;
+      position: relative; /* Added for night mode button positioning */
+    }
+    .dark-mode header {
+      background-color: #333;
     }
-    header h1 {
-      font-size: 32px;
-      margin: 0;
-      font-weight: bold;
+    header h1 {
+      font-size: 32px;
+      margin: 0;
+      font-weight: bold;
+    }
+    header p {
+      margin: 8px 0 0;
+      font-size: 14px;
+    }
+    header a {
+      color: #58a6ff;
+      text-decoration: none;
+    }
+    header a:hover {
+      text-decoration: underline;
+    }
+    main {
+      max-width: 900px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+    }
+    .dark-mode main {
+      background: #333;
+      color: #eee;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
     }
-    header p {
-      margin: 8px 0 0;
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .dark-mode input[type="text"] {
+      background-color: #444;
+      color: #eee;
+      border-color: #555;
+    }
+    button {
+      background-color: #2ea44f;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #279644;
+    }
+    .dark-mode button {
+      background-color: #0056b3; /* Darker shade of blue for buttons */
+    }
+    .dark-mode button:hover {
+      background-color: #004085;
+    }
+    #nightModeToggle {
+      position: absolute; 
+      top: 20px; 
+      right: 20px; 
+      background-color: #444; 
+      color: white; 
+      border: none; 
+      padding: 8px 12px; 
+      border-radius: 5px; 
+      cursor: pointer; 
       font-size: 14px;
     }
-    header a {
-      color: #58a6ff;
-      text-decoration: none;
+    .dark-mode #nightModeToggle { 
+      background-color: #555;
     }
-    header a:hover {
-      text-decoration: underline;
+    iframe {
+      width: 100%;
+      height: 500px;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    footer {
+      text-align: center;
+      padding: 15px;
+      margin-top: 40px;
+      font-size: 14px;
+      color: #666;
+    }
+    .dark-mode footer {
+      color: #bbb;
     }
-    main {
-      max-width: 900px;
-      margin: 30px auto;
-      background: #fff;
-      padding: 20px 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+    footer a {
+      color: #2e86c1;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .dark-mode footer a {
+      color: #7abaff; /* Lighter blue for links in dark mode */
     }
-    input[type="text"] {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    button {
-      background-color: #2ea44f;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #279644;
-    }
-    iframe {
-      width: 100%;
-      height: 500px;
-      margin-top: 20px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    footer {
-      text-align: center;
-      padding: 15px;
-      margin-top: 40px;
-      font-size: 14px;
-      color: #666;
-    }
-    footer a {
-      color: #2e86c1;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    footer a:hover {
-      text-decoration: underline;
-    }
-  </style>
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
 
 <header>
-  <h1>GitHub HTML Previewer</h1>
-  <p>Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></p>
+    <button id="nightModeToggle">Night Mode</button>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Wiki%27s_Lazy_Coders.png/250px-Wiki%27s_Lazy_Coders.png" alt="Wiki's Lazy Coders Logo" style="height: 60px; display: block; margin: 0 auto 15px;">
+  <h1>GitHub HTML Previewer</h1>
+  <p>Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a></p>
 </header>
 
 <main>
-  <p>Paste a GitHub HTML file URL (must include <code>/blob/</code>):</p>
-  <input type="text" id="githubUrl" placeholder="e.g. https://github.com/user/repo/blob/main/page.html" />
-  <button onclick="preview()">Preview</button>
-  <button onclick="clearPreview()" style="background-color:#d73a49;margin-left:10px;">Clear</button>
+  <p>Paste a GitHub HTML file URL (must include <code>/blob/</code>):</p>
+  <input type="text" id="githubUrl" placeholder="e.g. https://github.com/user/repo/blob/main/page.html" />
+  <button onclick="preview()">Preview</button>
+  <button onclick="clearPreview()" style="background-color:#d73a49;margin-left:10px;">Clear</button>
 
-  <iframe id="previewFrame" title="GitHub HTML Output Preview"></iframe>
+  <iframe id="previewFrame" title="GitHub HTML Output Preview"></iframe>
 </main>
 
 <footer>
-  Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a><br>
-  Updated on: 10 July 2025
+  Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a><br>
+  Updated on: 30 July 2025
 </footer>
 
 <script>
-  function preview() {
-    const inputUrl = document.getElementById('githubUrl').value.trim();
-    if (!inputUrl.includes('github.com') || !inputUrl.includes('/blob/')) {
-      alert('Please enter a valid GitHub blob URL.');
-      return;
-    }
-    const previewUrl = `https://htmlpreview.github.io/?${inputUrl}`;
-    document.getElementById('previewFrame').src = previewUrl;
-  }
+  function preview() {
+    const inputUrl = document.getElementById('githubUrl').value.trim();
+    if (!inputUrl.includes('github.com') || !inputUrl.includes('/blob/')) {
+      alert('Please enter a valid GitHub blob URL.');
+      return;
+    }
+    const previewUrl = `https://htmlpreview.github.io/?${inputUrl}`;
+    document.getElementById('previewFrame').src = previewUrl;
+  }
 </script>
 
-<!-- ✅ Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
 <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-GC8PGC89NB');
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GC8PGC89NB');
 </script>
-<script src="https://cdn.counter.dev/script.js" 
-        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014" 
-        data-utcoffset="6">
+<script src="https://cdn.counter.dev/script.js" 
+        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014" 
+        data-utcoffset="6">
 </script>
 
-<!-- ✅ Play alert.mp3 when preview iframe loads -->
 <audio id="previewSound" src="https://suyashdwivedi.github.io/alert.mp3" preload="auto"></audio>
 <script>
-  const frame = document.getElementById('previewFrame');
-  const sound = document.getElementById('previewSound');
+  const frame = document.getElementById('previewFrame');
+  const sound = document.getElementById('previewSound');
 
-  frame.onload = function () {
-    try {
-      sound.play().catch(err => {
-        console.warn("Sound autoplay blocked by browser:", err);
-      });
-    } catch (e) {
-      console.error("Error playing sound:", e);
-    }
-  };
+  frame.onload = function () {
+    try {
+      sound.play().catch(err => {
+        console.warn("Sound autoplay blocked by browser:", err);
+      });
+    } catch (e) {
+      console.error("Error playing sound:", e);
+    }
+  };
 </script>
 
-<!-- ✅ Clear Preview Function -->
 <script>
-  function clearPreview() {
-    document.getElementById('githubUrl').value = '';
-    document.getElementById('previewFrame').src = '';
-  }
+  function clearPreview() {
+    document.getElementById('githubUrl').value = '';
+    document.getElementById('previewFrame').src = '';
+  }
+</script>
+
+<script>
+    // Night mode toggle functionality
+    const nightModeToggle = document.getElementById('nightModeToggle');
+    const body = document.body;
+
+    // Check for saved theme preference
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme === 'dark') {
+        body.classList.add('dark-mode');
+        nightModeToggle.textContent = 'Day Mode';
+    }
+
+    nightModeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
+            nightModeToggle.textContent = 'Day Mode';
+            localStorage.setItem('theme', 'dark');
+        } else {
+            nightModeToggle.textContent = 'Night Mode';
+            localStorage.setItem('theme', 'light');
+        }
+    });
 </script>
 
 </body>
