@@ -1,404 +1,360 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- ✅ SEO Meta Tags -->
-    <title>Wikimedia Commons Usage Finder – Developed by Suyash Dwivedi</title>
-    <meta name="description" content="Find usage of Wikimedia Commons images on other Wikimedia projects and perform external reverse image searches with TinEye and Bing.">
-    <meta name="keywords" content="Wikimedia, Commons, Usage, Finder, Reverse Image Search, TinEye, Bing, Suyash Dwivedi, open source, tool">
-    <meta name="author" content="Suyash Dwivedi">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wikimedia Commons Usage Finder – Developed by Suyash Dwivedi</title>
+<meta name="description" content="Find usage of Wikimedia Commons images on other Wikimedia projects and perform external reverse image searches with TinEye and Bing.">
+<meta name="keywords" content="Wikimedia, Commons, Usage, Finder, Reverse Image Search, TinEye, Bing, Suyash Dwivedi, open source, tool">
+<meta name="author" content="Suyash Dwivedi">
 
-    <!-- ✅ Open Graph (for Facebook, LinkedIn) -->
-    <meta property="og:title" content="Wikimedia Commons Usage Finder">
-    <meta property="og:description" content="Find where a Wikimedia Commons image is used on other projects and across the web.">
-    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png/500px-Wiki_s_Lazy_Coders_logo_small_transparent.png">
-    <meta property="og:url" content="https://suyashdwivedi.github.io/Commons_Image_Search.html">
-    <meta property="og:type" content="website">
+<meta property="og:title" content="Wikimedia Commons Usage Finder">
+<meta property="og:description" content="Find where a Wikimedia Commons image is used on other projects and across the web.">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png/500px-Wiki_s_Lazy_Coders_logo_small_transparent.png">
+<meta property="og:url" content="https://suyashdwivedi.github.io/Commons_Image_Search.html">
+<meta property="og:type" content="website">
 
-    <!-- ✅ Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Wikimedia Commons Usage Finder">
-    <meta name="twitter:description" content="A simple, quick tool to find where Wikimedia Commons images are being used on different projects and search them with external reverse image engines.">
-    <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png/500px-Wiki_s_Lazy_Coders_logo_small_transparent.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Wikimedia Commons Usage Finder">
+<meta name="twitter:description" content="A simple, quick tool to find where Wikimedia Commons images are being used on different projects and search them with external reverse image engines.">
+<meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png/500px-Wiki_s_Lazy_Coders_logo_small_transparent.png">
 
-    <!-- ✅ Favicon and Canonical -->
-    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png/500px-Wiki_s_Lazy_Coders_logo_small_transparent.png" type="image/png">
-    <link rel="canonical" href="https://suyashdwivedi.github.io/Commons_Image_Search.html" />
+<link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png/500px-Wiki_s_Lazy_Coders_logo_small_transparent.png" type="image/png">
+<link rel="canonical" href="https://suyashdwivedi.github.io/Commons_Image_Search.html" />
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-GC8PGC89NB');
-    </script>
-    <!-- Counter.dev -->
-    <script src="https://cdn.counter.dev/script.js"
-        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
-        data-utcoffset="6">
-    </script>
-    <style>
-        /* Custom styles for Inter font and smooth transitions */
-        body {
-            font-family: "Inter", sans-serif;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .dark body {
-            background-color: #1a202c; /* Dark background */
-            color: #e2e8f0; /* Light text */
-        }
-        .dark .bg-white {
-            background-color: #2d3748; /* Darker card background */
-        }
-        .dark .text-gray-900 {
-            color: #e2e8f0;
-        }
-        .dark .text-gray-700 {
-            color: #cbd5e0;
-        }
-        .dark input {
-            background-color: #4a5568;
-            color: #e2e8f0;
-            border-color: #6b7280;
-        }
-        .dark input:focus {
-            border-color: #63b3ed;
-        }
-        .dark .border-gray-300 {
-            border-color: #4a5568;
-        }
-        .dark .hover\\:bg-blue-600:hover {
-            background-color: #2b6cb0;
-        }
-        /* Style for initially hidden elements */
-        .hidden-on-load {
-            display: none;
-        }
-        /* Style for disabled buttons */
-        .disabled-link {
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-        .disabled-link:hover {
-            transform: none;
-        }
-    </style>
+<script src="https://cdn.tailwindcss.com"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-GC8PGC89NB');
+</script>
+<script src="https://cdn.counter.dev/script.js"
+data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
+data-utcoffset="6">
+</script>
+<style>
+body {
+font-family: "Inter", sans-serif;
+transition: background-color 0.3s, color 0.3s;
+}
+.dark body {
+background-color: #1a202c;
+color: #e2e8f0;
+}
+.dark .bg-white {
+background-color: #2d3748;
+}
+.dark .text-gray-900 {
+color: #e2e8f0;
+}
+.dark .text-gray-700 {
+color: #cbd5e0;
+}
+.dark input {
+background-color: #4a5568;
+color: #e2e8f0;
+border-color: #6b7280;
+}
+.dark input:focus {
+border-color: #63b3ed;
+}
+.dark .border-gray-300 {
+border-color: #4a5568;
+}
+.dark .hover\:bg-blue-600:hover {
+background-color: #2b6cb0;
+}
+.hidden-on-load {
+display: none;
+}
+.disabled-link {
+cursor: not-allowed;
+opacity: 0.5;
+}
+.disabled-link:hover {
+transform: none;
+}
+</style>
 </head>
 <body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col">
-    <div class="container mx-auto p-4 md:p-8 flex-grow">
-        <!-- The header is a flex container, centering its content horizontally -->
-        <header class="relative flex justify-center items-center mb-6">
-            <!-- The night mode toggle is positioned absolutely to the top right -->
-            <button id="nightModeToggle" class="absolute top-4 right-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 shadow-md transition-colors duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9 9 0 008.354-5.646z" />
-                </svg>
-            </button>
-            <!-- This div contains the logo and title, and is centered by the parent header's flexbox -->
-            <div class="flex items-center">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png/500px-Wiki_s_Lazy_Coders_logo_small_transparent.png" alt="Wiki's Lazy Coders logo" class="h-[100px] mr-4">
-                <div>
-                    <h1 class="text-3xl font-bold text-blue-700">Wikimedia Commons Usage Finder</h1>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">Suyash Dwivedi</a></p>
-                </div>
-            </div>
-        </header>
+<div class="container mx-auto p-4 md:p-8 flex-grow">
+<header class="relative flex justify-center items-center mb-6">
+<button id="nightModeToggle" class="absolute top-4 right-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 shadow-md transition-colors duration-300">
+<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9 9 0 008.354-5.646z" />
+</svg>
+</button>
+<div class="flex items-center">
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png/500px-Wiki_s_Lazy_Coders_logo_small_transparent.png" alt="Wiki's Lazy Coders logo" class="h-[100px] mr-4">
+<div>
+<h1 class="text-3xl font-bold text-blue-700">Wikimedia Commons Usage Finder</h1>
+<p class="text-sm text-gray-600 dark:text-gray-400">Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">Suyash Dwivedi</a></p>
+</div>
+</div>
+</header>
 
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl mb-8">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Find Usages for a Commons File</h2>
-            <div class="mb-4">
-                <label for="commonsUrlInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Wikimedia Commons URL:</label>
-                <input type="url" id="commonsUrlInput" placeholder="e.g., https://commons.wikimedia.org/wiki/File:Raghuvir_Yadav.jpg"
-                       class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">
-            </div>
-            <button id="findUsagesButton"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
-                Find Usages
-            </button>
-            <p id="messageBox" class="text-center mt-4 text-sm text-red-600 dark:text-red-400"></p>
-        </div>
+<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl mb-8">
+<h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Find Usages for a Commons File</h2>
+<div class="mb-4">
+<label for="commonsUrlInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Wikimedia Commons URL:</label>
+<input type="url" id="commonsUrlInput" placeholder="e.g., https://commons.wikimedia.org/wiki/File:Raghuvir_Yadav.jpg"
+class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">
+</div>
+<button id="findUsagesButton"
+class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+Find Usages
+</button>
+<p id="messageBox" class="text-center mt-4 text-sm text-red-600 dark:text-red-400"></p>
+</div>
 
-        <!-- This section is now always visible -->
-        <div id="externalSearchLinks" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl mb-8">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">External Reverse Image Search</h2>
-            <p class="text-gray-700 dark:text-gray-300 mb-4">Click the buttons below to search for this image's usage on other websites.</p>
-            <div class="flex flex-wrap gap-4">
-                <a id="tineyeSearchLink" href="#" target="_blank" class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-md transition duration-300 ease-in-out transform hover:scale-105 shadow-lg disabled-link">
-                    Search on TinEye
-                </a>
-                <a id="bingSearchLink" href="#" target="_blank" class="flex-1 text-center bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-md transition duration-300 ease-in-out transform hover:scale-105 shadow-lg disabled-link">
-                    Search on Bing Images
-                </a>
-            </div>
-        </div>
+<div id="externalSearchLinks" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl mb-8">
+<h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">External Reverse Image Search</h2>
+<p class="text-gray-700 dark:text-gray-300 mb-4">Click the buttons below to search for this image's usage on other websites.</p>
+<div class="flex flex-wrap gap-4">
+<a id="tineyeSearchLink" href="#" target="_blank" class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-md transition duration-300 ease-in-out transform hover:scale-105 shadow-lg disabled-link">
+Search on TinEye
+</a>
+<a id="bingSearchLink" href="#" target="_blank" class="flex-1 text-center bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-md transition duration-300 ease-in-out transform hover:scale-105 shadow-lg disabled-link">
+Search on Bing Images
+</a>
+</div>
+</div>
 
-        <!-- This section is now conditionally shown/hidden -->
-        <div id="apiResultsContainer" class="hidden-on-load">
-            <!-- Loading indicator and results will be displayed here -->
-            <div id="loadingIndicator" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl mb-8 text-center text-gray-500 dark:text-gray-400">
-                <p>Searching for usages...</p>
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mt-2"></div>
-            </div>
+<div id="apiResultsContainer" class="hidden-on-load">
+<div id="loadingIndicator" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl mb-8 text-center text-gray-500 dark:text-gray-400">
+<p>Searching for usages...</p>
+<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mt-2"></div>
+</div>
 
-            <div id="apiResults" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl mb-8">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Usage on Wikimedia Projects</h2>
-                <div id="wikimediaUsagesList" class="space-y-2">
-                    <!-- API results will be rendered here -->
-                </div>
-            </div>
-        </div>
-    </div>
+<div id="apiResults" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl mb-8">
+<h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Usage on Wikimedia Projects</h2>
+<div id="wikimediaUsagesList" class="space-y-2">
+</div>
+</div>
+</div>
+</div>
 
-    <footer class="bg-gray-200 dark:bg-gray-900 text-gray-700 dark:text-gray-400 p-4 text-center text-sm">
-        <p>Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener noreferrer" class="hover:underline">Suyash Dwivedi</a> | Updated on: 1 August 2025</p>
-    </footer>
+<footer class="bg-gray-200 dark:bg-gray-900 text-gray-700 dark:text-gray-400 p-4 text-center text-sm">
+<p>Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener noreferrer" class="hover:underline">Suyash Dwivedi</a> | Updated on: 1 August 2025</p>
+</footer>
 
-    <script>
-        // Get DOM elements
-        const commonsUrlInput = document.getElementById('commonsUrlInput');
-        const findUsagesButton = document.getElementById('findUsagesButton');
-        const messageBox = document.getElementById('messageBox');
-        const apiResultsContainer = document.getElementById('apiResultsContainer');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const wikimediaUsagesList = document.getElementById('wikimediaUsagesList');
-        const nightModeToggle = document.getElementById('nightModeToggle');
+<script>
+// Get DOM elements
+const commonsUrlInput = document.getElementById('commonsUrlInput');
+const findUsagesButton = document.getElementById('findUsagesButton');
+const messageBox = document.getElementById('messageBox');
+const apiResultsContainer = document.getElementById('apiResultsContainer');
+const loadingIndicator = document.getElementById('loadingIndicator');
+const wikimediaUsagesList = document.getElementById('wikimediaUsagesList');
+const nightModeToggle = document.getElementById('nightModeToggle');
 
-        // External search links
-        const tineyeSearchLink = document.getElementById('tineyeSearchLink');
-        const bingSearchLink = document.getElementById('bingSearchLink');
-        const externalLinks = [tineyeSearchLink, bingSearchLink];
+// External search links
+const tineyeSearchLink = document.getElementById('tineyeSearchLink');
+const bingSearchLink = document.getElementById('bingSearchLink');
+const externalLinks = [tineyeSearchLink, bingSearchLink];
 
-        /**
-         * Displays a message in the message box.
-         * @param {string} message - The message to display.
-         * @param {boolean} isError - True if it's an error message, false otherwise.
-         */
-        function showMessage(message, isError = false) {
-            messageBox.textContent = message;
-            messageBox.className = `text-center mt-4 text-sm ${isError ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`;
-            setTimeout(() => {
-                messageBox.textContent = '';
-                messageBox.className = '';
-            }, 5000); // Clear message after 5 seconds
+// Displays a message in the message box.
+function showMessage(message, isError = false) {
+    messageBox.textContent = message;
+    messageBox.className = `text-center mt-4 text-sm ${isError ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`;
+    setTimeout(() => {
+        messageBox.textContent = '';
+        messageBox.className = '';
+    }, 5000);
+}
+
+// Validates if a string is a valid Wikimedia Commons URL.
+function isValidCommonsUrl(urlString) {
+    try {
+        const url = new URL(urlString);
+        const hostname = url.hostname;
+        const isCommonsDomain = hostname === 'commons.wikimedia.org' || hostname === 'commons.m.wikimedia.org';
+        return isCommonsDomain && url.pathname.startsWith('/wiki/File:');
+    } catch (e) {
+        return false;
+    }
+}
+
+// Extracts the file name from a Wikimedia Commons URL and removes the "File:" prefix.
+function getFileNameFromUrl(urlString) {
+    try {
+        const url = new URL(urlString);
+        const pathParts = url.pathname.split('/');
+        let fileNameWithPrefix = pathParts[pathParts.length - 1];
+        if (fileNameWithPrefix.startsWith('File:')) {
+            return fileNameWithPrefix.substring(5);
         }
+        return fileNameWithPrefix;
+    } catch (e) {
+        return null;
+    }
+}
 
-        /**
-         * Validates if a string is a valid Wikimedia Commons URL.
-         * @param {string} urlString - The string to validate.
-         * @returns {boolean} - True if it's a valid Commons URL, false otherwise.
-         */
-        function isValidCommonsUrl(urlString) {
-            try {
-                const url = new URL(urlString);
-                const hostname = url.hostname;
-                const isCommonsDomain = hostname === 'commons.wikimedia.org' || hostname === 'commons.m.wikimedia.org';
-                return isCommonsDomain && url.pathname.startsWith('/wiki/File:');
-            } catch (e) {
-                return false;
-            }
-        }
-
-        /**
-         * Extracts the file name from a Wikimedia Commons URL and removes the "File:" prefix.
-         * @param {string} urlString - The Commons URL.
-         * @returns {string|null} - The file name or null if invalid.
-         */
-        function getFileNameFromUrl(urlString) {
-            try {
-                const url = new URL(urlString);
-                const pathParts = url.pathname.split('/');
-                let fileNameWithPrefix = pathParts[pathParts.length - 1];
-
-                // Check and remove the "File:" prefix
-                if (fileNameWithPrefix.startsWith('File:')) {
-                    return fileNameWithPrefix.substring(5);
-                }
-                return fileNameWithPrefix;
-            } catch (e) {
-                return null;
-            }
-        }
-
-        /**
-         * Updates the href attributes of the external search links.
-         * @param {string|null} fileName - The file name to use for the search query. If null, links are disabled.
-         */
-        function updateExternalSearchLinks(fileName) {
-            if (fileName) {
-                const originalImageUrl = `https://commons.wikimedia.org/wiki/Special:FilePath/${fileName}`;
-                tineyeSearchLink.href = `https://www.tineye.com/search?url=${encodeURIComponent(originalImageUrl)}`;
-                bingSearchLink.href = `https://www.bing.com/images/search?q=imgurl:${encodeURIComponent(originalImageUrl)}`;
-                externalLinks.forEach(link => link.classList.remove('disabled-link'));
-            } else {
-                externalLinks.forEach(link => {
-                    link.href = '#';
-                    link.classList.add('disabled-link');
-                });
-            }
-        }
-
-        /**
-         * Fetches usages from the Wikimedia Commons API with exponential backoff retry logic.
-         * @param {string} fileName - The file name to search for.
-         * @param {number} retries - Number of remaining retries.
-         * @param {number} delay - Current delay in milliseconds.
-         */
-        async function fetchUsages(fileName, retries = 3, delay = 1000) {
-            const params = new URLSearchParams();
-            params.append('action', 'query');
-            params.append('format', 'json');
-            params.append('prop', 'globalusage');
-            params.append('guprop', 'url|pageid|namespace');
-            params.append('titles', `File:${fileName}`);
-            params.append('origin', '*');
-
-            const apiUrl = `https://commons.wikimedia.org/w/api.php?${params.toString()}`;
-
-            try {
-                // Show loading indicator and results container on first attempt
-                if (retries === 3) {
-                    apiResultsContainer.classList.remove('hidden-on-load');
-                    loadingIndicator.classList.remove('hidden-on-load');
-                    wikimediaUsagesList.innerHTML = '';
-                }
-                
-                const response = await fetch(apiUrl);
-
-                if (!response.ok) {
-                    if (retries > 0) {
-                        console.warn(`Fetch failed, retrying in ${delay}ms...`);
-                        await new Promise(res => setTimeout(res, delay));
-                        // Exponential backoff: double the delay for the next attempt
-                        return fetchUsages(fileName, retries - 1, delay * 2);
-                    } else {
-                        console.error('Network response was not ok after multiple retries:', response.statusText, response.status);
-                        showMessage(`Network error: ${response.status} - ${response.statusText}`, true);
-                        loadingIndicator.classList.add('hidden-on-load');
-                        return;
-                    }
-                }
-
-                const data = await response.json();
-                
-                if (data.error) {
-                    console.error('API Error:', data.error.info);
-                    showMessage(`API Error: ${data.error.info}`, true);
-                    loadingIndicator.classList.add('hidden-on-load');
-                    return;
-                }
-                
-                renderResults(data, fileName);
-            } catch (error) {
-                if (retries > 0) {
-                    console.warn(`Fetch failed with exception, retrying in ${delay}ms...`, error);
-                    await new Promise(res => setTimeout(res, delay));
-                    return fetchUsages(fileName, retries - 1, delay * 2);
-                } else {
-                    console.error('API call failed after multiple retries:', error);
-                    showMessage('An error occurred while fetching data. Please try again.', true);
-                    loadingIndicator.classList.add('hidden-on-load');
-                }
-            }
-        }
-
-        /**
-         * Renders the results from the API call and sets up external search links.
-         * @param {object} data - The JSON response from the API.
-         * @param {string} fileName - The file name used to construct external search links.
-         */
-        function renderResults(data, fileName) {
-            loadingIndicator.classList.add('hidden-on-load');
-            wikimediaUsagesList.innerHTML = '';
-
-            const pages = data.query.pages;
-            const pageId = Object.keys(pages)[0];
-            const pageInfo = pages[pageId];
-
-            if (pageId === "-1" || !pageInfo.globalusage || pageInfo.globalusage.length === 0) {
-                wikimediaUsagesList.innerHTML = `<p class="text-gray-500 dark:text-gray-400">No usage found on other Wikimedia projects.</p>`;
-            } else {
-                pageInfo.globalusage.forEach(usage => {
-                    const listItem = document.createElement('div');
-                    listItem.className = 'flex items-center bg-gray-50 dark:bg-gray-700 p-3 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm transition-colors duration-200';
-                    listItem.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.814a4 4 0 00-.025-5.656l-1.102-1.101m1.99 7.952l-1.102 1.102" />
-                        </svg>
-                        <a href="${usage.url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-300 hover:underline font-medium break-all">
-                            ${usage.title} (${usage.wiki})
-                        </a>
-                    `;
-                    wikimediaUsagesList.appendChild(listItem);
-                });
-            }
-            updateExternalSearchLinks(fileName);
-        }
-
-        /**
-         * Event listener for the "Find Usages" button.
-         */
-        findUsagesButton.addEventListener('click', () => {
-            const commonsUrl = commonsUrlInput.value.trim();
-
-            if (!commonsUrl) {
-                showMessage('Please enter a Wikimedia Commons URL.', true);
-                return;
-            }
-
-            if (!isValidCommonsUrl(commonsUrl)) {
-                showMessage('Please enter a valid Wikimedia Commons "File" URL.', true);
-                return;
-            }
-
-            const fileName = getFileNameFromUrl(commonsUrl);
-            if (fileName) {
-                fetchUsages(fileName);
-            } else {
-                showMessage('Could not extract file name from the URL.', true);
-            }
+// Updates the href attributes of the external search links.
+function updateExternalSearchLinks(fileName) {
+    if (fileName) {
+        const originalImageUrl = `https://commons.wikimedia.org/wiki/Special:FilePath/${fileName}`;
+        tineyeSearchLink.href = `https://www.tineye.com/search?url=${encodeURIComponent(originalImageUrl)}`;
+        bingSearchLink.href = `https://www.bing.com/images/search?q=imgurl:${encodeURIComponent(originalImageUrl)}`;
+        externalLinks.forEach(link => link.classList.remove('disabled-link'));
+    } else {
+        externalLinks.forEach(link => {
+            link.href = '#';
+            link.classList.add('disabled-link');
         });
+    }
+}
 
-        /**
-         * Handles real-time input in the URL field to update external search links.
-         */
-        commonsUrlInput.addEventListener('input', () => {
-            const commonsUrl = commonsUrlInput.value.trim();
-            if (isValidCommonsUrl(commonsUrl)) {
-                const fileName = getFileNameFromUrl(commonsUrl);
-                updateExternalSearchLinks(fileName);
-            } else {
-                updateExternalSearchLinks(null);
-            }
-        });
+// Fetch file usage within Commons
+async function fetchFileusage(fileName) {
+    const params = new URLSearchParams();
+    params.append('action', 'query');
+    params.append('format', 'json');
+    params.append('prop', 'fileusage');
+    params.append('titles', `File:${fileName}`);
+    params.append('fulimit', 'max');
+    params.append('origin', '*');
+    const apiUrl = `https://commons.wikimedia.org/w/api.php?${params.toString()}`;
+    const response = await fetch(apiUrl);
+    return response.json();
+}
 
-        /**
-         * Handles night mode toggle.
-         */
-        nightModeToggle.addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
-            const isDarkMode = document.documentElement.classList.contains('dark');
-            localStorage.setItem('darkMode', isDarkMode);
-        });
+// Fetch global usage on other Wikimedia sites
+async function fetchGlobalusage(fileName) {
+    const params = new URLSearchParams();
+    params.append('action', 'query');
+    params.append('format', 'json');
+    params.append('prop', 'globalusage');
+    params.append('guprop', 'url|pageid|namespace');
+    params.append('titles', `File:${fileName}`);
+    params.append('gulimit', 'max');
+    params.append('origin', '*');
+    const apiUrl = `https://commons.wikimedia.org/w/api.php?${params.toString()}`;
+    const response = await fetch(apiUrl);
+    return response.json();
+}
 
-        /**
-         * Initialize night mode based on user preference.
-         */
-        function initializeNightMode() {
-            const savedDarkMode = localStorage.getItem('darkMode');
-            if (savedDarkMode === 'true' || (savedDarkMode === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            }
+// Fetch both usages and render
+async function fetchAllUsages(fileName) {
+    apiResultsContainer.classList.remove('hidden-on-load');
+    loadingIndicator.classList.remove('hidden-on-load');
+    wikimediaUsagesList.innerHTML = '';
+    try {
+        // Fetch local and global usages in parallel
+        const [localRes, globalRes] = await Promise.all([
+            fetchFileusage(fileName),
+            fetchGlobalusage(fileName)
+        ]);
+        loadingIndicator.classList.add('hidden-on-load');
+        renderCombinedResults(localRes, globalRes, fileName);
+    } catch (error) {
+        showMessage('An error occurred while fetching data. Please try again.', true);
+        loadingIndicator.classList.add('hidden-on-load');
+    }
+}
+
+// Render both Commons fileusage and globalusage
+function renderCombinedResults(localData, globalData, fileName) {
+    updateExternalSearchLinks(fileName);
+
+    // === Usage on Commons ===
+    let output = '<h3 class="font-semibold mb-2 text-lg text-gray-800 dark:text-gray-100">File usage on Commons</h3>';
+    const pages = localData?.query?.pages || {};
+    const localEntry = Object.values(pages)[0];
+    const fileUsages = localEntry?.fileusage || [];
+    if(fileUsages.length > 0) {
+        output += '<ul class="mb-4 pl-4 list-disc">';
+        for(const item of fileUsages) {
+            const url = `https://commons.wikimedia.org/wiki/${encodeURIComponent(item.title.replace(/ /g, '_'))}`;
+            output += `<li>
+                <a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-300 hover:underline">${item.title}</a>
+            </li>`;
         }
-        
-        // Initialize night mode and external links state when the page loads
-        window.onload = () => {
-            initializeNightMode();
-            updateExternalSearchLinks(null); // Disable links on load
-        };
-    </script>
+        output += '</ul>';
+    } else {
+        output += '<p class="text-gray-500 dark:text-gray-400">No file usage found in Commons.</p>';
+    }
+
+    // === Usage on other Wikimedia projects ===
+    output += '<h3 class="font-semibold mb-2 mt-4 text-lg text-gray-800 dark:text-gray-100">File usage on other Wikimedia projects</h3>';
+    const globalpages = globalData?.query?.pages || {};
+    const globalEntry = Object.values(globalpages)[0];
+    const globalUsages = globalEntry?.globalusage || [];
+    if(globalUsages.length > 0) {
+        output += '<ul class="pl-4 list-disc">';
+        for(const usage of globalUsages) {
+            output += `<li>
+                <a href="${usage.url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-300 hover:underline">${usage.title} <span class="text-xs font-normal text-gray-500 dark:text-gray-400">(${usage.wiki})</span></a>
+            </li>`;
+        }
+        output += '</ul>';
+    } else {
+        output += "<p class='text-gray-500 dark:text-gray-400'>No usage found on other Wikimedia projects.</p>";
+    }
+
+    // Add a link to the Special:GlobalUsage page for even more uses (long lists)
+    output += `<div class="mt-4">
+        <a href="https://commons.wikimedia.org/wiki/Special:GlobalUsage/${encodeURIComponent(fileName)}"
+        target="_blank" rel="noopener noreferrer"
+        class="inline-block mt-2 text-blue-700 dark:text-blue-400 hover:underline font-bold"
+        >View more global usage of this file &rarr;</a>
+    </div>`;
+
+    wikimediaUsagesList.innerHTML = output;
+}
+
+// Event listener for the "Find Usages" button.
+findUsagesButton.addEventListener('click', () => {
+    const commonsUrl = commonsUrlInput.value.trim();
+    if (!commonsUrl) {
+        showMessage('Please enter a Wikimedia Commons URL.', true);
+        return;
+    }
+    if (!isValidCommonsUrl(commonsUrl)) {
+        showMessage('Please enter a valid Wikimedia Commons "File" URL.', true);
+        return;
+    }
+    const fileName = getFileNameFromUrl(commonsUrl);
+    if (fileName) {
+        fetchAllUsages(fileName);
+    } else {
+        showMessage('Could not extract file name from the URL.', true);
+    }
+});
+
+// Handles real-time input in the URL field to update external search links.
+commonsUrlInput.addEventListener('input', () => {
+    const commonsUrl = commonsUrlInput.value.trim();
+    if (isValidCommonsUrl(commonsUrl)) {
+        const fileName = getFileNameFromUrl(commonsUrl);
+        updateExternalSearchLinks(fileName);
+    } else {
+        updateExternalSearchLinks(null);
+    }
+});
+
+// Handles night mode toggle.
+nightModeToggle.addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
+    const isDarkMode = document.documentElement.classList.contains('dark');
+    localStorage.setItem('darkMode', isDarkMode);
+});
+
+// Initialize night mode based on user preference.
+function initializeNightMode() {
+    const savedDarkMode = localStorage.getItem('darkMode');
+    if (savedDarkMode === 'true' || (savedDarkMode === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+    }
+}
+
+// Initialize night mode and external links state when the page loads
+window.onload = () => {
+    initializeNightMode();
+    updateExternalSearchLinks(null);
+};
+</script>
 </body>
 </html>
