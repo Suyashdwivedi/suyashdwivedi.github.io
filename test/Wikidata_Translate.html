@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wikidata Translator</title>
+    <!-- Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GC8PGC89NB');
+    </script>
+    </script>
+    <script src="https://cdn.counter.dev/script.js"
+        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
+        data-utcoffset="6">
+    </script>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styles for Lucide icons */
+        .icon {
+            display: inline-block;
+            stroke-width: 2;
+            stroke: currentColor;
+            fill: none;
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-8 transition-colors duration-300 bg-gray-200 text-gray-900">
+
+    <!-- Header with title and night mode toggle -->
+    <header class="flex items-center justify-between mb-8 pb-4 border-b border-gray-400">
+        <h1 class="text-3xl font-bold">Wikidata Translator</h1>
+        <button id="night-mode-toggle" class="p-2 rounded-full transition-colors duration-300 hover:bg-gray-400" aria-label="Toggle night mode">
+            <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon w-6 h-6 text-gray-900 hidden"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun w-6 h-6 text-yellow-500"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m4.93 19.07 1.41-1.41"/><path d="m17.66 6.34 1.41-1.41"/></svg>
+        </button>
+    </header>
+
+    <!-- Main content and input form -->
+    <main class="max-w-4xl mx-auto">
+        <form id="translator-form" class="mb-8">
+            <label for="wikidata-input" class="block text-lg mb-2">
+                Enter Wikidata ID (e.g., "Q2235607") or URL:
+            </label>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <input
+                    type="text"
+                    id="wikidata-input"
+                    class="flex-grow p-3 rounded-lg border border-gray-400 bg-gray-100 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g., Q2235607 or https://www.wikidata.org/wiki/Q2235607"
+                />
+                <button
+                    type="submit"
+                    id="fetch-button"
+                    class="px-6 py-3 rounded-lg font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 disabled:bg-gray-500"
+                >
+                    Fetch & Translate
+                </button>
+            </div>
+        </form>
+
+        <!-- Display area for results and errors -->
+        <div id="status-message"></div>
+        <div id="results-container"></div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const form = document.getElementById('translator-form');
+            const wikidataInput = document.getElementById('wikidata-input');
+            const fetchButton = document.getElementById('fetch-button');
+            const statusMessage = document.getElementById('status-message');
+            const resultsContainer = document.getElementById('results-container');
+            const nightModeToggle = document.getElementById('night-mode-toggle');
+            const moonIcon = document.getElementById('moon-icon');
+            const sunIcon = document.getElementById('sun-icon');
+            
+            // Initial state for night mode
+            let isNightMode = false;
+            body.classList.remove('bg-gray-900', 'text-gray-100');
+            body.classList.add('bg-gray-200', 'text-gray-900');
+            moonIcon.classList.add('hidden');
+            sunIcon.classList.remove('hidden');
+
+            // Function to format the date string
+            const formatDate = (dateString) => {
+                const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+                return new Date(dateString).toLocaleString(undefined, options);
+            };
+
+            // Function to toggle night mode
+            nightModeToggle.addEventListener('click', () => {
+                isNightMode = !isNightMode;
+                if (isNightMode) {
+                    body.classList.remove('bg-gray-200', 'text-gray-900');
+                    body.classList.add('bg-gray-900', 'text-gray-100');
+                    moonIcon.classList.remove('hidden');
+                    sunIcon.classList.add('hidden');
+                } else {
+                    body.classList.remove('bg-gray-900', 'text-gray-100');
+                    body.classList.add('bg-gray-200', 'text-gray-900');
+                    moonIcon.classList.add('hidden');
+                    sunIcon.classList.remove('hidden');
+                }
+            });
+
+            // Function to copy text to clipboard
+            const copyToClipboard = (text, lang) => {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    const copyButton = document.querySelector(`button[data-lang='${lang}']`);
+                    if (copyButton) {
+                        const feedbackSpan = document.createElement('span');
+                        feedbackSpan.textContent = 'Copied!';
+                        feedbackSpan.className = 'absolute -top-8 left-1/2 -translate-x-1/2 text-xs bg-gray-600 text-white py-1 px-2 rounded-md whitespace-nowrap z-10 opacity-100 transition-opacity duration-300';
+                        copyButton.appendChild(feedbackSpan);
+                        setTimeout(() => {
+                            feedbackSpan.classList.remove('opacity-100');
+                            feedbackSpan.classList.add('opacity-0');
+                            setTimeout(() => feedbackSpan.remove(), 300);
+                        }, 1500);
+                    }
+                } catch (err) {
+                    console.error('Failed to copy text:', err);
+                } finally {
+                    document.body.removeChild(textarea);
+                }
+            };
+
+            // New function with exponential backoff for API calls
+            const getTranslationWithRetry = async (prompt, languageName) => {
+                const maxRetries = 3;
+                let delay = 1000; // 1 second
+                for (let i = 0; i < maxRetries; i++) {
+                    try {
+                        const payload = {
+                            contents: [{ role: "user", parts: [{ text: prompt }] }],
+                        };
+                        const apiKey = "";
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('API response was not ok.');
+                        }
+
+                        const result = await response.json();
+                        const translatedText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                        if (translatedText) {
+                            return translatedText;
+                        } else {
+                            throw new Error('API response did not contain translated text.');
+                        }
+                    } catch (e) {
+                        console.error(`Error translating to ${languageName} (Attempt ${i + 1}/${maxRetries}):`, e);
+                        if (i < maxRetries - 1) {
+                            await new Promise(res => setTimeout(res, delay));
+                            delay *= 2; // Double the delay for the next attempt
+                        }
+                    }
+                }
+                return null; // Return null if all retries fail
+            };
+
+            // Function to render the UI with fetched data and handle translations
+            const renderResults = async (data) => {
+                if (!data) {
+                    resultsContainer.innerHTML = '';
+                    return;
+                }
+
+                const languages = ['en', 'de', 'es', 'fr', 'it', 'ru', 'ja', 'zh', 'ar', 'awa', 'gu', 'hi', 'hif', 'mai', 'sa'];
+                const languageNames = {
+                    'en': 'English', 'de': 'German', 'es': 'Spanish', 'fr': 'French', 'it': 'Italian', 'ru': 'Russian', 'ja': 'Japanese', 'zh': 'Chinese', 'ar': 'Arabic',
+                    'awa': 'Awadhi', 'gu': 'Gujarati', 'hi': 'Hindi', 'hif': 'Fiji Hindi', 'mai': 'Maithili', 'sa': 'Sanskrit'
+                };
+
+                // Prepare the HTML structure with placeholders for descriptions
+                let html = `
+                    <div class="space-y-6">
+                        <h2 class="text-2xl font-bold border-b border-gray-400 pb-2 mb-4">
+                            Wikidata Item: <a href="https://www.wikidata.org/wiki/${data.id}" target="_blank" class="text-blue-600 hover:underline">${data.id}</a>
+                        </h2>
+                        <p class="text-sm text-gray-600">
+                            Last updated on: ${formatDate(data.modified)}
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                `;
+
+                languages.forEach(lang => {
+                    const langLabel = data.labels[lang]?.value;
+                    const langDescription = data.descriptions[lang]?.value;
+                    const langAliases = data.aliases[lang]?.map(alias => alias.value).join(', ');
+
+                    const label = langLabel || data.labels['en']?.value || 'N/A';
+                    const aliases = langAliases || data.aliases['en']?.map(alias => alias.value).join(', ') || 'N/A';
+                    const descriptionPlaceholder = langDescription || (data.descriptions['en']?.value ? `Translating...` : 'N/A');
+
+                    html += `
+                        <div id="card-${lang}" class="bg-gray-100 p-6 rounded-lg shadow-md space-y-4">
+                            <h3 class="text-xl font-semibold uppercase text-blue-600 border-b border-gray-400 pb-2">
+                                ${lang}
+                            </h3>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600">Label</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <p class="flex-grow text-lg break-words">${label}</p>
+                                    <button data-lang="${lang}-label" class="p-2 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-300 transition-colors duration-300 relative">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy w-5 h-5"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600">Description</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <p id="description-${lang}" class="flex-grow text-sm text-gray-800 break-words">${descriptionPlaceholder}</p>
+                                    <button data-lang="${lang}-description" class="p-2 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-300 transition-colors duration-300 relative">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy w-5 h-5"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600">Also known as</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <p class="flex-grow text-sm text-gray-800 break-words">${aliases}</p>
+                                    <button data-lang="${lang}-aliases" class="p-2 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-300 transition-colors duration-300 relative">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy w-5 h-5"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div></div>`;
+                resultsContainer.innerHTML = html;
+
+                // Concurrently fetch translations for missing descriptions
+                const englishDescription = data.descriptions['en']?.value;
+                if (englishDescription) {
+                    const translationPromises = languages.map(lang => {
+                        if (!data.descriptions[lang]?.value) {
+                            const languageName = languageNames[lang];
+                            const prompt = `Translate the following to ${languageName}: "${englishDescription}"`;
+                            return getTranslationWithRetry(prompt, languageName).then(translatedText => ({ lang, translatedText }));
+                        }
+                        return null;
+                    }).filter(Boolean);
+
+                    const translatedResults = await Promise.all(translationPromises);
+                    translatedResults.forEach(result => {
+                        const { lang, translatedText } = result;
+                        const descriptionElement = document.getElementById(`description-${lang}`);
+                        if (descriptionElement) {
+                             if (translatedText) { 
+                                descriptionElement.innerHTML = `${translatedText} <span class="text-xs text-gray-500">(Machine Translated)</span>`;
+                            } else {
+                                descriptionElement.innerHTML = `Translation failed. <span class="text-xs text-gray-500">(Could not get translation from API)</span>`;
+                            }
+                        }
+                    });
+                } else {
+                     // If there's no English description, clear any "Translating..." placeholders
+                    languages.forEach(lang => {
+                        if (!data.descriptions[lang]?.value) {
+                             const descriptionElement = document.getElementById(`description-${lang}`);
+                            if (descriptionElement) {
+                                descriptionElement.textContent = 'N/A';
+                            }
+                        }
+                    });
+                }
+                
+                // Add event listeners for the new copy buttons
+                resultsContainer.querySelectorAll('button').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const langKey = button.dataset.lang;
+                        const langCode = langKey.split('-')[0];
+                        const type = langKey.split('-')[1];
+                        let textToCopy;
+
+                        // Use the displayed text for the description, including the machine-translated one
+                        if (type === 'description') {
+                            const descriptionElement = document.getElementById(`description-${langCode}`);
+                            textToCopy = descriptionElement ? descriptionElement.textContent.replace(' (Machine Translated)', '').trim() : 'N/A';
+                        } else if (type === 'label') {
+                            textToCopy = data.labels[langCode]?.value || data.labels['en']?.value || 'N/A';
+                        } else if (type === 'aliases') {
+                            textToCopy = data.aliases[langCode]?.map(alias => alias.value).join(', ') || data.aliases['en']?.map(alias => alias.value).join(', ') || 'N/A';
+                        }
+                        copyToClipboard(textToCopy, langKey);
+                    });
+                });
+            };
+
+            // Main function to handle form submission
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const wikidataId = wikidataInput.value.trim();
+
+                if (!wikidataId) {
+                    statusMessage.innerHTML = `<div class="p-4 bg-red-800 text-red-100 rounded-lg mb-8"><p class="font-semibold">Error:</p><p>Please enter a Wikidata ID or URL.</p></div>`;
+                    renderResults(null);
+                    return;
+                }
+
+                fetchButton.disabled = true;
+                statusMessage.innerHTML = `
+                    <div class="flex justify-center items-center h-48">
+                        <div class="w-12 h-12 border-4 border-t-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+                    </div>
+                `;
+                resultsContainer.innerHTML = '';
+
+                // Regex to extract the Q-number from various inputs
+                const qidMatch = wikidataInput.value.match(/(Q\d+)|(\d+)/i);
+                const qid = qidMatch ? `Q${qidMatch[0].match(/\d+/)[0]}` : null;
+
+                if (!qid) {
+                    statusMessage.innerHTML = `<div class="p-4 bg-red-800 text-red-100 rounded-lg mb-8"><p class="font-semibold">Error:</p><p>Invalid Wikidata ID or URL format.</p></div>`;
+                    fetchButton.disabled = false;
+                    return;
+                }
+
+                // Updated list of languages to fetch from Wikidata
+                const languages = 'en|de|es|fr|it|ru|ja|zh|ar|awa|gu|hi|hif|mai|sa';
+                const apiUrl = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${qid}&props=labels|descriptions|aliases|modified&languages=${languages}&format=json&origin=*`;
+
+                try {
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok.');
+                    }
+                    const data = await response.json();
+
+                    if (data.error) {
+                        throw new Error(data.error.info || 'Could not find the Wikidata item.');
+                    }
+
+                    if (data.entities[qid].missing) {
+                        throw new Error(`The item "${qid}" does not exist.`);
+                    }
+
+                    statusMessage.innerHTML = '';
+                    await renderResults(data.entities[qid]);
+                } catch (err) {
+                    statusMessage.innerHTML = `<div class="p-4 bg-red-800 text-red-100 rounded-lg mb-8"><p class="font-semibold">Error:</p><p>${err.message || 'An error occurred while fetching data.'}</p></div>`;
+                    renderResults(null);
+                } finally {
+                    fetchButton.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
