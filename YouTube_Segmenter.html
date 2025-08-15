@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Segment Link Generator</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Generate YouTube video segment links and preview them easily. Trim YouTube videos to specific start and end times.">
+    <meta name="keywords" content="YouTube, video segment, link generator, video trimmer, YouTube clip, share video segment, video preview">
+    <meta name="author" content="Suyash Dwivedi">
+    <link rel="canonical" href="https://suyashdwivedi.github.io/YouTube_Segmenter.html">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://suyashdwivedi.github.io/YouTube_Segmenter.html">
+    <meta property="og:title" content="YouTube Segment Link Generator">
+    <meta property="og:description" content="Generate YouTube video segment links and preview them easily. Trim YouTube videos to specific start and end times.">
+    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png/250px-Wiki_s_Lazy_Coders_logo_small_transparent.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://suyashdwivedi.github.io/YouTube_Segmenter.html">
+    <meta property="twitter:title" content="YouTube Segment Link Generator">
+    <meta property="twitter:description" content="Generate YouTube video segment links and preview them easily. Trim YouTube videos to specific start and end times.">
+    <meta property="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png/250px-Wiki_s_Lazy_Coders_logo_small_transparent.png">
+
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GC8PGC89NB');
+    </script>
+    <script src="https://cdn.counter.dev/script.js"
+        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
+        data-utcoffset="6">
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.dark-mode {
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .dark-mode .bg-white {
+            background-color: #2d3748;
+        }
+        .dark-mode .text-gray-900 {
+            color: #e2e8f0;
+        }
+        .dark-mode input, .dark-mode textarea {
+            background-color: #4a5568;
+            color: #e2e8f0;
+            border-color: #64748b;
+        }
+        .dark-mode button {
+            background-color: #4299e1;
+        }
+        .dark-mode button:hover {
+            background-color: #3182ce;
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center the entire header content */
+            gap: 10px; /* Space between logo and text */
+            margin-bottom: 1.5rem; /* Equivalent to mb-6 */
+        }
+        .header-logo {
+            height: 90px; /* Increased by 50px from 40px */
+            width: auto;
+            border-radius: 8px; /* Slightly rounded corners for the logo */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
+
+    <!-- Night Mode Button -->
+    <button id="nightModeToggle" class="absolute top-4 right-4 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-full shadow-md transition-colors duration-300">
+        🌙 Night Mode
+    </button>
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow flex items-center justify-center">
+        <div class="bg-white p-6 sm:p-8 rounded-lg shadow-xl w-full max-w-2xl">
+            <div class="header-content">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png/250px-Wiki_s_Lazy_Coders_logo_small_transparent.png" alt="Wiki's Lazy Coders Logo" class="header-logo">
+                <h1 class="text-3xl font-bold text-blue-600">YouTube Segment Link Generator 🎬</h1>
+            </div>
+
+            <div class="mb-4">
+                <label for="videoUrl" class="block text-sm font-medium text-gray-700 mb-1">YouTube Video URL:</label>
+                <input type="url" id="videoUrl" placeholder="e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                       value="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+            </div>
+
+            <div id="initialPreviewContainer" class="mt-4 mb-6 hidden">
+                <p class="text-lg font-semibold text-center mb-3 text-gray-700">Full Video Preview:</p>
+                <div class="relative w-full overflow-hidden rounded-lg shadow-lg" style="padding-top: 56.25%;">
+                    <!-- 16:9 Aspect Ratio -->
+                    <iframe id="initialVideoPreview"
+                            class="absolute top-0 left-0 w-full h-full rounded-lg"
+                            src=""
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Start Time:</label>
+                    <div class="flex space-x-2">
+                        <input type="number" id="startMinutes" placeholder="MM" min="0" value="0"
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <span class="self-center text-gray-500">:</span>
+                        <input type="number" id="startSeconds" placeholder="SS" min="0" max="59" value="30"
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">End Time:</label>
+                    <div class="flex space-x-2">
+                        <input type="number" id="endMinutes" placeholder="MM" min="0" value="0"
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <span class="self-center text-gray-500">:</span>
+                        <input type="number" id="endSeconds" placeholder="SS" min="0" max="59" value="50"
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <button id="generateLinkBtn"
+                    class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                Generate Link & Segment Preview 🚀
+            </button>
+
+            <div id="resultContainer" class="mt-6 p-4 bg-gray-50 rounded-md border border-gray-200 hidden">
+                <p class="text-sm font-medium text-gray-700 mb-2">Generated Link:</p>
+                <textarea id="generatedLink" rows="2" readonly
+                          class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 text-gray-800 text-sm resize-none"></textarea>
+                <button id="copyLinkBtn" class="mt-3 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md shadow-md transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                    Copy Link 📋
+                </button>
+            </div>
+
+            <div id="segmentPreviewContainer" class="mt-6 hidden">
+                <p class="text-lg font-semibold text-center mb-3 text-gray-700">Segment Video Preview:</p>
+                <div class="relative w-full overflow-hidden rounded-lg shadow-lg" style="padding-top: 56.25%;">
+                    <!-- 16:9 Aspect Ratio -->
+                    <iframe id="segmentVideoPreview"
+                            class="absolute top-0 left-0 w-full h-full rounded-lg"
+                            src=""
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- Message Box for copy confirmation -->
+            <div id="messageBox" class="fixed bottom-4 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg hidden">
+                Link copied to clipboard!
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Information -->
+    <footer class="mt-8 py-4 text-center text-sm text-gray-600 dark:text-gray-400">
+        <p>Last modified: 16 August 2025</p>
+        <p>Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" class="text-blue-500 hover:underline">Suyash Dwivedi</a></p>
+    </footer>
+
+    <script>
+        const videoUrlInput = document.getElementById('videoUrl');
+        const startMinutesInput = document.getElementById('startMinutes');
+        const startSecondsInput = document.getElementById('startSeconds');
+        const endMinutesInput = document.getElementById('endMinutes');
+        const endSecondsInput = document.getElementById('endSeconds');
+        const generateLinkBtn = document.getElementById('generateLinkBtn');
+        const resultContainer = document.getElementById('resultContainer');
+        const generatedLinkTextarea = document.getElementById('generatedLink');
+        const copyLinkBtn = document.getElementById('copyLinkBtn');
+        const initialVideoPreviewIframe = document.getElementById('initialVideoPreview'); // New iframe for initial preview
+        const initialPreviewContainer = document.getElementById('initialPreviewContainer'); // New container for initial preview
+        const segmentVideoPreviewIframe = document.getElementById('segmentVideoPreview'); // Existing iframe for segment preview, renamed
+        const segmentPreviewContainer = document.getElementById('segmentPreviewContainer'); // Existing container for segment preview, renamed
+        const messageBox = document.getElementById('messageBox');
+        const nightModeToggle = document.getElementById('nightModeToggle');
+
+        // Function to extract YouTube Video ID from various URL formats
+        function getYouTubeVideoId(url) {
+            let videoId = '';
+            const regExp = /(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=|embed\/|v\/|)([\w-]{11})(?:\S+)?/i;
+            const match = url.match(regExp);
+            if (match && match[1]) {
+                videoId = match[1];
+            }
+            return videoId;
+        }
+
+        // Function to show a message box
+        function showMessageBox(message) {
+            messageBox.textContent = message;
+            messageBox.classList.remove('hidden');
+            setTimeout(() => {
+                messageBox.classList.add('hidden');
+            }, 3000); // Hide after 3 seconds
+        }
+
+        // Event listener for real-time video URL input preview
+        videoUrlInput.addEventListener('input', () => {
+            const videoUrl = videoUrlInput.value.trim();
+            const videoId = getYouTubeVideoId(videoUrl);
+
+            if (videoId) {
+                const embedLink = `https://www.youtube.com/embed/${videoId}`; // Embed link for full video
+                initialVideoPreviewIframe.src = embedLink;
+                initialPreviewContainer.classList.remove('hidden');
+                // Hide segment preview if a new URL is entered
+                segmentPreviewContainer.classList.add('hidden');
+                generatedLinkTextarea.value = ''; // Clear generated link
+                resultContainer.classList.add('hidden'); // Hide generated link container
+            } else {
+                initialVideoPreviewIframe.src = ''; // Clear iframe if URL is invalid
+                initialPreviewContainer.classList.add('hidden');
+            }
+        });
+
+
+        generateLinkBtn.addEventListener('click', () => {
+            const videoUrl = videoUrlInput.value.trim();
+            const videoId = getYouTubeVideoId(videoUrl);
+
+            if (!videoId) {
+                showMessageBox('Please enter a valid YouTube video URL!');
+                return;
+            }
+
+            const startMinutes = parseInt(startMinutesInput.value) || 0;
+            const startSeconds = parseInt(startSecondsInput.value) || 0;
+            const endMinutes = parseInt(endMinutesInput.value) || 0;
+            const endSeconds = parseInt(endSecondsInput.value) || 0;
+
+            const startTimeInSeconds = (startMinutes * 60) + startSeconds;
+            const endTimeInSeconds = (endMinutes * 60) + endSeconds;
+
+            // Ensure end time is greater than start time
+            if (endTimeInSeconds <= startTimeInSeconds) {
+                showMessageBox('End time must be after start time!');
+                return;
+            }
+
+            const generatedShareLink = `https://youtu.be/${videoId}?t=${startTimeInSeconds}&end=${endTimeInSeconds}`;
+            const embedLink = `https://www.youtube.com/embed/${videoId}?start=${startTimeInSeconds}&end=${endTimeInSeconds}&autoplay=1`;
+
+            generatedLinkTextarea.value = generatedShareLink;
+            resultContainer.classList.remove('hidden');
+
+            // Update segment preview iframe
+            segmentVideoPreviewIframe.src = embedLink;
+            segmentPreviewContainer.classList.remove('hidden');
+            initialPreviewContainer.classList.add('hidden'); // Hide full video preview when segment preview is shown
+        });
+
+        copyLinkBtn.addEventListener('click', () => {
+            generatedLinkTextarea.select();
+            generatedLinkTextarea.setSelectionRange(0, 99999); // For mobile devices
+
+            try {
+                // Use document.execCommand for better compatibility in iframe environments
+                document.execCommand('copy');
+                showMessageBox('Link copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                showMessageBox('Failed to copy link. Please copy manually.');
+            }
+        });
+
+        // Night Mode Toggle
+        nightModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            nightModeToggle.textContent = isDarkMode ? '☀️ Day Mode' : '🌙 Night Mode';
+        });
+
+        // Initialize with Night Mode if preferred (optional, could be based on system preference)
+        // if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        //     document.body.classList.add('dark-mode');
+        //     nightModeToggle.textContent = '☀️ Day Mode';
+        // }
+    </script>
+</body>
+</html>
