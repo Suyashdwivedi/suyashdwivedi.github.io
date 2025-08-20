@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Top 500 Longest Wikipedia Articles (by size)</title>
+
+  <!-- Meta SEO Tags -->
+  <meta name="description" content="Explore and filter the top 500 longest Wikipedia articles by size in various languages. Analyze article length and discover interesting content." />
+  <meta name="keywords" content="Wikipedia, longest articles, Wikimedia, data, language, articles, size, bytes, KB, mediawiki, API, science, knowledge" />
+  <meta name="author" content="Gemini" />
+
+  <!-- Open Graph Tags for Social Sharing -->
+  <meta property="og:title" content="Top 500 Longest Wikipedia Articles (by size)" />
+  <meta property="og:description" content="Explore and filter the top 500 longest Wikipedia articles by size in various languages. Analyze article length and discover interesting content." />
+  <meta property="og:url" content="https://www.wikisciencecompetition.org/" /> <!-- Replaced with your competition URL -->
+  <meta property="og:type" content="website" />
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GC8PGC89NB');
+  </script>
+  <script src="https://cdn.counter.dev/script.js"
+    data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
+    data-utcoffset="6">
+  </script>
+  <style>
+    /* Default (Light) Theme */
+    :root {
+      --bg: #f0f4f8; /* Light gray-blue */
+      --panel: #ffffff; /* White */
+      --muted: #6b7280; /* Gray */
+      --text: #000000; /* Black for day mode */
+      --accent: #10b981; /* Green */
+      --accent-2: #8b5cf6; /* Purple */
+      --ring: rgba(16,185,129,.35); /* Green ring */
+      --border: #e2e8f0; /* Light border */
+    }
+
+    /* Night Mode Theme */
+    body.night-mode {
+      --bg: #0b1020; /* deep navy */
+      --panel: #11162b;
+      --muted: #9aa4b2;
+      --text: #e6ecf2; /* Light text for night mode */
+      --accent: #52c7ea;
+      --accent-2: #9b8cff;
+      --ring: rgba(82,199,234,.35);
+      --border: #1b2240;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+        background: radial-gradient(1200px 800px at 85% -10%, var(--bg-gradient-start, #17203a) 0%, var(--bg) 60%), var(--bg);
+        color: var(--text);
+        transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+    }
+
+    body.night-mode {
+        --bg-gradient-start: #17203a;
+    }
+
+    header { padding: 24px 20px 8px; display: flex; justify-content: space-between; align-items: flex-start; }
+    h1 { margin: 0; font-size: clamp(20px, 3.5vw, 30px); font-weight: 800; letter-spacing: .3px; display: flex; align-items: center; } /* Added flex and align-items */
+    .header-content { display: flex; align-items: center; gap: 10px; } /* New div for logo and title */
+    .wikipedia-logo {
+      height: 40px; /* Adjust size as needed */
+      width: auto;
+      margin-right: 10px;
+    }
+    .sub { color: var(--muted); margin-top: 6px; }
+
+    .theme-toggle {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text);
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .theme-toggle:hover {
+      box-shadow: 0 0 0 2px var(--ring);
+    }
+
+    .container { padding: 12px 20px 36px; max-width: 1200px; margin: 0 auto; }
+    .controls { display: grid; gap: 10px; grid-template-columns: 1fr; }
+    @media (min-width: 860px) { .controls { grid-template-columns: 1.2fr .8fr .6fr auto; } }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01) 60%), var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.1), inset 0 1px 0 rgba(255,255,255,.04);
+      transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    body.night-mode .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01) 60%), var(--panel);
+      box-shadow: 0 10px 30px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.04);
+    }
+
+    .field {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg-field, #f8fafc); /* Light background for fields */
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    body.night-mode .field {
+      background: #0e1430; /* Dark background for fields */
+    }
+
+    label { font-size: 12px; color: var(--muted); }
+    input, select {
+      width: 100%;
+      background: transparent;
+      color: var(--text);
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+    select {
+        /* Custom arrow for select in dark mode */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%236B7280' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.7em top 50%;
+        background-size: 0.8em auto;
+        padding-right: 2em;
+    }
+    body.night-mode select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%239aa4b2' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3E%3C/svg%3E");
+    }
+
+
+    .lang-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-pill, #f0f4f8); /* Light background for pill */
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+    body.night-mode .pill {
+      background: #0f1532;
+    }
+    .pill.active {
+      background: linear-gradient(90deg, rgba(16,185,129,.16), rgba(139,92,246,.16)); /* Green/Purple gradient */
+      border-color: var(--ring);
+      box-shadow: 0 0 0 2px var(--ring);
+    }
+    body.night-mode .pill.active {
+      background: linear-gradient(90deg, rgba(82,199,234,.16), rgba(155,140,255,.16));
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg-btn, #e2e8f0); /* Light background for button */
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 700;
+      letter-spacing:.2px;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+    body.night-mode .btn {
+      background: linear-gradient(180deg, #1a2146, #151a38);
+    }
+    .btn:hover { box-shadow: 0 0 0 2px var(--ring); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    .hint { font-size: 12px; color: var(--muted); }
+
+    .table-wrap {
+      margin-top: 16px;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--panel); /* Table background same as card panel */
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      position: sticky;
+      top: 0;
+      background: var(--bg-table-header, #f0f4f8); /* Light header background */
+      border-bottom: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+    body.night-mode thead th {
+      background: #0d1330;
+    }
+    tbody td {
+      border-bottom: 1px solid var(--border-table-row, #edf2f7); /* Light row border */
+      padding: 10px 12px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+    body.night-mode tbody td {
+      border-bottom: 1px solid #11183b;
+    }
+    tbody tr:hover { background: rgba(16,185,129,.05); } /* Green hover for light mode */
+    body.night-mode tbody tr:hover { background: rgba(82,199,234,.05); } /* Blue hover for dark mode */
+
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .badge {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-badge, #e2e8f0); /* Light badge background */
+      color: var(--muted);
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+    body.night-mode .badge {
+      background: #0f1532;
+    }
+
+    .status { display:flex; align-items:center; gap:8px; margin-top:8px; min-height:24px; }
+    .spinner { width: 16px; height: 16px; border: 2px solid rgba(0,0,0,.15); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+    body.night-mode .spinner {
+      border: 2px solid rgba(255,255,255,.15);
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .footer { margin-top: 18px; color: var(--muted); font-size: 12px; text-align: center; } /* Centered footer */
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* Go to Top/Bottom Buttons */
+    .scroll-btn-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 1000;
+    }
+
+    .scroll-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .scroll-btn:hover {
+      transform: translateY(-2px);
+      background-color: var(--accent-2); /* A different accent color on hover */
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="header-content">
+        <img src="https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2@2x.png" alt="Wikipedia Logo" class="wikipedia-logo">
+        <h1>Top 500 Longest Wikipedia Articles <span class="badge">by size (bytes)</span></h1>
+      </div>
+      <div class="sub">Pick a language wiki (e.g., <b>en</b>, <b>hi</b>, <b>awa</b>) and fetch the top 500 longest pages via the MediaWiki API (Special:Longpages).</div>
+    </div>
+    <button id="themeToggle" class="theme-toggle">Night Mode</button>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <div class="controls">
+        <div>
+          <div class="lang-pills" id="presetPills"></div>
+          <div class="hint" style="margin-top:6px">Quick picks</div>
+        </div>
+        <div class="field">
+          <label for="lang" title="Language code, e.g., en, hi, awa">Lang</label>
+          <input id="lang" value="awa" placeholder="e.g., en" />
+        </div>
+        <div class="field">
+          <label for="ns">Namespace</label>
+          <select id="ns">
+            <option value="0" selected>Main (articles)</option>
+            <option value="all">All namespaces</option>
+          </select>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <button class="btn" id="fetchBtn">Fetch Top 500</button>
+          <button class="btn" id="downloadBtn" title="Download as CSV" disabled>Download CSV</button>
+        </div>
+      </div>
+      <div class="status" id="status"></div>
+
+      <div class="field" style="margin-top:10px">
+        <label for="filter">Filter</label>
+        <input id="filter" placeholder="type to filter by title…" />
+      </div>
+
+      <div class="table-wrap" style="margin-top:12px">
+        <table id="resultTable">
+          <thead>
+            <tr>
+              <th data-key="#">#</th>
+              <th data-key="title">Title</th>
+              <th data-key="size" class="num">Size (bytes)</th>
+              <th data-key="kb" class="num">Size (KB)</th>
+              <th data-key="lang">Wiki</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="footer">
+        Data source: MediaWiki API <code>list=querypage&qppage=Longpages&qplimit=500</code>. Cross-origin enabled with <code>origin=*</code>.<br>
+        Some entries can be templates or non-article pages if "All namespaces" is chosen.<br><br>
+        Created by <a href="https://www.linkedin.com/in/suyash-dwivedi-a6816521a/" target="_blank">Suyash Dwivedi</a> | Updated on: 20 August 2025
+      </div>
+    </div>
+  </div>
+
+  <!-- Go to Top/Bottom Buttons -->
+  <div class="scroll-btn-container">
+    <button id="scrollToTopBtn" class="scroll-btn">⬆️</button>
+    <button id="scrollToBottomBtn" class="scroll-btn">⬇️</button>
+  </div>
+
+  <script>
+    const presets = ["awa","hi","en","bn","mr","ta","te","gu","pa","ur","ne"];
+    const presetPills = document.getElementById('presetPills');
+    const statusEl = document.getElementById('status');
+    const tbody = document.querySelector('#resultTable tbody');
+    const filterInput = document.getElementById('filter');
+    const langInput = document.getElementById('lang');
+    const nsSelect = document.getElementById('ns');
+    const fetchBtn = document.getElementById('fetchBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+    const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
+
+    let currentData = [];
+    let sortState = { key: 'size', dir: 'desc' };
+
+    function setStatus(txt, spinning = false) {
+      statusEl.innerHTML = spinning ? `<span class="spinner"></span>${txt}` : txt;
+    }
+
+    // Theme toggle functionality
+    function setTheme(mode) {
+      if (mode === 'night') {
+        document.body.classList.add('night-mode');
+        themeToggleBtn.textContent = 'Day Mode';
+        localStorage.setItem('theme', 'night');
+      } else {
+        document.body.classList.remove('night-mode');
+        themeToggleBtn.textContent = 'Night Mode';
+        localStorage.setItem('theme', 'day');
+      }
+    }
+
+    // Initialize theme from localStorage
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      setTheme(savedTheme);
+    } else {
+      // Default to day mode if no preference is saved
+      setTheme('day');
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+      if (document.body.classList.contains('night-mode')) {
+        setTheme('day');
+      } else {
+        setTheme('night');
+      }
+    });
+
+    // Build quick-pick pills
+    presets.forEach(code => {
+      const b = document.createElement('button');
+      b.className = 'pill';
+      b.textContent = code;
+      b.onclick = () => {
+        langInput.value = code;
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+        b.classList.add('active');
+      };
+      if (code === 'awa') b.classList.add('active');
+      presetPills.appendChild(b);
+    });
+
+    async function fetchLongPages(lang, includeAllNamespaces=false) {
+      const base = `https://${lang}.wikipedia.org/w/api.php`;
+      const params = new URLSearchParams({
+        action: 'query',
+        format: 'json',
+        list: 'querypage',
+        qppage: includeAllNamespaces ? 'Longpages' : 'Longpages',
+        qplimit: '500',
+        origin: '*'
+      });
+
+      const url = `${base}?${params.toString()}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${url}`);
+      const data = await res.json();
+      const items = data?.query?.querypage?.results || [];
+
+      const rows = items.map((it, idx) => ({
+        rank: idx + 1,
+        title: it.title,
+        size: Number(it.value) || 0,
+        kb: Math.round(((Number(it.value)||0) / 1024) * 10) / 10,
+        lang
+      }));
+
+      if (!includeAllNamespaces) {
+        return rows.filter(r => !/^.*?:/.test(r.title));
+      }
+      return rows;
+    }
+
+    function render(data) {
+      tbody.innerHTML = '';
+      const q = filterInput.value.trim().toLowerCase();
+      const filtered = q ? data.filter(r => r.title.toLowerCase().includes(q)) : data.slice();
+
+      // Sort
+      filtered.sort((a,b) => {
+        const key = sortState.key;
+        const dir = sortState.dir === 'asc' ? 1 : -1;
+        if (key === 'title' || key === 'lang') return dir * a[key].localeCompare(b[key]);
+        return dir * ((a[key]||0) - (b[key]||0));
+      });
+
+      filtered.forEach((r, i) => {
+        const tr = document.createElement('tr');
+        const urlTitle = r.title.replace(/ /g, '_');
+        tr.innerHTML = `
+          <td class="num">${i+1}</td>
+          <td><a href="https://${r.lang}.wikipedia.org/wiki/${encodeURIComponent(urlTitle)}" target="_blank" rel="noopener">${r.title}</a></td>
+          <td class="num">${r.size.toLocaleString()}</td>
+          <td class="num">${r.kb.toLocaleString()}</td>
+          <td><span class="badge">${r.lang}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      downloadBtn.disabled = filtered.length === 0;
+      setStatus(`${filtered.length.toLocaleString()} rows`);
+    }
+
+    async function onFetch() {
+      const lang = (langInput.value || '').trim();
+      if (!/^([a-zA-Z-]{2,12})$/.test(lang)) { setStatus('Enter a valid language code (e.g., en, hi, awa).'); return; }
+      const includeAll = nsSelect.value === 'all';
+      setStatus(`Fetching top 500 from ${lang}.wikipedia.org …`, true);
+      tbody.innerHTML = '';
+      try {
+        currentData = await fetchLongPages(lang, includeAll);
+        render(currentData);
+      } catch (err) {
+        console.error(err);
+        setStatus(`Failed: ${err.message}`);
+      }
+    }
+
+    fetchBtn.addEventListener('click', onFetch);
+    filterInput.addEventListener('input', () => render(currentData));
+
+    // Click-to-sort headers
+    document.querySelectorAll('#resultTable thead th').forEach(th => {
+      th.addEventListener('click', () => {
+        const key = th.getAttribute('data-key');
+        if (sortState.key === key) {
+          sortState.dir = sortState.dir === 'asc' ? 'desc' : 'asc';
+        } else {
+          sortState.key = key;
+          sortState.dir = key === 'title' || key === 'lang' ? 'asc' : 'desc';
+        }
+        render(currentData);
+      });
+    });
+
+    // Initial fetch for Awa
+    onFetch();
+
+    // CSV download
+    downloadBtn.addEventListener('click', () => {
+      const q = filterInput.value.trim().toLowerCase();
+      const filtered = q ? currentData.filter(r => r.title.toLowerCase().includes(q)) : currentData.slice();
+      const header = ['rank','title','size_bytes','size_kb','lang'];
+      const rows = filtered.map(r => [r.rank, `"${r.title.replace(/"/g,'""')}"`, r.size, r.kb, r.lang].join(','));
+      const csv = [header.join(','), ...rows].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `longpages_top500_${(langInput.value||'wiki')}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    // Scroll to Top/Bottom functionality
+    scrollToTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    scrollToBottomBtn.addEventListener('click', () => {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
