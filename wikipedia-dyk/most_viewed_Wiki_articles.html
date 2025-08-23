@@ -1,0 +1,556 @@
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GC8PGC89NB');
+</script>
+	</script>
+	<script src="https://cdn.counter.dev/script.js"
+        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
+        data-utcoffset="6">
+</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Top 500 Most Viewed Wikipedia Articles</title>
+
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png">
+
+    <meta name="description" content="Explore and filter the most viewed Wikipedia articles by pageviews in various languages. Discover the most popular content on Wikipedia." />
+    <meta name="keywords" content="Wikipedia, most viewed, popular articles, Wikimedia, data, language, articles, pageviews, free, no signup, wikipedia facts" />
+    <meta name="author" content="Suyash Dwivedi">
+
+    <meta property="og:title" content="Top 500 Most Viewed Wikipedia Articles" />
+    <meta property="og:description" content="Explore and filter the most viewed Wikipedia articles by pageviews in various languages. Discover the most popular content on Wikipedia." />
+    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png">
+    <meta property="og:url" content="https://suyashdwivedi.github.io/wikipedia-dyk/most_viewed_Wiki_articles.html">
+    <meta property="og:type" content="website">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Top 500 Most Viewed Wikipedia Articles">
+    <meta name="twitter:description" content="Explore and filter the most viewed Wikipedia articles by pageviews in various languages. Discover the most popular content on Wikipedia.">
+    <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png">
+    
+    <style>
+      :root {
+        --bg-color: #f4f4f9;
+        --text-color: #333;
+        --card-bg: #ffffff;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+        --primary-color: #007bff;
+        --secondary-color: #6c757d;
+        --border-color: #e0e0e0;
+      }
+
+      body.dark-mode {
+        --bg-color: #121212;
+        --text-color: #e0e0e0;
+        --card-bg: #1e1e1e;
+        --shadow-color: rgba(255, 255, 255, 0.05);
+        --primary-color: #8ab4f8;
+        --secondary-color: #b0b0b0;
+        --border-color: #333;
+      }
+
+      body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background: var(--bg-color);
+        color: var(--text-color);
+        margin: 0;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        transition: background 0.3s ease, color 0.3s ease;
+      }
+
+      .container {
+        max-width: 900px;
+        width: 100%;
+        background: var(--card-bg);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px var(--shadow-color);
+        text-align: center;
+        transition: box-shadow 0.3s ease, background 0.3s ease;
+      }
+      
+      .header {
+        width: 100%;
+        max-width: 900px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .header-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      
+      .header-title img {
+        height: 40px;
+        width: auto;
+      }
+
+      #theme-toggle {
+        background: none;
+        border: none;
+        color: var(--text-color);
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: color 0.2s ease;
+      }
+
+      #theme-toggle:hover {
+        color: var(--primary-color);
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 300;
+        margin-bottom: 0.5rem;
+        color: var(--primary-color);
+      }
+
+      .date-display {
+          font-size: 0.9em;
+          color: var(--secondary-color);
+          margin-bottom: 1.5rem;
+      }
+      
+      .quick-picks {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 1rem;
+      }
+
+      .quick-picks button {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        font-weight: bold;
+        color: var(--text-color);
+        background: var(--card-bg);
+        border: 2px solid var(--border-color);
+        border-radius: 20px;
+        cursor: pointer;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+      }
+
+      .quick-picks button:hover {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+      }
+      
+      .quick-picks button.active {
+          background-color: var(--primary-color);
+          color: white;
+          border-color: var(--primary-color);
+      }
+
+      .input-group {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      input[type="text"] {
+        padding: 0.75rem 1rem;
+        width: 6rem;
+        font-size: 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        background: transparent;
+        color: var(--text-color);
+        text-align: center;
+        transition: border-color 0.2s ease;
+      }
+
+      input[type="text"]:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+
+      .find-button {
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+        font-weight: bold;
+        color: white;
+        background-color: var(--primary-color);
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+      }
+
+      .find-button:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+      }
+
+      #error {
+        color: #dc3545;
+        margin-top: -1rem;
+        margin-bottom: 1rem;
+      }
+
+      #results {
+        margin-top: 2rem;
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        background: var(--card-bg);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      
+      th {
+        cursor: pointer;
+        position: relative;
+      }
+
+      th, td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+      }
+      
+      th:first-child, td:first-child {
+          border-left: 1px solid var(--border-color);
+      }
+      th:last-child, td:last-child {
+          border-right: 1px solid var(--border-color);
+      }
+
+      th {
+        background: var(--primary-color);
+        color: white;
+        font-weight: 400;
+      }
+      
+      th:first-child {
+        border-top-left-radius: 8px;
+      }
+
+      th:last-child {
+        border-top-right-radius: 8px;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.2s ease;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+      
+      .footer {
+        margin-top: auto;
+        padding-top: 2rem;
+        font-size: 0.9rem;
+        color: var(--secondary-color);
+      }
+      
+      .footer a {
+          color: var(--primary-color);
+      }
+
+      .loading-spinner {
+        display: none;
+        border: 4px solid var(--border-color);
+        border-top: 4px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 2rem auto;
+      }
+
+      body.dark-mode .loading-spinner {
+        border: 4px solid #333;
+        border-top: 4px solid #8ab4f8;
+      }
+
+      .scroll-buttons {
+          position: fixed;
+          bottom: 2rem;
+          right: 2rem;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+      }
+      
+      .scroll-buttons button {
+          padding: 10px 15px;
+          border-radius: 50%;
+          font-size: 1rem;
+          background-color: var(--primary-color);
+          color: white;
+          border: none;
+          cursor: pointer;
+          box-shadow: 0 4px 8px var(--shadow-color);
+          transition: background-color 0.2s;
+      }
+      
+      .scroll-buttons button:hover {
+          background-color: #0056b3;
+      }
+
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      @media (max-width: 768px) {
+          body {
+              padding: 1rem;
+          }
+          .container {
+              padding: 1.5rem;
+          }
+          h1 {
+              font-size: 2rem;
+          }
+          .input-group {
+              flex-direction: column;
+              gap: 0.5rem;
+          }
+          input[type="text"], .find-button {
+              width: 100%;
+              text-align: center;
+          }
+      }
+    </style>
+</head>
+<body>
+  <div class="header">
+    <div style="width: 1.5rem;"></div>
+    <div class="header-title">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png" alt="Wikipedia Logo" />
+        <h1>Most Viewed Wikipedia Articles</h1>
+    </div>
+    <button id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+  </div>
+  <div class="container">
+    <p>Enter a Wikipedia language code (e.g., <code>en</code>, <code>de</code>, <code>fr</code>) and click "Find" to see the most viewed articles for the previous month.</p>
+    <div id="update-date" class="date-display"></div>
+    
+    <p class="quick-picks-label" style="text-align: left; margin-bottom: 0.5rem; color: var(--secondary-color);">Quick picks</p>
+    <div class="quick-picks">
+        <button data-lang="awa">awa</button>
+        <button data-lang="hi">hi</button>
+        <button data-lang="en">en</button>
+        <button data-lang="bn">bn</button>
+        <button data-lang="mr">mr</button>
+        <button data-lang="ta">ta</button>
+        <button data-lang="te">te</button>
+        <button data-lang="gu">gu</button>
+        <button data-lang="pa">pa</button>
+        <button data-lang="ur">ur</button>
+        <button data-lang="ne">ne</button>
+    </div>
+
+    <div class="input-group">
+      <input type="text" id="langCode" maxlength="3" placeholder="en" />
+      <button id="findBtn" class="find-button">Find</button>
+    </div>
+
+    <div id="error"></div>
+    <div id="results"></div>
+  </div>
+  
+  <div class="footer">
+    Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> | Updated on: 23 August 2025
+  </div>
+
+  <div class="scroll-buttons">
+      <button id="top-btn" title="Go to top">⬆️</button>
+      <button id="bottom-btn" title="Go to bottom">⬇️</button>
+  </div>
+
+
+<script>
+  let currentArticles = [];
+  let sortDirection = {
+      'article': 'asc',
+      'views': 'asc'
+  };
+
+  async function fetchMostViewedArticles(lang) {
+    const today = new Date();
+    let year = today.getFullYear();
+    let month = today.getMonth();
+
+    if (month === 0) {
+      month = 12;
+      year = year - 1;
+    }
+    
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    document.getElementById('update-date').textContent = `Showing data for ${months[month - 1]} ${year}`;
+
+    const monthStr = month < 10 ? '0' + month : month;
+    const url = `https://wikimedia.org/api/rest_v1/metrics/pageviews/top/${lang}.wikipedia.org/all-access/${year}/${monthStr}/01`;
+
+    try {
+      const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      if (!response.ok) throw new Error(`API returned status ${response.status}`);
+      const data = await response.json();
+      if (!data.items || data.items.length === 0) throw new Error('No pageview data found.');
+      
+      const articles = data.items[0].articles.filter(article => article.article !== 'Main_Page').slice(0, 500);
+      currentArticles = articles;
+      return articles;
+    } catch (error) {
+      throw new Error(`Failed to fetch data for language code "${lang}": ${error.message}`);
+    }
+  }
+
+  function renderTable(articles) {
+    if (!articles || articles.length === 0) {
+      return '<p>No articles found.</p>';
+    }
+    let html = `<table>
+      <thead>
+        <tr>
+          <th data-sort="rank">Serial#</th>
+          <th data-sort="article">Article Title</th>
+          <th data-sort="views">Views</th>
+          <th>Link</th>
+        </tr>
+      </thead>
+      <tbody>`;
+    
+    articles.forEach((article, idx) => {
+      const titleEncoded = encodeURIComponent(article.article.replace(/ /g, '_'));
+      const articleUrl = `https://${document.getElementById('langCode').value}.wikipedia.org/wiki/${titleEncoded}`;
+      
+      html += `
+      <tr>
+        <td>${idx + 1}</td>
+        <td>${article.article.replace(/_/g, ' ')}</td>
+        <td>${article.views.toLocaleString()}</td>
+        <td><a href="${articleUrl}" target="_blank" rel="noopener noreferrer">Read</a></td>
+      </tr>`;
+    });
+    html += `
+      </tbody>
+    </table>`;
+    return html;
+  }
+  
+  function sortTable(column) {
+      if (!currentArticles || currentArticles.length === 0) return;
+
+      const direction = sortDirection[column] === 'asc' ? 'desc' : 'asc';
+      sortDirection = { [column]: direction };
+
+      currentArticles.sort((a, b) => {
+          let aVal, bVal;
+          if (column === 'views') {
+              aVal = a.views;
+              bVal = b.views;
+          } else { // 'article'
+              aVal = a.article.toLowerCase();
+              bVal = b.article.toLowerCase();
+          }
+
+          if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+          if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+          return 0;
+      });
+
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = renderTable(currentArticles);
+      attachSortListeners();
+  }
+  
+  function attachSortListeners() {
+      const headers = document.querySelectorAll('th[data-sort]');
+      headers.forEach(header => {
+          header.addEventListener('click', () => {
+              const sortColumn = header.getAttribute('data-sort');
+              if (sortColumn !== 'rank') {
+                  sortTable(sortColumn);
+              }
+          });
+      });
+  }
+
+  document.getElementById('findBtn').addEventListener('click', async () => {
+    const errorDiv = document.getElementById('error');
+    const resultsDiv = document.getElementById('results');
+    errorDiv.textContent = '';
+    resultsDiv.innerHTML = '<div class="loading-spinner"></div>';
+    
+    const langCodeInput = document.getElementById('langCode').value.trim().toLowerCase();
+    
+    if (!/^[a-z]{2,3}$/.test(langCodeInput)) {
+      errorDiv.textContent = 'Please enter a valid 2- or 3-letter Wikipedia language code.';
+      resultsDiv.innerHTML = '';
+      return;
+    }
+
+    try {
+      const articles = await fetchMostViewedArticles(langCodeInput);
+      resultsDiv.innerHTML = renderTable(articles);
+      attachSortListeners();
+    } catch (error) {
+      errorDiv.textContent = error.message;
+      resultsDiv.innerHTML = '';
+    }
+  });
+
+  const themeToggleBtn = document.getElementById('theme-toggle');
+  themeToggleBtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    themeToggleBtn.textContent = isDarkMode ? '☀️' : '🌙';
+  });
+
+  document.getElementById('top-btn').addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  document.getElementById('bottom-btn').addEventListener('click', () => {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  });
+  
+  document.querySelectorAll('.quick-picks button').forEach(button => {
+      button.addEventListener('click', (event) => {
+          const langCode = event.target.getAttribute('data-lang');
+          document.getElementById('langCode').value = langCode;
+          document.getElementById('findBtn').click();
+          
+          // Add active state to the clicked button and remove from others
+          document.querySelectorAll('.quick-picks button').forEach(btn => btn.classList.remove('active'));
+          event.target.classList.add('active');
+      });
+  });
+</script>
+</body>
+</html>
