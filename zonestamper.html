@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zonestamp & Calendar Generator | Create Events & Timezone Stamps Easily</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Generate Zonestamps and Google Calendar (.ics) files easily. Convert event times across timezones, add links, notes, and location.">
+    <meta name="keywords" content="Zonestamp, Timezone Converter, Google Calendar, ICS Generator, Event Scheduler, Suyash Dwivedi, Wiki's Lazy Coders">
+    <meta name="author" content="Suyash Dwivedi">
+    <link rel="canonical" href="https://suyashdwivedi.github.io/zonestamper.html">
+    
+    <!-- Open Graph / Facebook / LinkedIn Meta Tags -->
+    <meta property="og:title" content="Zonestamp & Calendar Generator | Create Events & Timezone Stamps Easily">
+    <meta property="og:description" content="Generate Zonestamps and Google Calendar (.ics) files easily. Convert event times across timezones, add links, notes, and location.">
+    <meta property="og:url" content="https://suyashdwivedi.github.io/zonestamper.html">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@Suyash_Dwivedi"> <!-- Replace with your Twitter handle if you have one -->
+    <meta name="twitter:title" content="Zonestamp & Calendar Generator | Create Events & Timezone Stamps Easily">
+    <meta name="twitter:description" content="Generate Zonestamps and Google Calendar (.ics) files easily. Convert event times across timezones, add links, notes, and location.">
+    <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png">
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GC8PGC89NB');
+    </script>
+    <!-- Counter Dev Script -->
+    <script src="https://cdn.counter.dev/script.js"
+            data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
+            data-utcoffset="6">
+    </script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for Inter font and theme transitions */
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        /* Light Theme (default) - Earthy Tones */
+        body {
+            background-color: #f8f0e3; /* Light beige background */
+            color: #4a4a4a; /* Dark gray text */
+        }
+        .container-card {
+            background-color: #ffffff;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        input, textarea, select { /* Added select */
+            background-color: #f9f9f9;
+            border-color: #e2e2e2;
+        }
+        button {
+            background-color: #8c735b; /* Earthy brown */
+            color: #ffffff;
+        }
+        button:hover {
+            background-color: #a38b71;
+        }
+        .output-box {
+            background-color: #f0f0f0;
+            border-color: #d1d1d1;
+        }
+        .text-primary {
+            color: #6a4a3a; /* Darker earthy tone for headings */
+        }
+        .text-secondary {
+            color: #8c735b; /* Lighter earthy tone for secondary text */
+        }
+        .btn-copy {
+            background-color: #d1d1d1;
+            color: #4a4a4a;
+        }
+        .btn-copy:hover {
+            background-color: #bdbdbd;
+        }
+        .btn-download {
+            background-color: #5b8c7e; /* Greenish earthy tone for download ICS */
+        }
+        .btn-download:hover {
+            background-color: #71a395;
+        }
+        .btn-google-cal {
+            background-color: #4285F4; /* Google Blue */
+            color: #ffffff;
+        }
+        .btn-google-cal:hover {
+            background-color: #357ae8;
+        }
+        .footer-link {
+            color: #8c735b; /* Match primary button color */
+        }
+        .footer-link:hover {
+            color: #6a4a3a;
+        }
+
+
+        /* Dark Mode - Adjusted Earthy Tones */
+        .dark-mode {
+            background-color: #2b2b2b; /* Dark background */
+            color: #e0e0e0; /* Light text */
+        }
+        .dark-mode .container-card {
+            background-color: #3a3a3a;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+        }
+        .dark-mode input, .dark-mode textarea, .dark-mode select { /* Added select */
+            background-color: #4a4a4a; /* Darker input background */
+            color: #e0e0e0; /* Light text */
+            border-color: #5a5a5a; /* Darker border */
+        }
+        .dark-mode button {
+            background-color: #7a634e; /* Darker earthy brown */
+            color: #ffffff;
+        }
+        .dark-mode button:hover {
+            background-color: #917960;
+        }
+        .dark-mode .output-box {
+            background-color: #4a4a4a;
+            border-color: #5a5a5a;
+        }
+        .dark-mode .text-primary {
+            color: #c9af92; /* Lighter earthy tone for headings */
+        }
+        .dark-mode .text-secondary {
+            color: #917960; /* Lighter secondary text */
+        }
+        .dark-mode .btn-copy {
+            background-color: #5a5a5a;
+            color: #e0e0e0;
+        }
+        .dark-mode .btn-copy:hover {
+            background-color: #6a6a6a;
+        }
+        .dark-mode .btn-download {
+            background-color: #4e7a6f; /* Darker greenish earthy tone */
+        }
+        .dark-mode .btn-download:hover {
+            background-color: #609185;
+        }
+        .dark-mode .btn-google-cal {
+            background-color: #2a6edc; /* Darker Google Blue */
+            color: #ffffff;
+        }
+        .dark-mode .btn-google-cal:hover {
+            background-color: #215bad;
+        }
+        .dark-mode .footer-link {
+            color: #c9af92; /* Match primary heading color */
+        }
+        .dark-mode .footer-link:hover {
+            color: #e0e0e0;
+        }
+
+        /* Message box styling */
+        .message-box-card {
+            background-color: #ffffff;
+            color: #4a4a4a;
+        }
+        .dark-mode .message-box-card {
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+        }
+        .message-box-button {
+             background-color: #8c735b;
+             color: #ffffff;
+        }
+        .dark-mode .message-box-button {
+            background-color: #7a634e;
+            color: #ffffff;
+        }
+
+    </style>
+    <!-- Moment.js and Moment-Timezone for date handling -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.33/moment-timezone-with-data.min.js"></script>
+</head>
+<body class="flex flex-col min-h-screen">
+    <!-- Night Mode Toggle Button -->
+    <button id="darkModeToggle" class="absolute top-4 right-4 p-2 rounded-full bg-gray-300 text-gray-800 shadow-md hover:bg-gray-400 transition-colors duration-300 focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+    </button>
+
+    <div class="container mx-auto p-4 md:p-8 flex-grow flex items-center justify-center">
+        <div class="container-card rounded-lg shadow-xl p-6 md:p-10 w-full max-w-lg">
+            <h1 class="text-3xl font-bold text-center mb-6 text-primary flex items-center justify-center">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" alt="Wiki's Lazy Coders Logo" class="h-8 w-8 mr-2 inline-block align-middle">
+                Event Details Generator
+            </h1>
+            <p class="text-sm text-center text-secondary mb-6">Enter your event details to generate a Zonestamp URL and a Google Calendar file.</p>
+
+            <div class="mb-5">
+                <label for="eventName" class="block text-sm font-medium text-secondary mb-2">Event Name:</label>
+                <input type="text" id="eventName" placeholder="e.g., Team Meeting"
+                       class="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-secondary focus:border-secondary">
+            </div>
+
+            <div class="mb-5">
+                <label for="eventDateTime" class="block text-sm font-medium text-secondary mb-2">Date & Time Range (e.g., 21:30, 27 August 2025 – 23:00, 27 August 2025 Timezone: Asia/Kolkata):</label>
+                <textarea id="eventDateTime" rows="3" placeholder="e.g., 21:30, 27 August 2025 – 23:00, 27 August 2025 Timezone: Asia/Kolkata"
+                          class="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-secondary focus:border-secondary"></textarea>
+                <p class="text-xs text-secondary mt-1">Format: HH:MM, DD Month YYYY – HH:MM, DD Month YYYY (Optional: Timezone: IANA/Timezone_Name)</p>
+            </div>
+
+            <div class="mb-6">
+                <label for="eventTimezoneSelect" class="block text-sm font-medium text-secondary mb-2">Timezone (Selected or Auto-detected):</label>
+                <select id="eventTimezoneSelect"
+                        class="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-secondary focus:border-secondary">
+                    <!-- Options will be populated dynamically by JavaScript -->
+                </select>
+                <p class="text-xs text-secondary mt-1">Automatically picks from above text if "Timezone:..." is specified, or select manually.</p>
+            </div>
+
+            <div class="mb-5">
+                <label for="eventLocation" class="block text-sm font-medium text-secondary mb-2">Event Location (Online Link or Physical Address - Optional):</label>
+                <input type="text" id="eventLocation" placeholder="e.g., Google Meet link or 123 Main St, Anytown"
+                       class="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-secondary focus:border-secondary">
+            </div>
+
+            <div class="mb-5">
+                <label for="eventLink" class="block text-sm font-medium text-secondary mb-2">Additional Event Link (Optional):</label>
+                <input type="url" id="eventLink" placeholder="e.g., https://meet.google.com/xyz"
+                       class="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-secondary focus:border-secondary">
+            </div>
+
+            <div class="mb-6">
+                <label for="meetingNotesLink" class="block text-sm font-medium text-secondary mb-2">Meeting Notes Link (Optional):</label>
+                <input type="url" id="meetingNotesLink" placeholder="e.g., https://docs.google.com/document/d/xyz"
+                       class="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-secondary focus:border-secondary">
+            </div>
+
+            <div class="mb-6">
+                <label for="meetingNotes" class="block text-sm font-medium text-secondary mb-2">Meeting Notes (Optional):</label>
+                <textarea id="meetingNotes" rows="4" placeholder="e.g., Discussion points, agenda, key takeaways"
+                          class="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-secondary focus:border-secondary"></textarea>
+            </div>
+            <!------------------------>
+
+            <button id="generateBtn"
+                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary mb-4 transition-all duration-300">
+                Generate Output
+            </button>
+
+            <div id="outputSection" class="hidden mt-8">
+                <h2 class="text-xl font-semibold text-primary mb-4">Generated Output:</h2>
+
+                <div class="mb-4">
+                    <label for="zonestampOutput" class="block text-sm font-medium text-secondary mb-2">Zonestamp URL:</label>
+                    <div class="flex items-center space-x-2">
+                        <input type="text" id="zonestampOutput" readonly
+                               class="output-box flex-grow px-4 py-2 border rounded-md overflow-x-auto text-sm">
+                        <button id="copyZonestampBtn"
+                                class="btn-copy p-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <button id="saveToGoogleCalBtn"
+                            class="btn-google-cal flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-base font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300">
+                        Save to Google Calendar
+                    </button>
+                    <button id="downloadCalenderBtn"
+                            class="btn-download flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-base font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300">
+                        Download ICS File
+                    </button>
+                </div>
+            </div>
+
+            <!-- Custom message box for alerts/confirmations -->
+            <div id="messageBox" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-50">
+                <div class="message-box-card rounded-lg shadow-xl p-6 max-w-sm w-full text-center">
+                    <p id="messageBoxText" class="text-lg mb-4"></p>
+                    <button id="messageBoxCloseBtn" class="message-box-button px-6 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary">
+                        OK
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <footer class="text-center py-4 text-sm mt-auto">
+        Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" class="footer-link font-semibold hover:underline">Suyash Dwivedi</a> | Updated on: 26 August 2025
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const eventNameInput = document.getElementById('eventName');
+            const eventDateTimeInput = document.getElementById('eventDateTime');
+            const eventTimezoneSelect = document.getElementById('eventTimezoneSelect');
+            const eventLocationInput = document.getElementById('eventLocation');
+            const eventLinkInput = document.getElementById('eventLink');
+            const meetingNotesLinkInput = document.getElementById('meetingNotesLink');
+            const meetingNotesInput = document.getElementById('meetingNotes');
+            const generateBtn = document.getElementById('generateBtn');
+            const outputSection = document.getElementById('outputSection');
+            const zonestampOutput = document.getElementById('zonestampOutput');
+            const copyZonestampBtn = document.getElementById('copyZonestampBtn');
+            const saveToGoogleCalBtn = document.getElementById('saveToGoogleCalBtn');
+            const downloadCalenderBtn = document.getElementById('downloadCalenderBtn');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const messageBox = document.getElementById('messageBox');
+            const messageBoxText = document.getElementById('messageBoxText');
+            const messageBoxCloseBtn = document.getElementById('messageBoxCloseBtn');
+
+            // Function to show custom message box
+            function showMessageBox(message) {
+                messageBoxText.textContent = message;
+                messageBox.classList.remove('hidden');
+            }
+
+            // Function to hide custom message box
+            messageBoxCloseBtn.addEventListener('click', () => {
+                messageBox.classList.add('hidden');
+            });
+
+            // Night mode toggle functionality
+            darkModeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                // Persist user preference
+                if (document.body.classList.contains('dark-mode')) {
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+
+            // Apply saved theme preference on load
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+
+            // --- Dynamic Timezone Population ---
+            function populateTimezoneDropdown() {
+                const timezones = moment.tz.names();
+                eventTimezoneSelect.innerHTML = ''; // Clear existing options
+
+                // Add a default option or a placeholder
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Select a timezone...';
+                defaultOption.disabled = true;
+                defaultOption.selected = true;
+                eventTimezoneSelect.appendChild(defaultOption);
+
+
+                timezones.forEach(tz => {
+                    // Try to get a current time in that timezone to determine offset and display name
+                    try {
+                        const now = moment.tz(moment(), tz);
+                        const offset = now.format('Z'); // e.g., +05:30
+                        const abbreviation = now.format('z'); // e.g., IST, EDT
+                        const option = document.createElement('option');
+                        option.value = tz;
+                        option.textContent = `${tz} (${offset} ${abbreviation})`; // e.g., Asia/Kolkata (UTC+05:30 IST)
+                        eventTimezoneSelect.appendChild(option);
+                    } catch (e) {
+                        // Handle timezones that moment-timezone might not correctly parse
+                        // or just skip them if they cause issues.
+                        console.warn(`Could not process timezone: ${tz}`, e);
+                    }
+                });
+
+                // Set default to Asia/Kolkata if available
+                if (Array.from(eventTimezoneSelect.options).some(option => option.value === 'Asia/Kolkata')) {
+                    eventTimezoneSelect.value = 'Asia/Kolkata';
+                }
+            }
+
+            populateTimezoneDropdown(); // Call on page load
+
+            // --- Event Listener for Generate Button ---
+            generateBtn.addEventListener('click', () => {
+                const eventName = eventNameInput.value.trim();
+                const eventDateTimeRaw = eventDateTimeInput.value.trim();
+                const eventLocation = eventLocationInput.value.trim();
+                const eventLink = eventLinkInput.value.trim();
+                const meetingNotesLink = meetingNotesLinkInput.value.trim();
+                const meetingNotes = meetingNotesInput.value.trim();
+
+                if (!eventName || !eventDateTimeRaw) {
+                    showMessageBox('Please fill in the required fields: Event Name and Date & Time Range.');
+                    return;
+                }
+
+                let selectedTimezone = eventTimezoneSelect.value;
+
+                // Attempt to extract timezone from eventDateTimeRaw
+                const timezoneRegex = /Timezone:\s*([a-zA-Z/_]+)/i;
+                const timezoneMatch = eventDateTimeRaw.match(timezoneRegex);
+
+                if (timezoneMatch && timezoneMatch[1]) {
+                    const detectedTz = timezoneMatch[1];
+                    if (Array.from(eventTimezoneSelect.options).some(option => option.value === detectedTz)) {
+                        eventTimezoneSelect.value = detectedTz;
+                        selectedTimezone = detectedTz;
+                    } else {
+                        console.warn(`Detected timezone "${detectedTz}" not in dropdown. Using it.`);
+                        selectedTimezone = detectedTz;
+                    }
+                } else if (!selectedTimezone) {
+                    showMessageBox('Please select a timezone from the dropdown or specify it in the date/time text.');
+                    return;
+                }
+
+                // Remove timezone part from eventDateTimeRaw for moment parsing
+                const eventDateTimeClean = eventDateTimeRaw.replace(timezoneRegex, '').trim();
+
+                // Regex to parse "HH:MM, DD Month YYYY – HH:MM, DD Month YYYY"
+                const dateTimeRangeRegex = /(\d{2}:\d{2}), (\d{1,2} \w+ \d{4})\s*–\s*(\d{2}:\d{2}), (\d{1,2} \w+ \d{4})/;
+                const match = eventDateTimeClean.match(dateTimeRangeRegex);
+
+                if (!match) {
+                    showMessageBox('Invalid Date & Time Range format. Please use "HH:MM, DD Month YYYY – HH:MM, DD Month YYYY".');
+                    return;
+                }
+
+                const [, startTime, startDateStr, endTime, endDateStr] = match;
+
+                try {
+                    const startDateTimeString = `${startDateStr} ${startTime}`;
+                    const endDateTimeString = `${endDateStr} ${endTime}`;
+
+                    const startMoment = moment.tz(startDateTimeString, "DD MMMM YYYY HH:mm", selectedTimezone);
+                    const endMoment = moment.tz(endDateTimeString, "DD MMMM YYYY HH:mm", selectedTimezone);
+
+                    if (!startMoment.isValid() || !endMoment.isValid()) {
+                        showMessageBox('Could not parse date/time or selected timezone. Please check your input.');
+                        return;
+                    }
+
+                    // 1. Generate Zonestamp URL
+                    const zonestampUnix = startMoment.unix();
+                    const zonestampUrl = `https://zonestamp.toolforge.org/${zonestampUnix}`;
+                    zonestampOutput.value = zonestampUrl;
+
+                    // 2. Prepare Description for ICS and Google Calendar URL
+                    let descriptionLines = [];
+                    if (meetingNotes) {
+                        descriptionLines.push(`Notes: ${meetingNotes}`);
+                    }
+                    if (eventLink && !eventLocation.includes(eventLink)) {
+                         descriptionLines.push(`Event Link: ${eventLink}`);
+                    }
+                    if (meetingNotesLink && !eventLocation.includes(meetingNotesLink)) {
+                        descriptionLines.push(`Meeting Notes Link: ${meetingNotesLink}`);
+                    }
+
+                    const icsDescription = descriptionLines.map(line => line.replace(/\n/g, '\\n')).join('\\n');
+                    const googleCalDescription = encodeURIComponent(descriptionLines.join('\n'));
+                    const encodedLocation = encodeURIComponent(eventLocation);
+
+
+                    // 3. Generate ICS file content
+                    const uid = `event-${Date.now()}@zonestamp.example.com`;
+                    const dtStartIcs = startMoment.format("YYYYMMDDTHHmmss");
+                    const dtEndIcs = endMoment.format("YYYYMMDDTHHmmss");
+
+                    const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Zonestamp Generator//NONSGML v1.0//EN
+BEGIN:VEVENT
+UID:${uid}
+DTSTART;TZID=${selectedTimezone}:${dtStartIcs}
+DTEND;TZID=${selectedTimezone}:${dtEndIcs}
+SUMMARY:${eventName}
+${icsDescription ? `DESCRIPTION:${icsDescription}` : ''}
+${eventLocation ? `LOCATION:${eventLocation.replace(/\n/g, '\\n')}` : ''}
+END:VEVENT
+END:VCALENDAR`;
+
+                    // Create a Blob for the ICS file
+                    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+                    const downloadUrl = URL.createObjectURL(blob);
+
+                    downloadCalenderBtn.onclick = () => {
+                        const a = document.createElement('a');
+                        a.href = downloadUrl;
+                        a.download = `${eventName.replace(/\s/g, '_')}.ics`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(downloadUrl);
+                        showMessageBox('ICS file downloaded!');
+                    };
+
+                    // 4. Generate Google Calendar URL
+                    const gcalStart = startMoment.utc().format("YYYYMMDDTHHmmssZ");
+                    const gcalEnd = endMoment.utc().format("YYYYMMDDTHHmmssZ");
+                    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE` +
+                                              `&text=${encodeURIComponent(eventName)}` +
+                                              `&dates=${gcalStart}/${gcalEnd}` +
+                                              `&details=${googleCalDescription}` +
+                                              `${eventLocation ? `&location=${encodedLocation}` : ''}` +
+                                              `&ctz=${encodeURIComponent(selectedTimezone)}` +
+                                              `&sf=true&output=xml`;
+
+                    saveToGoogleCalBtn.onclick = () => {
+                        window.open(googleCalendarUrl, '_blank');
+                        showMessageBox('Opening Google Calendar in a new tab!');
+                    };
+
+
+                    outputSection.classList.remove('hidden');
+
+                } catch (error) {
+                    console.error("Error generating output:", error);
+                    showMessageBox(`An error occurred: ${error.message}. Please check your input format and timezone.`);
+                }
+            });
+
+            // Copy Zonestamp URL to clipboard
+            copyZonestampBtn.addEventListener('click', () => {
+                zonestampOutput.select();
+                zonestampOutput.setSelectionRange(0, 99999); // For mobile devices
+                try {
+                    document.execCommand('copy');
+                    showMessageBox('Zonestamp URL copied to clipboard!');
+                } catch (err) {
+                    showMessageBox('Failed to copy Zonestamp URL.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
