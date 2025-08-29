@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ratio Stadium - Web Game</title>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GC8PGC89NB');
+</script>
+<script src="https://cdn.counter.dev/script.js"
+    data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
+    data-utcoffset="6">
+</script>
+<style>
+    :root {
+        --bg-color: #f0f0f0;
+        --container-bg-color: white;
+        --text-color: #222;
+        --heading-color: #333;
+        --track-bg-color: #eee;
+        --track-shadow: inset 0 0 8px #bbb;
+        --button-border-color: #444;
+        --button-bg-color: #fff;
+        --button-hover-bg-color: #444;
+        --button-hover-text-color: white;
+        --disabled-bg-color: #ccc;
+        --disabled-border-color: #999;
+        --disabled-text-color: #666;
+    }
+
+    body.night-mode {
+        --bg-color: #121212;
+        --container-bg-color: #1e1e1e;
+        --text-color: #e0e0e0;
+        --heading-color: #e0e0e0;
+        --track-bg-color: #2c2c2c;
+        --track-shadow: inset 0 0 8px #000;
+        --button-border-color: #aaa;
+        --button-bg-color: #333;
+        --button-hover-bg-color: #aaa;
+        --button-hover-text-color: #121212;
+        --disabled-bg-color: #444;
+        --disabled-border-color: #666;
+        --disabled-text-color: #888;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background: var(--bg-color);
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        transition: background-color 0.5s, color 0.5s;
+    }
+    
+    #nightModeToggle {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 8px 12px;
+        font-size: 14px;
+        cursor: pointer;
+        background-color: var(--button-bg-color);
+        border: 2px solid var(--button-border-color);
+        border-radius: 5px;
+        color: var(--text-color);
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    #gameArea {
+        margin: 20px auto;
+        max-width: 600px;
+        background: var(--container-bg-color);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #aaa;
+        transition: background-color 0.5s, box-shadow 0.5s;
+    }
+
+    h2, h3 {
+        margin-bottom: 10px;
+        color: var(--heading-color);
+        transition: color 0.5s;
+    }
+
+    #setupScreen {
+        margin-bottom: 20px;
+    }
+
+    #setupScreen input {
+        padding: 8px;
+        margin: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    #question {
+        font-size: 20px;
+        margin-bottom: 15px;
+        font-weight: bold;
+        color: var(--text-color);
+        transition: color 0.5s;
+    }
+    
+    .player-name-red {
+        color: #E74C3C;
+    }
+    .player-name-blue {
+        color: #3498DB;
+    }
+
+    #choices {
+        margin-bottom: 25px;
+    }
+
+    button {
+        margin: 10px 10px 10px 0;
+        padding: 10px 20px;
+        font-size: 18px;
+        border: 2px solid var(--button-border-color);
+        background: var(--button-bg-color);
+        cursor: pointer;
+        border-radius: 6px;
+        transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        min-width: 80px;
+        color: var(--text-color);
+    }
+    
+    #startButton, #restartButton {
+        padding: 12px 24px;
+        font-size: 20px;
+        background-color: #2ecc71;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    #startButton:hover, #restartButton:hover {
+        background-color: #27ae60;
+    }
+
+    button:hover:not(:disabled) {
+        background-color: var(--button-hover-bg-color);
+        color: var(--button-hover-text-color);
+    }
+
+    button:disabled {
+        background: var(--disabled-bg-color);
+        border-color: var(--disabled-border-color);
+        cursor: default;
+        color: var(--disabled-text-color);
+    }
+
+    .track {
+        height: 50px;
+        width: 100%;
+        background: var(--track-bg-color);
+        margin: 20px 0;
+        position: relative;
+        border-radius: 25px;
+        box-shadow: var(--track-shadow);
+        transition: background-color 0.5s, box-shadow 0.5s;
+    }
+
+    .motorcycle {
+        width: 40px;
+        height: 40px;
+        position: absolute;
+        top: 5px;
+        border-radius: 50%;
+        transition: left 0.3s ease-in-out;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        line-height: 40px;
+        font-weight: bold;
+        font-size: 24px;
+        color: white;
+        user-select: none;
+    }
+
+    #player1 {
+        background: #E74C3C; /* red */
+        left: 0;
+    }
+    #player2 {
+        background: #3498DB; /* blue */
+        left: 0;
+    }
+
+    #message {
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 15px;
+        height: 24px;
+        color: var(--text-color);
+        transition: color 0.5s;
+    }
+    
+    #gameControl {
+        margin-top: 20px;
+    }
+
+    #info {
+        font-size: 14px;
+        color: #666;
+        margin-top: 10px;
+        transition: color 0.5s;
+    }
+
+    #cheers {
+        min-height: 24px;
+        margin-top: 10px;
+        font-style: italic;
+        color: #888;
+        transition: color 0.5s;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    @keyframes flash {
+        0% { background-color: #e74c3c; }
+        25% { background-color: #3498db; }
+        50% { background-color: #2ecc71; }
+        75% { background-color: #f1c40f; }
+        100% { background-color: #e74c3c; }
+    }
+
+    .winner-flash {
+        animation: flash 1s infinite;
+    }
+
+    .footer {
+        margin-top: 20px;
+        font-size: 12px;
+        color: #888;
+    }
+</style>
+</head>
+<body>
+    <button id="nightModeToggle">Night Mode</button>
+    
+    <div id="gameArea">
+        <h2>Ratio Stadium</h2>
+
+        <div id="setupScreen">
+            <h3>Enter Player Names</h3>
+            <input type="text" id="player1NameInput" placeholder="Player 1 Name" value="Player 1" />
+            <input type="text" id="player2NameInput" placeholder="Player 2 Name" value="Player 2" />
+            <button id="startButton">Start Game!</button>
+        </div>
+
+        <div id="gameScreen" class="hidden">
+            <div id="question"></div>
+            <div id="choices"></div>
+
+            <div class="track"><div id="player1" class="motorcycle"></div></div>
+            <div class="track"><div id="player2" class="motorcycle"></div></div>
+
+            <div id="message"></div>
+            <div id="cheers"></div>
+            <div id="info"></div>
+            <div id="gameControl" class="hidden">
+                <button id="restartButton">Restart Game</button>
+            </div>
+        </div>
+    </div>
+    
+    <audio id="startSound" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/3/racing-start.mp3" preload="auto"></audio>
+    <audio id="correctSound" src="correct.mp3" preload="auto"></audio>
+    <audio id="incorrectSound" src="wrong.mp3" preload="auto"></audio>
+    <audio id="winSound" src="cheering.mp3" preload="auto"></audio>
+
+    <div class="footer">
+        Created by Sukrut Dwivedi | Class 5th "D"
+    </div>
+
+<script>
+    // UI elements
+    const setupScreen = document.getElementById('setupScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    const startButton = document.getElementById('startButton');
+    const nightModeToggle = document.getElementById('nightModeToggle');
+    const player1NameInput = document.getElementById('player1NameInput');
+    const player2NameInput = document.getElementById('player2NameInput');
+    const infoEl = document.getElementById('info');
+    const gameControlEl = document.getElementById('gameControl');
+    const restartButton = document.getElementById('restartButton');
+
+    const player1El = document.getElementById('player1');
+    const player2El = document.getElementById('player2');
+    const questionEl = document.getElementById('question');
+    const choicesEl = document.getElementById('choices');
+    const messageEl = document.getElementById('message');
+    const cheersEl = document.getElementById('cheers');
+
+    // Audio elements
+    const startSound = document.getElementById('startSound');
+    const correctSound = document.getElementById('correctSound');
+    const incorrectSound = document.getElementById('incorrectSound');
+    const winSound = document.getElementById('winSound');
+
+    const finishLine = 550;
+    const moveStep = 100;
+
+    let playerPositions = [0, 0];
+    let playerNames = ["Player 1", "Player 2"];
+    const playerColors = ['player-name-red', 'player-name-blue'];
+    let currentCorrectAnswer = null;
+    let currentQuestionType = null;
+    let currentPlayerIndex = 0;
+    let gameActive = false;
+
+    // --- Core Logic Functions ---
+
+    function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+    }
+
+    function simplifyRatio(a, b) {
+        const g = gcd(a, b);
+        return [a / g, b / g];
+    }
+
+    function generateChoices(correctAnswer, type) {
+        const choices = [correctAnswer];
+        while (choices.length < 4) {
+            let distractor;
+            if (type === 'simplify') {
+                let [num, den] = [Math.floor(Math.random() * 12) + 1, Math.floor(Math.random() * 12) + 1];
+                let g = gcd(num, den);
+                distractor = `${num / g}/${den / g}`;
+            } else if (type === 'missingNumber') {
+                distractor = Math.floor(Math.random() * 20) + 1;
+            } else if (type === 'equivalentRatio') {
+                let [baseA, baseB] = correctAnswer.split(':').map(Number);
+                let randMult = Math.floor(Math.random() * 5) + 2;
+                if (Math.random() > 0.5) {
+                    distractor = `${baseA * randMult}:${baseB * randMult}`;
+                } else {
+                    distractor = `${baseA * (Math.floor(Math.random() * 5) + 2)}:${baseB * (Math.floor(Math.random() * 5) + 2)}`;
+                }
+            } else if (type === 'ratioOperation') {
+                const ops = ['+', '-', '*', '/'];
+                const op = ops[Math.floor(Math.random() * ops.length)];
+                let a = Math.floor(Math.random() * 8) + 1;
+                let b = Math.floor(Math.random() * 8) + 1;
+                let c = Math.floor(Math.random() * 8) + 1;
+                let d = Math.floor(Math.random() * 8) + 1;
+
+                if (op === '-') {
+                    while (a/b < c/d) {
+                        a = Math.floor(Math.random() * 8) + 1;
+                        b = Math.floor(Math.random() * 8) + 1;
+                        c = Math.floor(Math.random() * 8) + 1;
+                        d = Math.floor(Math.random() * 8) + 1;
+                    }
+                }
+
+                if (op === '/') {
+                    distractor = `${a/b * (Math.random() * 3 + 0.5) | 0}/${c/d * (Math.random() * 3 + 0.5) | 0}`;
+                } else {
+                    distractor = `${a+c}/${b+d}`;
+                }
+            }
+            if (!choices.includes(distractor) && distractor != correctAnswer) {
+                choices.push(distractor);
+            }
+        }
+        for (let i = choices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [choices[i], choices[j]] = [choices[j], choices[i]];
+        }
+        return choices;
+    }
+
+    function generateQuestion() {
+        const questionTypes = ['simplify', 'missingNumber', 'equivalentRatio', 'ratioOperation'];
+        currentQuestionType = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+        let a, b, c, d, correctAnswer, questionText;
+
+        switch(currentQuestionType) {
+            case 'simplify':
+                a = Math.floor(Math.random() * 12) + 1;
+                b = Math.floor(Math.random() * 12) + 1;
+                while (a === b) b = Math.floor(Math.random() * 12) + 1;
+                [a, b] = simplifyRatio(a, b);
+                const multiplier = Math.floor(Math.random() * 5) + 2;
+                questionText = `Simplify the ratio ${a * multiplier}:${b * multiplier}`;
+                correctAnswer = `${a}/${b}`;
+                infoEl.textContent = 'Click the simplified fraction.';
+                break;
+            
+            case 'missingNumber':
+                a = Math.floor(Math.random() * 12) + 1;
+                b = Math.floor(Math.random() * 12) + 1;
+                while (a === b) b = Math.floor(Math.random() * 12) + 1;
+                const factor = Math.floor(Math.random() * 4) + 2;
+                const position = Math.random() < 0.5 ? 'first' : 'second';
+                if (position === 'first') {
+                    questionText = `Find the missing number: ?:${b * factor} = ${a}:${b}`;
+                    correctAnswer = a * factor;
+                } else {
+                    questionText = `Find the missing number: ${a * factor}:? = ${a}:${b}`;
+                    correctAnswer = b * factor;
+                }
+                infoEl.textContent = 'Find the missing value.';
+                break;
+
+            case 'equivalentRatio':
+                a = Math.floor(Math.random() * 12) + 1;
+                b = Math.floor(Math.random() * 12) + 1;
+                while (a === b) b = Math.floor(Math.random() * 12) + 1;
+                const newFactor = Math.floor(Math.random() * 4) + 2;
+                questionText = `Find a ratio equivalent to ${a}:${b}`;
+                correctAnswer = `${a * newFactor}:${b * newFactor}`;
+                infoEl.textContent = 'Click an equivalent ratio.';
+                break;
+
+            case 'ratioOperation':
+                const ops = ['+', '-', '*', '/'];
+                const op = ops[Math.floor(Math.random() * ops.length)];
+                a = Math.floor(Math.random() * 8) + 1;
+                b = Math.floor(Math.random() * 8) + 1;
+                c = Math.floor(Math.random() * 8) + 1;
+                d = Math.floor(Math.random() * 8) + 1;
+
+                let resultNum, resultDen;
+                let textOp = op;
+                let questionString;
+
+                if (op === '+') {
+                    resultNum = a * d + c * b;
+                    resultDen = b * d;
+                    questionString = `(${a}/${b}) ${op} (${c}/${d})`;
+                } else if (op === '-') {
+                    while (a/b < c/d) {
+                        a = Math.floor(Math.random() * 8) + 1;
+                        b = Math.floor(Math.random() * 8) + 1;
+                        c = Math.floor(Math.random() * 8) + 1;
+                        d = Math.floor(Math.random() * 8) + 1;
+                    }
+                    resultNum = a * d - c * b;
+                    resultDen = b * d;
+                    questionString = `(${a}/${b}) ${op} (${c}/${d})`;
+                } else if (op === '*') {
+                    resultNum = a * c;
+                    resultDen = b * d;
+                    questionString = `(${a}/${b}) ${op} (${c}/${d})`;
+                } else if (op === '/') {
+                    resultNum = a * d;
+                    resultDen = b * c;
+                    questionString = `(${a}/${b}) ${op} (${c}/${d})`;
+                }
+                [resultNum, resultDen] = simplifyRatio(resultNum, resultDen);
+                correctAnswer = `${resultNum}/${resultDen}`;
+                questionText = `Solve the fraction problem: ${questionString}`;
+                infoEl.textContent = `Find the simplified result.`;
+                break;
+        }
+
+        return { questionText, correctAnswer, type: currentQuestionType };
+    }
+
+    function loadNewQuestion() {
+        if (!gameActive) return;
+
+        const { questionText, correctAnswer, type } = generateQuestion();
+        const currentPlayerName = playerNames[currentPlayerIndex];
+        const currentPlayerColor = playerColors[currentPlayerIndex];
+        questionEl.innerHTML = `<span class="${currentPlayerColor}">${currentPlayerName}</span>, ${questionText}`;
+        currentCorrectAnswer = correctAnswer;
+        
+        const choices = generateChoices(currentCorrectAnswer, type);
+        choicesEl.innerHTML = '';
+        choices.forEach(choice => {
+            const btn = document.createElement('button');
+            btn.textContent = choice;
+            btn.onclick = () => handleAnswer(choice);
+            choicesEl.appendChild(btn);
+        });
+        setMessage(`${currentPlayerName}, make your move!`);
+        cheersEl.textContent = '';
+        gameControlEl.classList.add('hidden');
+    }
+
+    function handleAnswer(selectedAnswer) {
+        if (!gameActive) return;
+        let isCorrect = false;
+
+        if (currentQuestionType === 'simplify' || currentQuestionType === 'equivalentRatio' || currentQuestionType === 'ratioOperation') {
+            isCorrect = (selectedAnswer === currentCorrectAnswer);
+        } else if (currentQuestionType === 'missingNumber') {
+            isCorrect = (Number(selectedAnswer) === currentCorrectAnswer);
+        }
+
+        if (isCorrect) {
+            correctSound.play();
+            movePlayer(currentPlayerIndex);
+            setMessage(`Correct! 🎉`);
+            cheersEl.textContent = `Go, ${playerNames[currentPlayerIndex]}!`;
+        } else {
+            incorrectSound.play();
+            setMessage(`Wrong! 😞 No move for ${playerNames[currentPlayerIndex]}.`);
+            cheersEl.textContent = '';
+        }
+
+        if (gameActive) {
+            currentPlayerIndex = (currentPlayerIndex + 1) % 2;
+            setTimeout(loadNewQuestion, 1500);
+        }
+    }
+
+    // --- Utility Functions ---
+
+    function movePlayer(playerIndex) {
+        playerPositions[playerIndex] += moveStep;
+        const playerEl = playerIndex === 0 ? player1El : player2El;
+        playerEl.style.left = playerPositions[playerIndex] + 'px';
+        playerEl.textContent = playerIndex + 1;
+        if (playerPositions[playerIndex] >= finishLine) {
+            gameActive = false;
+            winSound.play();
+            setMessage(`${playerNames[playerIndex]} wins the race! 🏆`);
+            cheersEl.textContent = 'Game Over!';
+            disableChoices();
+            flashScreen();
+            gameControlEl.classList.remove('hidden');
+        }
+    }
+
+    function setMessage(msg) {
+        messageEl.textContent = msg;
+    }
+
+    function disableChoices() {
+        const buttons = choicesEl.querySelectorAll('button');
+        buttons.forEach(btn => btn.disabled = true);
+    }
+
+    function resetGame() {
+        playerPositions = [0, 0];
+        player1El.style.left = '0px';
+        player2El.style.left = '0px';
+        currentPlayerIndex = 0;
+        gameActive = true;
+        setMessage('');
+        document.body.classList.remove('winner-flash');
+        gameControlEl.classList.add('hidden');
+    }
+
+    function flashScreen() {
+        document.body.classList.add('winner-flash');
+    }
+
+    // --- Event Listeners and Initial Setup ---
+
+    startButton.addEventListener('click', () => {
+        playerNames[0] = player1NameInput.value || "Player 1";
+        playerNames[1] = player2NameInput.value || "Player 2";
+        setupScreen.classList.add('hidden');
+        gameScreen.classList.remove('hidden');
+        resetGame();
+        startSound.play();
+        loadNewQuestion();
+    });
+
+    restartButton.addEventListener('click', () => {
+        resetGame();
+        loadNewQuestion();
+    });
+
+    nightModeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('night-mode');
+    });
+
+</script>
+
+</body>
+</html>
