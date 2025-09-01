@@ -1,128 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<!--  🌐 Root Pages  -->
-<url>
-<loc>https://suyashdwivedi.github.io/</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/index_hi.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/fetch.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/parivartak.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/Google_event_creator.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/Wiki%20URL%20Shortener.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/wikidata.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/glocation.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/hindi.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/calendar.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/AIIMS_Bhopal_Yellow_Fever_Vaccination.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/medic-tree-mapping.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/megapixel-checker.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/mtm.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/mcalender.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/wiki-noimg-500.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/eSpeak.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/speech2.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/speech_V3.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/github-html-previewer.html</loc>
-</url>
-
-<!--  📁 map/  -->
-<url>
-<loc>https://suyashdwivedi.github.io/map/locate_commons_photos.html</loc>
-</url>
-
-<!--  📁 wcs/  -->
-<url>
-<loc>https://suyashdwivedi.github.io/wcs/WCS_Calendar.html</loc>
-</url>
-
-<!--  📁 wikipedia-dyk/  -->
-<url>
-<loc>https://suyashdwivedi.github.io/wikipedia-dyk/index.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/wikipedia-dyk/dyk.html</loc>
-</url>
-
-<!--  📁 RC/  -->
-<url>
-<loc>https://suyashdwivedi.github.io/RC/index.html</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/RC/Recent_changes.mp3</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/RC/Recent_changes_en.mp3</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/RC/Recent_changes_hi.mp3</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/RC/fetch_recent_changes.php</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/RC/server.js</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/RC/ਪੰਨਿਆਂ_ਵਿੱਚ_ਬਦਲਾਅ_ਆਇਆ_ਹੈ_1.mp3</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/RC/ਪੰਨਿਆਂ_ਵਿੱਚ_ਬਦਲਾਅ_ਆਇਆ_ਹੈ_2.mp3</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/RC/પાનાઓમાં_ફેરફાર_થયો_છે_1.mp3</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/RC/પાનાઓમાં ફેરફાર થયો છે.mp3</loc>
-</url>
-
-<!--  🔊 Other Files  -->
-<url>
-<loc>https://suyashdwivedi.github.io/alert.mp3</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/beep.mp3</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/beep1.mp3</loc>
-</url>
-<url>
-<loc>https://suyashdwivedi.github.io/beep2.mp3</loc>
-</url>
+  <!--  🌐 Root Pages  -->
+  <url><loc>https://suyashdwivedi.github.io/</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/index_hi.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/fetch.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/parivartak.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/Google_event_creator.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/Wiki%20URL%20Shortener.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/wikidata.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/glocation.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/hindi.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/calendar.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/AIIMS_Bhopal_Yellow_Fever_Vaccination.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/medic-tree-mapping.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/megapixel-checker.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/mtm.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/mcalender.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/wiki-noimg-500.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/eSpeak.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/speech2.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/speech_V3.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/github-html-previewer.html</loc></url>
+  <!--  📁 map/  -->
+  <url><loc>https://suyashdwivedi.github.io/map/locate_commons_photos.html</loc></url>
+  <!--  📁 wcs/  -->
+  <url><loc>https://suyashdwivedi.github.io/wcs/WCS_Calendar.html</loc></url>
+  <!--  📁 wikipedia-dyk/  -->
+  <url><loc>https://suyashdwivedi.github.io/wikipedia-dyk/index.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/wikipedia-dyk/dyk.html</loc></url>
+  <!--  📁 RC/  -->
+  <url><loc>https://suyashdwivedi.github.io/RC/index.html</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/RC/Recent_changes.mp3</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/RC/Recent_changes_en.mp3</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/RC/Recent_changes_hi.mp3</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/RC/fetch_recent_changes.php</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/RC/server.js</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/RC/ਪੰਨਿਆਂ_ਵਿੱਚ_ਬਦਲਾਅ_ਆਇਆ_ਹੈ_1.mp3</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/RC/ਪੰਨਿਆਂ_ਵਿੱਚ_ਬਦਲਾਅ_ਆਇਆ_ਹੈ_2.mp3</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/RC/પાનાઓમાં_ફેરફાર_થયો_છે_1.mp3</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/RC/પાનાઓમાં ફેરફાર થયો છે.mp3</loc></url>
+  <!--  🔊 Other Files  -->
+  <url><loc>https://suyashdwivedi.github.io/alert.mp3</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/beep.mp3</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/beep1.mp3</loc></url>
+  <url><loc>https://suyashdwivedi.github.io/beep2.mp3</loc></url>
 </urlset>
