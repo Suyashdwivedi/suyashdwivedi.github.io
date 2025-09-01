@@ -232,22 +232,60 @@
             } while (apcontinue && allPages.length < 500);
             return allPages.slice(0, 500);
         }
-
+        
         async function checkNoImage(apiUrl, title) {
-            const params = new URLSearchParams({
-                action: "query",
-                prop: "pageimages",
-                titles: title,
-                piprop: "thumbnail",
-                format: "json",
-            });
-            const response = await fetch(`${apiUrl}&${params.toString()}`);
-            const data = await response.json();
-            const pages = data.query.pages;
-            for (let key in pages) {
-                if (pages[key].thumbnail) return false;
+            try {
+                // Step 1: Get the Wikidata ID for the Wikipedia page
+                const wikidataIdParams = new URLSearchParams({
+                    action: 'query',
+                    prop: 'pageprops',
+                    titles: title,
+                    format: 'json',
+                    redirects: '1'
+                });
+                const wikidataIdResponse = await fetch(`${apiUrl}&${wikidataIdParams.toString()}`);
+                const wikidataIdData = await wikidataIdResponse.json();
+                const pages = wikidataIdData.query.pages;
+                let wikidataId;
+                for (let key in pages) {
+                    wikidataId = pages[key].pageprops?.wikidata_item;
+                }
+
+                if (!wikidataId) {
+                    // No Wikidata item found, fallback to the old method
+                    const fallbackParams = new URLSearchParams({
+                        action: 'query',
+                        prop: 'pageimages',
+                        titles: title,
+                        piprop: 'thumbnail',
+                        format: 'json',
+                    });
+                    const fallbackResponse = await fetch(`${apiUrl}&${fallbackParams.toString()}`);
+                    const fallbackData = await fallbackResponse.json();
+                    const fallbackPages = fallbackData.query.pages;
+                    for (let key in fallbackPages) {
+                        if (fallbackPages[key].thumbnail) return false;
+                    }
+                    return true;
+                }
+
+                // Step 2: Check the Wikidata item for the P18 (image) property
+                const wikidataApiUrl = `https://www.wikidata.org/w/api.php?origin=*`;
+                const wikidataImageParams = new URLSearchParams({
+                    action: 'wbgetentities',
+                    ids: wikidataId,
+                    props: 'claims',
+                    format: 'json',
+                });
+                const wikidataImageResponse = await fetch(`${wikidataApiUrl}&${wikidataImageParams.toString()}`);
+                const wikidataImageData = await wikidataImageResponse.json();
+
+                return !wikidataImageData.entities[wikidataId].claims?.P18;
+
+            } catch (err) {
+                console.error(`Error checking for image for ${title}:`, err);
+                return false;
             }
-            return true;
         }
 
         async function runQuery() {
