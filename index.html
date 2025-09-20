@@ -80,7 +80,7 @@
         .nav-button:hover {
             background-color: #45a049;
         }
-        #toggle-theme {
+        #toggle-theme, #toggle-sound {
             position: absolute;
             top: 10px;
             right: 10px;
@@ -93,6 +93,14 @@
             cursor: pointer;
             z-index: 120;
             transition: background 0.2s, color 0.2s;
+        }
+        #toggle-sound {
+            right: 120px; /* Position to the left of the theme button */
+            background: #e74c3c;
+            color: white;
+        }
+        #toggle-sound.on {
+            background: #2ecc71;
         }
         #toggle-theme.light {
             background: #e0e0e0;
@@ -126,6 +134,7 @@
     <header>
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" alt="Wiki's Lazy Coders Logo">
         <button id="toggle-theme" aria-label="Switch Dark/Light Theme">🌙 Dark Mode</button>
+        <button id="toggle-sound" aria-label="Toggle Sound">🔇 Sound Off</button>
         <h1>Wikipedia Recent Changes</h1>
         <p>Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> (in 43 languages)</p>
         <label for="language-select">Select Language:</label>
@@ -135,7 +144,7 @@
             <option value="awa">अवधी (Awadhi)</option>
             <option value="ar">العربية (Arabic)</option>
             <option value="as">অসমীয়া (Assamese)</option>
-            <option value="bh">भोजपुरी (Bhojpuri)</option>
+            <option value="bh">ভোজपुरी (Bhojpuri)</option>
             <option value="bn">বাংলা (Bengali)</option>
             <option value="bcl">Bikol Central (Central Bikol)</option>
             <option value="zh">中文 (Chinese)</option>
@@ -211,6 +220,7 @@
         const languageSelect = document.getElementById('language-select');
         let lastChangeTimestamp = null;
         let changeCount = 0;
+        let isSoundEnabled = true;
 
         const beepMap = {
             hi: 'beepHi',
@@ -271,7 +281,7 @@
                     <strong>Comment:</strong> ${change.comment || 'No summary'}<br>
                 `;
 
-                if (!lastChangeTimestamp || changeTime > lastChangeTimestamp) {
+                if (isSoundEnabled && (!lastChangeTimestamp || changeTime > lastChangeTimestamp)) {
                     changeCount++;
                     lastChangeTimestamp = changeTime;
                     beep.play().catch(()=>{});
@@ -311,12 +321,18 @@
             const isDark = document.body.classList.toggle('dark-mode');
             setTheme(isDark ? 'dark' : 'light');
         });
-        // Load theme preference
-        (function(){
-            const mode = localStorage.getItem('theme');
-            if (mode === 'dark') setTheme('dark');
-            else setTheme('light');
-        })();
+        
+        // Sound toggle
+        const soundBtn = document.getElementById('toggle-sound');
+        function setSound(enabled) {
+            isSoundEnabled = enabled;
+            soundBtn.textContent = enabled ? '🔊 Sound On' : '🔇 Sound Off';
+            soundBtn.classList.toggle('on', enabled);
+            localStorage.setItem('soundEnabled', enabled);
+        }
+        soundBtn.addEventListener('click', () => {
+            setSound(!isSoundEnabled);
+        });
 
         // Unlock audio on user interaction (browser autoplay rule)
         document.body.addEventListener('click', () => {
@@ -325,6 +341,23 @@
                 if (el) el.play().then(()=>el.pause()).catch(()=>{});
             });
         }, { once:true });
+
+        // Load preferences on page load
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                setTheme('dark');
+            } else {
+                setTheme('light');
+            }
+
+            const savedSound = localStorage.getItem('soundEnabled');
+            if (savedSound !== null) {
+                setSound(savedSound === 'true');
+            } else {
+                setSound(true); // Default to sound on
+            }
+        };
 
         displayDateTime();
         setInterval(displayDateTime, 1000);
