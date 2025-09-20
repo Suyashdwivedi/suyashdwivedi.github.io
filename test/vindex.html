@@ -106,6 +106,24 @@
       background: #e0e0e0;
       color: #333;
     }
+    #toggle-voice {
+      position: absolute;
+      top: 50px;
+      right: 10px;
+      padding: 8px 14px;
+      background: #0044cc;
+      color: #fff;
+      border: none;
+      border-radius: 18px;
+      font-size: 15px;
+      cursor: pointer;
+      z-index: 120;
+      transition: background 0.2s, color 0.2s;
+    }
+    #toggle-voice.off {
+      background: #999;
+      color: #222;
+    }
     body.dark-mode {
       background-color: #121212;
       color: #f4f4f4;
@@ -133,6 +151,7 @@
   <header>
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/263px-Wikipedia-logo-v2.svg.png" alt="Wikipedia Logo">
     <button id="toggle-theme" aria-label="Switch Dark/Light Theme">🌙 Dark Mode</button>
+    <button id="toggle-voice" aria-label="Enable/Disable Voice"></button>
     <h1>Wikipedia Recent Changes</h1>
     <p>Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> (in 43 languages)</p>
     <label for="language-select">Select Language:</label>
@@ -188,7 +207,7 @@
   <div id="changes"></div>
 
   <footer>
-    Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> | Updated on: 23 July 2025
+    Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> | Updated on: 20 August 2025
   </footer>
 
   <div class="nav-buttons">
@@ -199,6 +218,7 @@
   <script>
     const languageSelect = document.getElementById("language-select");
     const themeToggle = document.getElementById("toggle-theme");
+    const voiceToggle = document.getElementById("toggle-voice");
     const counterDisplay = document.getElementById("counter");
     const dateDisplay = document.getElementById("date-time");
     const changesDiv = document.getElementById("changes");
@@ -210,6 +230,25 @@
     let spokenQueue = [];
     const REFRESH_INTERVAL = 20000; 
     let fetchIntervalId; 
+    let voiceEnabled = localStorage.getItem("voiceEnabled") !== "false"; 
+
+    function updateVoiceButton() {
+      if (voiceEnabled) {
+        voiceToggle.textContent = "🔊 Voice: ON";
+        voiceToggle.classList.remove("off");
+      } else {
+        voiceToggle.textContent = "🔇 Voice: OFF";
+        voiceToggle.classList.add("off");
+      }
+    }
+    updateVoiceButton();
+
+    voiceToggle.onclick = () => {
+      voiceEnabled = !voiceEnabled;
+      localStorage.setItem("voiceEnabled", voiceEnabled);
+      updateVoiceButton();
+      if (!voiceEnabled) speechSynthesis.cancel();
+    };
 
     const langMap = {
       en: "en-US", hi: "hi-IN", awa: "awa-IN", ar: "ar-SA", as: "as-IN", bh: "bh-IN", bn: "bn-IN", bcl: "bcl-PH",
@@ -240,7 +279,7 @@
     }
 
     function speakQueue(queue) {
-        if (!queue || queue.length === 0) {
+        if (!voiceEnabled || !queue || queue.length === 0) {
             return;
         }
         speechSynthesis.cancel(); 
@@ -344,39 +383,13 @@
     languageSelect.onchange = () => {
       currentLang = languageSelect.value;
       localStorage.setItem("selectedLanguage", currentLang);
-      
-      changeCount = 0; 
-      intervalCount = 0; 
-      counterDisplay.textContent = "Changes Count: 0";
-      changesDiv.innerHTML = ""; 
-      previousChangeIDs = []; 
-      spokenQueue = []; 
-      speechSynthesis.cancel(); 
-
-      clearInterval(fetchIntervalId);
-      fetchChanges(); 
-      fetchIntervalId = setInterval(fetchChanges, REFRESH_INTERVAL);
+      changesDiv.innerHTML = "";
+      previousChangeIDs = [];
+      fetchChanges();
     };
 
-    window.onload = () => {
-      changeCount = 0; 
-      intervalCount = 0; 
-      counterDisplay.textContent = "Changes Count: 0";
-      fetchChanges(); 
-      fetchIntervalId = setInterval(fetchChanges, REFRESH_INTERVAL); 
-    };
+    fetchChanges();
+    fetchIntervalId = setInterval(fetchChanges, REFRESH_INTERVAL);
   </script>
-
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-GC8PGC89NB');
-  </script>
-  <script src="https://cdn.counter.dev/script.js"
-        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
-        data-utcoffset="6">
-</script>
 </body>
 </html>
