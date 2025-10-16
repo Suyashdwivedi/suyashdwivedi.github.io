@@ -4,46 +4,46 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- ✅ SEO Meta Tags -->
   <title>Google Map ➡️ Commons Location Template</title>
   <meta name="description" content="Convert Google Map coordinates to Wikimedia Commons Location template easily. Developed by Wikimedian Suyash Dwivedi.">
   <meta name="keywords" content="Commons location template, Google Maps, GPS to Wikimedia, geo coordinates, location template tool, Suyash Dwivedi, Wikimedia">
   <meta name="author" content="Suyash Dwivedi">
 
-  <!-- ✅ Open Graph Tags -->
   <meta property="og:title" content="Google Map ➡️ Commons Location Template – by Suyash Dwivedi">
   <meta property="og:description" content="Paste GPS coordinates from Google Maps and generate Wikimedia Commons Location template instantly.">
   <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Suyash_Dwivedi_01%28cropped%29.jpg/180px-Suyash_Dwivedi_01%28cropped%29.jpg">
   <meta property="og:url" content="https://suyashdwivedi.github.io/glocation.html">
   <meta property="og:type" content="website">
 
-  <!-- ✅ Twitter Card -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Google Map ➡️ Commons Location Tool – by Suyash Dwivedi">
   <meta name="twitter:description" content="Create Commons Location template from coordinates.">
   <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Suyash_Dwivedi_01%28cropped%29.jpg/180px-Suyash_Dwivedi_01%28cropped%29.jpg">
 
-  <!-- ✅ Favicon and Canonical -->
-  <link rel="icon" href="https://suyashdwivedi.github.io/Wiki_Tools/Github_icon.png" type="image/png">
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" type="image/png">
   <link rel="canonical" href="https://suyashdwivedi.github.io/glocation.html" />
 
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 0;
-      background: #f5f5f5;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
       color: #333;
       text-align: center;
+      transition: background 0.5s, color 0.5s;
     }
 
     .container {
       max-width: 800px;
       margin: 40px auto;
-      padding: 30px;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      transition: all 0.5s;
     }
 
     .logo-container {
@@ -54,15 +54,26 @@
       margin-bottom: 20px;
     }
 
+    .custom-logo {
+      height: 90px !important;
+      width: auto;
+      margin-right: 10px;
+      align-self: center;
+    }
+
     .logo-container img {
-      height: 120px;
+      height: 90px;
       width: auto;
     }
 
     h1, h2 {
       font-size: 32px;
-      color: #222;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       margin: 20px 0;
+      font-weight: 700;
     }
 
     label, input, button {
@@ -77,18 +88,33 @@
     }
 
     input, button {
-      border: 1px solid #ccc;
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
     button {
-      background: #007BFF;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       cursor: pointer;
-      transition: 0.3s;
+      transition: all 0.3s ease;
+      border: none;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     }
 
     button:hover {
-      background: #0056b3;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
     }
 
     .btn-group {
@@ -124,12 +150,12 @@
       margin-top: 20px;
     }
 
-    .credits a {
+    .credits a, .footer a {
       color: #007BFF;
       text-decoration: none;
     }
 
-    .credits a:hover {
+    .credits a:hover, .footer a:hover {
       text-decoration: underline;
     }
 
@@ -137,6 +163,63 @@
       font-size: 14px;
       color: #555;
       margin-top: 10px;
+    }
+
+    #nightModeToggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 24px;
+      z-index: 1000;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #nightModeToggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    body.night-mode {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #e0e0e0;
+    }
+
+    .container.night-mode {
+      background: rgba(30, 30, 30, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .night-mode h1, .night-mode h2 {
+      background: linear-gradient(135deg, #a8b3ff 0%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .night-mode input, .night-mode button:not(.btn-group button) {
+      background: #333;
+      color: #e0e0e0;
+      border-color: #555;
+    }
+
+    .night-mode .license-tip {
+      color: #b0b0b0;
+    }
+
+    .night-mode .footer {
+      color: #999;
     }
 
     @media (max-width: 768px) {
@@ -163,10 +246,19 @@
       .logo-container img {
         height: 60px;
       }
+      .custom-logo {
+        height: 40px !important;
+      }
+      #nightModeToggle {
+        top: 10px;
+        right: 10px;
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+      }
     }
   </style>
 
-  <!-- ✅ Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -174,29 +266,32 @@
     gtag('js', new Date());
     gtag('config', 'G-GC8PGC89NB');
   </script>
-  <script src="https://cdn.counter.dev/script.js" 
-          data-id="cc7a036d-a904-4d76-bcac-37ea4196c014" 
+  <script src="https://cdn.counter.dev/script.js"
+          data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
           data-utcoffset="6">
   </script>
 </head>
 
 <body>
 
-<div class="container">
+<button id="nightModeToggle" onclick="toggleNightMode()">🌙</button>
+
+<div class="container" id="mainContainer">
 
   <div class="logo-container">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" alt="Wiki's Lazy Coders Logo" class="custom-logo">
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Google_Maps_Logo_2020.svg/267px-Google_Maps_Logo_2020.svg.png" alt="Google Maps Logo">
     <span style="font-size: 32px;">➡️</span>
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Commons-logo-en.svg/182px-Commons-logo-en.svg.png" alt="Commons Logo">
   </div>
 
-  <h1>Google Map ➡️ Commons Location Template</h1>
+  <h1>Google Map ➤ Commons Location Template</h1>
 
   <p class="credits">
     Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a>
   </p>
 
-  <label for="coordinateInput">Enter Coordinates (lat, long) <br> <a href="https://www.google.com/maps" target="_blank">Google Map</a></label>
+  <label for="coordinateInput">Enter Coordinates (lat, long) <br> <a href="https://www.google.com/maps" target="_blank">Open Google Map</a></label>
   <input type="text" id="coordinateInput" placeholder="23.247087, 77.392092">
 
   <div class="btn-group">
@@ -229,30 +324,63 @@
 
   <iframe id="mapFrame" src="https://www.google.com/maps?q=Madhya+Pradesh&z=6&output=embed" allowfullscreen></iframe>
 
-  <p class="footer" id="lastUpdated">Last update: 07/September/2025</p>
+  <p class="footer">
+    Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi">Suyash Dwivedi</a> | Updated on: 16 October 2025
+  </p>
 
 </div>
 
 <script>
+  function truncateCoordinate(coord, decimalPlaces) {
+    const multiplier = Math.pow(10, decimalPlaces);
+    return (Math.trunc(coord * multiplier) / multiplier).toFixed(decimalPlaces);
+  }
+
   window.onload = function () {
     const savedUsername = localStorage.getItem('wikimediaUsername');
     if (savedUsername) {
       document.getElementById("userIdInput").value = savedUsername;
     }
+    const isNightMode = localStorage.getItem('nightMode') === 'enabled';
+    if (isNightMode) {
+      document.body.classList.add('night-mode');
+      document.getElementById('mainContainer').classList.add('night-mode');
+      document.getElementById('nightModeToggle').innerText = '☀️';
+    }
   };
+
+  function toggleNightMode() {
+    document.body.classList.toggle('night-mode');
+    document.getElementById('mainContainer').classList.toggle('night-mode');
+
+    const isNightMode = document.body.classList.contains('night-mode');
+    if (isNightMode) {
+      localStorage.setItem('nightMode', 'enabled');
+      document.getElementById('nightModeToggle').innerText = '☀️';
+    } else {
+      localStorage.setItem('nightMode', 'disabled');
+      document.getElementById('nightModeToggle').innerText = '🌙';
+    }
+  }
 
   function convertCoordinates() {
     let input = document.getElementById("coordinateInput").value.trim();
     let coords = input.split(",").map(coord => coord.trim());
 
     if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
-      let formatted = `{{Location|${coords[0]}|${coords[1]}}}`;
+      let lat = parseFloat(coords[0]);
+      let lon = parseFloat(coords[1]);
+
+      let truncatedLat = truncateCoordinate(lat, 6);
+      let truncatedLon = truncateCoordinate(lon, 6);
+
+      let formatted = `{{Location|${truncatedLat}|${truncatedLon}}}`;
       document.getElementById("output").innerText = formatted;
 
-      let mapSrc = `https://www.google.com/maps?q=${coords[0]},${coords[1]}&z=15&output=embed`;
+      let mapSrc = `https://www.google.com/maps?q=${truncatedLat},${truncatedLon}&z=15&output=embed`;
       document.getElementById("mapFrame").src = mapSrc;
     } else {
-      alert("Invalid input. Please enter coordinates in the format: lat, long");
+      alert("Invalid input. Please enter coordinates in the format: lat, long (e.g., 23.247087, 77.392092)");
     }
   }
 
@@ -261,6 +389,10 @@
     let userId = document.getElementById("userIdInput").value.trim();
     let addLicense = document.getElementById("addLicenseCheckbox").checked;
 
+    if (userId) {
+      localStorage.setItem('wikimediaUsername', userId);
+    }
+
     if (!fileName) {
       alert("Please enter a valid filename.");
       return;
@@ -268,8 +400,21 @@
 
     let finalFileName = fileName.match(/^file:/i) ? fileName : `File:${fileName}`;
     let outputText = document.getElementById("output").innerText;
-    let licenseText = addLicense && userId ? `\n{{${userId}/license}} \n[[Category:Location added using the Glocation tool]]` : "\n[[Category:Location added using the Glocation tool]]";
-    let editSummary = addLicense ? "Location added + license added" : "Location added";
+    
+    if (!outputText) {
+      alert("Please convert the coordinates first.");
+      return;
+    }
+
+    let licenseText = "";
+    let editSummary = "Location added";
+
+    if (addLicense && userId) {
+      licenseText = `\n{{${userId}/license}}\n[[Category:Location added using the Glocation tool]]`;
+      editSummary = "Location added + license added";
+    } else {
+      licenseText = "\n[[Category:Location added using the Glocation tool]]";
+    }
 
     navigator.clipboard.writeText(`${outputText}${licenseText}`).then(() => {
       alert("Copied to clipboard!");
@@ -282,6 +427,7 @@
     document.getElementById("coordinateInput").value = "";
     document.getElementById("imageFilename").value = "";
     document.getElementById("output").innerText = "";
+    document.getElementById("mapFrame").src = "https://www.google.com/maps?q=Madhya+Pradesh&z=6&output=embed";
   }
 </script>
 
