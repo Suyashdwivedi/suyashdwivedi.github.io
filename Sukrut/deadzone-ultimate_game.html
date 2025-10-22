@@ -1,0 +1,2410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>☣ DeadZone: Ultimate Edition ☣</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Russo+One&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050607;
+  --panel:#10161d;
+  --accent:#ffd166;
+  --accent2:#ff9900;
+  --danger:#ff4d6d;
+  --success:#00ff88;
+  --text:#fff;
+  --muted:#93a4b3;
+  --shadow: 0 8px 24px rgba(0,0,0,.5);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  font-family: 'Orbitron', sans-serif;
+  overflow: hidden;
+  color: var(--accent);
+  height: 100vh;
+}
+
+/* MENU SYSTEM */
+#menu-container {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  background: radial-gradient(circle at center, #111 0%, #000 90%);
+  z-index: 100;
+}
+
+#game-title {
+  font-size: 3.5em; 
+  text-shadow: 0 0 20px var(--accent);
+  animation: pulse 3s infinite;
+  margin-bottom: 20px;
+  font-family: 'Russo One', sans-serif;
+}
+
+.subtitle {
+  font-size: 1.2em;
+  color: var(--muted);
+  margin-bottom: 40px;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse { 
+  0%,100%{text-shadow:0 0 10px var(--accent);} 
+  50%{text-shadow:0 0 30px var(--accent2);} 
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 5px var(--muted); }
+  to { text-shadow: 0 0 15px var(--success); }
+}
+
+.menu-btn {
+  background: transparent; 
+  color: var(--accent); 
+  border: 2px solid var(--accent);
+  padding: 15px 30px; 
+  margin: 8px; 
+  cursor: pointer; 
+  font-size: 1.2em;
+  border-radius: 12px; 
+  transition: 0.3s;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  min-width: 250px;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-btn:hover { 
+  background: var(--accent); 
+  color: #000; 
+  box-shadow: var(--shadow);
+  transform: scale(1.05);
+}
+
+.menu-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.menu-btn:hover::before {
+  left: 100%;
+}
+
+.panel {
+  position: absolute; 
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%,-50%);
+  background: rgba(10,10,10,0.95); 
+  border: 2px solid var(--accent);
+  padding: 30px; 
+  border-radius: 15px; 
+  display: none; 
+  z-index: 110;
+  color: var(--text); 
+  width: 90%; 
+  max-width: 1000px;
+  max-height: 85vh;
+  overflow-y: auto;
+  backdrop-filter: blur(10px);
+}
+
+.panel h2 {
+  text-align: center;
+  color: var(--accent);
+  font-size: 2em;
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px var(--accent);
+}
+
+.mode-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px; 
+  justify-content: center; 
+  margin: 20px 0;
+}
+
+.mode-btn {
+  background: linear-gradient(135deg, #222, #333); 
+  color: var(--accent); 
+  border: 2px solid var(--accent);
+  padding: 25px; 
+  cursor: pointer; 
+  border-radius: 15px;
+  font-size: 1.1em;
+  font-weight: 700;
+  transition: 0.3s;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.mode-btn:hover {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #000;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(255,209,102,0.3);
+}
+
+.mode-btn .desc {
+  font-size: 0.8em;
+  color: var(--muted);
+  margin-top: 8px;
+  font-weight: 400;
+}
+
+.mode-btn .new-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--danger);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.7em;
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* WEATHER SELECTOR */
+.weather-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.weather-btn {
+  background: #333;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  padding: 15px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: 0.3s;
+  font-size: 0.9em;
+}
+
+.weather-btn:hover, .weather-btn.active {
+  background: var(--accent);
+  color: #000;
+}
+
+/* ACHIEVEMENTS */
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.achievement {
+  background: #222;
+  border: 1px solid #444;
+  padding: 15px;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.achievement.unlocked {
+  border-color: var(--success);
+  background: rgba(0, 255, 136, 0.1);
+}
+
+.achievement-title {
+  font-weight: bold;
+  color: var(--accent);
+  margin-bottom: 5px;
+}
+
+.achievement-desc {
+  font-size: 0.8em;
+  color: var(--muted);
+}
+
+/* GAME CANVAS & HUD */
+#gameCanvas {
+  display: none;
+  background: #0a0a0a;
+  width: 100vw; 
+  height: 100vh;
+}
+
+#game-hud {
+  position: absolute; 
+  inset: 0; 
+  pointer-events: none; 
+  z-index: 50;
+  display: none;
+}
+
+.hud-panel {
+  background: linear-gradient(180deg, rgba(16,22,29,.9), rgba(10,15,20,.8));
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  padding: 12px 15px;
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-weight: 600;
+  backdrop-filter: blur(5px);
+}
+
+/* Weather Effects */
+.weather-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 45;
+}
+
+/* Mini-map */
+#minimap {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 120px;
+  height: 120px;
+  background: rgba(0,0,0,0.7);
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+}
+
+/* Mission Objectives */
+#objectives {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  max-width: 300px;
+}
+
+.objective {
+  background: rgba(16,22,29,.9);
+  border-left: 4px solid var(--accent);
+  padding: 10px 15px;
+  margin: 5px 0;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.9em;
+}
+
+.objective.completed {
+  border-left-color: var(--success);
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+/* Dialog System */
+#dialog-box {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10,10,10,0.95);
+  border: 2px solid var(--accent);
+  border-radius: 15px;
+  padding: 20px;
+  max-width: 600px;
+  display: none;
+  z-index: 60;
+}
+
+.dialog-speaker {
+  color: var(--accent);
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.dialog-text {
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.dialog-choices {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.dialog-choice {
+  background: #333;
+  color: var(--text);
+  border: 1px solid var(--accent);
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.dialog-choice:hover {
+  background: var(--accent);
+  color: #000;
+}
+
+/* Events Log */
+#events-log {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  max-width: 400px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.event-msg {
+  background: rgba(16,22,29,.8);
+  border: 1px solid rgba(255,255,255,.1);
+  padding: 8px 12px;
+  margin: 3px 0;
+  border-radius: 8px;
+  font-size: 0.8em;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Stats Display */
+#stats-display {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin: 5px 0;
+}
+
+.meter {
+  width: 200px; 
+  height: 8px; 
+  border-radius: 4px;
+  background: #0c131a; 
+  border: 1px solid rgba(255,255,255,.1);
+  position: relative; 
+  overflow: hidden;
+}
+
+.meter > span {
+  position: absolute; 
+  left: 0; 
+  top: 0; 
+  height: 100%; 
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width 0.3s;
+}
+
+/* Photo Mode */
+#photo-mode {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+}
+
+.photo-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+}
+
+.photo-btn {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Close buttons */
+.close-btn {
+  margin: 20px auto 0;
+  background: var(--danger); 
+  color: var(--text); 
+  border: none; 
+  padding: 12px 25px; 
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 700;
+  display: block;
+  transition: 0.3s;
+}
+
+.close-btn:hover {
+  background: #cc3a57;
+  transform: scale(1.05);
+}
+
+/* Loading Screen */
+#loading-screen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #000, #111);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 300;
+  flex-direction: column;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(255, 209, 102, 0.3);
+  border-top: 4px solid var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: var(--accent);
+  font-size: 1.2em;
+  text-align: center;
+}
+
+.loading-tips {
+  margin-top: 20px;
+  color: var(--muted);
+  font-size: 0.9em;
+  max-width: 400px;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #game-title { font-size: 2.5em; }
+  .mode-grid { grid-template-columns: 1fr; }
+  .meter { width: 150px; }
+  .menu-btn { min-width: 200px; font-size: 1em; }
+  #objectives { max-width: 250px; }
+}
+
+/* Dark/Light theme toggle */
+.theme-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+body.light-theme {
+  --bg: #f0f0f0;
+  --panel: #ffffff;
+  --text: #000;
+  --muted: #666;
+}
+
+body.light-theme #gameCanvas {
+  background: #e0e0e0;
+}
+</style>
+</head>
+<body>
+
+<!-- THEME TOGGLE -->
+<button class="theme-toggle" id="theme-toggle">🌙 Dark</button>
+
+<!-- LOADING SCREEN -->
+<div id="loading-screen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Initializing DeadZone Protocol...</div>
+  <div class="loading-tips">
+    <div id="loading-tip">Tip: Headshots deal extra damage and look cooler in photos!</div>
+  </div>
+</div>
+
+<!-- MAIN MENU -->
+<div id="menu-container">
+  <h1 id="game-title">☣ DEADZONE: ULTIMATE EDITION ☣</h1>
+  <div class="subtitle">🎮 Enhanced with 8 Creative Game Modes & Advanced Features</div>
+  <button class="menu-btn" data-panel="start">🚀 Start Mission</button>
+  <button class="menu-btn" data-panel="weather">🌦️ Weather Control</button>
+  <button class="menu-btn" data-panel="achievements">🏆 Achievements</button>
+  <button class="menu-btn" data-panel="story">📖 Story Mode</button>
+  <button class="menu-btn" data-panel="settings">⚙️ Advanced Settings</button>
+</div>
+
+<!-- GAME MODE SELECTION -->
+<div class="panel" id="panel-start">
+  <h2>🎯 Select Your Mission</h2>
+  <div class="mode-grid">
+    <button class="mode-btn" data-mode="survival">
+      <div>🏆 SURVIVAL WAVES</div>
+      <div class="desc">Classic wave survival with power-ups</div>
+    </button>
+    <button class="mode-btn" data-mode="escape">
+      <div>🏃‍♂️ ESCAPE MISSION</div>
+      <div class="desc">Reach extraction points under time pressure</div>
+      <span class="new-badge">NEW!</span>
+    </button>
+    <button class="mode-btn" data-mode="infection">
+      <div>🦠 INFECTION SPREAD</div>
+      <div class="desc">Play as the virus, convert humans</div>
+      <span class="new-badge">NEW!</span>
+    </button>
+    <button class="mode-btn" data-mode="sniper">
+      <div>🎯 SNIPER'S NEST</div>
+      <div class="desc">Long-range precision shooting</div>
+      <span class="new-badge">NEW!</span>
+    </button>
+    <button class="mode-btn" data-mode="vehicle">
+      <div>🚗 VEHICLE ESCAPE</div>
+      <div class="desc">High-speed zombie highway chase</div>
+      <span class="new-badge">NEW!</span>
+    </button>
+    <button class="mode-btn" data-mode="building">
+      <div>🏗️ BASE DEFENSE</div>
+      <div class="desc">Build and defend your fortress</div>
+      <span class="new-badge">NEW!</span>
+    </button>
+    <button class="mode-btn" data-mode="investigation">
+      <div>🔍 INVESTIGATION</div>
+      <div class="desc">Uncover the outbreak mystery</div>
+      <span class="new-badge">NEW!</span>
+    </button>
+    <button class="mode-btn" data-mode="coop">
+      <div>👥 CO-OP SPLIT SCREEN</div>
+      <div class="desc">Local multiplayer survival</div>
+      <span class="new-badge">NEW!</span>
+    </button>
+  </div>
+  <button class="close-btn">🔙 Back to Menu</button>
+</div>
+
+<!-- WEATHER CONTROL -->
+<div class="panel" id="panel-weather">
+  <h2>🌦️ Weather & Environment Control</h2>
+  <p style="text-align:center; margin-bottom:25px;">Choose weather conditions that affect gameplay</p>
+  <div class="weather-grid">
+    <button class="weather-btn active" data-weather="clear">☀️ Clear</button>
+    <button class="weather-btn" data-weather="rain">🌧️ Rain</button>
+    <button class="weather-btn" data-weather="storm">⛈️ Storm</button>
+    <button class="weather-btn" data-weather="fog">🌫️ Fog</button>
+    <button class="weather-btn" data-weather="snow">❄️ Snow</button>
+    <button class="weather-btn" data-weather="sandstorm">🏜️ Sandstorm</button>
+  </div>
+  <div style="margin-top:20px;">
+    <h3>Weather Effects:</h3>
+    <div id="weather-description" style="color: var(--muted); margin-top:10px;">
+      Clear weather provides optimal visibility and weapon accuracy.
+    </div>
+  </div>
+  <button class="close-btn">🔙 Back to Menu</button>
+</div>
+
+<!-- ACHIEVEMENTS -->
+<div class="panel" id="panel-achievements">
+  <h2>🏆 Achievement Gallery</h2>
+  <div class="achievement-grid" id="achievement-list">
+    <!-- Achievements will be populated by JavaScript -->
+  </div>
+  <button class="close-btn">🔙 Back to Menu</button>
+</div>
+
+<!-- STORY MODE -->
+<div class="panel" id="panel-story">
+  <h2>📖 Story Campaign</h2>
+  <div style="text-align:center; margin:20px 0;">
+    <div style="font-size:1.2em; margin-bottom:15px;">Chapter 1: The Outbreak</div>
+    <div style="color:var(--muted); line-height:1.6; margin-bottom:20px;">
+      The zombie virus has spread through Metro City. As one of the few survivors, 
+      you must uncover the truth behind the outbreak while fighting for your life.
+      Your choices will determine the fate of humanity.
+    </div>
+    <div style="background:#333; padding:15px; border-radius:10px; margin:15px 0;">
+      <div style="color:var(--accent);">Mission Objectives:</div>
+      <div style="margin-top:8px; font-size:0.9em;">
+        • Reach the Safe Zone (0/1)<br>
+        • Rescue Survivors (0/5)<br>
+        • Collect Evidence (0/3)<br>
+        • Survive 10 Minutes (0:00/10:00)
+      </div>
+    </div>
+    <button class="menu-btn" onclick="startStoryMode()" style="margin-top:20px;">🎬 Begin Story</button>
+  </div>
+  <button class="close-btn">🔙 Back to Menu</button>
+</div>
+
+<!-- ADVANCED SETTINGS -->
+<div class="panel" id="panel-settings">
+  <h2>⚙️ Advanced Settings</h2>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin:20px 0;">
+    <div>
+      <h3>Graphics</h3>
+      <label>Visual Effects: <select id="fx-quality">
+        <option value="low">Low</option>
+        <option value="medium" selected>Medium</option>
+        <option value="high">High</option>
+        <option value="ultra">Ultra</option>
+      </select></label><br><br>
+      
+      <label>Particles: <input type="range" id="particle-count" min="50" max="500" value="200"></label><br><br>
+      
+      <label><input type="checkbox" id="screen-shake" checked> Screen Shake</label><br>
+      <label><input type="checkbox" id="blood-effects" checked> Blood Effects</label><br>
+      <label><input type="checkbox" id="dynamic-lighting" checked> Dynamic Lighting</label>
+    </div>
+    <div>
+      <h3>Gameplay</h3>
+      <label>Difficulty: <select id="difficulty">
+        <option value="easy">Easy</option>
+        <option value="normal" selected>Normal</option>
+        <option value="hard">Hard</option>
+        <option value="nightmare">Nightmare</option>
+      </select></label><br><br>
+      
+      <label>Auto-Aim: <input type="range" id="auto-aim" min="0" max="100" value="20"></label><br><br>
+      
+      <label><input type="checkbox" id="friendly-fire"> Friendly Fire</label><br>
+      <label><input type="checkbox" id="permadeath"> Permanent Death</label><br>
+      <label><input type="checkbox" id="realistic-ammo" checked> Realistic Ammo</label>
+    </div>
+  </div>
+  <div style="text-align:center; margin-top:20px;">
+    <button class="menu-btn" onclick="exportSettings()">💾 Export Settings</button>
+    <button class="menu-btn" onclick="resetSettings()">🔄 Reset to Defaults</button>
+  </div>
+  <button class="close-btn">🔙 Back to Menu</button>
+</div>
+
+<!-- GAME CANVAS -->
+<canvas id="gameCanvas"></canvas>
+
+<!-- WEATHER OVERLAY -->
+<div class="weather-overlay" id="weather-overlay"></div>
+
+<!-- GAME HUD -->
+<div id="game-hud">
+  <!-- Mini-map -->
+  <canvas id="minimap"></canvas>
+  
+  <!-- Mission Objectives -->
+  <div id="objectives" class="hud-panel">
+    <div style="font-weight:bold; margin-bottom:10px; color:var(--accent);">📋 Objectives</div>
+    <div class="objective" id="obj1">Survive the first wave</div>
+    <div class="objective" id="obj2">Find the safe room</div>
+    <div class="objective" id="obj3">Collect medical supplies</div>
+  </div>
+  
+  <!-- Stats Display -->
+  <div id="stats-display" class="hud-panel">
+    <div class="stat-item">
+      <span>❤️ Health</span>
+      <div class="meter"><span id="health-fill" style="width:100%; background:linear-gradient(90deg,#ff4d6d,#ff8a95)"></span></div>
+      <span id="health-text">100</span>
+    </div>
+    <div class="stat-item">
+      <span>🔫 Ammo</span>
+      <div class="meter"><span id="ammo-fill" style="width:100%; background:linear-gradient(90deg,#ffd166,#ff9900)"></span></div>
+      <span id="ammo-text">30/120</span>
+    </div>
+    <div class="stat-item">
+      <span>🛡️ Armor</span>
+      <div class="meter"><span id="armor-fill" style="width:0%; background:linear-gradient(90deg,#00ff88,#00cc6a)"></span></div>
+      <span id="armor-text">0</span>
+    </div>
+    <div class="stat-item">
+      <span>⚡ Stamina</span>
+      <div class="meter"><span id="stamina-fill" style="width:100%; background:linear-gradient(90deg,#66d9ef,#4fc3f7)"></span></div>
+      <span id="stamina-text">100</span>
+    </div>
+  </div>
+  
+  <!-- Events Log -->
+  <div id="events-log">
+    <!-- Events will be added dynamically -->
+  </div>
+</div>
+
+<!-- DIALOG SYSTEM -->
+<div id="dialog-box">
+  <div class="dialog-speaker" id="dialog-speaker">Dr. Sarah Chen</div>
+  <div class="dialog-text" id="dialog-text">
+    The outbreak started in Sector 7. We need to get there and find out what went wrong. 
+    Are you ready for this mission?
+  </div>
+  <div class="dialog-choices">
+    <button class="dialog-choice" data-choice="yes">Yes, let's go</button>
+    <button class="dialog-choice" data-choice="no">I need more time</button>
+    <button class="dialog-choice" data-choice="info">Tell me more</button>
+  </div>
+</div>
+
+<!-- PHOTO MODE -->
+<div id="photo-mode">
+  <canvas id="photo-canvas"></canvas>
+  <div class="photo-controls">
+    <button class="photo-btn" onclick="takeScreenshot()">📷 Capture</button>
+    <button class="photo-btn" onclick="togglePhotoMode()">❌ Exit</button>
+  </div>
+</div>
+
+<script>
+// ========== GLOBAL GAME STATE ==========
+let gameState = {
+  initialized: false,
+  currentMode: null,
+  currentWeather: 'clear',
+  running: false,
+  paused: false,
+  
+  // Canvas & Context
+  canvas: null,
+  ctx: null,
+  minimap: null,
+  minimapCtx: null,
+  
+  // Game Objects
+  player: null,
+  enemies: [],
+  bullets: [],
+  particles: [],
+  powerups: [],
+  vehicles: [],
+  buildings: [],
+  
+  // Weather System
+  weather: {
+    rain: [],
+    snow: [],
+    fog: { opacity: 0 },
+    storm: { lightning: 0 }
+  },
+  
+  // Mission System
+  objectives: [],
+  story: { chapter: 1, scene: 0, choices: {} },
+  
+  // Stats & Progress
+  stats: {
+    kills: 0,
+    headshots: 0,
+    accuracy: 0,
+    timeAlive: 0,
+    distanceTraveled: 0
+  },
+  
+  // Input
+  keys: {},
+  mouse: { x: 0, y: 0, down: false },
+  
+  // Settings
+  settings: {
+    fxQuality: 'medium',
+    particleCount: 200,
+    screenShake: true,
+    bloodEffects: true,
+    dynamicLighting: true,
+    difficulty: 'normal',
+    autoAim: 20,
+    friendlyFire: false,
+    permadeath: false,
+    realisticAmmo: true
+  },
+  
+  // Achievements
+  achievements: [
+    { id: 'first_kill', name: 'First Blood', desc: 'Kill your first zombie', unlocked: false },
+    { id: 'headshot_master', name: 'Headshot Master', desc: 'Get 50 headshots', unlocked: false, progress: 0, target: 50 },
+    { id: 'survivor', name: 'Survivor', desc: 'Survive for 10 minutes', unlocked: false },
+    { id: 'speed_demon', name: 'Speed Demon', desc: 'Travel 1000 meters', unlocked: false, progress: 0, target: 1000 },
+    { id: 'weather_master', name: 'Weather Master', desc: 'Complete missions in all weather types', unlocked: false, progress: 0, target: 6 },
+    { id: 'story_complete', name: 'The Truth', desc: 'Complete the story campaign', unlocked: false },
+    { id: 'perfectionist', name: 'Perfectionist', desc: 'Complete a mission with 100% accuracy', unlocked: false },
+    { id: 'builder', name: 'Master Builder', desc: 'Build 10 defensive structures', unlocked: false, progress: 0, target: 10 }
+  ]
+};
+
+// ========== INITIALIZATION ==========
+window.addEventListener('load', () => {
+  showLoadingScreen();
+  setTimeout(() => {
+    initializeGame();
+    hideLoadingScreen();
+  }, 2000);
+});
+
+function showLoadingScreen() {
+  document.getElementById('loading-screen').style.display = 'flex';
+  
+  const tips = [
+    "Headshots deal extra damage and look cooler in photos!",
+    "Different weather conditions affect gameplay strategy",
+    "Building mode lets you create defensive structures",
+    "Investigation mode reveals the outbreak's true origin",
+    "Co-op mode supports local split-screen multiplayer",
+    "Vehicle escape mode features high-speed zombie chases",
+    "Use the photo mode to capture epic battle moments",
+    "Weather effects can help or hinder your survival"
+  ];
+  
+  let tipIndex = 0;
+  const tipElement = document.getElementById('loading-tip');
+  
+  setInterval(() => {
+    tipElement.textContent = tips[tipIndex];
+    tipIndex = (tipIndex + 1) % tips.length;
+  }, 3000);
+}
+
+function hideLoadingScreen() {
+  document.getElementById('loading-screen').style.display = 'none';
+}
+
+function initializeGame() {
+  if (gameState.initialized) return;
+  
+  // Initialize menu system
+  initMenuSystem();
+  
+  // Initialize weather system
+  initWeatherSystem();
+  
+  // Initialize achievements
+  initAchievements();
+  
+  // Initialize settings
+  loadSettings();
+  
+  // Theme toggle
+  document.getElementById('theme-toggle').onclick = toggleTheme;
+  
+  gameState.initialized = true;
+  console.log('🎮 DeadZone: Ultimate Edition initialized!');
+}
+
+// ========== MENU SYSTEM ==========
+function initMenuSystem() {
+  const panels = document.querySelectorAll(".panel");
+  const menu = document.getElementById("menu-container");
+  
+  // Menu navigation
+  document.querySelectorAll(".menu-btn").forEach(btn => {
+    btn.onclick = () => {
+      const panelId = "panel-" + btn.dataset.panel;
+      panels.forEach(p => p.style.display = "none");
+      if (document.getElementById(panelId)) {
+        document.getElementById(panelId).style.display = "block";
+        menu.style.display = "none";
+      }
+    }
+  });
+  
+  // Close buttons
+  document.querySelectorAll(".close-btn").forEach(btn => {
+    btn.onclick = () => {
+      panels.forEach(p => p.style.display = "none");
+      menu.style.display = "flex";
+    }
+  });
+  
+  // Mode selection
+  document.querySelectorAll(".mode-btn").forEach(btn => {
+    btn.onclick = () => startGameMode(btn.dataset.mode);
+  });
+}
+
+// ========== WEATHER SYSTEM ==========
+function initWeatherSystem() {
+  const weatherBtns = document.querySelectorAll('.weather-btn');
+  const weatherDesc = document.getElementById('weather-description');
+  
+  const weatherEffects = {
+    clear: "Clear weather provides optimal visibility and weapon accuracy.",
+    rain: "Rain reduces visibility by 20% and weapon accuracy by 15%. Zombies move 10% slower.",
+    storm: "Heavy rain with lightning flashes. Visibility reduced 40%, but lightning can electrocute zombie groups.",
+    fog: "Dense fog reduces visibility to 30%. Perfect for stealth, but zombies can ambush you easier.",
+    snow: "Snow slows movement by 15% but muffles footstep sounds. Zombies are also slower in snow.",
+    sandstorm: "Extreme weather reduces visibility to 20%. High winds affect bullet trajectory but damage zombie hearing."
+  };
+  
+  weatherBtns.forEach(btn => {
+    btn.onclick = () => {
+      weatherBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      gameState.currentWeather = btn.dataset.weather;
+      weatherDesc.textContent = weatherEffects[gameState.currentWeather];
+    }
+  });
+}
+
+// ========== ACHIEVEMENTS SYSTEM ==========
+function initAchievements() {
+  const achievementList = document.getElementById('achievement-list');
+  
+  gameState.achievements.forEach(achievement => {
+    const div = document.createElement('div');
+    div.className = 'achievement' + (achievement.unlocked ? ' unlocked' : '');
+    div.innerHTML = `
+      <div class="achievement-title">${achievement.unlocked ? '🏆' : '🔒'} ${achievement.name}</div>
+      <div class="achievement-desc">${achievement.desc}</div>
+      ${achievement.progress !== undefined ? 
+        `<div style="margin-top:5px; font-size:0.7em; color:var(--accent);">${achievement.progress}/${achievement.target}</div>` : ''}
+    `;
+    achievementList.appendChild(div);
+  });
+}
+
+function unlockAchievement(id) {
+  const achievement = gameState.achievements.find(a => a.id === id);
+  if (achievement && !achievement.unlocked) {
+    achievement.unlocked = true;
+    addEvent(`🏆 Achievement Unlocked: ${achievement.name}!`);
+    
+    // Visual notification
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+      position: fixed; top: 20px; right: 20px; z-index: 1000;
+      background: linear-gradient(135deg, var(--accent), var(--success));
+      color: #000; padding: 15px 20px; border-radius: 10px;
+      font-weight: bold; animation: slideIn 0.5s ease-out;
+    `;
+    notification.textContent = `🏆 ${achievement.name}`;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => notification.remove(), 4000);
+    
+    // Refresh achievement display
+    initAchievements();
+  }
+}
+
+// ========== GAME MODES ==========
+function startGameMode(mode) {
+  gameState.currentMode = mode;
+  gameState.running = true;
+  
+  // Hide menu and show game
+  document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
+  document.getElementById('menu-container').style.display = 'none';
+  document.getElementById('gameCanvas').style.display = 'block';
+  document.getElementById('game-hud').style.display = 'block';
+  
+  initGameEngine();
+  
+  // Mode-specific initialization
+  switch(mode) {
+    case 'survival':
+      setupSurvivalMode();
+      break;
+    case 'escape':
+      setupEscapeMode();
+      break;
+    case 'infection':
+      setupInfectionMode();
+      break;
+    case 'sniper':
+      setupSniperMode();
+      break;
+    case 'vehicle':
+      setupVehicleMode();
+      break;
+    case 'building':
+      setupBuildingMode();
+      break;
+    case 'investigation':
+      setupInvestigationMode();
+      break;
+    case 'coop':
+      setupCoopMode();
+      break;
+  }
+  
+  gameLoop();
+  addEvent(`🚀 ${mode.toUpperCase()} mode activated!`);
+}
+
+function setupSurvivalMode() {
+  gameState.wave = 1;
+  gameState.objectives = [
+    { id: 'survive_wave', text: 'Survive wave 1', completed: false },
+    { id: 'kill_10', text: 'Kill 10 zombies', completed: false, progress: 0, target: 10 },
+    { id: 'survive_time', text: 'Survive 5 minutes', completed: false }
+  ];
+  
+  updateObjectives();
+}
+
+function setupEscapeMode() {
+  gameState.objectives = [
+    { id: 'reach_extraction', text: 'Reach extraction point', completed: false },
+    { id: 'rescue_survivors', text: 'Rescue survivors', completed: false, progress: 0, target: 3 },
+    { id: 'time_limit', text: 'Escape within 10 minutes', completed: false }
+  ];
+  
+  // Create extraction points
+  gameState.extractionPoints = [
+    { x: gameState.canvas.width - 50, y: 50, radius: 30, active: true },
+    { x: 50, y: gameState.canvas.height - 50, radius: 30, active: false }
+  ];
+  
+  updateObjectives();
+}
+
+function setupInfectionMode() {
+  // Player becomes the virus
+  gameState.player.isVirus = true;
+  gameState.objectives = [
+    { id: 'infect_humans', text: 'Infect 20 humans', completed: false, progress: 0, target: 20 },
+    { id: 'spread_fast', text: 'Infect 5 humans in 30 seconds', completed: false },
+    { id: 'total_domination', text: 'Achieve 100% infection rate', completed: false }
+  ];
+  
+  // Spawn humans instead of zombies
+  for (let i = 0; i < 15; i++) {
+    spawnHuman();
+  }
+  
+  updateObjectives();
+}
+
+function setupSniperMode() {
+  gameState.player.weapon = {
+    type: 'sniper',
+    damage: 150,
+    range: 800,
+    zoom: 2,
+    ammo: 5,
+    maxAmmo: 5,
+    reserve: 25
+  };
+  
+  gameState.objectives = [
+    { id: 'headshot_streak', text: 'Get 5 headshots in a row', completed: false, progress: 0, target: 5 },
+    { id: 'long_range', text: 'Kill enemy from 500m away', completed: false },
+    { id: 'no_detection', text: 'Complete without being detected', completed: false }
+  ];
+  
+  updateObjectives();
+}
+
+function setupVehicleMode() {
+  gameState.vehicle = {
+    x: 100, y: gameState.canvas.height / 2,
+    speed: 0, maxSpeed: 8,
+    health: 100, fuel: 100,
+    passengers: 2
+  };
+  
+  gameState.objectives = [
+    { id: 'drive_distance', text: 'Drive 2000m', completed: false, progress: 0, target: 2000 },
+    { id: 'save_fuel', text: 'Finish with 25+ fuel', completed: false },
+    { id: 'passenger_safety', text: 'Keep all passengers alive', completed: false }
+  ];
+  
+  updateObjectives();
+}
+
+function setupBuildingMode() {
+  gameState.resources = { scrap: 100, ammo: 50, food: 30 };
+  gameState.structures = [];
+  
+  gameState.objectives = [
+    { id: 'build_walls', text: 'Build 4 defensive walls', completed: false, progress: 0, target: 4 },
+    { id: 'survive_siege', text: 'Survive the siege', completed: false },
+    { id: 'save_resources', text: 'End with 50+ scrap', completed: false }
+  ];
+  
+  updateObjectives();
+}
+
+function setupInvestigationMode() {
+  gameState.evidence = [];
+  gameState.suspects = ['Dr. Morrison', 'Agent Smith', 'Patient Zero'];
+  
+  gameState.objectives = [
+    { id: 'collect_evidence', text: 'Collect 5 pieces of evidence', completed: false, progress: 0, target: 5 },
+    { id: 'interview_witnesses', text: 'Interview 3 witnesses', completed: false, progress: 0, target: 3 },
+    { id: 'solve_mystery', text: 'Identify the true culprit', completed: false }
+  ];
+  
+  // Spawn evidence items
+  for (let i = 0; i < 8; i++) {
+    spawnEvidence();
+  }
+  
+  updateObjectives();
+}
+
+function setupCoopMode() {
+  gameState.player2 = {
+    x: gameState.canvas.width / 2 + 50,
+    y: gameState.canvas.height / 2,
+    health: 100,
+    weapon: { type: 'pistol', ammo: 12 }
+  };
+  
+  gameState.objectives = [
+    { id: 'teamwork', text: 'Revive teammate 3 times', completed: false, progress: 0, target: 3 },
+    { id: 'combined_kills', text: 'Team kills: 50 zombies', completed: false, progress: 0, target: 50 },
+    { id: 'stay_close', text: 'Stay within 100m of teammate', completed: false }
+  ];
+  
+  updateObjectives();
+}
+
+// ========== CORE GAME ENGINE ==========
+function initGameEngine() {
+  gameState.canvas = document.getElementById('gameCanvas');
+  gameState.ctx = gameState.canvas.getContext('2d');
+  gameState.canvas.width = window.innerWidth;
+  gameState.canvas.height = window.innerHeight;
+  
+  // Initialize minimap
+  gameState.minimap = document.getElementById('minimap');
+  gameState.minimapCtx = gameState.minimap.getContext('2d');
+  
+  // Initialize player
+  gameState.player = {
+    x: gameState.canvas.width / 2,
+    y: gameState.canvas.height / 2,
+    radius: 16,
+    health: 100,
+    maxHealth: 100,
+    armor: 0,
+    stamina: 100,
+    weapon: {
+      type: 'assault_rifle',
+      damage: 25,
+      ammo: 30,
+      maxAmmo: 30,
+      reserve: 120,
+      fireRate: 150,
+      lastShot: 0
+    },
+    speed: 3,
+    facing: 0
+  };
+  
+  // Clear arrays
+  gameState.enemies = [];
+  gameState.bullets = [];
+  gameState.particles = [];
+  gameState.powerups = [];
+  
+  setupInputHandlers();
+  initWeatherEffects();
+}
+
+function setupInputHandlers() {
+  // Keyboard
+  window.addEventListener('keydown', (e) => {
+    gameState.keys[e.key.toLowerCase()] = true;
+    
+    // Special key handlers
+    switch(e.key.toLowerCase()) {
+      case 'f': togglePhotoMode(); break;
+      case 'r': reload(); break;
+      case 'p':
+      case 'escape': togglePause(); break;
+      case 'h': showHelp(); break;
+    }
+  });
+  
+  window.addEventListener('keyup', (e) => {
+    gameState.keys[e.key.toLowerCase()] = false;
+  });
+  
+  // Mouse
+  gameState.canvas.addEventListener('mousemove', (e) => {
+    const rect = gameState.canvas.getBoundingClientRect();
+    gameState.mouse.x = e.clientX - rect.left;
+    gameState.mouse.y = e.clientY - rect.top;
+  });
+  
+  gameState.canvas.addEventListener('mousedown', () => {
+    gameState.mouse.down = true;
+  });
+  
+  gameState.canvas.addEventListener('mouseup', () => {
+    gameState.mouse.down = false;
+  });
+  
+  // Dialog choices
+  document.querySelectorAll('.dialog-choice').forEach(btn => {
+    btn.onclick = () => handleDialogChoice(btn.dataset.choice);
+  });
+}
+
+// ========== GAME LOOP ==========
+function gameLoop() {
+  if (!gameState.running) return;
+  
+  const now = performance.now();
+  const deltaTime = now - (gameState.lastUpdate || now);
+  gameState.lastUpdate = now;
+  
+  if (!gameState.paused) {
+    update(deltaTime);
+    updateWeather(deltaTime);
+    updateStats(deltaTime);
+  }
+  
+  render();
+  renderMinimap();
+  updateHUD();
+  
+  requestAnimationFrame(gameLoop);
+}
+
+function update(deltaTime) {
+  updatePlayer(deltaTime);
+  updateEnemies(deltaTime);
+  updateBullets(deltaTime);
+  updateParticles(deltaTime);
+  updatePowerups(deltaTime);
+  
+  checkCollisions();
+  checkObjectives();
+  
+  // Mode-specific updates
+  switch(gameState.currentMode) {
+    case 'vehicle':
+      updateVehicle(deltaTime);
+      break;
+    case 'building':
+      updateBuilding(deltaTime);
+      break;
+    case 'investigation':
+      updateInvestigation(deltaTime);
+      break;
+  }
+}
+
+function updatePlayer(deltaTime) {
+  if (!gameState.player) return;
+  
+  let moveX = 0, moveY = 0;
+  
+  if (gameState.keys['w']) moveY -= 1;
+  if (gameState.keys['s']) moveY += 1;
+  if (gameState.keys['a']) moveX -= 1;
+  if (gameState.keys['d']) moveY += 1;
+  
+  // Normalize movement
+  const length = Math.sqrt(moveX * moveX + moveY * moveY);
+  if (length > 0) {
+    moveX /= length;
+    moveY /= length;
+  }
+  
+  // Apply weather effects
+  let speedMult = 1;
+  if (gameState.currentWeather === 'snow') speedMult *= 0.85;
+  if (gameState.currentWeather === 'sandstorm') speedMult *= 0.9;
+  
+  // Apply stamina effects
+  if (gameState.keys['shift'] && gameState.player.stamina > 0) {
+    speedMult *= 1.5;
+    gameState.player.stamina = Math.max(0, gameState.player.stamina - deltaTime * 0.1);
+  } else {
+    gameState.player.stamina = Math.min(100, gameState.player.stamina + deltaTime * 0.05);
+  }
+  
+  gameState.player.x += moveX * gameState.player.speed * speedMult * (deltaTime / 16);
+  gameState.player.y += moveY * gameState.player.speed * speedMult * (deltaTime / 16);
+  
+  // Boundary check
+  gameState.player.x = Math.max(gameState.player.radius, 
+    Math.min(gameState.canvas.width - gameState.player.radius, gameState.player.x));
+  gameState.player.y = Math.max(gameState.player.radius, 
+    Math.min(gameState.canvas.height - gameState.player.radius, gameState.player.y));
+  
+  // Update facing direction
+  gameState.player.facing = Math.atan2(
+    gameState.mouse.y - gameState.player.y,
+    gameState.mouse.x - gameState.player.x
+  );
+  
+  // Shooting
+  if (gameState.mouse.down) {
+    tryShoot();
+  }
+  
+  // Update distance traveled
+  if (length > 0) {
+    gameState.stats.distanceTraveled += length * speedMult;
+  }
+}
+
+function tryShoot() {
+  if (!gameState.player.weapon) return;
+  
+  const now = performance.now();
+  if (now - gameState.player.weapon.lastShot < gameState.player.weapon.fireRate) return;
+  if (gameState.player.weapon.ammo <= 0) return;
+  
+  gameState.player.weapon.lastShot = now;
+  gameState.player.weapon.ammo--;
+  
+  // Create bullet
+  const spread = gameState.currentWeather === 'sandstorm' ? 0.1 : 0.05;
+  const angle = gameState.player.facing + (Math.random() - 0.5) * spread;
+  
+  const bullet = {
+    x: gameState.player.x,
+    y: gameState.player.y,
+    vx: Math.cos(angle) * 8,
+    vy: Math.sin(angle) * 8,
+    damage: gameState.player.weapon.damage,
+    life: 1000,
+    radius: 3,
+    owner: 'player'
+  };
+  
+  gameState.bullets.push(bullet);
+  
+  // Muzzle flash
+  createParticle(gameState.player.x, gameState.player.y, '#ffdd44', 150, 5);
+  
+  // Screen shake
+  if (gameState.settings.screenShake) {
+    gameState.screenShake = { intensity: 5, duration: 100 };
+  }
+}
+
+function updateEnemies(deltaTime) {
+  // Spawn enemies based on mode
+  if (Math.random() < 0.002) {
+    spawnEnemy();
+  }
+  
+  gameState.enemies.forEach((enemy, index) => {
+    if (!enemy) return;
+    
+    // AI behavior based on type
+    switch(enemy.type) {
+      case 'zombie':
+        updateZombieAI(enemy, deltaTime);
+        break;
+      case 'human':
+        updateHumanAI(enemy, deltaTime);
+        break;
+      case 'boss':
+        updateBossAI(enemy, deltaTime);
+        break;
+    }
+    
+    // Check if enemy is dead
+    if (enemy.health <= 0) {
+      createExplosion(enemy.x, enemy.y);
+      gameState.enemies.splice(index, 1);
+      gameState.stats.kills++;
+      
+      // Check for first kill achievement
+      if (gameState.stats.kills === 1) {
+        unlockAchievement('first_kill');
+      }
+    }
+  });
+}
+
+function spawnEnemy() {
+  const side = Math.floor(Math.random() * 4);
+  let x, y;
+  
+  switch(side) {
+    case 0: x = Math.random() * gameState.canvas.width; y = -30; break;
+    case 1: x = gameState.canvas.width + 30; y = Math.random() * gameState.canvas.height; break;
+    case 2: x = Math.random() * gameState.canvas.width; y = gameState.canvas.height + 30; break;
+    case 3: x = -30; y = Math.random() * gameState.canvas.height; break;
+  }
+  
+  const enemy = {
+    x, y,
+    radius: 12 + Math.random() * 6,
+    health: 60,
+    maxHealth: 60,
+    speed: 1 + Math.random() * 0.5,
+    damage: 20,
+    type: 'zombie',
+    color: `hsl(${Math.random() * 40}, 70%, 40%)`
+  };
+  
+  gameState.enemies.push(enemy);
+}
+
+function spawnHuman() {
+  const human = {
+    x: Math.random() * gameState.canvas.width,
+    y: Math.random() * gameState.canvas.height,
+    radius: 10,
+    health: 40,
+    speed: 2,
+    type: 'human',
+    infected: false,
+    panicLevel: 0,
+    color: '#4CAF50'
+  };
+  
+  gameState.enemies.push(human);
+}
+
+function spawnEvidence() {
+  const evidence = {
+    x: Math.random() * gameState.canvas.width,
+    y: Math.random() * gameState.canvas.height,
+    type: 'evidence',
+    collected: false,
+    info: 'Classified Document #' + (gameState.evidence.length + 1)
+  };
+  
+  gameState.powerups.push(evidence);
+}
+
+// ========== RENDERING ==========
+function render() {
+  const ctx = gameState.ctx;
+  const canvas = gameState.canvas;
+  
+  // Apply screen shake
+  ctx.save();
+  if (gameState.screenShake && gameState.screenShake.duration > 0) {
+    const intensity = gameState.screenShake.intensity;
+    ctx.translate(
+      (Math.random() - 0.5) * intensity,
+      (Math.random() - 0.5) * intensity
+    );
+    gameState.screenShake.duration -= 16;
+  }
+  
+  // Clear with theme-appropriate background
+  ctx.fillStyle = document.body.classList.contains('light-theme') ? '#e0e0e0' : '#0a0a0a';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // Draw dynamic grid
+  drawGrid();
+  
+  // Weather-based visibility
+  let visibilityMult = 1;
+  switch(gameState.currentWeather) {
+    case 'fog': visibilityMult = 0.3; break;
+    case 'rain': visibilityMult = 0.8; break;
+    case 'storm': visibilityMult = 0.6; break;
+    case 'sandstorm': visibilityMult = 0.2; break;
+    case 'snow': visibilityMult = 0.9; break;
+  }
+  
+  // Draw game objects with visibility
+  ctx.save();
+  ctx.globalAlpha = visibilityMult;
+  
+  // Draw particles (background)
+  renderParticles();
+  
+  // Draw bullets
+  renderBullets();
+  
+  // Draw enemies
+  renderEnemies();
+  
+  // Draw powerups
+  renderPowerups();
+  
+  // Draw player
+  renderPlayer();
+  
+  // Draw structures (building mode)
+  if (gameState.currentMode === 'building') {
+    renderStructures();
+  }
+  
+  // Draw vehicle (vehicle mode)
+  if (gameState.currentMode === 'vehicle') {
+    renderVehicle();
+  }
+  
+  ctx.restore();
+  
+  // Draw weather overlay
+  renderWeatherOverlay();
+  
+  // Draw UI elements (always full visibility)
+  renderUI();
+  
+  ctx.restore();
+}
+
+function drawGrid() {
+  const ctx = gameState.ctx;
+  const canvas = gameState.canvas;
+  
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  
+  const gridSize = 40;
+  for (let x = 0; x < canvas.width; x += gridSize) {
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, canvas.height);
+  }
+  
+  for (let y = 0; y < canvas.height; y += gridSize) {
+    ctx.moveTo(0, y);
+    ctx.lineTo(canvas.width, y);
+  }
+  
+  ctx.stroke();
+}
+
+function renderPlayer() {
+  if (!gameState.player) return;
+  
+  const ctx = gameState.ctx;
+  ctx.save();
+  ctx.translate(gameState.player.x, gameState.player.y);
+  ctx.rotate(gameState.player.facing);
+  
+  // Player body
+  const playerColor = gameState.player.isVirus ? '#ff4444' : '#00aaff';
+  ctx.fillStyle = playerColor;
+  ctx.beginPath();
+  ctx.arc(0, 0, gameState.player.radius, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Weapon visualization
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(gameState.player.radius - 2, -3, 20, 6);
+  
+  // Player glow
+  ctx.strokeStyle = `${playerColor}80`;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(0, 0, gameState.player.radius + 3, 0, Math.PI * 2);
+  ctx.stroke();
+  
+  ctx.restore();
+  
+  // Health bar above player
+  if (gameState.player.health < gameState.player.maxHealth) {
+    const barWidth = gameState.player.radius * 2;
+    const barHeight = 4;
+    const barY = gameState.player.y - gameState.player.radius - 12;
+    
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.fillRect(gameState.player.x - barWidth/2, barY, barWidth, barHeight);
+    
+    const healthPct = gameState.player.health / gameState.player.maxHealth;
+    ctx.fillStyle = healthPct > 0.5 ? '#00ff00' : healthPct > 0.25 ? '#ffff00' : '#ff0000';
+    ctx.fillRect(gameState.player.x - barWidth/2, barY, barWidth * healthPct, barHeight);
+  }
+}
+
+function renderEnemies() {
+  gameState.enemies.forEach(enemy => {
+    const ctx = gameState.ctx;
+    
+    // Enemy body
+    ctx.fillStyle = enemy.color;
+    ctx.beginPath();
+    ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Type-specific details
+    switch(enemy.type) {
+      case 'zombie':
+        // Zombie eyes
+        ctx.fillStyle = '#ff0000';
+        ctx.beginPath();
+        ctx.arc(enemy.x - 4, enemy.y - 4, 2, 0, Math.PI * 2);
+        ctx.arc(enemy.x + 4, enemy.y - 4, 2, 0, Math.PI * 2);
+        ctx.fill();
+        break;
+        
+      case 'human':
+        // Human indicator
+        ctx.strokeStyle = enemy.infected ? '#ff4444' : '#00ff00';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(enemy.x, enemy.y, enemy.radius + 2, 0, Math.PI * 2);
+        ctx.stroke();
+        break;
+        
+      case 'boss':
+        // Boss crown
+        ctx.fillStyle = '#ffaa00';
+        ctx.fillRect(enemy.x - 6, enemy.y - enemy.radius - 8, 12, 6);
+        break;
+    }
+    
+    // Health bar
+    if (enemy.health < enemy.maxHealth) {
+      const barWidth = enemy.radius * 2;
+      const barHeight = 3;
+      const barY = enemy.y - enemy.radius - 8;
+      
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.fillRect(enemy.x - barWidth/2, barY, barWidth, barHeight);
+      
+      const healthPct = enemy.health / enemy.maxHealth;
+      ctx.fillStyle = healthPct > 0.5 ? '#00ff00' : healthPct > 0.25 ? '#ffff00' : '#ff0000';
+      ctx.fillRect(enemy.x - barWidth/2, barY, barWidth * healthPct, barHeight);
+    }
+  });
+}
+
+function renderBullets() {
+  gameState.bullets.forEach(bullet => {
+    const ctx = gameState.ctx;
+    
+    // Bullet body
+    ctx.fillStyle = bullet.owner === 'player' ? '#ffdd44' : '#ff4444';
+    ctx.beginPath();
+    ctx.arc(bullet.x, bullet.y, bullet.radius, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Bullet trail
+    ctx.save();
+    ctx.globalAlpha = 0.3;
+    ctx.strokeStyle = bullet.owner === 'player' ? '#ffdd44' : '#ff4444';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(bullet.x, bullet.y);
+    ctx.lineTo(bullet.x - bullet.vx * 3, bullet.y - bullet.vy * 3);
+    ctx.stroke();
+    ctx.restore();
+  });
+}
+
+function renderParticles() {
+  gameState.particles.forEach(particle => {
+    const ctx = gameState.ctx;
+    ctx.save();
+    ctx.globalAlpha = particle.alpha || 1;
+    ctx.fillStyle = particle.color;
+    ctx.beginPath();
+    ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
+}
+
+// ========== UTILITY FUNCTIONS ==========
+function createParticle(x, y, color, life, radius = 3) {
+  const particle = {
+    x: x,
+    y: y,
+    vx: (Math.random() - 0.5) * 4,
+    vy: (Math.random() - 0.5) * 4,
+    color: color,
+    life: life,
+    maxLife: life,
+    radius: radius,
+    alpha: 1
+  };
+  
+  gameState.particles.push(particle);
+}
+
+function createExplosion(x, y) {
+  for (let i = 0; i < 15; i++) {
+    createParticle(x, y, '#ff6600', 400 + Math.random() * 200, 2 + Math.random() * 4);
+  }
+}
+
+function addEvent(message) {
+  const eventsLog = document.getElementById('events-log');
+  const eventDiv = document.createElement('div');
+  eventDiv.className = 'event-msg';
+  eventDiv.textContent = message;
+  eventsLog.appendChild(eventDiv);
+  
+  // Remove old events (keep last 5)
+  while (eventsLog.children.length > 5) {
+    eventsLog.removeChild(eventsLog.firstChild);
+  }
+}
+
+function updateObjectives() {
+  const objectives = document.getElementById('objectives');
+  objectives.innerHTML = '<div style="font-weight:bold; margin-bottom:10px; color:var(--accent);">📋 Objectives</div>';
+  
+  gameState.objectives.forEach(obj => {
+    const div = document.createElement('div');
+    div.className = 'objective' + (obj.completed ? ' completed' : '');
+    div.textContent = obj.text;
+    
+    if (obj.progress !== undefined) {
+      div.textContent += ` (${obj.progress}/${obj.target})`;
+    }
+    
+    objectives.appendChild(div);
+  });
+}
+
+function updateHUD() {
+  if (!gameState.player) return;
+  
+  // Health
+  const healthPct = Math.max(0, gameState.player.health / gameState.player.maxHealth * 100);
+  document.getElementById('health-fill').style.width = healthPct + '%';
+  document.getElementById('health-text').textContent = Math.max(0, Math.round(gameState.player.health));
+  
+  // Ammo
+  if (gameState.player.weapon) {
+    const ammoPct = gameState.player.weapon.ammo / gameState.player.weapon.maxAmmo * 100;
+    document.getElementById('ammo-fill').style.width = ammoPct + '%';
+    document.getElementById('ammo-text').textContent = `${gameState.player.weapon.ammo}/${gameState.player.weapon.reserve}`;
+  }
+  
+  // Armor
+  const armorPct = gameState.player.armor;
+  document.getElementById('armor-fill').style.width = armorPct + '%';
+  document.getElementById('armor-text').textContent = Math.round(armorPct);
+  
+  // Stamina
+  const staminaPct = gameState.player.stamina;
+  document.getElementById('stamina-fill').style.width = staminaPct + '%';
+  document.getElementById('stamina-text').textContent = Math.round(staminaPct);
+}
+
+// ========== PHOTO MODE ==========
+function togglePhotoMode() {
+  const photoMode = document.getElementById('photo-mode');
+  const isActive = photoMode.style.display === 'flex';
+  
+  photoMode.style.display = isActive ? 'none' : 'flex';
+  gameState.paused = !isActive;
+  
+  if (!isActive) {
+    // Capture current game state to photo canvas
+    const photoCanvas = document.getElementById('photo-canvas');
+    const photoCtx = photoCanvas.getContext('2d');
+    photoCanvas.width = gameState.canvas.width;
+    photoCanvas.height = gameState.canvas.height;
+    photoCtx.drawImage(gameState.canvas, 0, 0);
+  }
+}
+
+function takeScreenshot() {
+  const photoCanvas = document.getElementById('photo-canvas');
+  const link = document.createElement('a');
+  link.download = `DeadZone_Screenshot_${Date.now()}.png`;
+  link.href = photoCanvas.toDataURL();
+  link.click();
+  
+  addEvent('📷 Screenshot saved!');
+}
+
+// ========== SETTINGS ==========
+function loadSettings() {
+  // Load from localStorage if available
+  const saved = localStorage.getItem('deadzone_settings');
+  if (saved) {
+    gameState.settings = { ...gameState.settings, ...JSON.parse(saved) };
+  }
+  
+  // Apply settings to UI
+  document.getElementById('fx-quality').value = gameState.settings.fxQuality;
+  document.getElementById('particle-count').value = gameState.settings.particleCount;
+  document.getElementById('screen-shake').checked = gameState.settings.screenShake;
+  document.getElementById('blood-effects').checked = gameState.settings.bloodEffects;
+  document.getElementById('dynamic-lighting').checked = gameState.settings.dynamicLighting;
+  document.getElementById('difficulty').value = gameState.settings.difficulty;
+  document.getElementById('auto-aim').value = gameState.settings.autoAim;
+  document.getElementById('friendly-fire').checked = gameState.settings.friendlyFire;
+  document.getElementById('permadeath').checked = gameState.settings.permadeath;
+  document.getElementById('realistic-ammo').checked = gameState.settings.realisticAmmo;
+}
+
+function exportSettings() {
+  const settings = JSON.stringify(gameState.settings, null, 2);
+  const blob = new Blob([settings], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'deadzone_settings.json';
+  link.click();
+  URL.revokeObjectURL(url);
+  
+  addEvent('⚙️ Settings exported!');
+}
+
+function resetSettings() {
+  gameState.settings = {
+    fxQuality: 'medium',
+    particleCount: 200,
+    screenShake: true,
+    bloodEffects: true,
+    dynamicLighting: true,
+    difficulty: 'normal',
+    autoAim: 20,
+    friendlyFire: false,
+    permadeath: false,
+    realisticAmmo: true
+  };
+  
+  loadSettings();
+  addEvent('⚙️ Settings reset to defaults!');
+}
+
+function toggleTheme() {
+  const body = document.body;
+  const toggle = document.getElementById('theme-toggle');
+  
+  if (body.classList.contains('light-theme')) {
+    body.classList.remove('light-theme');
+    toggle.textContent = '🌙 Dark';
+  } else {
+    body.classList.add('light-theme');
+    toggle.textContent = '☀️ Light';
+  }
+}
+
+// ========== STORY MODE ==========
+function startStoryMode() {
+  startGameMode('story');
+  
+  // Show first dialog after a delay
+  setTimeout(() => {
+    showDialog('Dr. Sarah Chen', 
+      'The outbreak started in Sector 7. We need to get there and find out what went wrong. Are you ready for this mission?',
+      [
+        { text: 'Yes, let\'s go', action: 'start_mission' },
+        { text: 'I need more time', action: 'delay' },
+        { text: 'Tell me more', action: 'info' }
+      ]);
+  }, 2000);
+}
+
+function showDialog(speaker, text, choices) {
+  const dialogBox = document.getElementById('dialog-box');
+  const speakerEl = document.getElementById('dialog-speaker');
+  const textEl = document.getElementById('dialog-text');
+  const choicesEl = document.querySelector('.dialog-choices');
+  
+  speakerEl.textContent = speaker;
+  textEl.textContent = text;
+  
+  // Clear and populate choices
+  choicesEl.innerHTML = '';
+  choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'dialog-choice';
+    btn.textContent = choice.text;
+    btn.onclick = () => handleDialogChoice(choice.action);
+    choicesEl.appendChild(btn);
+  });
+  
+  dialogBox.style.display = 'block';
+  gameState.paused = true;
+}
+
+function handleDialogChoice(choice) {
+  const dialogBox = document.getElementById('dialog-box');
+  dialogBox.style.display = 'none';
+  gameState.paused = false;
+  
+  // Store choice for story tracking
+  gameState.story.choices[gameState.story.scene] = choice;
+  gameState.story.scene++;
+  
+  // Handle choice consequences
+  switch(choice) {
+    case 'start_mission':
+      addEvent('🎬 Mission started!');
+      break;
+    case 'delay':
+      addEvent('⏰ Taking time to prepare...');
+      // Give player extra health/ammo
+      gameState.player.health = gameState.player.maxHealth;
+      gameState.player.weapon.reserve += 30;
+      break;
+    case 'info':
+      addEvent('📚 Learning more about the outbreak...');
+      // Reveal additional objectives
+      gameState.objectives.push({ 
+        id: 'investigate_sector7', 
+        text: 'Investigate Sector 7 anomaly', 
+        completed: false 
+      });
+      updateObjectives();
+      break;
+  }
+}
+
+// ========== WEATHER EFFECTS ==========
+function initWeatherEffects() {
+  gameState.weather = {
+    rain: [],
+    snow: [],
+    fog: { opacity: 0 },
+    storm: { lightning: 0 }
+  };
+  
+  // Initialize rain drops
+  for (let i = 0; i < 200; i++) {
+    gameState.weather.rain.push({
+      x: Math.random() * gameState.canvas.width,
+      y: Math.random() * gameState.canvas.height,
+      speed: 5 + Math.random() * 3
+    });
+  }
+  
+  // Initialize snow flakes
+  for (let i = 0; i < 150; i++) {
+    gameState.weather.snow.push({
+      x: Math.random() * gameState.canvas.width,
+      y: Math.random() * gameState.canvas.height,
+      speed: 1 + Math.random() * 2,
+      size: 2 + Math.random() * 3
+    });
+  }
+}
+
+function updateWeather(deltaTime) {
+  switch(gameState.currentWeather) {
+    case 'rain':
+    case 'storm':
+      gameState.weather.rain.forEach(drop => {
+        drop.y += drop.speed * (deltaTime / 16);
+        if (drop.y > gameState.canvas.height) {
+          drop.y = -10;
+          drop.x = Math.random() * gameState.canvas.width;
+        }
+      });
+      
+      if (gameState.currentWeather === 'storm') {
+        gameState.weather.storm.lightning -= deltaTime;
+        if (Math.random() < 0.001) {
+          gameState.weather.storm.lightning = 200;
+        }
+      }
+      break;
+      
+    case 'snow':
+      gameState.weather.snow.forEach(flake => {
+        flake.y += flake.speed * (deltaTime / 16);
+        flake.x += Math.sin(flake.y * 0.01) * 0.5;
+        
+        if (flake.y > gameState.canvas.height) {
+          flake.y = -10;
+          flake.x = Math.random() * gameState.canvas.width;
+        }
+      });
+      break;
+      
+    case 'fog':
+      gameState.weather.fog.opacity = Math.min(0.7, gameState.weather.fog.opacity + deltaTime * 0.001);
+      break;
+      
+    case 'sandstorm':
+      // Sandstorm particles handled in main particle system
+      if (Math.random() < 0.1) {
+        createParticle(
+          Math.random() * gameState.canvas.width,
+          Math.random() * gameState.canvas.height,
+          '#d4af37',
+          500 + Math.random() * 500,
+          1 + Math.random() * 2
+        );
+      }
+      break;
+  }
+}
+
+function renderWeatherOverlay() {
+  const overlay = document.getElementById('weather-overlay');
+  const ctx = gameState.ctx;
+  
+  switch(gameState.currentWeather) {
+    case 'rain':
+      ctx.save();
+      ctx.strokeStyle = 'rgba(173, 216, 230, 0.6)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      gameState.weather.rain.forEach(drop => {
+        ctx.moveTo(drop.x, drop.y);
+        ctx.lineTo(drop.x - 2, drop.y + 10);
+      });
+      ctx.stroke();
+      ctx.restore();
+      break;
+      
+    case 'storm':
+      // Draw rain
+      ctx.save();
+      ctx.strokeStyle = 'rgba(173, 216, 230, 0.8)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      gameState.weather.rain.forEach(drop => {
+        ctx.moveTo(drop.x, drop.y);
+        ctx.lineTo(drop.x - 3, drop.y + 15);
+      });
+      ctx.stroke();
+      ctx.restore();
+      
+      // Lightning flash
+      if (gameState.weather.storm.lightning > 0) {
+        ctx.save();
+        ctx.fillStyle = `rgba(255, 255, 255, ${gameState.weather.storm.lightning / 200})`;
+        ctx.fillRect(0, 0, gameState.canvas.width, gameState.canvas.height);
+        ctx.restore();
+      }
+      break;
+      
+    case 'snow':
+      ctx.save();
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      gameState.weather.snow.forEach(flake => {
+        ctx.beginPath();
+        ctx.arc(flake.x, flake.y, flake.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.restore();
+      break;
+      
+    case 'fog':
+      ctx.save();
+      const gradient = ctx.createRadialGradient(
+        gameState.canvas.width / 2, gameState.canvas.height / 2, 0,
+        gameState.canvas.width / 2, gameState.canvas.height / 2, gameState.canvas.width
+      );
+      gradient.addColorStop(0, `rgba(200, 200, 200, 0)`);
+      gradient.addColorStop(1, `rgba(200, 200, 200, ${gameState.weather.fog.opacity})`);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, gameState.canvas.width, gameState.canvas.height);
+      ctx.restore();
+      break;
+      
+    case 'sandstorm':
+      ctx.save();
+      ctx.fillStyle = 'rgba(212, 175, 55, 0.3)';
+      ctx.fillRect(0, 0, gameState.canvas.width, gameState.canvas.height);
+      ctx.restore();
+      break;
+  }
+}
+
+// Add more placeholder functions for remaining systems
+function updateZombieAI(enemy, deltaTime) {
+  // Basic zombie AI - move toward player
+  const dx = gameState.player.x - enemy.x;
+  const dy = gameState.player.y - enemy.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  
+  if (dist > 0) {
+    enemy.x += (dx / dist) * enemy.speed * (deltaTime / 16);
+    enemy.y += (dy / dist) * enemy.speed * (deltaTime / 16);
+  }
+}
+
+function updateHumanAI(enemy, deltaTime) {
+  // Humans run away from player if player is virus
+  if (gameState.player.isVirus) {
+    const dx = enemy.x - gameState.player.x;
+    const dy = enemy.y - gameState.player.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    
+    if (dist > 0 && dist < 100) {
+      enemy.x += (dx / dist) * enemy.speed * (deltaTime / 16);
+      enemy.y += (dy / dist) * enemy.speed * (deltaTime / 16);
+    }
+  }
+}
+
+function updateBossAI(enemy, deltaTime) {
+  updateZombieAI(enemy, deltaTime);
+  
+  // Boss special abilities
+  if (Math.random() < 0.001) {
+    // Spawn minions
+    for (let i = 0; i < 3; i++) {
+      const angle = (i / 3) * Math.PI * 2;
+      spawnEnemy();
+    }
+  }
+}
+
+function checkCollisions() {
+  // Bullet vs enemy collisions
+  for (let i = gameState.bullets.length - 1; i >= 0; i--) {
+    const bullet = gameState.bullets[i];
+    
+    for (let j = gameState.enemies.length - 1; j >= 0; j--) {
+      const enemy = gameState.enemies[j];
+      const dist = Math.sqrt((bullet.x - enemy.x) ** 2 + (bullet.y - enemy.y) ** 2);
+      
+      if (dist < bullet.radius + enemy.radius) {
+        // Check for headshot
+        const isHeadshot = Math.random() < 0.2;
+        let damage = bullet.damage;
+        
+        if (isHeadshot) {
+          damage *= 2;
+          gameState.stats.headshots++;
+          addEvent('🎯 HEADSHOT!');
+          
+          // Check headshot achievement
+          if (gameState.stats.headshots >= 50) {
+            unlockAchievement('headshot_master');
+          }
+        }
+        
+        enemy.health -= damage;
+        gameState.bullets.splice(i, 1);
+        
+        // Create hit effect
+        createParticle(enemy.x, enemy.y, isHeadshot ? '#ffff00' : '#ff6666', 200);
+        
+        break;
+      }
+    }
+  }
+  
+  // Player vs enemy collisions
+  gameState.enemies.forEach(enemy => {
+    const dist = Math.sqrt(
+      (gameState.player.x - enemy.x) ** 2 + 
+      (gameState.player.y - enemy.y) ** 2
+    );
+    
+    if (dist < gameState.player.radius + enemy.radius) {
+      if (gameState.player.isVirus && enemy.type === 'human' && !enemy.infected) {
+        // Infect human
+        enemy.infected = true;
+        enemy.color = '#ff4444';
+        addEvent('🦠 Human infected!');
+      } else if (!gameState.player.isVirus && enemy.type === 'zombie') {
+        // Damage player
+        gameState.player.health -= enemy.damage;
+        createParticle(gameState.player.x, gameState.player.y, '#ff4444', 300);
+        
+        if (gameState.player.health <= 0) {
+          gameOver();
+        }
+      }
+    }
+  });
+}
+
+function checkObjectives() {
+  gameState.objectives.forEach(obj => {
+    if (obj.completed) return;
+    
+    switch(obj.id) {
+      case 'kill_10':
+        obj.progress = gameState.stats.kills;
+        if (obj.progress >= obj.target) {
+          obj.completed = true;
+          addEvent('✅ Objective complete: Kill 10 zombies');
+        }
+        break;
+        
+      case 'headshot_streak':
+        obj.progress = Math.min(obj.target, gameState.stats.headshots);
+        if (obj.progress >= obj.target) {
+          obj.completed = true;
+          addEvent('✅ Objective complete: Headshot streak');
+        }
+        break;
+        
+      case 'survive_time':
+        if (gameState.stats.timeAlive >= 300000) { // 5 minutes
+          obj.completed = true;
+          addEvent('✅ Objective complete: Survived 5 minutes');
+        }
+        break;
+    }
+  });
+  
+  updateObjectives();
+}
+
+function updateStats(deltaTime) {
+  gameState.stats.timeAlive += deltaTime;
+  
+  // Check time-based achievements
+  if (gameState.stats.timeAlive >= 600000 && !gameState.achievements.find(a => a.id === 'survivor').unlocked) {
+    unlockAchievement('survivor');
+  }
+  
+  // Check distance achievement
+  const distAchv = gameState.achievements.find(a => a.id === 'speed_demon');
+  if (distAchv && !distAchv.unlocked) {
+    distAchv.progress = Math.floor(gameState.stats.distanceTraveled);
+    if (distAchv.progress >= distAchv.target) {
+      unlockAchievement('speed_demon');
+    }
+  }
+}
+
+function updateBullets(deltaTime) {
+  for (let i = gameState.bullets.length - 1; i >= 0; i--) {
+    const bullet = gameState.bullets[i];
+    
+    bullet.x += bullet.vx * (deltaTime / 16);
+    bullet.y += bullet.vy * (deltaTime / 16);
+    bullet.life -= deltaTime;
+    
+    // Remove if out of bounds or expired
+    if (bullet.x < 0 || bullet.x > gameState.canvas.width ||
+        bullet.y < 0 || bullet.y > gameState.canvas.height ||
+        bullet.life <= 0) {
+      gameState.bullets.splice(i, 1);
+    }
+  }
+}
+
+function updateParticles(deltaTime) {
+  for (let i = gameState.particles.length - 1; i >= 0; i--) {
+    const particle = gameState.particles[i];
+    
+    particle.x += particle.vx * (deltaTime / 16);
+    particle.y += particle.vy * (deltaTime / 16);
+    particle.life -= deltaTime;
+    particle.alpha = particle.life / particle.maxLife;
+    
+    if (particle.life <= 0) {
+      gameState.particles.splice(i, 1);
+    }
+  }
+}
+
+function updatePowerups(deltaTime) {
+  // Placeholder for powerup system
+}
+
+function updateVehicle(deltaTime) {
+  // Placeholder for vehicle mode
+}
+
+function updateBuilding(deltaTime) {
+  // Placeholder for building mode
+}
+
+function updateInvestigation(deltaTime) {
+  // Placeholder for investigation mode
+}
+
+function renderStructures() {
+  // Placeholder for rendering structures
+}
+
+function renderVehicle() {
+  // Placeholder for rendering vehicle
+}
+
+function renderPowerups() {
+  // Placeholder for rendering powerups
+}
+
+function renderUI() {
+  // Placeholder for additional UI rendering
+}
+
+function renderMinimap() {
+  const minimap = gameState.minimap;
+  const ctx = gameState.minimapCtx;
+  
+  if (!minimap || !ctx) return;
+  
+  ctx.clearRect(0, 0, minimap.width, minimap.height);
+  
+  // Minimap background
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+  ctx.fillRect(0, 0, minimap.width, minimap.height);
+  
+  // Scale factors
+  const scaleX = minimap.width / gameState.canvas.width;
+  const scaleY = minimap.height / gameState.canvas.height;
+  
+  // Draw player
+  ctx.fillStyle = '#00aaff';
+  ctx.beginPath();
+  ctx.arc(
+    gameState.player.x * scaleX,
+    gameState.player.y * scaleY,
+    3, 0, Math.PI * 2
+  );
+  ctx.fill();
+  
+  // Draw enemies
+  ctx.fillStyle = '#ff4444';
+  gameState.enemies.forEach(enemy => {
+    ctx.beginPath();
+    ctx.arc(
+      enemy.x * scaleX,
+      enemy.y * scaleY,
+      2, 0, Math.PI * 2
+    );
+    ctx.fill();
+  });
+}
+
+function reload() {
+  if (!gameState.player.weapon) return;
+  
+  const weapon = gameState.player.weapon;
+  if (weapon.ammo >= weapon.maxAmmo || weapon.reserve <= 0) return;
+  
+  const needed = weapon.maxAmmo - weapon.ammo;
+  const available = Math.min(needed, weapon.reserve);
+  
+  weapon.ammo += available;
+  weapon.reserve -= available;
+  
+  addEvent('🔄 Weapon reloaded');
+}
+
+function togglePause() {
+  gameState.paused = !gameState.paused;
+  addEvent(gameState.paused ? '⏸️ Game paused' : '▶️ Game resumed');
+}
+
+function showHelp() {
+  addEvent('💡 F: Photo Mode | R: Reload | P: Pause | H: Help');
+}
+
+function gameOver() {
+  gameState.running = false;
+  addEvent('💀 GAME OVER');
+  
+  // Show game over screen (placeholder)
+  setTimeout(() => {
+    alert(`Game Over! Final Score: ${gameState.stats.kills} kills, ${Math.floor(gameState.stats.timeAlive/1000)}s survived`);
+  }, 1000);
+}
+
+console.log('🎮 DeadZone: Ultimate Edition - All systems loaded!');
+</script>
+</body>
+</html>
