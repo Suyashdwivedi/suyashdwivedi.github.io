@@ -5,30 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>International Days Calendar - by Suyash Dwivedi</title>
 
-    <!-- Meta Tags for SEO and Social Sharing -->
     <meta name="description" content="An interactive calendar displaying major international days and global observances recognized by the UN, with short descriptions for each.">
     <meta name="keywords" content="International Days, UN Observances, Calendar, Global Events, Awareness Days, Suyash Dwivedi, world days, global calendar">
     <meta name="author" content="Suyash Dwivedi">
-    <link rel="canonical" href="https://suyashdwivedi.github.io/international_days.html" />
-
-    <meta property="og:title" content="International Days Calendar – by Suyash Dwivedi">
+    <link rel="canonical" href="https://suyashdwivedi.github.io/international_days.html" /> <meta property="og:title" content="International Days Calendar – by Suyash Dwivedi">
     <meta property="og:description" content="Explore and learn about major international days and global observances with this interactive calendar.">
-    <meta property="og:image" content="https://placehold.co/1200x630/3b82f6/ffffff?text=International+Days+Calendar">
+    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png">
     <meta property="og:url" content="https://suyashdwivedi.github.io/international_days.html">
     <meta property="og:type" content="website">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="International Days Calendar – by Suyash Dwivedi">
     <meta name="twitter:description" content="An interactive calendar of global observances.">
-    <meta name="twitter:image" content="https://placehold.co/1200x630/3b82f6/ffffff?text=International+Days+Calendar">
-    <meta name="twitter:site" content="@your_twitter_handle">
-
-    <link rel="icon" href="https://placehold.co/32x32/3b82f6/ffffff?text=📅" />
+    <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png">
+    <meta name="twitter:site" content="@SuyashDwivedi"> <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" />
     <meta name="theme-color" content="#3b82f6">
 
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Analytics -->
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -36,21 +30,22 @@
         gtag('js', new Date());
         gtag('config', 'G-GC8PGC89NB');
     </script>
-    <!-- Counter.dev Script -->
     <script src="https://cdn.counter.dev/script.js"
         data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
         data-utcoffset="6">
     </script>
+    
     <style>
         /* Custom styles for dark mode transition and general aesthetics */
         body {
             font-family: 'Inter', sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease;
+            scroll-behavior: smooth; /* For go-to-top/bottom buttons */
         }
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 8px; /* Gap between day cells */
+            gap: 8px;
         }
         .day-cell {
             padding: 12px 0;
@@ -61,35 +56,35 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 80px; /* Ensure consistent height for cells */
+            min-height: 80px;
             text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Subtle shadow */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         .day-cell:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.15); /* Enhanced shadow on hover */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
         }
         .day-cell.has-event {
-            background-color: #a7f3d0; /* Light green for days with events */
+            background-color: #a7f3d0;
             color: #065f46;
             font-weight: 600;
-            border: 1px solid #34d399; /* Green border */
+            border: 1px solid #34d399;
         }
         .day-cell.has-event:hover {
-            background-color: #6ee7b7; /* Darker green on hover */
+            background-color: #6ee7b7;
         }
         .day-cell.selected {
-            background-color: #3b82f6; /* Blue for selected day */
+            background-color: #3b82f6;
             color: white;
             border: 1px solid #2563eb;
-            transform: scale(1.02); /* Slightly larger when selected */
+            transform: scale(1.02);
         }
         .day-cell.selected.has-event {
-            background-color: #10b981; /* Darker green if selected and has event */
+            background-color: #10b981;
             border: 1px solid #059669;
         }
         .day-cell.empty {
-            background-color: #f3f4f6;
+            background-color: #bcbcbc;
             cursor: default;
             box-shadow: none;
             border: 1px solid #e5e7eb;
@@ -98,11 +93,18 @@
             transform: none;
             box-shadow: none;
         }
+        .un-badge {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
 
         /* Dark Mode Styles */
         body.dark-mode {
-            background-color: #1a202c; /* Dark background */
-            color: #e2e8f0; /* Light text */
+            background-color: #1a202c;
+            color: #e2e8f0;
         }
         .dark-mode .day-cell.empty {
             background-color: #2d3748;
@@ -115,7 +117,7 @@
             border-color: #6b7280;
         }
         .dark-mode .day-cell.has-event {
-            background-color: #065f46; /* Darker green for events in dark mode */
+            background-color: #065f46;
             color: #e2e8f0;
             border-color: #34d399;
         }
@@ -172,21 +174,48 @@
         .dark-mode .text-green-800 {
             color: #a7f3d0;
         }
+        
+        /* Floating Buttons CSS */
+        .floating-btn {
+            position: fixed;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 50%;
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: opacity 0.3s, background-color 0.3s;
+            z-index: 1000;
+        }
+        .floating-btn:hover {
+            background-color: #2563eb;
+        }
+        #goToTop {
+            bottom: 80px;
+        }
+        #goToBottom {
+            bottom: 20px;
+        }
+        
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8">
 
-    <!-- Night Mode Toggle Button -->
     <button id="nightModeToggle" class="absolute top-4 right-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-300">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9 9 0 008.354-5.646z" />
         </svg>
     </button>
 
+    <button id="goToTop" class="floating-btn hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+
     <div class="max-w-4xl w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 mb-8 border border-gray-200 dark:border-gray-700">
-        <!-- Header with Logo and Title -->
         <div class="flex items-center justify-center mb-6">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Wiki%27s_Lazy_Coders.png/250px-Wiki%27s_Lazy_Coders.png" alt="Wiki's Lazy Coders Logo" class="h-12 w-auto mr-4 rounded-full">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" alt="Wiki's Lazy Coders Logo" class="h-16 w-auto mr-4">
             <h1 class="text-3xl font-bold text-center text-gray-800 dark:text-gray-100 flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -195,7 +224,6 @@
             </h1>
         </div>
 
-        <!-- Calendar Header -->
         <div class="flex justify-between items-center mb-6">
             <button id="prevMonth" class="px-4 py-2 rounded-lg bg-blue-500 text-white font-semibold hover:bg-blue-600 transition-colors duration-200 shadow-md">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -212,7 +240,6 @@
             </button>
         </div>
 
-        <!-- Day Names -->
         <div class="calendar-grid text-sm font-medium text-gray-600 dark:text-gray-400 mb-4">
             <div class="text-center font-bold text-red-500 dark:text-red-400">Sun</div>
             <div class="text-center font-bold">Mon</div>
@@ -223,390 +250,448 @@
             <div class="text-center font-bold">Sat</div>
         </div>
 
-        <!-- Calendar Grid -->
         <div id="calendarGrid" class="calendar-grid text-gray-800 dark:text-gray-200">
-            <!-- Day cells will be dynamically inserted here by JavaScript -->
-        </div>
+            </div>
     </div>
 
-    <!-- Event Description Display -->
     <div id="eventDescriptionDisplay" class="max-w-4xl w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 border border-gray-200 dark:border-gray-700 mt-8 hidden">
         <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4" id="eventDisplayDate"></h3>
         <div id="eventDetails" class="space-y-3">
-            <!-- Event details will be displayed here -->
-        </div>
+            </div>
         <button id="closeDescription" class="mt-6 px-4 py-2 rounded-lg bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors duration-200 shadow-md">Close</button>
     </div>
 
-    <!-- Footer with Developer Info -->
     <footer class="mt-12 text-center text-gray-600 dark:text-gray-400 text-sm">
-        Developed by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold">Suyash Dwivedi</a> | Updated on: 24 Septmber 2025
+        Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold">Suyash Dwivedi</a> | Updated on: 10 November 2025
     </footer>
+    
+    <button id="goToBottom" class="floating-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+    </button>
 
     <script>
         // Function to generate Wikipedia link
         function getWikipediaLink(eventName) {
             if (!eventName) return null;
-            const formattedName = eventName.replace(/ /g, '_');
+            // Clean up event name to create a valid Wikipedia article title
+            const formattedName = eventName.replace(/ /g, '_').replace(/'/g, '').replace(/\(.+\)/, '').trim();
             return `https://en.wikipedia.org/wiki/${formattedName}`;
         }
 
-        // Data for international days with short descriptions and Wikipedia links
+        // UN Logo SVG as data URI
+        //const unLogoSvg = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"%3E%3Ccircle cx="150" cy="150" r="145" fill="%235b92e5"/%3E%3Cpath d="M150 30 C 90 30 40 80 40 140 C 40 200 90 250 150 250 C 210 250 260 200 260 140 C 260 80 210 30 150 30 Z M 150 50 C 200 50 240 90 240 140 C 240 190 200 230 150 230 C 100 230 60 190 60 140 C 60 90 100 50 150 50 Z M 80 150 L 220 150 M 150 80 L 150 220 M 110 110 L 190 190 M 190 110 L 110 190" stroke="white" stroke-width="8" fill="none"/%3E%3C/svg%3E';
+       // const unLogoHtml = '<img class="un-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/UN_emblem_blue.svg/330px-UN_emblem_blue.svg.png" alt="UN Logo">';
+      // const unLogoHtml = '<img class="un-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/UN_emblem_blue.svg/330px-UN_emblem_blue.svg.png" alt="UN Logo">';
+	   // Comprehensive data for international days
         const internationalDays = {
-    // January
-    "1-1": [{ name: "Global Family Day", description: "A day to promote peace and sharing.", wikipediaLink: getWikipediaLink("Global Family Day") }],
-    "1-4": [{ name: "World Braille Day", description: "Celebrates the importance of Braille as a means of communication for the visually impaired.", wikipediaLink: getWikipediaLink("World Braille Day") }],
-    "1-6": [{ name: "World Day for War Orphans", description: "Highlights the plight of children orphaned by war.", wikipediaLink: getWikipediaLink("World Day for War Orphans") }],
-    "1-14": [{ name: "World Logic Day", description: "Promotes the international development of logic in research and teaching.", wikipediaLink: getWikipediaLink("World Logic Day") }],
-    "1-24": [{ name: "International Day of Education", description: "Recognizes the role of education for peace and development.", wikipediaLink: getWikipediaLink("International Day of Education") }],
-    "1-24": [{ name: "World Day for African and Afrodescendant Culture", description: "Celebrates the rich cultures of Africa and its diasporas.", wikipediaLink: getWikipediaLink("World Day for African and Afrodescendant Culture") }],
-    "1-26": [{ name: "International Day of Clean Energy", description: "Promotes sustainable energy for all.", wikipediaLink: getWikipediaLink("International Day of Clean Energy") }],
-    "1-27": [{ name: "International Day of Commemoration in Memory of the Victims of the Holocaust", description: "Honors the victims of the Holocaust and promotes Holocaust education.", wikipediaLink: getWikipediaLink("International Holocaust Remembrance Day") }],
-    "1-28": [{ name: "International Day of Peaceful Coexistence", description: "Aims to promote peace, tolerance, inclusion, understanding and solidarity.", wikipediaLink: null }],
+            // January
+            "1-1": [{ name: "New Year's Day", description: "Global celebration of the beginning of a new year.", isUN: false, wikipediaLink: getWikipediaLink("New Year's Day") }],
+            "1-4": [{ name: "World Braille Day", description: "Celebrates the importance of Braille as a means of communication for the visually impaired.", isUN: true, wikipediaLink: getWikipediaLink("World Braille Day") }],
+            "1-24": [
+                { name: "International Day of Education", description: "Recognizes the role of education for peace and development.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Education") }
+            ],
+            "1-26": [{ name: "International Day of Clean Energy", description: "Promotes sustainable energy for all.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Clean Energy") }],
+            "1-27": [{ name: "International Day of Commemoration in Memory of the Victims of the Holocaust", description: "Honors the victims of the Holocaust and promotes Holocaust education.", isUN: true, wikipediaLink: getWikipediaLink("International Holocaust Remembrance Day") }],
+            "1-28": [{ name: "International Day of Peaceful Coexistence", description: "Aims to promote peace, tolerance, inclusion, understanding and solidarity.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Peaceful Coexistence") }],
 
-    // February
-    "2-2": [{ name: "World Wetlands Day", description: "Raises awareness about the vital role of wetlands for people and planet.", wikipediaLink: getWikipediaLink("World Wetlands Day") }],
-    "2-4": [{ name: "World Cancer Day", description: "Unites people to raise awareness and take action against cancer.", wikipediaLink: getWikipediaLink("World Cancer Day") }],
-    "2-4": [{ name: "International Day of Human Fraternity", description: "Promotes interfaith dialogue and cultural diversity.", wikipediaLink: getWikipediaLink("International Day of Human Fraternity") }],
-    "2-6": [{ name: "International Day of Zero Tolerance to Female Genital Mutilation", description: "Aims to eradicate female genital mutilation.", wikipediaLink: getWikipediaLink("International Day of Zero Tolerance to Female Genital Mutilation") }],
-    "2-10": [{ name: "World Pulses Day", description: "Celebrates pulses as sustainable food and their nutritional benefits.", wikipediaLink: getWikipediaLink("World Pulses Day") }],
-    "2-11": [{ name: "International Day of Women and Girls in Science", description: "Promotes full and equal access to and participation in science for women and girls.", wikipediaLink: getWikipediaLink("International Day of Women and Girls in Science") }],
-    "2-12": [{ name: "International Day for the Prevention of Violent Extremism as and when Conducive to Terrorism", description: "Highlights the importance of addressing conditions conducive to terrorism.", wikipediaLink: null }],
-    "2-13": [{ name: "World Radio Day", description: "Celebrates radio as a powerful medium for peace and development.", wikipediaLink: getWikipediaLink("World Radio Day") }],
-    "2-17": [{ name: "Global Tourism Resilience Day", description: "Recognizes the importance of sustainable tourism.", wikipediaLink: getWikipediaLink("Global Tourism Resilience Day") }],
-    "2-17": [{ name: "International Day of the Arabian Leopard", description: "Raises awareness about the Arabian Leopard.", wikipediaLink: getWikipediaLink("International Day of the Arabian Leopard") }],
-    "2-20": [{ name: "World Day of Social Justice", description: "Promotes efforts to tackle issues like poverty, exclusion, and unemployment.", wikipediaLink: getWikipediaLink("World Day of Social Justice") }],
-    "2-21": [{ name: "International Mother Language Day", description: "Promotes linguistic and cultural diversity and multilingualism.", wikipediaLink: getWikipediaLink("International Mother Language Day") }],
+            // February
+            // Feb 1-7 is World Interfaith Harmony Week, handled separately in generation logic
+            "2-2": [{ name: "World Wetlands Day", description: "Raises awareness about the vital role of wetlands for people and planet.", isUN: true, wikipediaLink: getWikipediaLink("World Wetlands Day") }],
+            "2-4": [
+                { name: "International Day of Human Fraternity", description: "Promotes interfaith dialogue and cultural diversity.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Human Fraternity") },
+                { name: "World Cancer Day", description: "Unites people to raise awareness and take action against cancer.", isUN: false, wikipediaLink: getWikipediaLink("World Cancer Day") }
+            ],
+            "2-6": [{ name: "International Day of Zero Tolerance to Female Genital Mutilation", description: "Aims to eradicate female genital mutilation.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Zero Tolerance to Female Genital Mutilation") }],
+            "2-10": [
+                { name: "World Pulses Day", description: "Celebrates pulses as sustainable food and their nutritional benefits.", isUN: true, wikipediaLink: getWikipediaLink("World Pulses Day") },
+                { name: "International Day of the Arabian Leopard", description: "Raises awareness about the Arabian Leopard.", isUN: true, wikipediaLink: getWikipediaLink("Arabian Leopard") }
+            ],
+            "2-11": [{ name: "International Day of Women and Girls in Science", description: "Promotes full and equal access to and participation in science for women and girls.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Women and Girls in Science") }],
+            "2-12": [{ name: "International Day for the Prevention of Violent Extremism as and when Conducive to Terrorism", description: "Highlights the importance of addressing conditions conducive to terrorism.", isUN: true, wikipediaLink: getWikipediaLink("International Day for the Prevention of Violent Extremism as and when Conducive to Terrorism") }],
+            "2-13": [{ name: "World Radio Day", description: "Celebrates radio as a powerful medium for peace and development.", isUN: true, wikipediaLink: getWikipediaLink("World Radio Day") }],
+            "2-20": [{ name: "World Day of Social Justice", description: "Promotes efforts to tackle issues like poverty, exclusion, and unemployment.", isUN: true, wikipediaLink: getWikipediaLink("World Day of Social Justice") }],
+            "2-21": [{ name: "International Mother Language Day", description: "Promotes linguistic and cultural diversity and multilingualism.", isUN: true, wikipediaLink: getWikipediaLink("International Mother Language Day") }],
 
-    // March
-    "3-1": [{ name: "Zero Discrimination Day", description: "Celebrates the right of everyone to live a full and productive life with dignity.", wikipediaLink: getWikipediaLink("Zero Discrimination Day") }],
-    "3-1": [{ name: "World Seagrass Day", description: "Raises awareness of the importance of seagrass ecosystems.", wikipediaLink: getWikipediaLink("World Seagrass Day") }],
-    "3-3": [{ name: "World Wildlife Day", description: "Celebrates wild fauna and flora and raises awareness of their conservation.", wikipediaLink: getWikipediaLink("World Wildlife Day") }],
-    "3-4": [{ name: "World Engineering Day for Sustainable Development", description: "Highlights the achievements of engineers and their contribution to sustainable development.", wikipediaLink: getWikipediaLink("World Engineering Day for Sustainable Development") }],
-    "3-5": [{ name: "International Day for Disarmament and Non-Proliferation Awareness", description: "Promotes awareness and understanding of disarmament issues.", wikipediaLink: getWikipediaLink("International Day for Disarmament and Non-Proliferation Awareness") }],
-    "3-8": [{ name: "International Women's Day", description: "Celebrates the social, economic, cultural, and political achievements of women.", wikipediaLink: getWikipediaLink("International Women's Day") }],
-    "3-10": [{ name: "International Day of Women Judges", description: "Promotes the full and equal participation of women at all levels of the judiciary.", wikipediaLink: getWikipediaLink("International Day of Women Judges") }],
-    "3-14": [{ name: "International Day of Mathematics", description: "Highlights the fundamental role of mathematics in our lives.", wikipediaLink: getWikipediaLink("International Day of Mathematics") }],
-    "3-15": [{ name: "International Day to Combat Islamophobia", description: "Aims to counter hatred, discrimination, and violence against Muslims.", wikipediaLink: getWikipediaLink("International Day to Combat Islamophobia") }],
-    "3-20": [{ name: "International Day of Happiness", description: "Recognizes the relevance of happiness and well-being as universal goals.", wikipediaLink: getWikipediaLink("International Day of Happiness") }],
-    "3-20": [{ name: "French Language Day", description: "Celebrates the French language and cultural diversity.", wikipediaLink: getWikipediaLink("French Language Day (United Nations)") }],
-    "3-21": [{ name: "International Day for the Elimination of Racial Discrimination", description: "Calls for efforts to eliminate all forms of racial discrimination.", wikipediaLink: getWikipediaLink("International Day for the Elimination of Racial Discrimination") }],
-    "3-21": [{ name: "World Poetry Day", description: "Promotes the reading, writing, publishing and teaching of poetry.", wikipediaLink: getWikipediaLink("World Poetry Day") }],
-    "3-21": [{ name: "International Day of Nowruz", description: "Celebrates the spring equinox as a day of renewal and harmony.", wikipediaLink: getWikipediaLink("International Day of Nowruz") }],
-    "3-21": [{ name: "World Down Syndrome Day", description: "Raises awareness about Down syndrome and promotes inclusion.", wikipediaLink: getWikipediaLink("World Down Syndrome Day") }],
-    "3-21": [{ name: "International Day of Forests", description: "Celebrates and raises awareness of the importance of all types of forests.", wikipediaLink: getWikipediaLink("International Day of Forests") }],
-    "3-21": [{ name: "World Day for Glaciers", description: "Highlights the importance of glaciers and the impact of climate change.", wikipediaLink: getWikipediaLink("World Day for Glaciers") }],
-    "3-22": [{ name: "World Water Day", description: "Focuses on the importance of freshwater and advocating for sustainable management of water resources.", wikipediaLink: getWikipediaLink("World Water Day") }],
-    "3-23": [{ name: "World Meteorological Day", description: "Commemorates the establishment of the World Meteorological Organization (WMO).", wikipediaLink: getWikipediaLink("World Meteorological Day") }],
-    "3-24": [{ name: "World Tuberculosis Day", description: "Raises public awareness about the devastating health, social and economic consequences of TB.", wikipediaLink: getWikipediaLink("World Tuberculosis Day") }],
-    "3-24": [{ name: "International Day for the Right to the Truth concerning Gross Human Rights Violations and for the Dignity of Victims", description: "Honors the memory of victims of gross human rights violations and promotes the right to truth and justice.", wikipediaLink: getWikipediaLink("International Day for the Right to the Truth concerning Gross Human Rights Violations and for the Dignity of Victims") }],
-    "3-25": [{ name: "International Day of Remembrance of the Victims of Slavery and the Transatlantic Slave Trade", description: "Honors the memory of those who suffered and died as a result of the transatlantic slave trade.", wikipediaLink: getWikipediaLink("International Day of Remembrance of the Victims of Slavery and the Transatlantic Slave Trade") }],
-    "3-25": [{ name: "International Day of Solidarity with Detained and Missing Staff Members", description: "Calls for justice and protection for UN staff members.", wikipediaLink: getWikipediaLink("International Day of Solidarity with Detained and Missing Staff Members") }],
-    "3-30": [{ name: "International Day of Zero Waste", description: "Promotes sustainable consumption and production patterns.", wikipediaLink: getWikipediaLink("International Day of Zero Waste") }],
+            // March
+            "3-1": [{ name: "World Seagrass Day", description: "Raises awareness of the importance of seagrass ecosystems.", isUN: true, wikipediaLink: getWikipediaLink("World Seagrass Day") }],
+            "3-3": [{ name: "World Wildlife Day", description: "Celebrates wild fauna and flora and raises awareness of their conservation.", isUN: true, wikipediaLink: getWikipediaLink("World Wildlife Day") }],
+            "3-8": [{ name: "International Women's Day", description: "Celebrates the social, economic, cultural, and political achievements of women.", isUN: true, wikipediaLink: getWikipediaLink("International Women's Day") }],
+            "3-20": [
+                { name: "International Day of Happiness", description: "Recognizes the relevance of happiness and well-being as universal goals.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Happiness") },
+                { name: "French Language Day", description: "Celebrates the French language and cultural diversity.", isUN: true, wikipediaLink: getWikipediaLink("French Language Day (United Nations)") }
+            ],
+            "3-21": [
+                { name: "International Day for the Elimination of Racial Discrimination", description: "Calls for efforts to eliminate all forms of racial discrimination.", isUN: true, wikipediaLink: getWikipediaLink("International Day for the Elimination of Racial Discrimination") },
+                { name: "World Day for Glaciers", description: "Highlights the importance of glaciers and the impact of climate change.", isUN: true, wikipediaLink: getWikipediaLink("Glacier") },
+                { name: "International Day of Forests", description: "Celebrates and raises awareness of the importance of all types of forests.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Forests") },
+                { name: "International Day of Nowruz", description: "Celebrates the spring equinox as a day of renewal and harmony.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Nowruz") },
+                { name: "World Down Syndrome Day", description: "Raises awareness about Down syndrome and promotes inclusion.", isUN: true, wikipediaLink: getWikipediaLink("World Down Syndrome Day") }
+            ],
+            // March 21-27 is Week of Solidarity with the Peoples Struggling against Racism and Racial Discrimination
+            "3-22": [{ name: "World Water Day", description: "Focuses on the importance of freshwater and advocating for sustainable management of water resources.", isUN: true, wikipediaLink: getWikipediaLink("World Water Day") }],
+            "3-24": [
+                { name: "World Tuberculosis Day", description: "Raises public awareness about the devastating health, social and economic consequences of TB.", isUN: true, wikipediaLink: getWikipediaLink("World Tuberculosis Day") },
+                { name: "International Day for the Right to the Truth concerning Gross Human Rights Violations and for the Dignity of Victims", description: "Honors the memory of victims of gross human rights violations and promotes the right to truth and justice.", isUN: true, wikipediaLink: getWikipediaLink("International Day for the Right to the Truth concerning Gross Human Rights Violations and for the Dignity of Victims") }
+            ],
+            "3-25": [
+                { name: "International Day of Remembrance of the Victims of Slavery and the Transatlantic Slave Trade", description: "Honors the memory of those who suffered and died as a result of the transatlantic slave trade.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Remembrance of the Victims of Slavery and the Transatlantic Slave Trade") },
+                { name: "International Day of Solidarity with Detained and Missing Staff Members", description: "Calls for justice and protection for UN staff members.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Solidarity with Detained and Missing Staff Members") }
+            ],
 
-    // April
-    "4-2": [{ name: "World Autism Awareness Day", description: "Highlights the need to help improve the quality of life of those with autism.", wikipediaLink: getWikipediaLink("World Autism Awareness Day") }],
-    "4-4": [{ name: "International Day for Mine Awareness and Assistance in Mine Action", description: "Calls for continued efforts to establish and develop national mine-action capacities.", wikipediaLink: getWikipediaLink("International Day for Mine Awareness and Assistance in Mine Action") }],
-    "4-5": [{ name: "International Day of Conscience", description: "Promotes peace, tolerance, inclusion, understanding and solidarity.", wikipediaLink: getWikipediaLink("International Day of Conscience") }],
-    "4-6": [{ name: "International Day of Sport for Development and Peace", description: "Recognizes the positive role sport plays in society.", wikipediaLink: getWikipediaLink("International Day of Sport for Development and Peace") }],
-    "4-7": [{ name: "World Health Day", description: "Marks the founding of the World Health Organization (WHO) and raises awareness on a specific health theme.", wikipediaLink: getWikipediaLink("World Health Day") }],
-    "4-7": [{ name: "International Day of Reflection on the 1994 Genocide against the Tutsi in Rwanda", description: "Remembers the victims of the genocide and promotes prevention of similar acts.", wikipediaLink: getWikipediaLink("International Day of Reflection on the 1994 Genocide against the Tutsi in Rwanda") }],
-    "4-12": [{ name: "International Day of Human Space Flight", description: "Commemorates the first human space flight by Yuri Gagarin.", wikipediaLink: getWikipediaLink("International Day of Human Space Flight") }],
-    "4-14": [{ name: "World Chagas Disease Day", description: "Raises awareness about Chagas disease and its prevention.", wikipediaLink: getWikipediaLink("World Chagas Disease Day") }],
-    "4-15": [{ name: "World Art Day", description: "Promotes the development, diffusion and enjoyment of art.", wikipediaLink: getWikipediaLink("World Art Day") }],
-    "4-20": [{ name: "Chinese Language Day", description: "Celebrates the Chinese language and cultural diversity.", wikipediaLink: getWikipediaLink("Chinese Language Day") }],
-    "4-21": [{ name: "World Creativity and Innovation Day", description: "Raises awareness of the role of creativity and innovation in all aspects of human development.", wikipediaLink: getWikipediaLink("World Creativity and Innovation Day") }],
-    "4-22": [{ name: "International Mother Earth Day", description: "Promotes harmony with nature and the Earth.", wikipediaLink: getWikipediaLink("Earth Day") }],
-    "4-23": [{ name: "World Book and Copyright Day", description: "Promotes reading, publishing, and copyright.", wikipediaLink: getWikipediaLink("World Book and Copyright Day") }],
-    "4-23": [{ name: "English Language Day", description: "Celebrates the English language and cultural diversity.", wikipediaLink: getWikipediaLink("English Language Day") }],
-    "4-23": [{ name: "Spanish Language Day", description: "Celebrates the Spanish language and cultural diversity.", wikipediaLink: getWikipediaLink("Spanish Language Day") }],
-    "4-24": [{ name: "International Day of Multilateralism and Diplomacy for Peace", description: "Promotes the peaceful resolution of disputes and international cooperation.", wikipediaLink: getWikipediaLink("International Day of Multilateralism and Diplomacy for Peace") }],
-    "4-25": [{ name: "World Malaria Day", description: "Highlights the global effort to control malaria.", wikipediaLink: getWikipediaLink("World Malaria Day") }],
-    "4-26": [{ name: "World Intellectual Property Day", description: "Celebrates innovation and creativity and promotes understanding of intellectual property.", wikipediaLink: getWikipediaLink("World Intellectual Property Day") }],
-    "4-26": [{ name: "International Chernobyl Disaster Remembrance Day", description: "Remembers the victims and highlights the long-term consequences of the Chernobyl disaster.", wikipediaLink: getWikipediaLink("International Chernobyl Disaster Remembrance Day") }],
-    "4-28": [{ name: "World Day for Safety and Health at Work", description: "Promotes the prevention of occupational accidents and diseases globally.", wikipediaLink: getWikipediaLink("World Day for Safety and Health at Work") }],
-    "4-30": [{ name: "International Jazz Day", description: "Highlights jazz as a universal language for peace and dialogue.", wikipediaLink: getWikipediaLink("International Jazz Day") }],
+            // April
+            "4-2": [{ name: "World Autism Awareness Day", description: "Highlights the need to help improve the quality of life of those with autism.", isUN: true, wikipediaLink: getWikipediaLink("World Autism Awareness Day") }],
+            "4-4": [{ name: "International Day for Mine Awareness and Assistance in Mine Action", description: "Calls for continued efforts to establish and develop national mine-action capacities.", isUN: true, wikipediaLink: getWikipediaLink("International Day for Mine Awareness and Assistance in Mine Action") }],
+            "4-6": [{ name: "International Day of Sport for Development and Peace", description: "Recognizes the positive role sport plays in society.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Sport for Development and Peace") }],
+            "4-7": [
+                { name: "International Day of Reflection on the 1994 Genocide against the Tutsi in Rwanda", description: "Remembers the victims of the genocide and promotes prevention of similar acts.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Reflection on the 1994 Genocide against the Tutsi in Rwanda") },
+                { name: "World Health Day (WHO)", description: "Marks the founding of the World Health Organization (WHO) and raises awareness on a specific health theme.", isUN: true, wikipediaLink: getWikipediaLink("World Health Day") }
+            ],
+            "4-12": [{ name: "International Day of Human Space Flight", description: "Commemorates the first human space flight by Yuri Gagarin.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Human Space Flight") }],
+            "4-20": [{ name: "Chinese Language Day", description: "Celebrates the Chinese language and cultural diversity.", isUN: true, wikipediaLink: getWikipediaLink("Chinese Language Day") }],
+            "4-22": [{ name: "International Mother Earth Day", description: "Promotes harmony with nature and the Earth.", isUN: true, wikipediaLink: getWikipediaLink("Earth Day") }],
+            "4-23": [
+                { name: "English Language Day", description: "Celebrates the English language and cultural diversity.", isUN: true, wikipediaLink: getWikipediaLink("English Language Day") },
+                { name: "Spanish Language Day", description: "Celebrates the Spanish language and cultural diversity.", isUN: true, wikipediaLink: getWikipediaLink("Spanish Language Day") },
+                { name: "World Book and Copyright Day", description: "Promotes reading, publishing, and copyright.", isUN: true, wikipediaLink: getWikipediaLink("World Book and Copyright Day") }
+            ],
+            "4-25": [
+                { name: "World Malaria Day (WHO)", description: "Highlights the global effort to control malaria.", isUN: true, wikipediaLink: getWikipediaLink("World Malaria Day") },
+                { name: "International Delegate's Day", description: "Recognizes the role of delegates and multilateralism.", isUN: true, wikipediaLink: getWikipediaLink("International Delegate's Day") }
+            ],
+            "4-26": [{ name: "International Chernobyl Disaster Remembrance Day", description: "Remembers the victims and highlights the long-term consequences of the Chernobyl disaster.", isUN: true, wikipediaLink: getWikipediaLink("International Chernobyl Disaster Remembrance Day") }],
+            "4-28": [{ name: "World Day for Safety and Health at Work", description: "Promotes the prevention of occupational accidents and diseases.", isUN: true, wikipediaLink: getWikipediaLink("World Day for Safety and Health at Work") }],
+            "4-29": [{ name: "International Day in Memory of the Victims of Earthquakes", description: "Remembers the victims of earthquakes and promotes disaster preparedness.", isUN: true, wikipediaLink: getWikipediaLink("International Day in Memory of the Victims of Earthquakes") }],
+            "4-30": [{ name: "International Jazz Day", description: "Celebrates jazz and its role in promoting peace, dialogue, and cooperation.", isUN: true, wikipediaLink: getWikipediaLink("International Jazz Day") }],
 
-    // May
-    "5-2": [{ name: "World Tuna Day", description: "Raises awareness about the importance of tuna and sustainable fishing practices.", wikipediaLink: getWikipediaLink("World Tuna Day") }],
-    "5-3": [{ name: "World Press Freedom Day", description: "Celebrates the fundamental principles of press freedom.", wikipediaLink: getWikipediaLink("World Press Freedom Day") }],
-    "5-5": [{ name: "World Portuguese Language Day", description: "Celebrates the Portuguese language and Lusophone cultures.", wikipediaLink: getWikipediaLink("World Portuguese Language Day") }],
-    "5-5": [{ name: "African World Heritage Day", description: "Celebrates Africa’s unique cultural and natural heritage.", wikipediaLink: getWikipediaLink("African World Heritage Day") }],
-    "5-8": [{ name: "Time of Remembrance and Reconciliation for Those Who Lost Their Lives during the Second World War", description: "A time to remember all victims of World War II.", wikipediaLink: getWikipediaLink("Time of Remembrance and Reconciliation for Those Who Lost Their Lives During the Second World War") }],
-    "5-10": [{ name: "International Day of Argania", description: "Celebrates the Argan tree and its role in sustainable development.", wikipediaLink: getWikipediaLink("International Day of Argania") }],
-    "5-12": [{ name: "International Day of Plant Health", description: "Raises awareness on how protecting plant health can help end hunger.", wikipediaLink: getWikipediaLink("International Day of Plant Health") }],
-    "5-12": [{ name: "Vesak, the Day of the Full Moon", description: "Commemorates the birth, enlightenment, and passing of Buddha.", wikipediaLink: getWikipediaLink("Vesak") }],
-    "5-15": [{ name: "International Day of Families", description: "Promotes awareness of issues relating to families and their well-being.", wikipediaLink: getWikipediaLink("International Day of Families") }],
-    "5-16": [{ name: "International Day of Living Together in Peace", description: "Promotes peace, tolerance, inclusion, understanding and solidarity.", wikipediaLink: getWikipediaLink("International Day of Living Together in Peace") }],
-    "5-16": [{ name: "International Day of Light", description: "Celebrates the role of light in science, culture, art, education, and sustainable development.", wikipediaLink: getWikipediaLink("International Day of Light") }],
-    "5-17": [{ name: "World Telecommunication and Information Society Day", description: "Raises awareness about the possibilities that the use of the Internet and other information and communication technologies (ICT) can bring to societies and economies.", wikipediaLink: getWikipediaLink("World Telecommunication and Information Society Day") }],
-    "5-20": [{ name: "World Bee Day", description: "Raises awareness of the importance of pollinators, the threats they face, and their contribution to sustainable development.", wikipediaLink: getWikipediaLink("World Bee Day") }],
-    "5-20": [{ name: "World Metrology Day", description: "Commemorates the signing of the Metre Convention.", wikipediaLink: getWikipediaLink("World Metrology Day") }],
-    "5-21": [{ name: "World Day for Cultural Diversity for Dialogue and Development", description: "Promotes cultural diversity and dialogue among civilizations.", wikipediaLink: getWikipediaLink("World Day for Cultural Diversity for Dialogue and Development") }],
-    "5-21": [{ name: "International Tea Day", description: "Promotes the sustainable production and consumption of tea.", wikipediaLink: getWikipediaLink("International Tea Day") }],
-    "5-22": [{ name: "International Day for Biological Diversity", description: "Raises understanding and awareness of biodiversity issues.", wikipediaLink: getWikipediaLink("International Day for Biological Diversity") }],
-    "5-23": [{ name: "International Day to End Obstetric Fistula", description: "Raises awareness and mobilizes support for ending obstetric fistula.", wikipediaLink: getWikipediaLink("International Day to End Obstetric Fistula") }],
-    "5-24": [{ name: "International Day of the Markhor", description: "Raises awareness about the conservation of the Markhor.", wikipediaLink: getWikipediaLink("International Day of the Markhor") }],
-    "5-25": [{ name: "World Football Day", description: "Celebrates the global game of football.", wikipediaLink: getWikipediaLink("World Football Day") }],
-    "5-29": [{ name: "International Day of UN Peacekeepers", description: "Honors the service and sacrifice of peacekeepers.", wikipediaLink: getWikipediaLink("International Day of UN Peacekeepers") }],
-    "5-30": [{ name: "International Day of Potato", description: "Highlights the importance of potatoes in food security and nutrition.", wikipediaLink: getWikipediaLink("International Day of Potato") }],
-    "5-31": [{ name: "World No Tobacco Day", description: "Highlights the health risks associated with tobacco use and advocates for effective policies to reduce tobacco consumption.", wikipediaLink: getWikipediaLink("World No Tobacco Day") }],
+            // May
+            "5-1": [{ name: "International Workers' Day / Labour Day", description: "Celebrates the achievements of workers and the labor movement.", isUN: false, wikipediaLink: getWikipediaLink("International Workers' Day") }],
+            "5-2": [{ name: "World Tuna Day", description: "Highlights the importance of tuna fish and their conservation.", isUN: true, wikipediaLink: getWikipediaLink("World Tuna Day") }],
+            "5-3": [{ name: "World Press Freedom Day", description: "Raises awareness of the importance of freedom of the press.", isUN: true, wikipediaLink: getWikipediaLink("World Press Freedom Day") }],
+            // May 8-9 is Time of Remembrance and Reconciliation for Those Who Lost Their Lives During the Second World War
+            "5-10": [{ name: "International Day of Argania", description: "Celebrates the Argan tree and its role in sustainable development.", isUN: true, wikipediaLink: getWikipediaLink("Argania") }],
+            "5-15": [{ name: "International Day of Families", description: "Promotes awareness of issues relating to families and to increase knowledge of social, economic and demographic processes affecting families.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Families") }],
+            "5-16": [{ name: "International Day of Living Together in Peace", description: "Promotes peace, tolerance, inclusion, understanding and solidarity.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Living Together in Peace") }],
+            "5-17": [{ name: "World Telecommunication and Information Society Day", description: "Raises awareness of the possibilities that the use of the Internet and other information and communication technologies (ICT) can bring to societies and economies.", isUN: true, wikipediaLink: getWikipediaLink("World Telecommunication and Information Society Day") }],
+            "5-19": [{ name: "World Fair Play Day", description: "Celebrates fair play in sport.", isUN: true, wikipediaLink: getWikipediaLink("Fair play") }],
+            "5-20": [{ name: "World Bee Day", description: "Raises awareness of the importance of pollinators, the threats they face and their contribution to sustainable development.", isUN: true, wikipediaLink: getWikipediaLink("World Bee Day") }],
+            "5-21": [
+                { name: "International Tea Day", description: "Raises awareness of the long history and deep cultural and economic significance of tea.", isUN: true, wikipediaLink: getWikipediaLink("International Tea Day") },
+                { name: "World Day for Cultural Diversity for Dialogue and Development", description: "Raises awareness of the importance of intercultural dialogue, diversity and inclusion.", isUN: true, wikipediaLink: getWikipediaLink("World Day for Cultural Diversity for Dialogue and Development") }
+            ],
+            "5-22": [{ name: "International Day for Biological Diversity", description: "Promotes the understanding and awareness of biodiversity issues.", isUN: true, wikipediaLink: getWikipediaLink("International Day for Biological Diversity") }],
+            "5-23": [{ name: "International Day to End Obstetric Fistula", description: "Raises awareness and intensifies actions towards ending obstetric fistula.", isUN: true, wikipediaLink: getWikipediaLink("International Day to End Obstetric Fistula") }],
+            "5-24": [{ name: "International Day of the Markhor", description: "Raises awareness about the Markhor mountain goat and its conservation.", isUN: true, wikipediaLink: getWikipediaLink("Markhor") }],
+            "5-25": [{ name: "World Football Day", description: "Celebrates the game of football (soccer) and its global impact.", isUN: true, wikipediaLink: getWikipediaLink("Football (soccer)") }],
+            // May 25-31 is Week of Solidarity with the Peoples of Non-Self-Governing Territories
+            "5-29": [{ name: "International Day of UN Peacekeepers", description: "Honors all men and women who have served in UN peacekeeping operations.", isUN: true, wikipediaLink: getWikipediaLink("International Day of UN Peacekeepers") }],
+            "5-30": [{ name: "International Day of Potato", description: "Highlights the cultural and nutritional importance of potatoes.", isUN: true, wikipediaLink: getWikipediaLink("Potato") }],
+            "5-31": [{ name: "World No-Tobacco Day", description: "Raises awareness of the harmful effects of tobacco use.", isUN: true, wikipediaLink: getWikipediaLink("World No Tobacco Day") }],
 
-    // June
-    "6-1": [{ name: "Global Day of Parents", description: "Honors parents throughout the world for their selfless commitment to children.", wikipediaLink: getWikipediaLink("Global Day of Parents") }],
-    "6-3": [{ name: "World Bicycle Day", description: "Recognizes the uniqueness, longevity and versatility of the bicycle.", wikipediaLink: getWikipediaLink("World Bicycle Day") }],
-    "6-4": [{ name: "International Day of Innocent Children Victims of Aggression", description: "Acknowledges the pain suffered by children who are victims of physical, mental and emotional abuse.", wikipediaLink: getWikipediaLink("International Day of Innocent Children Victims of Aggression") }],
-    "6-5": [{ name: "World Environment Day", description: "Encourages worldwide awareness and action for the protection of our environment.", wikipediaLink: getWikipediaLink("World Environment Day") }],
-    "6-5": [{ name: "International Day for the Fight against Illegal, Unreported and Unregulated Fishing", description: "Highlights the negative impacts of illegal fishing.", wikipediaLink: getWikipediaLink("Illegal, Unreported and Unregulated Fishing") }],
-    "6-6": [{ name: "Russian Language Day", description: "Celebrates the Russian language and cultural diversity.", wikipediaLink: getWikipediaLink("Russian Language Day") }],
-    "6-7": [{ name: "World Food Safety Day", description: "Draws attention to the need to prevent, detect and manage foodborne risks.", wikipediaLink: getWikipediaLink("World Food Safety Day") }],
-    "6-8": [{ name: "World Oceans Day", description: "Highlights the role of the oceans in our daily life and inspires action to protect the ocean.", wikipediaLink: getWikipediaLink("World Oceans Day") }],
-    "6-10": [{ name: "International Day for Dialogue among Civilizations", description: "Promotes understanding and respect among different cultures and civilizations.", wikipediaLink: getWikipediaLink("International Day for Dialogue among Civilizations") }],
-    "6-11": [{ name: "International Day of Play", description: "Recognizes the importance of play for children's development and well-being.", wikipediaLink: getWikipediaLink("International Day of Play") }],
-    "6-12": [{ name: "World Day Against Child Labour", description: "Raises awareness and activism to stop child labour.", wikipediaLink: getWikipediaLink("World Day Against Child Labour") }],
-    "6-13": [{ name: "International Albinism Awareness Day", description: "Promotes understanding of albinism and fights discrimination.", wikipediaLink: getWikipediaLink("International Albinism Awareness Day") }],
-    "6-14": [{ name: "World Blood Donor Day", description: "Raises awareness of the need for safe blood and blood products.", wikipediaLink: getWikipediaLink("World Blood Donor Day") }],
-    "6-15": [{ name: "World Elder Abuse Awareness Day", description: "Raises awareness about elder abuse and promotes a better understanding of the cultural, social, economic and demographic processes affecting elder abuse and neglect.", wikipediaLink: getWikipediaLink("World Elder Abuse Awareness Day") }],
-    "6-16": [{ name: "International Day of Family Remittances", description: "Recognizes the significant contribution of migrants to their families and communities.", wikipediaLink: getWikipediaLink("International Day of Family Remittances") }],
-    "6-17": [{ name: "World Day to Combat Desertification and Drought", description: "Raises awareness of the presence of desertification and drought.", wikipediaLink: getWikipediaLink("World Day to Combat Desertification and Drought") }],
-    "6-18": [{ name: "Sustainable Gastronomy Day", description: "Recognizes gastronomy as a cultural expression related to the natural and cultural diversity of the world.", wikipediaLink: getWikipediaLink("Sustainable Gastronomy Day") }],
-    "6-18": [{ name: "International Day for Countering Hate Speech", description: "Promotes awareness and action against hate speech.", wikipediaLink: getWikipediaLink("International Day for Countering Hate Speech") }],
-    "6-19": [{ name: "International Day for the Elimination of Sexual Violence in Conflict", description: "Raises awareness of the need to put an end to conflict-related sexual violence.", wikipediaLink: getWikipediaLink("International Day for the Elimination of Sexual Violence in Conflict") }],
-    "6-20": [{ name: "World Refugee Day", description: "Celebrates the strength and courage of people who have been forced to flee their home country to escape conflict or persecution.", wikipediaLink: getWikipediaLink("World Refugee Day") }],
-    "6-21": [{ name: "International Day of Yoga", description: "Highlights the many benefits of practicing yoga.", wikipediaLink: getWikipediaLink("International Day of Yoga") }],
-    "6-21": [{ name: "International Day of the Celebration of the Solstice", description: "Recognizes the importance of solstices in various cultures and religions.", wikipediaLink: getWikipediaLink("Solstice") }],
-    "6-23": [{ name: "United Nations Public Service Day", description: "Celebrates the value and virtue of public service to the community.", wikipediaLink: getWikipediaLink("United Nations Public Service Day") }],
-    "6-23": [{ name: "International Widows' Day", description: "Addresses the poverty and injustice faced by millions of widows and their dependents in many countries.", wikipediaLink: getWikipediaLink("International Widows' Day") }],
-    "6-24": [{ name: "International Day of Women in Diplomacy", description: "Recognizes the vital role of women in diplomacy.", wikipediaLink: getWikipediaLink("International Day of Women in Diplomacy") }],
-    "6-25": [{ name: "Day of the Seafarer", description: "Recognizes the unique contribution made by seafarers to international seaborne trade.", wikipediaLink: getWikipediaLink("Day of the Seafarer") }],
-    "6-26": [{ name: "International Day against Drug Abuse and Illicit Trafficking", description: "Aims to strengthen action and cooperation to achieve a world free of drug abuse.", wikipediaLink: getWikipediaLink("International Day Against Drug Abuse and Illicit Trafficking") }],
-    "6-26": [{ name: "United Nations International Day in Support of Victims of Torture", description: "Speaks out against the crime of torture and to honour and support victims and survivors.", wikipediaLink: getWikipediaLink("International Day in Support of Victims of Torture") }],
-    "6-27": [{ name: "Micro-, Small and Medium-sized Enterprises Day", description: "Recognizes the importance of MSMEs in achieving sustainable development goals.", wikipediaLink: getWikipediaLink("Micro-, Small and Medium-sized Enterprises Day") }],
-    "6-29": [{ name: "International Day of the Tropics", description: "Celebrates the extraordinary diversity of the Tropics.", wikipediaLink: getWikipediaLink("International Day of the Tropics") }],
-    "6-30": [{ name: "International Asteroid Day", description: "Raises public awareness about the asteroid impact hazard.", wikipediaLink: getWikipediaLink("Asteroid Day") }],
-    "6-30": [{ name: "International Day of Parliamentarism", description: "Celebrates parliaments and their role in democratic governance.", wikipediaLink: getWikipediaLink("International Day of Parliamentarism") }],
+            // June
+            "6-1": [{ name: "Global Day of Parents", description: "Honors parents throughout the world for their selfless commitment to children.", isUN: true, wikipediaLink: getWikipediaLink("Global Day of Parents") }],
+            "6-3": [{ name: "World Bicycle Day", description: "Highlights the benefits of using the bicycle.", isUN: true, wikipediaLink: getWikipediaLink("World Bicycle Day") }],
+            "6-4": [{ name: "International Day of Innocent Children Victims of Aggression", description: "Acknowledges the pain suffered by children who are victims of physical, mental and emotional abuse.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Innocent Children Victims of Aggression") }],
+            "6-5": [
+                { name: "World Environment Day", description: "Encourages worldwide awareness and action for the protection of our environment.", isUN: true, wikipediaLink: getWikipediaLink("World Environment Day") },
+                { name: "International Day for the Fight against Illegal, Unreported and Unregulated Fishing", description: "Raises awareness of the negative impacts of IUU fishing.", isUN: true, wikipediaLink: getWikipediaLink("Illegal, unreported and unregulated fishing") }
+            ],
+            "6-6": [{ name: "Russian Language Day", description: "Celebrates the Russian language and cultural diversity.", isUN: true, wikipediaLink: getWikipediaLink("Russian Language Day (United Nations)") }],
+            "6-7": [{ name: "World Food Safety Day", description: "Calls for action to prevent, detect and manage foodborne risks.", isUN: true, wikipediaLink: getWikipediaLink("World Food Safety Day") }],
+            "6-8": [{ name: "World Oceans Day", description: "Highlights the importance of the ocean in our lives and the threats it faces.", isUN: true, wikipediaLink: getWikipediaLink("World Oceans Day") }],
+            "6-11": [{ name: "International Day of Play", description: "Recognizes the importance of play for children's well-being and development.", isUN: true, wikipediaLink: getWikipediaLink("Play (activity)") }],
+            "6-12": [{ name: "World Day Against Child Labour", description: "Raises awareness and activism to prevent child labour.", isUN: true, wikipediaLink: getWikipediaLink("World Day Against Child Labour") }],
+            "6-13": [{ name: "International Albinism Awareness Day", description: "Raises awareness of albinism and promotes the human rights of people with albinism.", isUN: true, wikipediaLink: getWikipediaLink("International Albinism Awareness Day") }],
+            "6-14": [{ name: "World Blood Donor Day", description: "Raises awareness of the need for safe blood and blood products and to thank voluntary, unpaid blood donors.", isUN: true, wikipediaLink: getWikipediaLink("World Blood Donor Day") }],
+            "6-15": [{ name: "World Elder Abuse Awareness Day", description: "Raises awareness of elder abuse and neglect.", isUN: true, wikipediaLink: getWikipediaLink("World Elder Abuse Awareness Day") }],
+            "6-16": [{ name: "International Day of Family Remittances", description: "Recognizes the financial contribution of migrant workers to their families and communities.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Family Remittances") }],
+            "6-17": [{ name: "World Day to Combat Desertification and Drought", description: "Raises awareness of the presence of desertification and drought, highlighting methods of preventing desertification and recovering from drought.", isUN: true, wikipediaLink: getWikipediaLink("World Day to Combat Desertification and Drought") }],
+            "6-18": [{ name: "Sustainable Gastronomy Day", description: "Acknowledges gastronomy as a cultural expression related to the natural and cultural diversity of the world.", isUN: true, wikipediaLink: getWikipediaLink("Sustainable Gastronomy Day") }],
+            "6-19": [{ name: "International Day for the Elimination of Sexual Violence in Conflict", description: "Raises awareness of the need to end conflict-related sexual violence.", isUN: true, wikipediaLink: getWikipediaLink("International Day for the Elimination of Sexual Violence in Conflict") }],
+            "6-20": [{ name: "World Refugee Day", description: "Celebrates the strength, courage, and resilience of millions of refugees.", isUN: true, wikipediaLink: getWikipediaLink("World Refugee Day") }],
+            "6-21": [
+                { name: "International Day of Yoga", description: "Highlights the many benefits of practicing yoga.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Yoga") },
+                { name: "International Day of the Celebration of the Solstice", description: "Celebrates the summer and winter solstices as a symbol of unity and cultural heritage.", isUN: true, wikipediaLink: getWikipediaLink("Solstice") }
+            ],
+            "6-23": [
+                { name: "International Widows' Day", description: "Highlights the poverty and injustice faced by millions of widows and their dependents.", isUN: true, wikipediaLink: getWikipediaLink("International Widows' Day") },
+                { name: "United Nations Public Service Day", description: "Celebrates the value and virtue of public service to the community.", isUN: true, wikipediaLink: getWikipediaLink("United Nations Public Service Day") }
+            ],
+            "6-25": [{ name: "Day of the Seafarer", description: "Recognizes the unique contribution made by seafarers to international seaborne trade, the world economy and civil society as a whole.", isUN: true, wikipediaLink: getWikipediaLink("Day of the Seafarer") }],
+            "6-26": [
+                { name: "International Day against Drug Abuse and Illicit Trafficking", description: "Raises awareness of the major problem that illicit drugs represent to society.", isUN: true, wikipediaLink: getWikipediaLink("International Day against Drug Abuse and Illicit Trafficking") },
+                { name: "United Nations International Day in Support of Victims of Torture", description: "A day on which we speak out against the crime of torture and honour the victims.", isUN: true, wikipediaLink: getWikipediaLink("United Nations International Day in Support of Victims of Torture") }
+            ],
+            "6-30": [{ name: "International Asteroid Day", description: "Raises public awareness about the asteroid impact hazard and the importance of global collaboration.", isUN: true, wikipediaLink: getWikipediaLink("Asteroid Day") }],
 
-    // July
-    "7-6": [{ name: "International Day of Cooperatives", description: "Celebrates cooperatives and highlights their contributions to sustainable development.", wikipediaLink: getWikipediaLink("International Day of Cooperatives") }],
-    "7-7": [{ name: "Kiswahili Language Day", description: "Promotes the Kiswahili language as a tool for peace and multiculturalism.", wikipediaLink: getWikipediaLink("Kiswahili Language Day") }],
-    "7-11": [{ name: "World Population Day", description: "Focuses attention on the urgency and importance of population issues.", wikipediaLink: getWikipediaLink("World Population Day") }],
-    "7-15": [{ name: "World Youth Skills Day", description: "Celebrates the strategic importance of equipping young people with skills for employment, decent work and entrepreneurship.", wikipediaLink: getWikipediaLink("World Youth Skills Day") }],
-    "7-18": [{ name: "Nelson Mandela International Day", description: "Celebrates the life and legacy of Nelson Mandela.", wikipediaLink: getWikipediaLink("Nelson Mandela International Day") }],
-    "7-20": [{ name: "International Moon Day", description: "Commemorates the first human landing on the Moon.", wikipediaLink: getWikipediaLink("International Moon Day") }],
-    "7-20": [{ name: "World Chess Day", description: "Recognizes the role of chess in promoting fair play, tolerance, and understanding.", wikipediaLink: getWikipediaLink("International Chess Day") }],
-    "7-25": [{ name: "World Drowning Prevention Day", description: "Highlights the tragic and preventable impact of drowning.", wikipediaLink: getWikipediaLink("World Drowning Prevention Day") }],
-    "7-25": [{ name: "International Day of Women and Girls of African Descent", description: "Promotes the recognition and respect of the human rights of women and girls of African descent.", wikipediaLink: getWikipediaLink("International Day of Women and Girls of African Descent") }],
-    "7-26": [{ name: "International Day for the Conservation of the Mangrove Ecosystem", description: "Raises awareness of the importance of mangrove ecosystems.", wikipediaLink: getWikipediaLink("International Day for the Conservation of the Mangrove Ecosystem") }],
-    "7-28": [{ name: "World Hepatitis Day", description: "Raises awareness of viral hepatitis, which inflames the liver and can cause severe disease and liver cancer.", wikipediaLink: getWikipediaLink("World Hepatitis Day") }],
-    "7-29": [{ name: "International Tiger Day", description: "Raises awareness for tiger conservation and protection of their habitats.", wikipediaLink: getWikipediaLink("International Tiger Day") }],
-    "7-30": [{ name: "International Day of Friendship", description: "Promotes friendship between peoples, countries, cultures and individuals.", wikipediaLink: getWikipediaLink("International Day of Friendship") }],
-    "7-30": [{ name: "World Day against Trafficking in Persons", description: "Raises awareness of the situation of victims of human trafficking and for the promotion and protection of their rights.", wikipediaLink: getWikipediaLink("World Day Against Trafficking in Persons") }],
+            // July
+            "7-6": [{ name: "World Rural Development Day", description: "Promotes rural development for poverty reduction and economic growth.", isUN: true, wikipediaLink: getWikipediaLink("Rural development") }],
+            "7-7": [{ name: "World Kiswahili Language Day", description: "Celebrates the Kiswahili language and its role in promoting cultural diversity.", isUN: true, wikipediaLink: getWikipediaLink("World Kiswahili Language Day") }],
+            "7-11": [
+                { name: "World Horse Day", description: "Celebrates the importance of horses in human history and development.", isUN: true, wikipediaLink: getWikipediaLink("Horse") },
+                { name: "World Population Day", description: "Focuses attention on the urgency and importance of population issues.", isUN: true, wikipediaLink: getWikipediaLink("World Population Day") },
+                { name: "International Day of Reflection and Commemoration of the 1995 Genocide in Srebrenica", description: "Remembers the victims of the Srebrenica genocide.", isUN: true, wikipediaLink: getWikipediaLink("Srebrenica genocide") }
+            ],
+            "7-12": [{ name: "International Day of Hope", description: "Promotes hope and global solidarity in tackling challenges.", isUN: true, wikipediaLink: getWikipediaLink("Hope") }],
+            "7-15": [{ name: "World Youth Skills Day", description: "Celebrates the strategic importance of equipping young people with skills for employment, decent work, and entrepreneurship.", isUN: true, wikipediaLink: getWikipediaLink("World Youth Skills Day") }],
+            "7-18": [{ name: "International Nelson Mandela Day", description: "Celebrates the life and legacy of Nelson Mandela.", isUN: true, wikipediaLink: getWikipediaLink("Nelson Mandela International Day") }],
+            "7-20": [
+                { name: "World Chess Day", description: "Celebrates the game of chess, promoting its educational and social benefits.", isUN: true, wikipediaLink: getWikipediaLink("World Chess Day") },
+                { name: "International Moon Day", description: "Commemorates the first human landing on the Moon.", isUN: true, wikipediaLink: getWikipediaLink("International Moon Day") }
+            ],
+            "7-28": [{ name: "World Hepatitis Day (WHO)", description: "Raises national and international awareness of hepatitis and encourages prevention, diagnosis and treatment.", isUN: true, wikipediaLink: getWikipediaLink("World Hepatitis Day") }],
+            "7-30": [
+                { name: "International Day of Friendship", description: "Promotes friendship between peoples, countries, cultures and individuals.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Friendship") },
+                { name: "World Day against Trafficking in Persons", description: "Raises awareness of the plight of human trafficking victims and for the promotion and protection of their rights.", isUN: true, wikipediaLink: getWikipediaLink("World Day against Trafficking in Persons") }
+            ],
 
-    // August
-    "8-9": [{ name: "International Day of the World's Indigenous Peoples", description: "Recognizes the need to protect the rights of the world’s indigenous population.", wikipediaLink: getWikipediaLink("International Day of the World's Indigenous Peoples") }],
-    "8-12": [{ name: "International Youth Day", description: "Celebrates young people's contributions to preventing and transforming conflicts as well as for inclusion, social justice and sustainable peace.", wikipediaLink: getWikipediaLink("International Youth Day") }],
-    "8-19": [{ name: "World Humanitarian Day", description: "Honors humanitarian aid workers and those who have lost their lives in humanitarian service.", wikipediaLink: getWikipediaLink("World Humanitarian Day") }],
-    "8-21": [{ name: "International Day of Remembrance and Tribute to the Victims of Terrorism", description: "Honors and supports the victims and survivors of terrorism.", wikipediaLink: getWikipediaLink("International Day of Remembrance and Tribute to the Victims of Terrorism") }],
-    "8-22": [{ name: "International Day Commemorating the Victims of Acts of Violence Based on Religion or Belief", description: "Condemns acts of violence against persons on the basis of their religion or belief.", wikipediaLink: getWikipediaLink("International Day Commemorating the Victims of Acts of Violence Based on Religion or Belief") }],
-    "8-23": [{ name: "International Day for the Remembrance of the Slave Trade and its Abolition", description: "Honors the memory of the victims of the transatlantic slave trade.", wikipediaLink: getWikipediaLink("International Day for the Remembrance of the Slave Trade and its Abolition") }],
-    "8-29": [{ name: "International Day against Nuclear Tests", description: "Aims to galvanize the United Nations, Member States, intergovernmental and non-governmental organizations, academic institutions, and the media to inform and educate about the necessity of banning nuclear weapon tests.", wikipediaLink: getWikipediaLink("International Day Against Nuclear Tests") }],
-    "8-30": [{ name: "International Day of the Victims of Enforced Disappearances", description: "Calls attention to the global problem of enforced disappearance.", wikipediaLink: getWikipediaLink("International Day of the Victims of Enforced Disappearances") }],
+            // August
+            "8-6": [{ name: "International Day of Awareness of the Special Development Needs and Challenges of Landlocked Developing Countries", description: "Draws attention to the specific development challenges of landlocked developing countries.", isUN: true, wikipediaLink: getWikipediaLink("Landlocked developing countries") }],
+            "8-9": [{ name: "International Day of the World's Indigenous Peoples", description: "Celebrates and raises awareness of the rights of the world's indigenous peoples.", isUN: true, wikipediaLink: getWikipediaLink("International Day of the World's Indigenous Peoples") }],
+            "8-11": [{ name: "World Steelpan Day", description: "Celebrates the cultural significance of the steelpan instrument.", isUN: true, wikipediaLink: getWikipediaLink("Steelpan") }],
+            "8-12": [{ name: "International Youth Day", description: "Celebrates young people's contributions to global development.", isUN: true, wikipediaLink: getWikipediaLink("International Youth Day") }],
+            "8-19": [{ name: "World Humanitarian Day", description: "Honors humanitarian workers and those who have lost their lives in humanitarian service.", isUN: true, wikipediaLink: getWikipediaLink("World Humanitarian Day") }],
+            "8-22": [{ name: "International Day Commemorating the Victims of Acts of Violence Based on Religion or Belief", description: "Recognizes the importance of providing support to victims of violence based on religion or belief.", isUN: true, wikipediaLink: getWikipediaLink("International Day Commemorating the Victims of Acts of Violence Based on Religion or Belief") }],
+            "8-23": [{ name: "International Day for the Remembrance of the Slave Trade and Its Abolition (UNESCO)", description: "Remembers the tragedy of the slave trade and its abolition.", isUN: true, wikipediaLink: getWikipediaLink("International Day for the Remembrance of the Slave Trade and Its Abolition") }],
+            "8-27": [{ name: "World Lake Day", description: "Promotes the preservation of lakes and freshwater ecosystems.", isUN: true, wikipediaLink: getWikipediaLink("Lake") }],
+            "8-29": [{ name: "International Day against Nuclear Tests", description: "Raises awareness about the need to ban nuclear weapon tests.", isUN: true, wikipediaLink: getWikipediaLink("International Day against Nuclear Tests") }],
+            "8-30": [{ name: "International Day of the Victims of Enforced Disappearances", description: "Raises awareness about enforced disappearances as a serious violation of human rights.", isUN: true, wikipediaLink: getWikipediaLink("International Day of the Victims of Enforced Disappearances") }],
+            "8-31": [{ name: "International Day for People of African Descent", description: "Promotes the human rights and fundamental freedoms of people of African descent.", isUN: true, wikipediaLink: getWikipediaLink("International Decade for People of African Descent") }],
 
-    // September
-    "9-5": [{ name: "International Day of Charity", description: "Recognizes the role of charity in alleviating humanitarian crises and suffering.", wikipediaLink: getWikipediaLink("International Day of Charity") }],
-    "9-7": [{ name: "International Day of Clean Air for blue skies", description: "Highlights the importance of clean air for health, productivity, and the environment.", wikipediaLink: getWikipediaLink("International Day of Clean Air for Blue Skies") }],
-    "9-8": [{ name: "International Literacy Day", description: "Highlights the importance of literacy for individuals, communities and societies.", wikipediaLink: getWikipediaLink("International Literacy Day") }],
-    "9-9": [{ name: "International Day to Protect Education from Attack", description: "Raises awareness of the need to protect schools as places of peace and safety.", wikipediaLink: getWikipediaLink("International Day to Protect Education from Attack") }],
-    "9-12": [{ name: "United Nations Day for South-South Cooperation", description: "Celebrates the economic, social and political developments made by regions and countries in the South.", wikipediaLink: getWikipediaLink("United Nations Day for South-South Cooperation") }],
-    "9-15": [{ name: "International Day of Democracy", description: "Provides an opportunity to review the state of democracy in the world.", wikipediaLink: getWikipediaLink("International Day of Democracy") }],
-    "9-16": [{ name: "International Day for the Preservation of the Ozone Layer", description: "Commemorates the signing of the Montreal Protocol on Substances that Deplete the Ozone Layer.", wikipediaLink: getWikipediaLink("International Day for the Preservation of the Ozone Layer") }],
-    "9-17": [{ name: "World Patient Safety Day", description: "Raises global awareness of the need for patient safety.", wikipediaLink: getWikipediaLink("World Patient Safety Day") }],
-    "9-18": [{ name: "International Equal Pay Day", description: "Highlights the importance of equal pay for work of equal value.", wikipediaLink: getWikipediaLink("International Equal Pay Day") }],
-    "9-20": [{ name: "International Day of University Sport", description: "Promotes the role of sport in universities.", wikipediaLink: getWikipediaLink("International Day of University Sport") }],
-    "9-21": [{ name: "International Day of Peace", description: "Dedicated to strengthening the ideals of peace, both within and among all nations and peoples.", wikipediaLink: getWikipediaLink("International Day of Peace") }],
-    "9-23": [{ name: "International Day of Sign Languages", description: "Raises awareness of the importance of sign languages.", wikipediaLink: getWikipediaLink("International Day of Sign Languages") }],
-    "9-26": [{ name: "International Day for the Total Elimination of Nuclear Weapons", description: "Calls for the urgent elimination of nuclear weapons.", wikipediaLink: getWikipediaLink("International Day for the Total Elimination of Nuclear Weapons") }],
-    "9-27": [{ name: "World Tourism Day", description: "Fosters awareness of the importance of tourism and its social, cultural, political and economic value.", wikipediaLink: getWikipediaLink("World Tourism Day") }],
-    "9-28": [{ name: "International Day for Universal Access to Information", description: "Highlights the importance of access to information for development and democracy.", wikipediaLink: getWikipediaLink("International Day for Universal Access to Information") }],
-    "9-29": [{ name: "World Maritime Day", description: "Celebrates the international maritime industry's contribution to the world's economy.", wikipediaLink: getWikipediaLink("World Maritime Day") }],
-    "9-29": [{ name: "International Day of Awareness of Food Loss and Waste", description: "Raises awareness about the need to reduce food loss and waste.", wikipediaLink: getWikipediaLink("International Day of Awareness of Food Loss and Waste") }],
-    "9-30": [{ name: "International Translation Day", description: "Celebrates the work of language professionals.", wikipediaLink: getWikipediaLink("International Translation Day") }],
+            // September
+            "9-5": [{ name: "International Day of Charity", description: "Raises awareness and mobilizes people, NGOs, and stakeholders around the world to help others through volunteer and philanthropic activities.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Charity") }],
+            "9-7": [{ name: "World Duchenne Awareness Day", description: "Raises awareness about Duchenne Muscular Dystrophy.", isUN: true, wikipediaLink: getWikipediaLink("Duchenne muscular dystrophy") }],
+            "9-8": [{ name: "International Literacy Day", description: "Raises awareness of and concern for literacy problems in the world.", isUN: true, wikipediaLink: getWikipediaLink("International Literacy Day") }],
+            "9-9": [{ name: "International Day to Protect Education from Attack", description: "Raises awareness of the plight of millions of children and adults living in countries affected by conflict.", isUN: true, wikipediaLink: getWikipediaLink("International Day to Protect Education from Attack") }],
+            "9-10": [{ name: "World Suicide Prevention Day", description: "Raises awareness around the globe that suicide can be prevented.", isUN: true, wikipediaLink: getWikipediaLink("World Suicide Prevention Day") }],
+            "9-12": [{ name: "United Nations Day for South-South Cooperation", description: "Celebrates the economic, social and political developments made by countries in the Global South.", isUN: true, wikipediaLink: getWikipediaLink("South–South cooperation") }],
+            "9-15": [{ name: "International Day of Democracy", description: "Promotes and upholds the principles of democracy.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Democracy") }],
+            "9-16": [{ name: "International Day for the Preservation of the Ozone Layer", description: "Commemorates the signing of the Montreal Protocol on Substances that Deplete the Ozone Layer.", isUN: true, wikipediaLink: getWikipediaLink("International Day for the Preservation of the Ozone Layer") }],
+            "9-18": [{ name: "International Equal Pay Day", description: "Represents the long-standing efforts towards the achievement of equal pay for work of equal value.", isUN: true, wikipediaLink: getWikipediaLink("Equal Pay Day") }],
+            "9-20": [{ name: "World Cleanup Day", description: "A day for citizens and organizations to work together to clean up their communities.", isUN: false, wikipediaLink: getWikipediaLink("World Cleanup Day") }],
+            "9-21": [{ name: "International Day of Peace", description: "Dedicated to world peace, specifically the absence of war and violence.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Peace") }],
+            "9-23": [{ name: "International Day of Sign Languages", description: "Raises awareness of the importance of sign language and the rights of the deaf community.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Sign Languages") }],
+            "9-25": [{ name: "World Maritime Day", description: "Celebrates the international maritime industry's contribution towards the world's economy.", isUN: true, wikipediaLink: getWikipediaLink("World Maritime Day") }],
+            "9-26": [{ name: "International Day for the Total Elimination of Nuclear Weapons", description: "Calls for the urgent elimination of nuclear weapons.", isUN: true, wikipediaLink: getWikipediaLink("International Day for the Total Elimination of Nuclear Weapons") }],
+            "9-27": [{ name: "World Tourism Day", description: "Fosters awareness of the role of tourism within the international community.", isUN: true, wikipediaLink: getWikipediaLink("World Tourism Day") }],
+            "9-28": [
+                { name: "International Day for Universal Access to Information", description: "Emphasizes the importance of access to information for development and democracy.", isUN: true, wikipediaLink: getWikipediaLink("International Day for Universal Access to Information") },
+                { name: "World Rabies Day", description: "Raises awareness about the impact of rabies on humans and animals.", isUN: true, wikipediaLink: getWikipediaLink("World Rabies Day") }
+            ],
+            "9-30": [{ name: "International Translation Day", description: "Celebrates the work of language professionals who play an important role in bringing nations together.", isUN: true, wikipediaLink: getWikipediaLink("International Translation Day") }],
 
-    // October
-    "10-1": [{ name: "International Day of Older Persons", description: "Recognizes the contributions of older persons and examines challenges of ageing.", wikipediaLink: getWikipediaLink("International Day of Older Persons") }],
-    "10-2": [{ name: "International Day of Non-Violence", description: "Marks the birthday of Mahatma Gandhi, leader of the Indian independence movement and pioneer of the philosophy and strategy of non-violence.", wikipediaLink: getWikipediaLink("International Day of Non-Violence") }],
-    "10-7": [{ name: "World Habitat Day", description: "Reflects on the state of our towns and cities and on the basic right of all to adequate shelter.", wikipediaLink: getWikipediaLink("World Habitat Day") }],
-    "10-5": [{ name: "World Teachers' Day", description: "Celebrates teachers worldwide and their vital role in education.", wikipediaLink: getWikipediaLink("World Teachers' Day") }],
-    "10-6": [{ name: "International Geodiversity Day", description: "Promotes the importance of geodiversity for sustainable development.", wikipediaLink: getWikipediaLink("International Geodiversity Day") }],
-    "10-9": [{ name: "World Post Day", description: "Marks the anniversary of the Universal Postal Union (UPU).", wikipediaLink: getWikipediaLink("World Post Day") }],
-    "10-10": [{ name: "World Mental Health Day", description: "Raises awareness of mental health issues around the world.", wikipediaLink: getWikipediaLink("World Mental Health Day") }],
-    "10-11": [{ name: "International Day of the Girl Child", description: "Highlights challenges girls face and promotes girls’ empowerment.", wikipediaLink: getWikipediaLink("International Day of the Girl Child") }],
-    "10-13": [{ name: "International Day for Disaster Risk Reduction", description: "Promotes a global culture of disaster risk reduction.", wikipediaLink: getWikipediaLink("International Day for Disaster Reduction") }],
-    "10-15": [{ name: "International Day of Rural Women", description: "Recognizes the critical role and contribution of rural women in enhancing agricultural and rural development.", wikipediaLink: getWikipediaLink("International Day of Rural Women") }],
-    "10-16": [{ name: "World Food Day", description: "Commemorates the founding of the Food and Agriculture Organization (FAO) and highlights global food issues.", wikipediaLink: getWikipediaLink("World Food Day") }],
-    "10-17": [{ name: "International Day for the Eradication of Poverty", description: "Promotes awareness of the need to eradicate poverty and destitution in all countries.", wikipediaLink: getWikipediaLink("International Day for the Eradication of Poverty") }],
-    "10-17": [{ name: "International Day of the Intangible Cultural Heritage", description: "Raises awareness about the importance of intangible cultural heritage.", wikipediaLink: getWikipediaLink("Intangible Cultural Heritage") }],
-    "10-20": [{ name: "World Statistics Day", description: "Celebrates the importance of statistics (observed every five years).", wikipediaLink: getWikipediaLink("World Statistics Day") }],
-    "10-24": [{ name: "United Nations Day", description: "Marks the anniversary of the entry into force of the UN Charter.", wikipediaLink: getWikipediaLink("United Nations Day") }],
-    "10-24": [{ name: "World Development Information Day", description: "Draws the attention of the world to development problems.", wikipediaLink: getWikipediaLink("World Development Information Day") }],
-    "10-27": [{ name: "World Day for Audiovisual Heritage", description: "Raises awareness of the significance of audiovisual documents.", wikipediaLink: getWikipediaLink("World Day for Audiovisual Heritage") }],
-    "10-29": [{ name: "International Day of Care and Support", description: "Recognizes the importance of care and support systems.", wikipediaLink: null }],
-    "10-29": [{ name: "World Coding Day", description: "Promotes coding education and digital literacy.", wikipediaLink: null }],
-    "10-31": [{ name: "World Cities Day", description: "Promotes the international community’s interest in global urbanization.", wikipediaLink: getWikipediaLink("World Cities Day") }],
+            // October
+            "10-1": [{ name: "International Day of Older Persons", description: "Recognizes the contributions of older persons to society and the challenges of ageing.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Older Persons") }],
+            "10-2": [{ name: "International Day of Non-Violence", description: "Marks the birthday of Mahatma Gandhi and promotes non-violence through education and public awareness.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Non-Violence") }],
+            "10-5": [{ name: "World Teachers' Day (UNESCO)", description: "Celebrates teachers and their crucial role in providing quality education.", isUN: true, wikipediaLink: getWikipediaLink("World Teachers' Day") }],
+            // Oct 6 is World Habitat Day (first Monday), handled separately
+            "10-7": [{ name: "World Cotton Day", description: "Celebrates the benefits of cotton and its role in sustainable development.", isUN: true, wikipediaLink: getWikipediaLink("Cotton") }],
+            "10-9": [{ name: "World Post Day", description: "Marks the anniversary of the establishment of the Universal Postal Union (UPU).", isUN: true, wikipediaLink: getWikipediaLink("World Post Day") }],
+            "10-10": [{ name: "World Mental Health Day", description: "Raises awareness of mental health issues around the world and mobilizes efforts in support of mental health.", isUN: true, wikipediaLink: getWikipediaLink("World Mental Health Day") }],
+            "10-11": [{ name: "International Day of the Girl Child", description: "Highlights the challenges girls face and promotes girls' empowerment and the fulfillment of their human rights.", isUN: true, wikipediaLink: getWikipediaLink("International Day of the Girl Child") }],
+            "10-13": [{ name: "International Day for Disaster Risk Reduction", description: "Promotes a global culture of disaster reduction.", isUN: true, wikipediaLink: getWikipediaLink("International Day for Disaster Risk Reduction") }],
+            "10-15": [
+                { name: "International Day of Rural Women", description: "Recognizes the critical role and contribution of rural women, including Indigenous women, in enhancing agricultural and rural development.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Rural Women") },
+                { name: "Global Handwashing Day", description: "A global advocacy day dedicated to increasing awareness and understanding about the importance of handwashing with soap as an effective and affordable way to prevent diseases.", isUN: false, wikipediaLink: getWikipediaLink("Global Handwashing Day") }
+            ],
+            "10-16": [{ name: "World Food Day (FAO)", description: "Commemorates the founding of the Food and Agriculture Organization (FAO) and raises awareness of global hunger.", isUN: true, wikipediaLink: getWikipediaLink("World Food Day") }],
+            "10-17": [{ name: "International Day for the Eradication of Poverty", description: "Promotes awareness of the need to eradicate poverty and destitution.", isUN: true, wikipediaLink: getWikipediaLink("International Day for the Eradication of Poverty") }],
+            // Oct 20 is World Statistics Day (every 5 years)
+            "10-24": [
+                { name: "United Nations Day", description: "Marks the anniversary of the entry into force of the UN Charter.", isUN: true, wikipediaLink: getWikipediaLink("United Nations Day") },
+                { name: "World Development Information Day", description: "Draws the attention of the world to development problems and the need to strengthen international cooperation.", isUN: true, wikipediaLink: getWikipediaLink("World Development Information Day") }
+            ],
+            "10-27": [{ name: "World Day for Audiovisual Heritage", description: "Raises general awareness of the need to take urgent measures and to acknowledge the importance of audiovisual documents.", isUN: true, wikipediaLink: getWikipediaLink("World Day for Audiovisual Heritage") }],
+            "10-31": [
+                { name: "World Cities Day", description: "Promotes the international community’s interest in global urbanization.", isUN: true, wikipediaLink: getWikipediaLink("World Cities Day") },
+                { name: "Halloween", description: "A celebration observed in a number of countries on the eve of the Western Christian feast of All Hallows' Day.", isUN: false, wikipediaLink: getWikipediaLink("Halloween") }
+            ],
 
-    // November
-    "11-1": [{ name: "World Vegan Day", description: "Promotes the benefits of a vegan lifestyle.", wikipediaLink: getWikipediaLink("World Vegan Day") }],
-    "11-2": [{ name: "International Day to End Impunity for Crimes against Journalists", description: "Raises awareness of the need to ensure justice for crimes against journalists.", wikipediaLink: getWikipediaLink("International Day to End Impunity for Crimes against Journalists") }],
-    "11-3": [{ name: "International Day for Biosphere Reserves", description: "Highlights the role of biosphere reserves in sustainable development.", wikipediaLink: getWikipediaLink("International Day for Biosphere Reserves") }],
-    "11-5": [{ name: "World Tsunami Awareness Day", description: "Raises awareness about tsunamis and promotes preparedness.", wikipediaLink: getWikipediaLink("World Tsunami Awareness Day") }],
-    "11-5": [{ name: "World Day of Romani Language", description: "Promotes the Romani language and culture.", wikipediaLink: getWikipediaLink("World Day of Romani Language") }],
-    "11-6": [{ name: "International Day for Preventing the Exploitation of the Environment in War and Armed Conflict", description: "Raises awareness of the devastating impact of war on the environment.", wikipediaLink: getWikipediaLink("International Day for Preventing the Exploitation of the Environment in War and Armed Conflict") }],
-    "11-7": [{ name: "International Day against Violence and Bullying at School, including Cyberbullying", description: "Promotes a safe and inclusive learning environment.", wikipediaLink: getWikipediaLink("International Day against Violence and Bullying at School, including Cyberbullying") }],
-    "11-10": [{ name: "World Science Day for Peace and Development", description: "Highlights the important role of science in society and the need to engage the wider public in debates on emerging scientific issues.", wikipediaLink: getWikipediaLink("World Science Day for Peace and Development") }],
-    "11-14": [{ name: "World Diabetes Day", description: "Raises awareness of diabetes as a global public health issue.", wikipediaLink: getWikipediaLink("World Diabetes Day") }],
-    "11-14": [{ name: "International Day against Illicit Trafficking in Cultural Property", description: "Raises awareness about the fight against illicit trafficking of cultural property.", wikipediaLink: getWikipediaLink("International Day against Illicit Trafficking in Cultural Property") }],
-    "11-15": [{ name: "International Day for the Prevention of and Fight Against all Forms of Transnational Organized Crime", description: "Promotes efforts to combat organized crime.", wikipediaLink: getWikipediaLink("United Nations Convention against Transnational Organized Crime") }],
-    "11-16": [{ name: "International Day for Tolerance", description: "Fosters mutual understanding among cultures and peoples.", wikipediaLink: getWikipediaLink("International Day for Tolerance") }],
-    "11-18": [{ name: "International Day of Islamic Art", description: "Celebrates Islamic art and its contributions to cultural heritage.", wikipediaLink: getWikipediaLink("International Day of Islamic Art") }],
-    "11-19": [{ name: "World Toilet Day", description: "Raises awareness and inspires action to tackle the global sanitation crisis.", wikipediaLink: getWikipediaLink("World Toilet Day") }],
-    "11-20": [{ name: "Universal Children's Day", description: "Promotes international togetherness, awareness among children worldwide, and improving children's welfare.", wikipediaLink: getWikipediaLink("Universal Children's Day") }],
-    "11-20": [{ name: "Africa Industrialization Day", description: "Promotes Africa's industrialization efforts.", wikipediaLink: getWikipediaLink("Africa Industrialization Day") }],
-    "11-21": [{ name: "World Television Day", description: "Recognizes the role of television in presenting different issues that affect people.", wikipediaLink: getWikipediaLink("World Television Day") }],
-    "11-21": [{ name: "World Fisheries Day", description: "Highlights the importance of healthy oceans ecosystems and sustainable fisheries.", wikipediaLink: getWikipediaLink("World Fisheries Day") }],
-    "11-25": [{ name: "International Day for the Elimination of Violence against Women", description: "Raises awareness of the fact that women around the world are subject to rape, domestic violence and other forms of violence.", wikipediaLink: getWikipediaLink("International Day for the Elimination of Violence against Women") }],
-    "11-26": [{ name: "World Olive Tree Day", description: "Promotes the olive tree and its cultural, economic, and environmental significance.", wikipediaLink: getWikipediaLink("World Olive Tree Day") }],
-    "11-26": [{ name: "World Sustainable Transport Day", description: "Promotes environmentally friendly and efficient transport systems.", wikipediaLink: getWikipediaLink("World Sustainable Transport Day") }],
-    "11-29": [{ name: "International Day of Solidarity with the Palestinian People", description: "Commemorates the adoption of the resolution on the partition of Palestine.", wikipediaLink: getWikipediaLink("International Day of Solidarity with the Palestinian People") }],
+            // November
+            "11-2": [{ name: "International Day to End Impunity for Crimes against Journalists", description: "Raises awareness of the ongoing violence against journalists.", isUN: true, wikipediaLink: getWikipediaLink("International Day to End Impunity for Crimes against Journalists") }],
+            "11-5": [{ name: "World Tsunami Awareness Day", description: "Raises awareness about tsunamis and promotes disaster risk reduction efforts.", isUN: true, wikipediaLink: getWikipediaLink("World Tsunami Awareness Day") }],
+            "11-6": [{ name: "International Day for Preventing the Exploitation of the Environment in War and Armed Conflict", description: "Raises awareness of the damage conflict inflicts on the environment and promotes its protection.", isUN: true, wikipediaLink: getWikipediaLink("International Day for Preventing the Exploitation of the Environment in War and Armed Conflict") }],
+            "11-10": [{ name: "World Science Day for Peace and Development", description: "Highlights the significant role of science in society and the need to engage the wider public in debates on emerging scientific issues.", isUN: true, wikipediaLink: getWikipediaLink("World Science Day for Peace and Development") }],
+            "11-14": [{ name: "World Diabetes Day", description: "Raises global awareness of diabetes.", isUN: true, wikipediaLink: getWikipediaLink("World Diabetes Day") }],
+            "11-15": [{ name: "International Day for the Prevention of and Fight against All Forms of Transnational Organized Crime", description: "Highlights the fight against transnational organized crime.", isUN: true, wikipediaLink: getWikipediaLink("United Nations Convention Against Transnational Organized Crime") }],
+            "11-16": [{ name: "International Day for Tolerance", description: "Raises public awareness of the dangers of intolerance.", isUN: true, wikipediaLink: getWikipediaLink("International Day for Tolerance") }],
+            "11-18": [{ name: "World Day for the Prevention of and Healing from Child Sexual Exploitation, Abuse and Violence", description: "Raises awareness and mobilizes action against child sexual exploitation.", isUN: true, wikipediaLink: getWikipediaLink("Child sexual abuse") }],
+            "11-19": [
+                { name: "World Toilet Day", description: "Raises awareness about the sanitation crisis and encourages action to tackle it.", isUN: true, wikipediaLink: getWikipediaLink("World Toilet Day") },
+                { name: "International Men's Day", description: "Celebrates men's health, positive role models, and gender relations.", isUN: false, wikipediaLink: getWikipediaLink("International Men's Day") }
+            ],
+            "11-20": [
+                { name: "Africa Industrialization Day", description: "Raises global awareness of the challenges and opportunities for industrial development in Africa.", isUN: true, wikipediaLink: getWikipediaLink("Africa Industrialization Day") },
+                { name: "World Children's Day", description: "Promotes international togetherness, awareness among children worldwide, and improving children's welfare.", isUN: true, wikipediaLink: getWikipediaLink("Universal Children's Day") }
+            ],
+            "11-21": [{ name: "World Television Day", description: "Recognizes the increasing impact television has on decision-making by bringing world attention to conflicts, threats to peace and security.", isUN: true, wikipediaLink: getWikipediaLink("World Television Day") }],
+            "11-24": [{ name: "World Conjoined Twins Day", description: "Raises awareness about conjoined twins and their unique challenges.", isUN: true, wikipediaLink: getWikipediaLink("Conjoined twins") }],
+            "11-25": [{ name: "International Day for the Elimination of Violence against Women", description: "Raises awareness of the fact that women around the world are subject to rape, domestic violence and other forms of violence.", isUN: true, wikipediaLink: getWikipediaLink("International Day for the Elimination of Violence against Women") }],
+            "11-29": [{ name: "International Day of Solidarity with the Palestinian People", description: "Focuses attention on the question of Palestine.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Solidarity with the Palestinian People") }],
+            "11-30": [{ name: "Day of Remembrance for all Victims of Chemical Warfare", description: "Pays tribute to the victims of chemical warfare and reaffirms the commitment to the prohibition of chemical weapons.", isUN: true, wikipediaLink: getWikipediaLink("Day of Remembrance for all Victims of Chemical Warfare") }],
 
-    // December
-    "12-1": [{ name: "World AIDS Day", description: "Raises awareness of the AIDS pandemic caused by the spread of HIV infection.", wikipediaLink: getWikipediaLink("World AIDS Day") }],
-    "12-2": [{ name: "International Day for the Abolition of Slavery", description: "Raises awareness about modern forms of slavery.", wikipediaLink: getWikipediaLink("International Day for the Abolition of Slavery") }],
-    "12-2": [{ name: "World Futures Day", description: "Encourages thinking about the future and its challenges.", wikipediaLink: null }],
-    "12-3": [{ name: "International Day of Persons with Disabilities", description: "Promotes the rights and well-being of persons with disabilities.", wikipediaLink: getWikipediaLink("International Day of Persons with Disabilities") }],
-    "12-4": [{ name: "International Day of Banks", description: "Recognizes the significant potential of multilateral development banks and other international financial institutions.", wikipediaLink: getWikipediaLink("International Day of Banks") }],
-    "12-5": [{ name: "International Volunteer Day for Economic and Social Development", description: "Celebrates volunteers and their contributions to development.", wikipediaLink: getWikipediaLink("International Volunteer Day for Economic and Social Development") }],
-    "12-5": [{ name: "World Soil Day", description: "Raises awareness of the importance of healthy soil.", wikipediaLink: getWikipediaLink("World Soil Day") }],
-    "12-7": [{ name: "International Civil Aviation Day", description: "Highlights the importance of international civil aviation to social and economic development.", wikipediaLink: getWikipediaLink("International Civil Aviation Day") }],
-    "12-9": [{ name: "International Anti-Corruption Day", description: "Raises awareness about corruption and the role of the Convention against Corruption.", wikipediaLink: getWikipediaLink("International Anti-Corruption Day") }],
-    "12-9": [{ name: "International Day of Commemoration and Dignity of the Victims of the Crime of Genocide", description: "Raises awareness of the Convention on the Prevention and Punishment of the Crime of Genocide.", wikipediaLink: getWikipediaLink("International Day of Commemoration and Dignity of the Victims of the Crime of Genocide") }],
-    "12-10": [{ name: "Human Rights Day", description: "Commemorates the day on which the United Nations General Assembly adopted the Universal Declaration of Human Rights.", wikipediaLink: getWikipediaLink("Human Rights Day") }],
-    "12-11": [{ name: "International Mountain Day", description: "Highlights the importance of mountains to life.", wikipediaLink: getWikipediaLink("International Mountain Day") }],
-    "12-12": [{ name: "International Universal Health Coverage Day", description: "Advocates for universal health coverage for all.", wikipediaLink: getWikipediaLink("International Universal Health Coverage Day") }],
-    "12-12": [{ name: "International Day of Neutrality", description: "Promotes the value of neutrality in international relations.", wikipediaLink: getWikipediaLink("International Day of Neutrality") }],
-    "12-18": [{ name: "International Migrants Day", description: "Recognizes the contributions of migrants and addresses the challenges of migration.", wikipediaLink: getWikipediaLink("International Migrants Day") }],
-    "12-18": [{ name: "World Arabic Language Day", description: "Celebrates the Arabic language and its cultural significance.", wikipediaLink: getWikipediaLink("Arabic Language Day") }],
-    "12-20": [{ name: "International Human Solidarity Day", description: "Celebrates unity in diversity and raises awareness about the importance of solidarity.", wikipediaLink: getWikipediaLink("International Human Solidarity Day") }],
-};
+            // December
+            "12-1": [{ name: "World AIDS Day", description: "Raises awareness of the AIDS pandemic caused by the spread of HIV infection and mourns those who have died of the disease.", isUN: true, wikipediaLink: getWikipediaLink("World AIDS Day") }],
+            "12-2": [{ name: "International Day for the Abolition of Slavery", description: "Focuses on eradicating contemporary forms of slavery, such as trafficking in persons, sexual exploitation, the worst forms of child labour, forced marriage, and the forced recruitment of children for use in armed conflict.", isUN: true, wikipediaLink: getWikipediaLink("International Day for the Abolition of Slavery") }],
+            "12-3": [{ name: "International Day of Persons with Disabilities", description: "Promotes the rights and well-being of persons with disabilities in all spheres of society and development.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Persons with Disabilities") }],
+            "12-4": [{ name: "International Day of Banks", description: "Recognizes the significant potential of multilateral development banks and international financial institutions in financing sustainable development.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Banks") }],
+            "12-5": [
+                { name: "International Volunteer Day for Economic and Social Development", description: "Promotes the work of volunteers and encourages governments to support volunteer efforts.", isUN: true, wikipediaLink: getWikipediaLink("International Volunteer Day") },
+                { name: "World Soil Day", description: "Raises awareness of the importance of soil for food security and ecosystem functions.", isUN: true, wikipediaLink: getWikipediaLink("World Soil Day") }
+            ],
+            "12-7": [{ name: "International Civil Aviation Day", description: "Highlights the importance of international civil aviation to the social and economic development of States.", isUN: true, wikipediaLink: getWikipediaLink("International Civil Aviation Day") }],
+            "12-9": [
+                { name: "International Day of Commemoration and Dignity of the Victims of the Crime of Genocide and of the Prevention of this Crime", description: "Raises awareness of the Convention on the Prevention and Punishment of the Crime of Genocide and its role in preventing genocide.", isUN: true, wikipediaLink: getWikipediaLink("International Day of Commemoration and Dignity of the Victims of the Crime of Genocide and of the Prevention of this Crime") },
+                { name: "International Anti-Corruption Day", description: "Raises awareness of corruption and the role of the Convention against Corruption in combating and preventing it.", isUN: true, wikipediaLink: getWikipediaLink("International Anti-Corruption Day") }
+            ],
+            "12-10": [{ name: "Human Rights Day", description: "Commemorates the day on which the United Nations General Assembly adopted the Universal Declaration of Human Rights.", isUN: true, wikipediaLink: getWikipediaLink("Human Rights Day") }],
+            "12-11": [{ name: "International Mountain Day", description: "Raises awareness about the importance of mountains to life, highlighting the opportunities and constraints in mountain development.", isUN: true, wikipediaLink: getWikipediaLink("International Mountain Day") }],
+            "12-18": [
+                { name: "International Migrants Day", description: "Highlights the contributions of migrants and the challenges they face.", isUN: true, wikipediaLink: getWikipediaLink("International Migrants Day") },
+                { name: "Arabic Language Day", description: "Celebrates the Arabic language and cultural diversity.", isUN: true, wikipediaLink: getWikipediaLink("Arabic Language Day (United Nations)") }
+            ],
+            "12-20": [{ name: "International Human Solidarity Day", description: "Celebrates unity in diversity and reminds people of the importance of solidarity in the fight against poverty.", isUN: true, wikipediaLink: getWikipediaLink("International Human Solidarity Day") }],
+            "12-21": [
+                { name: "World Meditation Day", description: "Promotes the practice of meditation for well-being and stress reduction.", isUN: true, wikipediaLink: getWikipediaLink("Meditation") },
+                { name: "World Basketball Day", description: "Celebrates the sport of basketball and its global reach.", isUN: true, wikipediaLink: getWikipediaLink("Basketball") }
+            ],
+            "12-25": [{ name: "Christmas Day", description: "A major Christian holiday and cultural celebration worldwide.", isUN: false, wikipediaLink: getWikipediaLink("Christmas") }]
+        };
+
+        // Date and Calendar Logic
+        let currentDate = new Date();
+        let currentYear = currentDate.getFullYear();
+        let currentMonth = currentDate.getMonth();
+
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        let currentMonth = new Date().getMonth();
-        let currentYear = new Date().getFullYear();
-        let selectedDayCell = null; // To keep track of the currently selected day cell
-
         const calendarGrid = document.getElementById('calendarGrid');
-        const currentMonthYearDisplay = document.getElementById('currentMonthYear');
-        const prevMonthBtn = document.getElementById('prevMonth');
-        const nextMonthBtn = document.getElementById('nextMonth');
+        const currentMonthYearElement = document.getElementById('currentMonthYear');
         const eventDescriptionDisplay = document.getElementById('eventDescriptionDisplay');
         const eventDisplayDate = document.getElementById('eventDisplayDate');
         const eventDetails = document.getElementById('eventDetails');
-        const closeDescriptionBtn = document.getElementById('closeDescription');
-        const nightModeToggle = document.getElementById('nightModeToggle');
+        const prevMonthButton = document.getElementById('prevMonth');
+        const nextMonthButton = document.getElementById('nextMonth');
+        const closeDescriptionButton = document.getElementById('closeDescription');
+        
+        // Custom Observances (Weeks/Variable Dates)
+        function getVariableEvents(year, month, day) {
+            const events = [];
+            const date = new Date(year, month, day);
+            const dateKey = (month + 1) + '-' + day;
+            
+            // Fixed Weeks (Example: Feb 1-7, March 21-27, May 25-31)
+            if (month === 1 && day >= 1 && day <= 7) {
+                events.push({ name: "World Interfaith Harmony Week", description: "A week to promote peace and cultural understanding.", isUN: true, wikipediaLink: getWikipediaLink("World Interfaith Harmony Week"), isWeek: true });
+            }
+            if (month === 2 && day >= 21 && day <= 27) {
+                events.push({ name: "Week of Solidarity with the Peoples Struggling against Racism and Racial Discrimination", description: "Promotes efforts to eliminate racial discrimination.", isUN: true, wikipediaLink: getWikipediaLink("International Day for the Elimination of Racial Discrimination"), isWeek: true });
+            }
+            if (month === 4 && day >= 25 && day <= 31) { // May (month 4) 25-31
+                events.push({ name: "Week of Solidarity with the Peoples of Non-Self-Governing Territories", description: "Promotes the political, economic, social and educational advancement of the peoples of Non-Self-Governing Territories.", isUN: true, wikipediaLink: getWikipediaLink("United Nations list of non-self-governing territories"), isWeek: true });
+            }
 
-        // Function to generate the calendar
+            // Variable Day Observances (Example: World Habitat Day - first Monday of October)
+            if (month === 9 && date.getDay() === 1 && day <= 7) { // October (month 9), first Monday
+                events.push({ name: "World Habitat Day", description: "Reflects on the state of our towns and cities, and on the basic right of all to adequate shelter.", isUN: true, wikipediaLink: getWikipediaLink("World Habitat Day") });
+            }
+            
+            return events;
+        }
+
         function generateCalendar() {
-            calendarGrid.innerHTML = ''; // Clear previous days
-            eventDescriptionDisplay.classList.add('hidden'); // Hide description on month change
+            calendarGrid.innerHTML = '';
+            currentMonthYearElement.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            eventDescriptionDisplay.classList.add('hidden'); // Hide event details on month change
 
-            const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+            const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay(); // 0 (Sun) to 6 (Sat)
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-            const firstDayOfWeek = firstDayOfMonth.getDay(); // 0 for Sunday, 1 for Monday, etc.
 
-            currentMonthYearDisplay.textContent = `${monthNames[currentMonth]} ${currentYear}`;
-
-            // Add empty cells for days before the 1st of the month
-            for (let i = 0; i < firstDayOfWeek; i++) {
+            // Insert empty cells for the days before the 1st
+            for (let i = 0; i < firstDayOfMonth; i++) {
                 const emptyCell = document.createElement('div');
-                emptyCell.classList.add('day-cell', 'empty', 'text-gray-400', 'dark:text-gray-600');
+                emptyCell.classList.add('day-cell', 'empty');
                 calendarGrid.appendChild(emptyCell);
             }
 
-            // Add day cells
+            // Insert day cells
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayCell = document.createElement('div');
-                dayCell.classList.add('day-cell', 'bg-gray-100', 'dark:bg-gray-700', 'border', 'border-gray-200', 'dark:border-gray-600');
-                dayCell.innerHTML = `<span class="text-xl font-bold">${day}</span>`;
+                dayCell.classList.add('day-cell');
                 dayCell.dataset.day = day;
+                dayCell.dataset.month = currentMonth + 1;
+                dayCell.dataset.year = currentYear;
+                
+                const dayKey = (currentMonth + 1) + '-' + day;
+                let events = internationalDays[dayKey] || [];
+                
+                // Add variable events
+                events = events.concat(getVariableEvents(currentYear, currentMonth, day));
 
-                const monthDayKey = `${currentMonth + 1}-${day}`;
-                if (internationalDays[monthDayKey]) {
+                const dayNumberSpan = document.createElement('span');
+                dayNumberSpan.classList.add('text-xl', 'font-bold', 'mb-1');
+                dayNumberSpan.textContent = day;
+                dayCell.appendChild(dayNumberSpan);
+
+                if (events.length > 0) {
                     dayCell.classList.add('has-event');
-                    // Add event names below the day number
-                    const eventNamesDiv = document.createElement('div');
-                    eventNamesDiv.classList.add('text-xs', 'mt-1', 'font-medium', 'text-center');
-                    internationalDays[monthDayKey].forEach(event => {
-                        const eventSpan = document.createElement('span');
-                        eventSpan.textContent = event.name;
-                        eventSpan.classList.add('block', 'leading-tight');
-                        eventNamesDiv.appendChild(eventSpan);
-                    });
-                    dayCell.appendChild(eventNamesDiv);
+                    
+                    const eventCountSpan = document.createElement('span');
+                    eventCountSpan.classList.add('text-xs', 'font-medium', 'mt-1', 'px-2', 'py-0.5', 'rounded-full', 'bg-green-100', 'text-green-800', 'dark:bg-green-800', 'dark:text-green-100');
+                    eventCountSpan.textContent = events.length === 1 ? events[0].name.split(' ')[0] : `${events.length} Events`;
+                    dayCell.appendChild(eventCountSpan);
+                    
+                    dayCell.addEventListener('click', () => displayEventDetails(day, currentMonth + 1, events));
+                } else {
+                    // Make empty cells less clickable/responsive
+                    dayCell.classList.add('empty');
                 }
-
-                dayCell.addEventListener('click', () => {
-                    // Remove 'selected' class from previously selected cell
-                    if (selectedDayCell) {
-                        selectedDayCell.classList.remove('selected');
-                    }
-                    // Add 'selected' class to the clicked cell
-                    dayCell.classList.add('selected');
-                    selectedDayCell = dayCell; // Update selected cell
-
-                    displayEventDetails(day, internationalDays[monthDayKey]);
-                });
-
+                
                 calendarGrid.appendChild(dayCell);
             }
         }
 
-        // Function to display event details
-        function displayEventDetails(day, events) {
-            eventDescriptionDisplay.classList.remove('hidden');
-            eventDisplayDate.textContent = `${monthNames[currentMonth]} ${day}, ${currentYear}`;
-            eventDetails.innerHTML = '';
-
-            if (events && events.length > 0) {
-                events.forEach(event => {
-                    const eventDiv = document.createElement('div');
-                    eventDiv.classList.add('p-4', 'rounded-lg', 'bg-green-50', 'dark:bg-green-900', 'border', 'border-green-200', 'dark:border-green-700', 'shadow-sm');
-                    eventDiv.innerHTML = `
-                        <p class="font-semibold text-green-800 dark:text-green-200">${event.name}</p>
-                        <p class="text-sm text-gray-700 dark:text-gray-300 mt-1">${event.description}</p>
-                    `;
-                    if (event.wikipediaLink) {
-                        const wikiLink = document.createElement('a');
-                        wikiLink.href = event.wikipediaLink;
-                        wikiLink.target = "_blank"; // Open in new tab
-                        wikiLink.classList.add('text-blue-600', 'dark:text-blue-400', 'hover:underline', 'text-sm', 'mt-2', 'block', 'flex', 'items-center');
-
-                        // Add Wikipedia logo image
-                        wikiLink.innerHTML = `
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/32px-Wikipedia-logo-v2.svg.png" alt="Wikipedia logo" class="w-4 h-4 mr-1 inline-block">
-                            Read more on Wikipedia
-                        `;
-                        eventDiv.appendChild(wikiLink);
-                    }
-                    eventDetails.appendChild(eventDiv);
-                });
-            } else {
-                eventDetails.innerHTML = `<p class="text-gray-600 dark:text-gray-400">No international observances for this day.</p>`;
+        function displayEventDetails(day, month, events) {
+            // Remove 'selected' class from all cells
+            document.querySelectorAll('.day-cell').forEach(cell => cell.classList.remove('selected'));
+            
+            // Add 'selected' class to the clicked cell
+            const clickedCell = document.querySelector(`.day-cell[data-day="${day}"][data-month="${month}"]`);
+            if (clickedCell) {
+                clickedCell.classList.add('selected');
             }
 
-            // Scroll to the description section
-            eventDescriptionDisplay.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            eventDisplayDate.textContent = `${monthNames[month - 1]} ${day}, ${currentYear}`;
+            eventDetails.innerHTML = '';
+
+            events.forEach(event => {
+                const eventDiv = document.createElement('div');
+                eventDiv.classList.add('p-3', 'rounded-lg', 'bg-gray-100', 'dark:bg-gray-700', 'border', 'border-gray-200', 'dark:border-gray-600', 'shadow-sm');
+                
+                let titleHtml = `<div class="font-semibold text-lg text-gray-900 dark:text-gray-100">${event.name}`;
+                if (event.isUN) {
+                  //  titleHtml += `<img src="${unLogoSvg}" alt="UN" title="UN-recognized official day" class="un-badge">`;
+					titleHtml += `<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/UN_emblem_blue.svg/40px-UN_emblem_blue.svg.png">`;
+
+                } else {
+                    titleHtml += `<span class="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2">(Widely Observed)</span>`;
+                }
+                titleHtml += `</div>`;
+
+                eventDiv.innerHTML = `
+                    ${titleHtml}
+                    <p class="text-gray-700 dark:text-gray-300 mt-1">${event.description}</p>
+                    ${event.wikipediaLink ? `<p class="mt-2"><a href="${event.wikipediaLink}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline font-medium">Read more on Wikipedia &rarr;</a></p>` : ''}
+                `;
+                eventDetails.appendChild(eventDiv);
+            });
+
+            eventDescriptionDisplay.classList.remove('hidden');
+            eventDescriptionDisplay.scrollIntoView({ behavior: 'smooth' }); // Scroll to view details
         }
 
-        // Navigation functions
-        prevMonthBtn.addEventListener('click', () => {
+        // Event Listeners
+        prevMonthButton.addEventListener('click', () => {
             currentMonth--;
             if (currentMonth < 0) {
                 currentMonth = 11;
@@ -615,7 +700,7 @@
             generateCalendar();
         });
 
-        nextMonthBtn.addEventListener('click', () => {
+        nextMonthButton.addEventListener('click', () => {
             currentMonth++;
             if (currentMonth > 11) {
                 currentMonth = 0;
@@ -623,43 +708,72 @@
             }
             generateCalendar();
         });
-
-        closeDescriptionBtn.addEventListener('click', () => {
+        
+        closeDescriptionButton.addEventListener('click', () => {
             eventDescriptionDisplay.classList.add('hidden');
-            if (selectedDayCell) {
-                selectedDayCell.classList.remove('selected');
-                selectedDayCell = null;
-            }
+            document.querySelectorAll('.day-cell').forEach(cell => cell.classList.remove('selected'));
         });
 
-        // Dark Mode Toggle
-        nightModeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            // Store user preference in local storage
-            if (document.body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
-        });
-
-        // Check for saved theme preference on load
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
+        // Night Mode Toggle Logic
+        const nightModeToggle = document.getElementById('nightModeToggle');
+        function setNightMode(isDark) {
+            if (isDark) {
                 document.body.classList.add('dark-mode');
-            } else if (savedTheme === 'light') {
-                document.body.classList.remove('dark-mode');
+                localStorage.setItem('nightMode', 'enabled');
             } else {
-                // Default to light mode if no preference is saved, or check system preference
-                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                    document.body.classList.add('dark-mode');
-                }
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('nightMode', 'disabled');
             }
-            generateCalendar(); // Initial calendar generation
+        }
+
+        // Apply saved mode on load
+        const savedMode = localStorage.getItem('nightMode');
+        if (savedMode === 'enabled') {
+            setNightMode(true);
+        } else if (savedMode === null && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+             // Default to system preference if no explicit setting
+             setNightMode(true);
+        } else {
+            setNightMode(false);
+        }
+        
+        nightModeToggle.addEventListener('click', () => {
+            const isDark = document.body.classList.contains('dark-mode');
+            setNightMode(!isDark);
         });
+        
+        // Go To Top/Bottom Logic
+        const goToTopBtn = document.getElementById('goToTop');
+        const goToBottomBtn = document.getElementById('goToBottom');
+
+        window.addEventListener('scroll', () => {
+            // Show/hide go to top button
+            if (window.scrollY > 200) {
+                goToTopBtn.classList.remove('hidden');
+            } else {
+                goToTopBtn.classList.add('hidden');
+            }
+            
+            // Adjust go to bottom button visibility (always visible unless at bottom)
+            const isAtBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50;
+            if (isAtBottom) {
+                goToBottomBtn.classList.add('hidden');
+            } else {
+                goToBottomBtn.classList.remove('hidden');
+            }
+        });
+
+        goToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        goToBottomBtn.addEventListener('click', () => {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        });
+
+        // Initial Calendar Load
+        generateCalendar();
     </script>
+
 </body>
 </html>
-
-
