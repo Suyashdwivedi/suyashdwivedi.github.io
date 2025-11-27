@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wikipedia Citation Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .header svg {
+            width: 48px;
+            height: 48px;
+            color: #667eea;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .info-box svg {
+            width: 20px;
+            height: 20px;
+            color: #2196f3;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: #1565c0;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        input {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        input:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #667eea;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            display: none;
+            align-items: start;
+            gap: 10px;
+        }
+
+        .error.show {
+            display: flex;
+        }
+
+        .error svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .citation-output {
+            margin-top: 30px;
+            padding: 24px;
+            background: linear-gradient(135deg, #e8f5e9 0%, #e3f2fd 100%);
+            border-radius: 12px;
+            border: 2px solid #4caf50;
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .citation-output.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .citation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .citation-header h3 {
+            color: #333;
+            font-size: 1.2em;
+        }
+
+        .copy-btn {
+            background: #4caf50;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+
+        .copy-btn:hover {
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .citation-text {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #333;
+            border: 1px solid #ddd;
+            word-break: break-all;
+            overflow-x: auto;
+        }
+
+        .citation-note {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .examples {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .examples h4 {
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .example-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: #f5f5f5;
+            color: #333;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .example-btn:hover {
+            background: #e0e0e0;
+            transform: none;
+            box-shadow: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .input-row {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            <h1>Wikipedia Citation Generator</h1>
+        </div>
+        <p class="subtitle">Automatically generate Wikipedia citations from any URL</p>
+
+        <div class="info-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M2 12h20"></path>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+            <div class="info-text">
+                <strong>Quick & Easy:</strong> Just paste any article URL and press Enter or click Generate. The tool automatically extracts all metadata and creates a properly formatted Wikipedia citation.
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="urlInput">Article URL</label>
+            <div class="input-row">
+                <input 
+                    type="url" 
+                    id="urlInput" 
+                    placeholder="https://example.com/article"
+                    onkeypress="if(event.key==='Enter') generateCitation()"
+                >
+                <button onclick="generateCitation()" id="generateBtn">
+                    Generate
+                </button>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <span style="margin-left: 10px;">Fetching article data...</span>
+        </div>
+
+        <div class="error" id="error">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span id="errorText"></span>
+        </div>
+
+        <div class="citation-output" id="output">
+            <div class="citation-header">
+                <h3>Wikipedia Citation</h3>
+                <button class="copy-btn" onclick="copyCitation()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span id="copyText">Copy Citation</span>
+                </button>
+            </div>
+            <div class="citation-text" id="citationText"></div>
+            <div class="citation-note">✓ Ready to paste into Wikipedia article</div>
+        </div>
+
+        <div class="examples">
+            <h4>Try these example URLs:</h4>
+            <button class="example-btn" onclick="tryExample('https://www.bbc.com/news')">
+                BBC News article
+            </button>
+            <button class="example-btn" onclick="tryExample('https://www.theguardian.com/world')">
+                The Guardian article
+            </button>
+            <button class="example-btn" onclick="tryExample('https://en.wikipedia.org/wiki/Citation')">
+                Wikipedia page
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return '';
+            const day = date.getDate();
+            const month = date.toLocaleString('en-US', { month: 'long' });
+            const year = date.getFullYear();
+            return `${day} ${month} ${year}`;
+        }
+
+        function extractMetadata(html, url) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            // Extract title
+            let title = doc.querySelector('meta[property="og:title"]')?.content ||
+                        doc.querySelector('meta[name="twitter:title"]')?.content ||
+                        doc.querySelector('h1')?.textContent ||
+                        doc.querySelector('title')?.textContent ||
+                        '';
+            
+            // Clean title
+            title = title.split('|')[0].split('-')[0].trim();
+            
+            // Extract author
+            let author = doc.querySelector('meta[name="author"]')?.content ||
+                         doc.querySelector('meta[property="article:author"]')?.content ||
+                         doc.querySelector('[rel="author"]')?.textContent ||
+                         '';
+            
+            // Extract site name
+            let siteName = doc.querySelector('meta[property="og:site_name"]')?.content ||
+                           doc.querySelector('meta[name="application-name"]')?.content ||
+                           '';
+            
+            if (!siteName) {
+                const hostname = new URL(url).hostname.replace('www.', '');
+                siteName = hostname.split('.')[0].charAt(0).toUpperCase() + hostname.split('.')[0].slice(1);
+            }
+            
+            // Extract date
+            let date = doc.querySelector('meta[property="article:published_time"]')?.content ||
+                       doc.querySelector('meta[name="publish-date"]')?.content ||
+                       doc.querySelector('meta[name="date"]')?.content ||
+                       doc.querySelector('meta[property="article:modified_time"]')?.content ||
+                       doc.querySelector('time')?.getAttribute('datetime') ||
+                       '';
+            
+            // Try JSON-LD
+            const jsonLdScripts = doc.querySelectorAll('script[type="application/ld+json"]');
+            jsonLdScripts.forEach(script => {
+                try {
+                    const data = JSON.parse(script.textContent);
+                    const processData = (obj) => {
+                        if (obj.headline && !title) title = obj.headline;
+                        if (obj.name && !title) title = obj.name;
+                        if (obj.author && !author) {
+                            if (typeof obj.author === 'string') {
+                                author = obj.author;
+                            } else if (obj.author.name) {
+                                author = obj.author.name;
+                            }
+                        }
+                        if (obj.datePublished && !date) date = obj.datePublished;
+                        if (obj.publisher?.name && !siteName) siteName = obj.publisher.name;
+                    };
+                    
+                    if (Array.isArray(data)) {
+                        data.forEach(processData);
+                    } else {
+                        processData(data);
+                    }
+                } catch (e) {}
+            });
+
+            // Clean author
+            if (author) {
+                author = author.replace(/^by\s+/i, '').trim();
+            }
+
+            return {
+                title: title.trim(),
+                author: author.trim(),
+                website: siteName.trim(),
+                date: date ? formatDate(date) : '',
+                url: url.trim(),
+                accessDate: formatDate(new Date())
+            };
+        }
+
+        function generateWikiCitation(meta) {
+            let parts = ['{{cite web'];
+            
+            if (meta.author) {
+                if (meta.author.includes(',')) {
+                    const [last, first] = meta.author.split(',').map(s => s.trim());
+                    parts.push(`| last=${last}`);
+                    parts.push(`| first=${first}`);
+                } else {
+                    parts.push(`| author=${meta.author}`);
+                }
+            }
+            
+            if (meta.title) parts.push(`| title=${meta.title}`);
+            if (meta.website) parts.push(`| website=${meta.website}`);
+            if (meta.date) parts.push(`| date=${meta.date}`);
+            if (meta.url) parts.push(`| url=${meta.url}`);
+            if (meta.accessDate) parts.push(`| access-date=${meta.accessDate}`);
+            
+            parts.push('}}');
+            
+            return '<ref>' + parts.join(' ') + '</ref>';
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('show', show);
+            document.getElementById('generateBtn').disabled = show;
+            document.getElementById('urlInput').disabled = show;
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('error');
+            document.getElementById('errorText').textContent = message;
+            errorEl.classList.add('show');
+            setTimeout(() => errorEl.classList.remove('show'), 5000);
+        }
+
+        function showCitation(citation) {
+            document.getElementById('citationText').textContent = citation;
+            document.getElementById('output').classList.add('show');
+            document.getElementById('output').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        async function generateCitation() {
+            const url = document.getElementById('urlInput').value.trim();
+            
+            if (!url) {
+                showError('Please enter a URL');
+                return;
+            }
+
+            showLoading(true);
+            document.getElementById('error').classList.remove('show');
+            document.getElementById('output').classList.remove('show');
+
+            try {
+                // Try multiple CORS proxies in sequence
+                const proxies = [
+                    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+                    `https://thingproxy.freeboard.io/fetch/${url}`,
+                    `https://corsproxy.io/?${encodeURIComponent(url)}`
+                ];
+
+                let html = null;
+                let lastError = null;
+
+                for (let i = 0; i < proxies.length; i++) {
+                    try {
+                        console.log(`Trying proxy ${i + 1}...`);
+                        const response = await fetch(proxies[i], {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            // allorigins returns JSON, others return text
+                            if (i === 0) {
+                                const data = await response.json();
+                                html = data.contents;
+                            } else {
+                                html = await response.text();
+                            }
+                            
+                            if (html && html.length > 100) {
+                                console.log('Successfully fetched HTML');
+                                break;
+                            }
+                        }
+                    } catch (err) {
+                        lastError = err;
+                        console.log(`Proxy ${i + 1} failed:`, err.message);
+                        continue;
+                    }
+                }
+
+                if (!html || html.length < 100) {
+                    throw new Error('Unable to fetch URL through any proxy service');
+                }
+
+                const meta = extractMetadata(html, url);
+                
+                if (!meta.title) {
+                    showError('Could not extract article information. The page may not have proper metadata. Try another URL or use a manual citation tool.');
+                    return;
+                }
+
+                const citation = generateWikiCitation(meta);
+                showCitation(citation);
+                
+            } catch (err) {
+                console.error('Fetch error:', err);
+                showError('Unable to automatically fetch this URL. Browser-based tools have limitations due to CORS security. For reliable citation generation, consider using the official Citer tool at https://citer.toolforge.org/ or similar server-based tools.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function copyCitation() {
+            const text = document.getElementById('citationText').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const copyTextEl = document.getElementById('copyText');
+                copyTextEl.textContent = 'Copied!';
+                setTimeout(() => copyTextEl.textContent = 'Copy Citation', 2000);
+            });
+        }
+
+        function tryExample(url) {
+            document.getElementById('urlInput').value = url;
+            generateCitation();
+        }
+    </script>
+</body>
+</html>
