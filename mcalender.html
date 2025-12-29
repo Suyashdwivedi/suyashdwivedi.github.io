@@ -4,234 +4,812 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medicine Schedule Planner</title>
-	  <!-- ✅ SEO Meta Tags -->
-    <meta name="description" content="Create a custom medicine schedule and export it to your calendar. Add multiple medicines, timing, and frequency. Built by Suyash Dwivedi.">
+    <meta name="description" content="Create a custom medicine schedule and export it to your calendar. Add multiple medicines, timing, and frequency. Built by Sukrut Dwivedi.">
     <meta name="keywords" content="medicine schedule planner, calendar, ics generator, medicine tracker, health, Sukrut Dwivedi">
     <meta name="author" content="Sukrut Dwivedi">
-
-    <!-- ✅ Open Graph Tags -->
-    <meta property="og:title" content="Medicine Schedule Planner 💊 – Suyash Dwivedi">
+    <meta property="og:title" content="Medicine Schedule Planner 💊 —  Sukrut Dwivedi">
     <meta property="og:description" content="Plan your medicine routine and export to calendar (.ics). Simple, offline & secure.">
     <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/VariousPills_%28cropped%29.jpg/500px-VariousPills_%28cropped%29.jpg">
     <meta property="og:url" content="https://suyashdwivedi.github.io/mcalender.html">
     <meta property="og:type" content="website">
-
-    <!-- ✅ Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Medicine Schedule Planner 💊 – by Suyash Dwivedi">
+    <meta name="twitter:title" content="Medicine Schedule Planner 💊 — by Sukrut Dwivedi">
     <meta name="twitter:description" content="Easily generate .ics files to schedule your medicine alerts. Works offline.">
     <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/VariousPills_%28cropped%29.jpg/500px-VariousPills_%28cropped%29.jpg">
-
-    <!-- ✅ Canonical and Favicon -->
     <link rel="canonical" href="https://suyashdwivedi.github.io/mcalender.html">
     <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/VariousPills_%28cropped%29.jpg/100px-VariousPills_%28cropped%29.jpg" />
-
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
-        h1 {
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.3s ease;
+        }
+
+        body.light-mode {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
             text-align: center;
-            background-color: #6200ea;
             color: white;
-            padding: 20px;
-            margin: 0;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.6s ease;
         }
-        form {
-            max-width: 600px;
-            margin: 20px auto;
+
+        .header-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .theme-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.light-mode .theme-btn {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .theme-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .theme-btn:active {
+            transform: translateY(-1px);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-card {
+            background: #1e1e2e;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: fadeInUp 0.6s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        body.light-mode .main-card {
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0,0,0,0.05);
         }
+
         .medicine-entry {
+            background: linear-gradient(135deg, #2d2d44 0%, #1a1a2e 100%);
+            border-radius: 15px;
+            padding: 25px;
             margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background: #f9f9f9;
+            border: 2px solid rgba(255,255,255,0.1);
+            position: relative;
+            transition: all 0.3s ease;
+            animation: slideIn 0.4s ease;
         }
-        button {
-            background-color: #6200ea;
+
+        body.light-mode .medicine-entry {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border: 2px solid #e0e0e0;
+        }
+
+        .medicine-entry:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        body.light-mode .medicine-entry:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .medicine-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .medicine-header h3 {
+            color: #a78bfa;
+            font-size: 1.3em;
+        }
+
+        body.light-mode .medicine-header h3 {
+            color: #667eea;
+        }
+
+        .remove-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background: #ff3838;
+            transform: scale(1.05);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        body.light-mode label {
+            color: #333;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: #2d2d44;
+            color: #fff;
+        }
+
+        body.light-mode input,
+        body.light-mode select {
+            background: white;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
+        }
+
+        body.light-mode input:focus,
+        body.light-mode select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .times-container {
+            background: #252538;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        body.light-mode .times-container {
+            background: white;
+            border: 1px solid #e0e0e0;
+        }
+
+        .time-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .time-input-group input {
+            flex: 1;
+        }
+
+        .time-remove-btn {
+            background: #ff6b6b;
             color: white;
             border: none;
             padding: 10px;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            min-width: 40px;
         }
-        button:hover {
-            background-color: #3700b3;
+
+        .time-remove-btn:hover {
+            background: #ff5252;
+            transform: rotate(90deg);
         }
-        input, select {
-            width: calc(100% - 20px);
-            padding: 8px;
-            margin: 5px 0 15px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
+
+        .add-time-btn {
+            background: #48dbfb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
         }
+
+        .add-time-btn:hover {
+            background: #0abde3;
+            transform: translateY(-2px);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(86, 171, 47, 0.4);
+        }
+
+        .stats-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
         footer {
             text-align: center;
-            margin-top: 20px;
-            font-size: 0.9em;
-            color: #555;
+            color: white;
+            margin-top: 30px;
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2ecc71;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            animation: slideInRight 0.4s ease;
+            display: none;
+        }
+
+        .notification.show {
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .main-card {
+                padding: 20px;
+            }
+
+            .btn {
+                min-width: 100%;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>💊 Medicine Schedule Planner 💊</h1>
-    <form id="medicine-form">
-        <div id="medicine-entries">
-            <div class="medicine-entry">
-                <h3>Medicine 1</h3>
-                <label for="medicine-name-1">Medicine Name:</label>
-                <input type="text" id="medicine-name-1" required>
-                <label for="medicine-type-1">Medicine Type:</label>
-                <select id="medicine-type-1" required>
-                    <option value="Tablet">💊 Tablet</option>
-                    <option value="Capsule">💊 Capsule</option>
-                    <option value="Syrup">🍶 Syrup</option>
-                    <option value="Ointment">🧴 Ointment</option>
-                </select>
-                <label for="start-date-1">Start Date:</label>
-                <input type="date" id="start-date-1" required>
-                <label for="end-date-1">End Date:</label>
-                <input type="date" id="end-date-1" required>
-                <label for="frequency-1">Frequency:</label>
-                <select id="frequency-1" required>
-                    <option value="Daily">Daily</option>
-                    <option value="Alternate">Alternate Days</option>
-                    <option value="Weekly">Weekly</option>
-                </select>
-                <label>Times:</label>
-                <div id="times-1">
-                    <input type="time" required>
-                </div>
-                <button type="button" id="add-time-1">Add Time</button>
-            </div>
-        </div>
-        <button type="button" id="add-medicine">Add Medicine</button>
-        <button type="button" id="generate-ics">Generate Calendar</button>
-    </form>
-    <footer>
-        Created by Sukrut Dwivedi
-    </footer>
-    <script>
-        let medicineCount = 1;
+    <div class="theme-toggle">
+        <button class="theme-btn" id="theme-toggle" title="Toggle Dark/Light Mode">
+            <span id="theme-icon">☀️</span>
+        </button>
+    </div>
 
-        // Function to add more times for a specific medicine
-        function addTime(medIndex) {
-            const timesDiv = document.getElementById(`times-${medIndex}`);
-            const timeInput = document.createElement("input");
-            timeInput.type = "time";
-            timeInput.required = true;
-            timesDiv.appendChild(timeInput);
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" alt="Logo" class="logo">
+                <div>
+                    <h1>💊 Medicine Schedule Planner</h1>
+                    <p class="subtitle">Create your personalized medication calendar</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-card">
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value" id="med-count">0</div>
+                    <div class="stat-label">Medicines</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="event-count">0</div>
+                    <div class="stat-label">Total Events</div>
+                </div>
+            </div>
+
+            <form id="medicine-form">
+                <div id="medicine-entries"></div>
+
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-primary" id="add-medicine">
+                        ➕ Add Medicine
+                    </button>
+                    <button type="button" class="btn btn-success" id="generate-ics">
+                        📅 Generate Calendar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <footer>
+            Created with ❤️ by Sukrut Dwivedi
+        </footer>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        let medicineCount = 0;
+        const medicines = [];
+
+        // Theme toggle functionality - Initialize immediately
+        function initTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            // Check for saved theme preference or default to dark
+            const savedTheme = window.localStorage.getItem('medicinePlannerTheme');
+            
+            if (savedTheme === 'light') {
+                body.classList.add('light-mode');
+                if (themeIcon) themeIcon.textContent = '🌙';
+            } else {
+                // Default is dark, no class needed
+                if (themeIcon) themeIcon.textContent = '☀️';
+            }
         }
 
-        // Function to add a new medicine entry
+        // Run theme initialization immediately
+        initTheme();
+
+        // Add event listener after DOM loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('light-mode');
+                const isLight = document.body.classList.contains('light-mode');
+                themeIcon.textContent = isLight ? '🌙' : '☀️';
+                window.localStorage.setItem('medicinePlannerTheme', isLight ? 'light' : 'dark');
+            });
+        });
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function updateStats() {
+            // Count actual medicine entries in the DOM
+            const actualMedicineCount = document.querySelectorAll('.medicine-entry').length;
+            document.getElementById('med-count').textContent = actualMedicineCount;
+            
+            let totalEvents = 0;
+            
+            // Only count events for medicines that exist in the DOM
+            document.querySelectorAll('.medicine-entry').forEach((entry) => {
+                const id = entry.id.split('-')[1];
+                const startDate = document.getElementById(`start-date-${id}`)?.value;
+                const endDate = document.getElementById(`end-date-${id}`)?.value;
+                const frequency = document.getElementById(`frequency-${id}`)?.value;
+                const timesDiv = document.getElementById(`times-${id}`);
+                
+                if (startDate && endDate && frequency && timesDiv) {
+                    const times = timesDiv.querySelectorAll('.time-input-group').length;
+                    const freqMap = { Daily: 1, Alternate: 2, Weekly: 7 };
+                    const days = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24));
+                    totalEvents += Math.ceil(days / freqMap[frequency]) * times;
+                }
+            });
+            
+            document.getElementById('event-count').textContent = totalEvents;
+        }
+
+        function addTime(medIndex) {
+            const timesContainer = document.getElementById(`times-${medIndex}`);
+            const timeGroup = document.createElement("div");
+            timeGroup.className = "time-input-group";
+            timeGroup.innerHTML = `
+                <input type="time" required>
+                <button type="button" class="time-remove-btn" onclick="removeTime(this)">✕</button>
+            `;
+            timesContainer.appendChild(timeGroup);
+            updateStats();
+        }
+
+        function removeTime(btn) {
+            const timeGroup = btn.parentElement;
+            const timesContainer = timeGroup.parentElement;
+            if (timesContainer.querySelectorAll('.time-input-group').length > 1) {
+                timeGroup.remove();
+                updateStats();
+            } else {
+                showNotification('At least one time is required');
+            }
+        }
+
         function addMedicine() {
             medicineCount++;
             const medicineEntries = document.getElementById("medicine-entries");
             const newEntry = document.createElement("div");
             newEntry.classList.add("medicine-entry");
+            newEntry.id = `medicine-${medicineCount}`;
             newEntry.innerHTML = `
-                <h3>Medicine ${medicineCount}</h3>
-                <label for="medicine-name-${medicineCount}">Medicine Name:</label>
-                <input type="text" id="medicine-name-${medicineCount}" required>
-                <label for="medicine-type-${medicineCount}">Medicine Type:</label>
-                <select id="medicine-type-${medicineCount}" required>
-                    <option value="Tablet">💊 Tablet</option>
-                    <option value="Capsule">💊 Capsule</option>
-                    <option value="Syrup">🍶 Syrup</option>
-                    <option value="Ointment">🧴 Ointment</option>
-                </select>
-                <label for="start-date-${medicineCount}">Start Date:</label>
-                <input type="date" id="start-date-${medicineCount}" required>
-                <label for="end-date-${medicineCount}">End Date:</label>
-                <input type="date" id="end-date-${medicineCount}" required>
-                <label for="frequency-${medicineCount}">Frequency:</label>
-                <select id="frequency-${medicineCount}" required>
-                    <option value="Daily">Daily</option>
-                    <option value="Alternate">Alternate Days</option>
-                    <option value="Weekly">Weekly</option>
-                </select>
-                <label>Times:</label>
-                <div id="times-${medicineCount}">
-                    <input type="time" required>
+                <div class="medicine-header">
+                    <h3>💊 Medicine ${medicineCount}</h3>
+                    <button type="button" class="remove-btn" onclick="removeMedicine(${medicineCount})">
+                        🗑️ Remove
+                    </button>
                 </div>
-                <button type="button" id="add-time-${medicineCount}">Add Time</button>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="medicine-name-${medicineCount}">Medicine Name</label>
+                        <input type="text" id="medicine-name-${medicineCount}" placeholder="e.g., Aspirin" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="medicine-type-${medicineCount}">Medicine Type</label>
+                        <select id="medicine-type-${medicineCount}" required>
+                            <option value="Tablet">💊 Tablet</option>
+                            <option value="Capsule">💊 Capsule</option>
+                            <option value="Syrup">🍶 Syrup</option>
+                            <option value="Ointment">🧴 Ointment</option>
+                            <option value="Injection">💉 Injection</option>
+                            <option value="Drops">💧 Drops</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="start-date-${medicineCount}">Start Date</label>
+                        <input type="date" id="start-date-${medicineCount}" required onchange="updateStats()">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="end-date-${medicineCount}">End Date</label>
+                        <input type="date" id="end-date-${medicineCount}" required onchange="updateStats()">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="frequency-${medicineCount}">Frequency</label>
+                        <select id="frequency-${medicineCount}" required onchange="updateStats()">
+                            <option value="Daily">📅 Daily</option>
+                            <option value="Alternate">🔄 Alternate Days</option>
+                            <option value="Weekly">📆 Weekly</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>⏰ Times</label>
+                    <div class="times-container" id="times-${medicineCount}">
+                        <div class="time-input-group">
+                            <input type="time" required>
+                            <button type="button" class="time-remove-btn" onclick="removeTime(this)">✕</button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-time-btn" onclick="addTime(${medicineCount})">
+                        ➕ Add Another Time
+                    </button>
+                </div>
             `;
             medicineEntries.appendChild(newEntry);
-
-            // Attach the event listener for the "Add Time" button
-            document.getElementById(`add-time-${medicineCount}`).addEventListener('click', function() {
-                addTime(medicineCount);
-            });
+            updateStats();
+            showNotification('Medicine form added - please fill in the details');
         }
 
-        // Function to generate the ICS file for the medicine schedule
+        function removeMedicine(index) {
+            const entry = document.getElementById(`medicine-${index}`);
+            if (entry) {
+                entry.style.animation = 'fadeInUp 0.3s ease reverse';
+                setTimeout(() => {
+                    entry.remove();
+                    
+                    // Recalculate medicineCount by counting actual medicine entries
+                    const remainingEntries = document.querySelectorAll('.medicine-entry');
+                    medicineCount = remainingEntries.length;
+                    
+                    updateStats();
+                    showNotification('Medicine removed');
+                }, 300);
+            }
+        }
+
         function generateICS() {
-            let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\n";
-            for (let i = 1; i <= medicineCount; i++) {
-                const name = document.getElementById(`medicine-name-${i}`).value;
-                const type = document.getElementById(`medicine-type-${i}`).value;
-                const startDate = document.getElementById(`start-date-${i}`).value;
-                const endDate = document.getElementById(`end-date-${i}`).value;
-                const frequency = document.getElementById(`frequency-${i}`).value;
-                const times = Array.from(document.getElementById(`times-${i}`).querySelectorAll("input")).map(
-                    (input) => input.value
-                );
+            const actualMedicineCount = document.querySelectorAll('.medicine-entry').length;
+            
+            if (actualMedicineCount === 0) {
+                showNotification('⚠️ Please add at least one medicine');
+                return;
+            }
+
+            // Validate that all medicines have required fields filled
+            let hasEmptyFields = false;
+            let emptyMedicineName = '';
+            
+            document.querySelectorAll('.medicine-entry').forEach((entry) => {
+                const id = entry.id.split('-')[1];
+                const name = document.getElementById(`medicine-name-${id}`)?.value.trim();
+                const startDate = document.getElementById(`start-date-${id}`)?.value;
+                const endDate = document.getElementById(`end-date-${id}`)?.value;
+                const timeInputs = document.getElementById(`times-${id}`)?.querySelectorAll("input");
+                const times = timeInputs ? Array.from(timeInputs).map(input => input.value).filter(v => v) : [];
+
+                if (!name || !startDate || !endDate || times.length === 0) {
+                    hasEmptyFields = true;
+                    emptyMedicineName = name || 'Unnamed medicine';
+                }
+            });
+
+            if (hasEmptyFields) {
+                showNotification('⚠️ Please fill in all required fields for all medicines');
+                return;
+            }
+
+            let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Medicine Schedule Planner//EN\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\n";
+            
+            document.querySelectorAll('.medicine-entry').forEach((entry) => {
+                const id = entry.id.split('-')[1];
+                const name = document.getElementById(`medicine-name-${id}`)?.value;
+                const type = document.getElementById(`medicine-type-${id}`)?.value;
+                const startDate = document.getElementById(`start-date-${id}`)?.value;
+                const endDate = document.getElementById(`end-date-${id}`)?.value;
+                const frequency = document.getElementById(`frequency-${id}`)?.value;
+                const timeInputs = document.getElementById(`times-${id}`)?.querySelectorAll("input");
+
+                if (!name || !startDate || !endDate || !timeInputs) return;
+
+                const times = Array.from(timeInputs).map(input => input.value).filter(v => v);
 
                 const freqMap = { Daily: 1, Alternate: 2, Weekly: 7 };
                 const freqIncrement = freqMap[frequency];
-                let currentDate = new Date(startDate);
+                let currentDate = new Date(startDate + 'T00:00:00');
+                const end = new Date(endDate + 'T23:59:59');
 
-                while (currentDate <= new Date(endDate)) {
+                while (currentDate <= end) {
                     times.forEach((time) => {
                         const [hours, minutes] = time.split(":").map(Number);
-                        currentDate.setHours(hours, minutes);
-                        const start = currentDate.toISOString().replace(/[-:]/g, "").slice(0, 15);
-                        const end = new Date(currentDate.getTime() + 30 * 60 * 1000)
-                            .toISOString()
-                            .replace(/[-:]/g, "")
-                            .slice(0, 15);
-                        icsContent += `BEGIN:VEVENT\nSUMMARY:${name} (${type})\nDTSTART:${start}\nDTEND:${end}\nEND:VEVENT\n`;
+                        const eventDate = new Date(currentDate);
+                        eventDate.setHours(hours, minutes, 0, 0);
+                        
+                        const start = eventDate.toISOString().replace(/[-:]/g, "").split('.')[0] + 'Z';
+                        const eventEnd = new Date(eventDate.getTime() + 30 * 60 * 1000);
+                        const endStr = eventEnd.toISOString().replace(/[-:]/g, "").split('.')[0] + 'Z';
+                        
+                        icsContent += `BEGIN:VEVENT\n`;
+                        icsContent += `UID:${Date.now()}-${Math.random()}@medicineplanner\n`;
+                        icsContent += `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split('.')[0]}Z\n`;
+                        icsContent += `DTSTART:${start}\n`;
+                        icsContent += `DTEND:${endStr}\n`;
+                        icsContent += `SUMMARY:${name} (${type})\n`;
+                        icsContent += `DESCRIPTION:Take ${name} - ${type}\n`;
+                        icsContent += `STATUS:CONFIRMED\n`;
+                        icsContent += `BEGIN:VALARM\n`;
+                        icsContent += `TRIGGER:-PT15M\n`;
+                        icsContent += `ACTION:DISPLAY\n`;
+                        icsContent += `DESCRIPTION:Reminder: ${name}\n`;
+                        icsContent += `END:VALARM\n`;
+                        icsContent += `END:VEVENT\n`;
                     });
                     currentDate.setDate(currentDate.getDate() + freqIncrement);
                 }
-            }
+            });
+            
             icsContent += "END:VCALENDAR";
             const blob = new Blob([icsContent], { type: "text/calendar" });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
             link.download = "medicine_schedule.ics";
             link.click();
+            
+            // Play success sound
+            const successSound = new Audio('https://suyashdwivedi.github.io/alert.mp3');
+            successSound.play().catch(err => console.log('Audio play failed:', err));
+            
+            showNotification('✅ Calendar file generated successfully! 🎉');
         }
 
-        // Event listeners for buttons
         document.getElementById("add-medicine").addEventListener('click', addMedicine);
         document.getElementById("generate-ics").addEventListener('click', generateICS);
 
-        // Initial setup for the first "Add Time" button
-        document.getElementById("add-time-1").addEventListener('click', function() {
-            addTime(1);
-        });
+        // Don't add first medicine automatically - let user add when ready
     </script>
- <!-- Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-GC8PGC89NB');
-</script>
-	</script>
-	<script src="https://cdn.counter.dev/script.js" 
-        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014" 
-        data-utcoffset="6">
-</script>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GC8PGC89NB');
+    </script>
+    
+    <!-- Counter Script -->
+    <script src="https://cdn.counter.dev/script.js" 
+            data-id="cc7a036d-a904-4d76-bcac-37ea4196c014" 
+            data-utcoffset="6">
+    </script>
 </body>
 </html>
