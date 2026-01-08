@@ -118,3 +118,4 @@ Thanks to the [Wikipedia](https://www.wikipedia.org/) for the public API and the
 
 - The project uses the Wikipedia API for fetching recent changes.
 - The sound files used for notifications are in MP3 format.
+Lots of new updates coming soon...
