@@ -106,6 +106,12 @@
   .empty { padding: 40px 20px; text-align: center; color: var(--muted); font-size: .92rem; }
   .actions { margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
 
+  .jump { position: fixed; right: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 8px; z-index: 20; }
+  .jump button { width: 44px; height: 44px; padding: 0; border-radius: 50%; display: grid; place-items: center;
+    background: var(--surface); color: var(--accent); border: 1px solid var(--line); box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+  .jump button:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent-hover); border-color: var(--accent); }
+  .jump button[hidden] { display: none; }
+  .jump svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
   #toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); opacity: 0;
     background: #202122; color: #fff; padding: 10px 16px; border-radius: 6px; font-size: .92rem;
     transition: opacity .2s, transform .2s; pointer-events: none; max-width: 90vw; }
@@ -184,6 +190,14 @@
   Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener">Suyash Dwivedi</a><br />
   Page last edited: <span id="lastModifiedDisplay">not loaded</span> · Tool updated: 28 October 2026
 </footer>
+<div class="jump">
+  <button type="button" id="toTop" aria-label="Go to top of page" title="Go to top" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+  <button type="button" id="toBottom" aria-label="Go to bottom of page" title="Go to bottom">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  </button>
+</div>
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -360,6 +374,23 @@ const loadImage = (src) => new Promise((res) => {
   i.onload = () => res(i); i.onerror = () => res(null); i.src = src;
 });
 
+/* Wikimedia only serves fixed thumbnail widths (1280, 1920, ...), and refuses sizes above the original.
+   So try big standard sizes first, then the untouched original file, then the small page thumbnail. */
+function imageCandidates(src) {
+  const out = [];
+  if (/\/thumb\//.test(src)) {
+    for (const w of [1920, 1280]) out.push(src.replace(/\/((?:lossy-|lossless-)?(?:page\d+-)?)\d+px-/, `/$1${w}px-`));
+    const orig = src.replace("/thumb/", "/").replace(/\/[^/]+$/, "");
+    if (/\.(jpe?g|png|webp|gif)$/i.test(orig)) out.push(orig);
+  }
+  out.push(src);
+  return out;
+}
+async function loadFirst(list) {
+  for (const u of list) { const i = await loadImage(u); if (i) return i; }
+  return null;
+}
+
 function wrapLines(ctx, text, maxW) {
   const lines = []; let line = "";
   for (const w of text.split(" ")) {
@@ -383,7 +414,7 @@ async function render() {
   const [W, H] = SIZES[document.querySelector("input[name=size]:checked").value];
   const cur = state.images[state.sel];
   const [bg, logo, qr] = await Promise.all([
-    cur ? loadImage(cur.full).then(i => i || loadImage(cur.thumb)) : null, getLogo(state.site),
+    cur ? loadFirst(imageCandidates(cur.thumb)) : null, getLogo(state.site),
     QRCode.toCanvas(document.createElement("canvas"), state.url, { width: 220, margin: 1 }).catch(() => null),
   ]);
   if (token !== renderToken) return;
@@ -488,6 +519,20 @@ $("shareBtn").onclick = nativeShare;
 $("copyBtn").onclick = copyCaption;
 $("fbBtn").onclick = () => open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(state.url)}&quote=${encodeURIComponent($("factText").value)}`);
 $("xBtn").onclick = () => open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(state.url)}&text=${encodeURIComponent($("factText").value)}`);
+
+/* ---------- Jump to top / bottom ---------- */
+const smooth = () => matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+function updateJump() {
+  const y = window.scrollY, max = document.documentElement.scrollHeight - window.innerHeight;
+  $("toTop").hidden = y < 200;
+  $("toBottom").hidden = max < 200 || y > max - 200;
+}
+$("toTop").onclick = () => window.scrollTo({ top: 0, behavior: smooth() });
+$("toBottom").onclick = () => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: smooth() });
+addEventListener("scroll", updateJump, { passive: true });
+addEventListener("resize", updateJump);
+new ResizeObserver(updateJump).observe(document.body);
+updateJump();
 render();
 </script>
 
