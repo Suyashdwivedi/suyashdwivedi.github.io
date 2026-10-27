@@ -176,12 +176,16 @@
       </div>
 
       <div class="actions">
-        <button id="downloadBtn" type="button" disabled>Download image</button>
-        <button id="shareBtn" type="button" class="ghost" disabled>Share…</button>
-        <button id="copyBtn" type="button" class="ghost" disabled>Copy caption</button>
+        <button id="shareBtn" type="button" disabled>Share image + caption</button>
+        <button id="copyBothBtn" type="button" class="ghost" disabled>Copy image + caption</button>
+        <button id="downloadBtn" type="button" class="ghost" disabled>Download image</button>
+        <button id="copyBtn" type="button" class="ghost" disabled>Copy caption only</button>
+        <button id="tgBtn" type="button" class="ghost" disabled>Telegram</button>
+        <button id="waBtn" type="button" class="ghost" disabled>WhatsApp</button>
         <button id="fbBtn" type="button" class="ghost" disabled>Facebook</button>
         <button id="xBtn" type="button" class="ghost" disabled>X</button>
       </div>
+      <p class="hint" style="margin:10px 0 0">On phones, “Share image + caption” opens your apps with both attached. On desktop, use “Copy image + caption”, then paste into the chat.</p>
     </section>
   </div>
 </div>
@@ -404,9 +408,9 @@ function wrapLines(ctx, text, maxW) {
 function scheduleRender() { clearTimeout(renderTimer); renderTimer = setTimeout(render, 200); }
 
 async function render() {
-  const fact = $("factText").value.trim();
+  const fact = cleanFact();
   const ready = fact && state.url;
-  ["downloadBtn", "shareBtn", "copyBtn", "fbBtn", "xBtn"].forEach(id => $(id).disabled = !ready);
+  ["downloadBtn", "shareBtn", "copyBtn", "copyBothBtn", "tgBtn", "waBtn", "fbBtn", "xBtn"].forEach(id => $(id).disabled = !ready);
   if (!ready) { $("previewCanvas").hidden = true; $("emptyMsg").hidden = false;
     $("emptyMsg").textContent = state.url ? "Select or type a fact to see your image." : "Load an article to begin."; return; }
 
@@ -485,7 +489,8 @@ async function render() {
 /* ---------- Output ---------- */
 const getBlob = () => new Promise(res => $("previewCanvas").toBlob(res, "image/png"));
 const slug = () => (state.title || "wikipedia").replace(/\W+/g, "_").slice(0, 40);
-const caption = () => `${$("factText").value.trim()}\n\nRead more: ${state.shown}`;
+const cleanFact = () => $("factText").value.replace(/(\s*(?:🔗\s*)?Read more:?\s*\S+)+\s*$/i, "").trim();
+const caption = () => `${cleanFact()}\n\nRead more: ${state.shown}`;
 
 async function download() {
   const a = document.createElement("a");
@@ -493,14 +498,29 @@ async function download() {
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   toast("Image downloaded");
 }
+async function copyBoth(quiet) {
+  try {
+    await navigator.clipboard.write([new ClipboardItem({
+      "image/png": getBlob(),
+      "text/plain": new Blob([caption()], { type: "text/plain" }),
+    })]);
+    if (!quiet) toast("Image and caption copied. Paste them into your chat.");
+    return true;
+  } catch {
+    try {
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": getBlob() })]);
+      toast("Image copied. Your browser can’t copy the caption too, so use “Copy caption only”.");
+      return true;
+    } catch { toast("Couldn’t copy the image. Use Download image instead."); return false; }
+  }
+}
 async function nativeShare() {
   const file = new File([await getBlob()], `dyk_${slug()}.png`, { type: "image/png" });
   const data = { files: [file], text: caption(), title: state.title };
   if (navigator.canShare?.(data)) {
     try { await navigator.share(data); } catch {}
   } else {
-    await download();
-    toast("Image saved. Open Instagram or another app and attach it.");
+    await copyBoth();
   }
 }
 async function copyCaption() {
@@ -517,8 +537,11 @@ document.querySelectorAll("input[name=size]").forEach(r => r.addEventListener("c
 $("downloadBtn").onclick = download;
 $("shareBtn").onclick = nativeShare;
 $("copyBtn").onclick = copyCaption;
-$("fbBtn").onclick = () => open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(state.url)}&quote=${encodeURIComponent($("factText").value)}`);
-$("xBtn").onclick = () => open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(state.url)}&text=${encodeURIComponent($("factText").value)}`);
+$("copyBothBtn").onclick = () => copyBoth();
+$("tgBtn").onclick = () => { open(`https://t.me/share/url?url=${encodeURIComponent(state.url)}&text=${encodeURIComponent(cleanFact())}`); copyBoth(); };
+$("waBtn").onclick = () => { open(`https://wa.me/?text=${encodeURIComponent(caption())}`); copyBoth(); };
+$("fbBtn").onclick = () => open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(state.url)}&quote=${encodeURIComponent(cleanFact())}`);
+$("xBtn").onclick = () => open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(state.url)}&text=${encodeURIComponent(cleanFact())}`);
 
 /* ---------- Jump to top / bottom ---------- */
 const smooth = () => matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
