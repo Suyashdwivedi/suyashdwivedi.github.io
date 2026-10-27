@@ -112,6 +112,35 @@
   .jump button:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent-hover); border-color: var(--accent); }
   .jump button[hidden] { display: none; }
   .jump svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  html, body { max-width: 100%; overflow-x: hidden; }
+  .layout > * { min-width: 0; }
+  #articleContainer { overflow-wrap: anywhere; }
+  #articleContainer * { max-width: 100%; }
+  #articleContainer .infobox, #articleContainer .thumb, #articleContainer figure, #articleContainer [style*="float"] {
+    float: none !important; width: auto !important; margin: 8px 0 !important; }
+  #articleContainer [style*="width"] { width: auto !important; }
+  .caption-box { margin-top: 14px; }
+  .caption-box label { display: block; font-size: .9rem; font-weight: 700; margin-bottom: 4px; }
+  .caption-box textarea { min-height: 96px; font-size: .92rem; }
+  @media (max-width: 600px) {
+    .logo-row { padding: 10px 12px; gap: 10px; }
+    .logo-img { height: 40px; }
+    .logo-row h1 { font-size: 1.15rem; }
+    .tagline { font-size: .8rem; }
+    .layout { padding: 0 12px; margin: 12px auto; gap: 12px; }
+    .panel { padding: 14px; }
+    .preview { position: static; }
+    .row button, input[type=url] { flex: 1 1 100%; }
+    button { min-height: 44px; }
+    #articleContainer { max-height: 55vh; padding: 12px; font-size: .92rem; }
+    .article-head { flex-direction: column; gap: 2px; }
+    .seg { display: grid; grid-template-columns: 1fr 1fr; }
+    .actions { grid-template-columns: 1fr 1fr; }
+    .actions #shareBtn { grid-column: 1 / -1; }
+    .jump { right: 10px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+    .jump button { width: 40px; height: 40px; }
+    footer { padding: 20px 12px 80px; }
+  }
   #toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); opacity: 0;
     background: #202122; color: #fff; padding: 10px 16px; border-radius: 6px; font-size: .92rem;
     transition: opacity .2s, transform .2s; pointer-events: none; max-width: 90vw; }
@@ -185,7 +214,11 @@
         <button id="fbBtn" type="button" class="ghost" disabled>Facebook</button>
         <button id="xBtn" type="button" class="ghost" disabled>X</button>
       </div>
-      <p class="hint" style="margin:10px 0 0">Browsers can’t put an image and its text on the clipboard together. On phones, “Share image + caption” passes both to the app and also copies the caption. On desktop, click Copy image, paste it in the chat, then click Copy caption and paste that as the caption.</p>
+      <div class="caption-box">
+        <label for="captionBox">Caption</label>
+        <textarea id="captionBox" readonly placeholder="Your caption appears here once you have a fact."></textarea>
+      </div>
+      <p class="hint" style="margin:10px 0 0">WhatsApp, Instagram and X only take the image from a share, so they leave the caption out. Share image + caption copies the caption first, so after you pick the app, paste it into the caption field. On desktop, use Copy image, paste it in the chat, then Copy caption.</p>
     </section>
   </div>
 </div>
@@ -228,9 +261,9 @@ const state = { blob: null, url: "", shown: "", title: "", host: "", site: SITES
 const logoCache = {};
 let renderTimer, renderToken = 0;
 
-const toast = (msg) => {
+const toast = (msg, ms = 2600) => {
   const t = $("toast"); t.textContent = msg; t.classList.add("show");
-  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2600);
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), ms);
 };
 const setStatus = (msg, err) => { const s = $("status"); s.textContent = msg; s.className = err ? "error" : ""; };
 
@@ -409,6 +442,7 @@ function scheduleRender() { clearTimeout(renderTimer); renderTimer = setTimeout(
 
 async function render() {
   const fact = cleanFact();
+  $("captionBox").value = fact && state.url ? caption() : "";
   const ready = fact && state.url;
   ["downloadBtn", "shareBtn", "copyBtn", "copyBothBtn", "tgBtn", "waBtn", "fbBtn", "xBtn"].forEach(id => $(id).disabled = !ready);
   if (!ready) { $("previewCanvas").hidden = true; $("emptyMsg").hidden = false;
@@ -515,8 +549,9 @@ function nativeShare() {
   if (navigator.canShare?.(data)) {
     // Many apps ignore the text when a file is shared, so keep the caption on the clipboard as a backup.
     navigator.clipboard?.writeText(caption()).catch(() => {});
-    navigator.share(data).catch(() => {});
-    toast("Caption copied too. If the app skips it, paste it as the caption.");
+    navigator.share(data)
+      .then(() => toast("Caption is copied. If WhatsApp, X or Instagram left it out, paste it as the caption.", 8000))
+      .catch(() => {});
   } else copyImage();
 }
 async function copyCaption() {
