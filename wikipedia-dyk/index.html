@@ -1,444 +1,395 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wikipedia DYK Share Tool</title>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
-    <link
-      rel="icon"
-      href="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png"
-    />
-    <style>
-      body {
-        font-family: "Segoe UI", Roboto, sans-serif;
-        background-color: #f9f9f9;
-        margin: 0;
-        padding: 0;
-      }
-      header {
-        display: flex;
-        align-items: center;
-        background-color: #ffffff;
-        padding: 10px 20px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-      header img {
-        height: 50px;
-        margin-right: 12px;
-      }
-      main {
-        max-width: 900px;
-        margin: auto;
-        padding: 20px;
-        background: #fff;
-        margin-top: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 12px rgba(0, 0, 0, 0.025);
-      }
-      .input-block {
-        margin: 15px 0;
-      }
-      input,
-      button,
-      select {
-        font-size: 16px;
-        padding: 8px;
-        margin-top: 5px;
-        border-radius: 4px;
-        border: 1px solid #ccc;
-      }
-      #articleContainer {
-        background-color: #fcfcfc;
-        border: 1px solid #ddd;
-        padding: 15px;
-        border-radius: 6px;
-        max-height: 400px;
-        overflow-y: auto;
-        margin-top: 20px;
-      }
-      canvas {
-        border: 1px solid #ccc;
-        margin-top: 20px;
-        border-radius: 4px;
-        display: none;
-      }
-      #shareButton,
-      #downloadButton {
-        display: none;
-        margin: 10px 5px;
-      }
-      footer {
-        text-align: center;
-        padding: 10px;
-        color: #666;
-        font-size: 14px;
-        margin-top: 40px;
-      }
-      #credit {
-        font-size: 15px;
-        color: #666;
-        margin-top: 5px;
-      }
-      #credit a {
-        color: #0074cc;
-        text-decoration: none;
-      }
-      #credit a:hover {
-        text-decoration: underline;
-      }
-      .social-share-buttons {
-        display: flex;
-        justify-content: space-around;
-        margin-top: 20px;
-      }
-      .social-share-buttons button {
-        background-color: #0074cc;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        font-size: 16px;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      .social-share-buttons button:hover {
-        background-color: #005fa3;
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <img
-        src="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png"
-        alt="Wikipedia Logo"
-      />
-      <div>
-        <h2>Wikipedia Article to Shareable DYK Image</h2>
-        <div id="credit">
-          📸 Created by:
-          <a
-            href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi"
-            target="_blank"
-            >Suyash Dwivedi</a
-          >
-        </div>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Wikipedia DYK Share Tool</title>
+<link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png" />
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+<style>
+  :root {
+    --bg: #f6f7f9; --surface: #fff; --text: #202122; --muted: #54595d;
+    --line: #dde0e4; --accent: #36c; --accent-hover: #2a4b8d; --accent-soft: #eaf3ff;
+    --ok: #14866d; --radius: 8px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101418; --surface: #1a1f25; --text: #eaecf0; --muted: #a2a9b1;
+      --line: #313840; --accent: #6b9bff; --accent-hover: #8fb3ff; --accent-soft: #1d2a40;
+      --ok: #4cc9a8; color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.5 "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  h1, h2 { font-family: "Linux Libertine", Georgia, "Times New Roman", serif; font-weight: 600; margin: 0; }
+  a { color: var(--accent); }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  header { background: var(--surface); border-bottom: 1px solid var(--line); }
+  .bar { max-width: 1200px; margin: auto; padding: 14px 20px; display: flex; align-items: center; gap: 14px; }
+  .bar img { height: 44px; }
+  .bar h1 { font-size: 1.5rem; line-height: 1.2; }
+  .bar p { margin: 2px 0 0; color: var(--muted); font-size: .9rem; }
+
+  .layout { max-width: 1200px; margin: 20px auto; padding: 0 20px;
+    display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+  .panel + .panel { margin-top: 20px; }
+  .step-title { font-size: 1.15rem; margin-bottom: 4px; }
+  .hint { margin: 0 0 12px; color: var(--muted); font-size: .92rem; }
+
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  input[type=url], textarea { width: 100%; font: inherit; padding: 10px 12px; color: var(--text);
+    background: var(--bg); border: 1px solid var(--line); border-radius: 6px; }
+  input[type=url] { flex: 1 1 260px; width: auto; }
+  textarea { resize: vertical; min-height: 110px; }
+  button { font: inherit; font-weight: 600; padding: 10px 16px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--accent); background: var(--accent); color: #fff; }
+  button:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+  button.ghost { background: transparent; color: var(--accent); }
+  button.ghost:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent-hover); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  @media (prefers-color-scheme: dark) { button:not(.ghost) { color: #0b1220; } }
+
+  #status { min-height: 1.4em; margin: 10px 0 0; font-size: .92rem; color: var(--muted); }
+  #status.error { color: #d33; }
+
+  .article-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; margin: 16px 0 8px; }
+  .article-head h2 { font-size: 1.3rem; }
+  #articleContainer { border: 1px solid var(--line); border-radius: 6px; padding: 16px; max-height: 520px;
+    overflow-y: auto; font-size: .95rem; line-height: 1.65; background: var(--bg); }
+  #articleContainer:empty::before { content: "The article will appear here. Select any sentence to use it as your fact.";
+    color: var(--muted); }
+  #articleContainer a { color: inherit; text-decoration: none; pointer-events: none; }
+  #articleContainer img { max-width: 100%; height: auto; cursor: pointer; border-radius: 3px; }
+  #articleContainer img.picked { outline: 4px solid var(--accent); }
+  #articleContainer .mw-editsection, #articleContainer style, #articleContainer .navbox,
+  #articleContainer .reflist, #articleContainer .mw-empty-elt { display: none; }
+  #articleContainer table { max-width: 100%; display: block; overflow-x: auto; }
+
+  .seg { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 14px; }
+  .seg label { cursor: pointer; }
+  .seg input { position: absolute; opacity: 0; }
+  .seg span { display: block; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: .9rem; }
+  .seg small { display: block; color: var(--muted); font-size: .75rem; }
+  .seg input:checked + span { border-color: var(--accent); background: var(--accent-soft); }
+  .seg input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .count { color: var(--muted); font-size: .82rem; text-align: right; margin: 4px 0 12px; }
+  .check { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; font-size: .95rem; }
+
+  .preview { position: sticky; top: 16px; }
+  .canvas-wrap { background: var(--bg); border: 1px dashed var(--line); border-radius: 6px; overflow: hidden; }
+  canvas { display: block; width: 100%; height: auto; }
+  .empty { padding: 40px 20px; text-align: center; color: var(--muted); font-size: .92rem; }
+  .actions { margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
+
+  #toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); opacity: 0;
+    background: #202122; color: #fff; padding: 10px 16px; border-radius: 6px; font-size: .92rem;
+    transition: opacity .2s, transform .2s; pointer-events: none; max-width: 90vw; }
+  #toast.show { opacity: 1; transform: translateX(-50%); }
+  footer { text-align: center; padding: 24px 20px 32px; color: var(--muted); font-size: .88rem; }
+  @media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png" alt="" />
+    <div>
+      <h1>Wikipedia DYK Share Tool</h1>
+      <p>Turn a fact from any Wikipedia article into a shareable image.</p>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <div>
+    <section class="panel">
+      <h2 class="step-title">1. Load an article</h2>
+      <p class="hint">Paste a Wikipedia link in any language. Add a #section to start there.</p>
+      <div class="row">
+        <input type="url" id="wikiURL" placeholder="https://en.wikipedia.org/wiki/…" aria-label="Wikipedia article URL" autocomplete="off" />
+        <button id="loadBtn" type="button">Load article</button>
       </div>
-    </header>
+      <p id="status" role="status" aria-live="polite"></p>
 
-    <main>
-      <div class="input-block">
-        <input
-          type="text"
-          id="wikiURL"
-          placeholder="Paste any Wikipedia article URL"
-          size="80"
-        />
-        <button onclick="loadArticle()">🔍 Load</button>
-        <div class="input-block">
-          <button id="shareButton" onclick="generateShareImage()">
-            📷 Generate Image
-          </button>
-        </div>
+      <div class="article-head">
+        <h2 id="articleTitle"></h2>
+        <span class="hint" id="updated" style="margin:0"></span>
       </div>
+      <div id="articleContainer" tabindex="0" aria-label="Article text"></div>
+      <p class="hint" style="margin-top:8px">Select text to use it as your fact. Click an image to use it as the background.</p>
+    </section>
+  </div>
 
-      <div id="articleContainer" onmouseup="checkSelection()"></div>
+  <div class="preview">
+    <section class="panel">
+      <h2 class="step-title">2. Write your fact</h2>
+      <textarea id="factText" maxlength="320" aria-label="Fact text" placeholder="Select text in the article, or type your own fact."></textarea>
+      <div class="count"><span id="charCount">0</span> / 320</div>
+      <label class="check"><input type="checkbox" id="dykPrefix" checked /> Start with “Did you know…”</label>
 
-      <div class="social-share-buttons">
-        <button id="shareFacebook" onclick="shareToPlatform('facebook')">
-          Share to Facebook
-        </button>
-        <button id="shareInstagram" onclick="shareToPlatform('instagram')">
-          Share to Instagram
-        </button>
-        <button id="shareX" onclick="shareToPlatform('x')">Share to X</button>
+      <h2 class="step-title">3. Pick a format</h2>
+      <div class="seg" role="radiogroup" aria-label="Image format">
+        <label><input type="radio" name="size" value="facebook" checked /><span>Facebook<small>1200 × 630</small></span></label>
+        <label><input type="radio" name="size" value="x" /><span>X<small>1200 × 675</small></span></label>
+        <label><input type="radio" name="size" value="linkedin" /><span>LinkedIn<small>1200 × 627</small></span></label>
+        <label><input type="radio" name="size" value="instagram" /><span>Instagram<small>1080 × 1080</small></span></label>
       </div>
 
-      <canvas id="previewCanvas"></canvas>
-
-      <div>
-        <button id="downloadButton" onclick="downloadImage()">
-          ⬇️ Download Image
-        </button>
+      <div class="canvas-wrap">
+        <div class="empty" id="emptyMsg">Your image preview appears here.</div>
+        <canvas id="previewCanvas" hidden></canvas>
       </div>
-    </main>
 
-    <footer>
-      Created by
-      <a
-        href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi"
-        target="_blank"
-        >Suyash Dwivedi</a
-      ><br />
-      <span id="lastModifiedDisplay">(Updated: --)</span><br />
-      Page Updated on: 27/June/2025
-    </footer>
+      <div class="actions">
+        <button id="downloadBtn" type="button" disabled>Download image</button>
+        <button id="shareBtn" type="button" class="ghost" disabled>Share…</button>
+        <button id="copyBtn" type="button" class="ghost" disabled>Copy caption</button>
+        <button id="fbBtn" type="button" class="ghost" disabled>Facebook</button>
+        <button id="xBtn" type="button" class="ghost" disabled>X</button>
+      </div>
+    </section>
+  </div>
+</div>
 
-    <script>
-      let selectedText = "";
-      let currentArticleURL = "";
-      let mainImageURL = "";
-      let wikiLogoURL =
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/40px-Wikipedia-logo-v2.svg.png";
+<footer>
+  Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener">Suyash Dwivedi</a><br />
+  Article last edited: <span id="lastModifiedDisplay">not loaded</span> · Tool updated: 28 October 2026
+</footer>
+<div id="toast" role="status" aria-live="polite"></div>
 
-      function updateCanvasSize() {
-        const canvas = document.getElementById("previewCanvas");
-        const platform = document.getElementById("platformSize")
-          ? document.getElementById("platformSize").value
-          : "facebook";
-        const sizes = {
-          facebook: [1200, 630],
-          x: [1200, 675],
-          instagram: [1080, 1080],
-          linkedin: [1200, 627],
-        };
-        const [w, h] = sizes[platform];
-        canvas.width = w;
-        canvas.height = h;
-      }
-
-      function loadArticle() {
-        const urlInput = document.getElementById("wikiURL").value.trim();
-        if (!urlInput.includes("wikipedia.org")) {
-          alert("Please enter a valid Wikipedia URL.");
-          return;
-        }
-        const url = new URL(urlInput);
-        const lang = url.hostname.split(".")[0];
-        const title = decodeURIComponent(url.pathname.split("/").pop());
-        const hash = url.hash.replace("#", "").trim();
-        currentArticleURL = url.href;
-
-        const contentAPI = `https://${lang}.wikipedia.org/w/api.php?origin=*&action=parse&page=${title}&prop=text&formatversion=2&format=json`;
-        const imageAPI = `https://${lang}.wikipedia.org/w/api.php?origin=*&format=json&action=query&prop=pageimages&titles=${title}&pithumbsize=800`;
-        const metaAPI = `https://${lang}.wikipedia.org/w/api.php?origin=*&format=json&action=query&prop=revisions&rvprop=timestamp&titles=${title}`;
-
-        fetch(contentAPI)
-          .then((res) => res.json())
-          .then((data) => {
-            const container = document.getElementById("articleContainer");
-            container.innerHTML = data.parse.text;
-            if (hash) {
-              setTimeout(() => {
-                const sectionElem = container.querySelector(`[id="${hash}"]`);
-                if (sectionElem) {
-                  sectionElem.scrollIntoView({ behavior: "smooth" });
-                  let sibling = sectionElem.nextElementSibling;
-                  while (sibling) {
-                    const img = sibling.querySelector("img");
-                    if (img && img.src) {
-                      mainImageURL = img.src;
-                      break;
-                    }
-                    sibling = sibling.nextElementSibling;
-                  }
-                }
-              }, 300);
-            }
-          });
-        fetch(imageAPI)
-          .then((res) => res.json())
-          .then((data) => {
-            const page = Object.values(data.query.pages)[0];
-            const fallback = page.thumbnail?.source;
-            if (!mainImageURL) mainImageURL = fallback;
-          });
-        fetch(metaAPI)
-          .then((res) => res.json())
-          .then((data) => {
-            const page = Object.values(data.query.pages)[0];
-            const dt = new Date(page.revisions[0].timestamp);
-            document.getElementById(
-              "lastModifiedDisplay"
-            ).textContent = `(Updated: ${dt.toLocaleDateString("en-GB", {
-              day: "2-digit",
-              month: "long",
-              year: "numeric",
-            })})`;
-          });
-
-        document.getElementById("shareButton").style.display = "inline-block";
-        document.getElementById("downloadButton").style.display = "none";
-        document.getElementById("previewCanvas").style.display = "none";
-      }
-
-      function checkSelection() {
-        const selection = window.getSelection().toString().trim();
-        if (selection.length > 0) {
-          selectedText = selection;
-          document.getElementById("shareButton").style.display = "inline-block";
-        }
-      }
-
-      function generateShareImage() {
-        updateCanvasSize();
-        const canvas = document.getElementById("previewCanvas");
-        const ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        const drawText = () => {
-          ctx.fillStyle = "rgba(255,255,255,0.25)";
-          ctx.fillRect(0, canvas.height - 140, canvas.width, 240);
-
-          const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
-          gradient.addColorStop("0", "#ff007f");
-          gradient.addColorStop("0.5", "#7f00ff");
-          gradient.addColorStop("1.0", "#00bfff");
-
-          ctx.shadowColor = "rgba(0,0,0,0.3)";
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
-          ctx.shadowBlur = 4;
-
-          const fontSize = getFittingFontSize(
-            selectedText,
-            ctx,
-            canvas.width - 80,
-            72,
-            16
-          );
-          ctx.font = `bold ${fontSize}px sans-serif`;
-          ctx.fillStyle = gradient;
-          ctx.textAlign = "center";
-
-          wrapTextCenter(
-            ctx,
-            "“" + selectedText + "”",
-            canvas.width / 2,
-            canvas.height - 80,
-            canvas.width - 80,
-            fontSize + 10
-          );
-
-          ctx.shadowColor = "transparent";
-          ctx.fillStyle = "#000";
-          ctx.font = "16px sans-serif";
-          ctx.fillText(
-            "🔗 " + currentArticleURL,
-            canvas.width / 2,
-            canvas.height - 30
-          );
-
-          const qrCanvas = document.createElement("canvas");
-          qrCanvas.width = 150;
-          qrCanvas.height = 150;
-          QRCode.toCanvas(qrCanvas, currentArticleURL, { width: 150 }, () => {
-            ctx.drawImage(qrCanvas, canvas.width - 160, 20, 140, 140);
-
-            const logoImg = new Image();
-            logoImg.crossOrigin = "anonymous";
-            logoImg.onload = () => {
-              const centerX = canvas.width - 90;
-              const centerY = 90;
-              ctx.save();
-              ctx.beginPath();
-              ctx.arc(centerX, centerY, 20, 0, 2 * Math.PI);
-              ctx.clip();
-              ctx.drawImage(logoImg, centerX - 20, centerY - 20, 40, 40);
-              ctx.restore();
-              ctx.fillStyle = "#000";
-              ctx.font = "bold 14px sans-serif";
-              ctx.textAlign = "right";
-              ctx.fillText("📱 Scan to read more", canvas.width - 20, 180);
-            };
-            logoImg.src = wikiLogoURL;
-          });
-
-          canvas.style.display = "block";
-          document.getElementById("downloadButton").style.display =
-            "inline-block";
-        };
-
-        if (mainImageURL) {
-          const img = new Image();
-          img.crossOrigin = "anonymous";
-          img.onload = () => {
-            const scale = Math.max(
-              canvas.width / img.width,
-              canvas.height / img.height
-            );
-            const w = img.width * scale;
-            const h = img.height * scale;
-            const x = (canvas.width - w) / 2;
-            const y = 0; // ✅ Align top
-            ctx.globalAlpha = 0.75;
-            ctx.drawImage(img, x, y, w, h);
-            ctx.globalAlpha = 1.0;
-            drawText();
-          };
-          img.src = mainImageURL;
-        } else {
-          drawText();
-        }
-      }
-
-      function wrapTextCenter(ctx, text, centerX, startY, maxWidth, lineHeight) {
-        const words = text.split(" ");
-        let line = "";
-        for (let i = 0; i < words.length; i++) {
-          const testLine = line + words[i] + " ";
-          const testWidth = ctx.measureText(testLine).width;
-          if (testWidth > maxWidth && i > 0) {
-            ctx.fillText(line, centerX, startY);
-            line = words[i] + " ";
-            startY += lineHeight;
-          } else {
-            line = testLine;
-          }
-        }
-        ctx.fillText(line, centerX, startY);
-      }
-
-      function getFittingFontSize(text, ctx, maxWidth, maxFontSize, minFontSize) {
-        let fontSize = maxFontSize;
-        ctx.font = `bold ${fontSize}px sans-serif`;
-        while (fontSize > minFontSize && ctx.measureText(text).width > maxWidth) {
-          fontSize -= 2;
-          ctx.font = `bold ${fontSize}px sans-serif`;
-        }
-        return fontSize;
-      }
-
-      function downloadImage() {
-        const canvas = document.getElementById("previewCanvas");
-        const a = document.createElement("a");
-        a.download = "wikipedia_dyk_share.png";
-        a.href = canvas.toDataURL("image/png");
-        a.click();
-      }
-
-      function shareToPlatform(platform) {
-        const canvas = document.getElementById("previewCanvas");
-        const imageURL = canvas.toDataURL("image/png");
-        if (platform === "facebook") {
-          window.open(
-            `https://www.facebook.com/sharer/sharer.php?u=${currentArticleURL}&quote=${encodeURIComponent(
-              selectedText
-            )}`,
-            "_blank"
-          );
-        } else if (platform === "instagram") {
-          alert(
-            "Instagram sharing is currently not supported via direct link sharing."
-          );
-        } else if (platform === "x") {
-          window.open(
-            `https://twitter.com/intent/tweet?url=${currentArticleURL}&text=${encodeURIComponent(
-              selectedText
-            )}`,
-            "_blank"
-          );
-        }
-      }
-
-      window.onload = updateCanvasSize;
-    </script>
-          <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
 <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-GC8PGC89NB');
+const $ = (id) => document.getElementById(id);
+const SIZES = { facebook: [1200, 630], x: [1200, 675], linkedin: [1200, 627], instagram: [1080, 1080] };
+const LOGO = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/200px-Wikipedia-logo-v2.svg.png";
+const state = { url: "", title: "", image: "", lang: "en" };
+let renderTimer, renderToken = 0;
+
+const toast = (msg) => {
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2600);
+};
+const setStatus = (msg, err) => { const s = $("status"); s.textContent = msg; s.className = err ? "error" : ""; };
+
+/* ---------- Loading ---------- */
+function parseWikiURL(raw) {
+  let u;
+  try { u = new URL(raw); } catch { return null; }
+  if (!/\.wikipedia\.org$/.test(u.hostname)) return null;
+  const title = u.searchParams.get("title") || decodeURIComponent(u.pathname.replace(/^\/wiki\//, ""));
+  if (!title) return null;
+  return { lang: u.hostname.split(".")[0], title, hash: decodeURIComponent(u.hash.slice(1)), href: u.href };
+}
+const api = (lang, params) =>
+  `https://${lang}.wikipedia.org/w/api.php?origin=*&format=json&formatversion=2&` + new URLSearchParams(params);
+
+async function loadArticle() {
+  const info = parseWikiURL($("wikiURL").value.trim());
+  if (!info) { setStatus("That doesn’t look like a Wikipedia article link. Try one like https://en.wikipedia.org/wiki/Tiger.", true); return; }
+  $("loadBtn").disabled = true; setStatus("Loading article…");
+  Object.assign(state, { url: info.href, lang: info.lang, image: "" });
+  try {
+    const [content, img, meta] = await Promise.all([
+      fetch(api(info.lang, { action: "parse", page: info.title, prop: "text|displaytitle", redirects: 1 })).then(r => r.json()),
+      fetch(api(info.lang, { action: "query", prop: "pageimages", titles: info.title, pithumbsize: 1200, redirects: 1 })).then(r => r.json()),
+      fetch(api(info.lang, { action: "query", prop: "revisions", rvprop: "timestamp", titles: info.title, redirects: 1 })).then(r => r.json()),
+    ]);
+    if (content.error) throw new Error(content.error.info || "Article not found");
+    state.title = content.parse.title;
+    $("articleTitle").textContent = state.title;
+    const box = $("articleContainer");
+    box.innerHTML = content.parse.text;
+    box.querySelectorAll("sup.reference, .mw-editsection, .noprint").forEach(n => n.remove());
+    box.querySelectorAll("img").forEach(i => { i.alt = i.alt || "Article image, click to use as background"; });
+    box.scrollTop = 0;
+
+    const page = img.query?.pages?.[0];
+    state.image = page?.thumbnail?.source || "";
+    if (info.hash) {
+      const el = box.querySelector(`[id="${CSS.escape(info.hash)}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        let sib = (el.closest(".mw-heading") || el).nextElementSibling;
+        while (sib) { const i = sib.querySelector("img"); if (i) { state.image = i.src; break; } sib = sib.nextElementSibling; }
+      }
+    }
+    const ts = meta.query?.pages?.[0]?.revisions?.[0]?.timestamp;
+    $("lastModifiedDisplay").textContent = ts
+      ? new Date(ts).toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" }) : "unknown";
+    setStatus(`Loaded “${state.title}”. Now select a sentence.`);
+    scheduleRender();
+  } catch (e) {
+    setStatus("Couldn’t load that article. Check the link and your connection, then try again.", true);
+  } finally { $("loadBtn").disabled = false; }
+}
+
+/* ---------- Selection ---------- */
+function useSelection() {
+  const sel = window.getSelection();
+  const box = $("articleContainer");
+  if (!sel.rangeCount || sel.isCollapsed || !box.contains(sel.anchorNode)) return;
+  const text = sel.toString().replace(/\[\d+\]/g, "").replace(/\s+/g, " ").trim();
+  if (text) { $("factText").value = text.slice(0, 320); updateCount(); scheduleRender(); }
+}
+document.addEventListener("selectionchange", () => { clearTimeout(useSelection.t); useSelection.t = setTimeout(useSelection, 250); });
+
+$("articleContainer").addEventListener("click", (e) => {
+  if (e.target.tagName !== "IMG") return;
+  e.preventDefault();
+  document.querySelectorAll("#articleContainer img.picked").forEach(i => i.classList.remove("picked"));
+  e.target.classList.add("picked");
+  state.image = e.target.src.replace(/\/\d+px-/, "/1200px-");
+  toast("Background image updated");
+  scheduleRender();
+});
+
+function updateCount() { $("charCount").textContent = $("factText").value.length; }
+
+/* ---------- Rendering ---------- */
+const loadImage = (src) => new Promise((res) => {
+  if (!src) return res(null);
+  const i = new Image(); i.crossOrigin = "anonymous";
+  i.onload = () => res(i); i.onerror = () => res(null); i.src = src;
+});
+
+function wrapLines(ctx, text, maxW) {
+  const lines = []; let line = "";
+  for (const w of text.split(" ")) {
+    const t = line ? line + " " + w : w;
+    if (ctx.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t;
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+function scheduleRender() { clearTimeout(renderTimer); renderTimer = setTimeout(render, 200); }
+
+async function render() {
+  const fact = $("factText").value.trim();
+  const ready = fact && state.url;
+  ["downloadBtn", "shareBtn", "copyBtn", "fbBtn", "xBtn"].forEach(id => $(id).disabled = !ready);
+  if (!ready) { $("previewCanvas").hidden = true; $("emptyMsg").hidden = false;
+    $("emptyMsg").textContent = state.url ? "Select or type a fact to see your image." : "Load an article to begin."; return; }
+
+  const token = ++renderToken;
+  const [W, H] = SIZES[document.querySelector("input[name=size]:checked").value];
+  const [bg, logo, qr] = await Promise.all([
+    loadImage(state.image), loadImage(LOGO),
+    QRCode.toCanvas(document.createElement("canvas"), state.url, { width: 220, margin: 1 }).catch(() => null),
+  ]);
+  if (token !== renderToken) return;
+
+  const c = $("previewCanvas"); c.width = W; c.height = H;
+  const ctx = c.getContext("2d");
+  const pad = Math.round(W * 0.05);
+
+  ctx.fillStyle = "#1c2733"; ctx.fillRect(0, 0, W, H);
+  if (bg) {
+    const s = Math.max(W / bg.width, H / bg.height);
+    ctx.drawImage(bg, (W - bg.width * s) / 2, (H - bg.height * s) / 2, bg.width * s, bg.height * s);
+  }
+  const scrim = ctx.createLinearGradient(0, 0, 0, H);
+  scrim.addColorStop(0, "rgba(10,15,22,.55)"); scrim.addColorStop(.35, "rgba(10,15,22,.35)"); scrim.addColorStop(1, "rgba(10,15,22,.92)");
+  ctx.fillStyle = scrim; ctx.fillRect(0, 0, W, H);
+
+  // Top row: logo and label
+  const logoSize = Math.round(H * 0.09);
+  if (logo) ctx.drawImage(logo, pad, pad, logoSize, logoSize);
+  ctx.fillStyle = "#fff"; ctx.textBaseline = "middle"; ctx.textAlign = "left";
+  ctx.font = `600 ${Math.round(logoSize * .4)}px "Segoe UI", Roboto, sans-serif`;
+  ctx.fillText("Wikipedia", pad + logoSize + 14, pad + logoSize / 2);
+
+  // Bottom meta row
+  const qrSize = Math.round(Math.min(H * 0.24, 200));
+  const metaY = H - pad;
+  if (qr) {
+    ctx.fillStyle = "#fff"; ctx.fillRect(W - pad - qrSize, metaY - qrSize, qrSize, qrSize);
+    ctx.drawImage(qr, W - pad - qrSize + 6, metaY - qrSize + 6, qrSize - 12, qrSize - 12);
+  }
+  const textW = W - pad * 2 - (qr ? qrSize + 30 : 0);
+  ctx.textBaseline = "alphabetic";
+  const urlSize = Math.round(H * 0.03), titleSize = Math.round(H * 0.045);
+  ctx.fillStyle = "rgba(255,255,255,.78)";
+  ctx.font = `${urlSize}px "Segoe UI", Roboto, sans-serif`;
+  const host = state.url.replace(/^https?:\/\//, "");
+  let shown = host; while (ctx.measureText(shown).width > textW && shown.length > 8) shown = shown.slice(0, -2);
+  ctx.fillText(shown === host ? host : shown + "…", pad, metaY - 4);
+  ctx.fillStyle = "#fff";
+  ctx.font = `600 ${titleSize}px "Segoe UI", Roboto, sans-serif`;
+  let t = state.title; while (ctx.measureText(t).width > textW && t.length > 4) t = t.slice(0, -2);
+  ctx.fillText(t === state.title ? t : t + "…", pad, metaY - urlSize - 16);
+
+  // Fact text, auto-fitted between the top row and meta row
+  const text = ($("dykPrefix").checked ? "Did you know… " : "") + fact;
+  const top = pad + logoSize + pad * 0.6;
+  const bottom = metaY - Math.max(qrSize, H * 0.14) - pad * 0.5;
+  const maxH = bottom - top;
+  ctx.fillStyle = "#fff"; ctx.textBaseline = "top";
+  let size = Math.round(H * 0.11), lines;
+  for (; size >= 18; size -= 2) {
+    ctx.font = `700 ${size}px "Linux Libertine", Georgia, "Times New Roman", serif`;
+    lines = wrapLines(ctx, text, W - pad * 2);
+    if (lines.length * size * 1.25 <= maxH) break;
+  }
+  const blockH = lines.length * size * 1.25;
+  ctx.shadowColor = "rgba(0,0,0,.45)"; ctx.shadowBlur = 8;
+  lines.forEach((l, i) => ctx.fillText(l, pad, top + (maxH - blockH) / 2 + i * size * 1.25));
+  ctx.shadowBlur = 0;
+
+  c.hidden = false; $("emptyMsg").hidden = true;
+}
+
+/* ---------- Output ---------- */
+const getBlob = () => new Promise(res => $("previewCanvas").toBlob(res, "image/png"));
+const slug = () => (state.title || "wikipedia").replace(/\W+/g, "_").slice(0, 40);
+const caption = () => `${$("factText").value.trim()}\n\nRead more: ${state.url}`;
+
+async function download() {
+  const a = document.createElement("a");
+  a.download = `dyk_${slug()}.png`; a.href = URL.createObjectURL(await getBlob()); a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  toast("Image downloaded");
+}
+async function nativeShare() {
+  const file = new File([await getBlob()], `dyk_${slug()}.png`, { type: "image/png" });
+  const data = { files: [file], text: caption(), title: state.title };
+  if (navigator.canShare?.(data)) {
+    try { await navigator.share(data); } catch {}
+  } else {
+    await download();
+    toast("Image saved. Open Instagram or another app and attach it.");
+  }
+}
+async function copyCaption() {
+  try { await navigator.clipboard.writeText(caption()); toast("Caption copied"); }
+  catch { toast("Couldn’t copy. Select the text and copy it manually."); }
+}
+const open = (u) => window.open(u, "_blank", "noopener");
+
+$("loadBtn").onclick = loadArticle;
+$("wikiURL").addEventListener("keydown", e => { if (e.key === "Enter") loadArticle(); });
+$("factText").addEventListener("input", () => { updateCount(); scheduleRender(); });
+$("dykPrefix").addEventListener("change", scheduleRender);
+document.querySelectorAll("input[name=size]").forEach(r => r.addEventListener("change", scheduleRender));
+$("downloadBtn").onclick = download;
+$("shareBtn").onclick = nativeShare;
+$("copyBtn").onclick = copyCaption;
+$("fbBtn").onclick = () => open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(state.url)}&quote=${encodeURIComponent($("factText").value)}`);
+$("xBtn").onclick = () => open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(state.url)}&text=${encodeURIComponent($("factText").value)}`);
+render();
 </script>
-  </body>
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-GC8PGC89NB');
+</script>
+</body>
 </html>
