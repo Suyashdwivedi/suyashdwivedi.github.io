@@ -177,15 +177,15 @@
 
       <div class="actions">
         <button id="shareBtn" type="button" disabled>Share image + caption</button>
-        <button id="copyBothBtn" type="button" class="ghost" disabled>Copy image + caption</button>
+        <button id="copyBothBtn" type="button" class="ghost" disabled>Copy image</button>
         <button id="downloadBtn" type="button" class="ghost" disabled>Download image</button>
-        <button id="copyBtn" type="button" class="ghost" disabled>Copy caption only</button>
+        <button id="copyBtn" type="button" class="ghost" disabled>Copy caption</button>
         <button id="tgBtn" type="button" class="ghost" disabled>Telegram</button>
         <button id="waBtn" type="button" class="ghost" disabled>WhatsApp</button>
         <button id="fbBtn" type="button" class="ghost" disabled>Facebook</button>
         <button id="xBtn" type="button" class="ghost" disabled>X</button>
       </div>
-      <p class="hint" style="margin:10px 0 0">On phones, “Share image + caption” opens your apps with both attached. On desktop, use “Copy image + caption”, then paste into the chat.</p>
+      <p class="hint" style="margin:10px 0 0">Browsers can’t put an image and its text on the clipboard together. On phones, “Share image + caption” passes both to the app and also copies the caption. On desktop, click Copy image, paste it in the chat, then click Copy caption and paste that as the caption.</p>
     </section>
   </div>
 </div>
@@ -224,7 +224,7 @@ const SITES = {
   mediawiki: { label: "MediaWiki", files: ["MediaWiki-2020-icon.svg"] },
   other: { label: "Wikimedia", files: ["Wikimedia-logo.svg"] },
 };
-const state = { url: "", shown: "", title: "", host: "", site: SITES.wikipedia, images: [], sel: -1 };
+const state = { blob: null, url: "", shown: "", title: "", host: "", site: SITES.wikipedia, images: [], sel: -1 };
 const logoCache = {};
 let renderTimer, renderToken = 0;
 
@@ -484,13 +484,16 @@ async function render() {
   ctx.shadowBlur = 0;
 
   c.hidden = false; $("emptyMsg").hidden = true;
+  const blob = await new Promise(r => c.toBlob(r, "image/png"));
+  if (token === renderToken) state.blob = blob;
 }
 
 /* ---------- Output ---------- */
-const getBlob = () => new Promise(res => $("previewCanvas").toBlob(res, "image/png"));
+const getBlob = () => Promise.resolve(state.blob);
 const slug = () => (state.title || "wikipedia").replace(/\W+/g, "_").slice(0, 40);
 const cleanFact = () => $("factText").value.replace(/(\s*(?:🔗\s*)?Read more:?\s*\S+)+\s*$/i, "").trim();
-const caption = () => `${cleanFact()}\n\nRead more: ${state.shown}`;
+const factText = () => ($("dykPrefix").checked ? "Did you know… " : "") + cleanFact();
+const caption = () => `${factText()}\n\nRead more: ${state.shown}`;
 
 async function download() {
   const a = document.createElement("a");
@@ -498,30 +501,23 @@ async function download() {
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   toast("Image downloaded");
 }
-async function copyBoth(quiet) {
+async function copyImage() {
+  if (!state.blob) { toast("The image is still being drawn. Try again in a moment."); return; }
   try {
-    await navigator.clipboard.write([new ClipboardItem({
-      "image/png": getBlob(),
-      "text/plain": new Blob([caption()], { type: "text/plain" }),
-    })]);
-    if (!quiet) toast("Image and caption copied. Paste them into your chat.");
-    return true;
-  } catch {
-    try {
-      await navigator.clipboard.write([new ClipboardItem({ "image/png": getBlob() })]);
-      toast("Image copied. Your browser can’t copy the caption too, so use “Copy caption only”.");
-      return true;
-    } catch { toast("Couldn’t copy the image. Use Download image instead."); return false; }
-  }
+    await navigator.clipboard.write([new ClipboardItem({ "image/png": state.blob })]);
+    toast("Image copied. Paste it in your chat, then paste the caption (use Copy caption).");
+  } catch { toast("Couldn’t copy the image. Use Download image instead."); }
 }
-async function nativeShare() {
-  const file = new File([await getBlob()], `dyk_${slug()}.png`, { type: "image/png" });
-  const data = { files: [file], text: caption(), title: state.title };
+function nativeShare() {
+  if (!state.blob) { toast("The image is still being drawn. Try again in a moment."); return; }
+  const file = new File([state.blob], `dyk_${slug()}.png`, { type: "image/png" });
+  const data = { files: [file], text: caption(), title: factText() };
   if (navigator.canShare?.(data)) {
-    try { await navigator.share(data); } catch {}
-  } else {
-    await copyBoth();
-  }
+    // Many apps ignore the text when a file is shared, so keep the caption on the clipboard as a backup.
+    navigator.clipboard?.writeText(caption()).catch(() => {});
+    navigator.share(data).catch(() => {});
+    toast("Caption copied too. If the app skips it, paste it as the caption.");
+  } else copyImage();
 }
 async function copyCaption() {
   try { await navigator.clipboard.writeText(caption()); toast("Caption copied"); }
@@ -537,11 +533,11 @@ document.querySelectorAll("input[name=size]").forEach(r => r.addEventListener("c
 $("downloadBtn").onclick = download;
 $("shareBtn").onclick = nativeShare;
 $("copyBtn").onclick = copyCaption;
-$("copyBothBtn").onclick = () => copyBoth();
-$("tgBtn").onclick = () => { open(`https://t.me/share/url?url=${encodeURIComponent(state.url)}&text=${encodeURIComponent(cleanFact())}`); copyBoth(); };
-$("waBtn").onclick = () => { open(`https://wa.me/?text=${encodeURIComponent(caption())}`); copyBoth(); };
-$("fbBtn").onclick = () => open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(state.url)}&quote=${encodeURIComponent(cleanFact())}`);
-$("xBtn").onclick = () => open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(state.url)}&text=${encodeURIComponent(cleanFact())}`);
+$("copyBothBtn").onclick = copyImage;
+$("tgBtn").onclick = () => { open(`https://t.me/share/url?url=${encodeURIComponent(state.url)}&text=${encodeURIComponent(factText())}`); copyImage(); };
+$("waBtn").onclick = () => { open(`https://wa.me/?text=${encodeURIComponent(caption())}`); copyImage(); };
+$("fbBtn").onclick = () => open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(state.url)}&quote=${encodeURIComponent(factText())}`);
+$("xBtn").onclick = () => open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(state.url)}&text=${encodeURIComponent(factText())}`);
 
 /* ---------- Jump to top / bottom ---------- */
 const smooth = () => matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
