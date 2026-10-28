@@ -206,6 +206,20 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
       <div class="gallery" id="gallery" role="radiogroup" aria-label="Background image"></div>
 
       <h2 class="step-title">4. Pick a format</h2>
+      <div class="check" style="margin:0 0 6px"><strong>Text position</strong></div>
+      <div class="seg" role="radiogroup" aria-label="Text position">
+        <label><input type="radio" name="pos" value="top" /><span>Top</span></label>
+        <label><input type="radio" name="pos" value="middle" /><span>Middle</span></label>
+        <label><input type="radio" name="pos" value="bottom" checked /><span>Bottom</span></label>
+      </div>
+      <div class="check" style="margin:0 0 6px"><strong>QR code position</strong></div>
+      <div class="seg" role="radiogroup" aria-label="QR code position">
+        <label><input type="radio" name="qr" value="tl" /><span>Top left</span></label>
+        <label><input type="radio" name="qr" value="tr" /><span>Top right</span></label>
+        <label><input type="radio" name="qr" value="bl" /><span>Bottom left</span></label>
+        <label><input type="radio" name="qr" value="br" checked /><span>Bottom right</span></label>
+      </div>
+      <div class="check" style="margin:0 0 6px"><strong>Image size</strong></div>
       <div class="seg" role="radiogroup" aria-label="Image format">
         <label><input type="radio" name="size" value="facebook" checked /><span>Facebook<small>1200 × 630</small></span></label>
         <label><input type="radio" name="size" value="x" /><span>X<small>1200 × 675</small></span></label>
@@ -236,7 +250,7 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
           <button id="tagAdd" type="button" class="ghost">Add</button>
         </div>
         <label class="check" style="margin:10px 0 0"><input type="checkbox" id="tagsOn" checked /> Include hashtags in the caption</label>
-        <label class="check" style="margin:6px 0 0"><input type="checkbox" id="imgTags" /> Also show hashtags on the image</label>
+        <label class="check" style="margin:6px 0 0"><input type="checkbox" id="imgTags" checked /> Show hashtags on the image (works separately from the caption)</label>
       </div>
       <div class="caption-box">
         <label for="captionBox">Caption</label>
@@ -491,6 +505,26 @@ async function render() {
   // Sizes are based on u, so the square Instagram format gets the same text scale as the wide ones.
   const u = Math.min(H, W * 0.525);
   const shadow = (on) => { ctx.shadowColor = on ? "rgba(0,0,0,.75)" : "transparent"; ctx.shadowBlur = on ? 12 : 0; ctx.shadowOffsetY = on ? 2 : 0; };
+  const FONT = "Arial, Helvetica, sans-serif";
+
+  // Layout: the QR code takes one corner, and all text lives in the column beside it.
+  const qrPos = document.querySelector("input[name=qr]:checked").value; // tl, tr, bl, br
+  const qrLeft = qrPos[1] === "l", qrTop = qrPos[0] === "t";
+  const qrSize = Math.round(Math.min(u * 0.24, 200));
+  const tagSize = Math.round(u * 0.032);
+  let tagLine = ""; // optional hashtag line, centred at the very bottom; tags that don't fit are left out
+  if ($("imgTags").checked && state.tags.some(x => x.on)) {
+    ctx.font = `700 ${tagSize}px ${FONT}`;
+    for (const x of state.tags.filter(x => x.on)) {
+      const n = (tagLine ? tagLine + " " : "") + "#" + x.t;
+      if (ctx.measureText(n).width > W - pad * 2) break;
+      tagLine = n;
+    }
+  }
+  const metaY = H - pad - (tagLine ? tagSize + 20 : 0);
+  const x0 = pad + (qr && qrLeft ? qrSize + 30 : 0);
+  const x1 = W - pad - (qr && !qrLeft ? qrSize + 30 : 0);
+  const colW = x1 - x0;
 
   ctx.fillStyle = "#1c2733"; ctx.fillRect(0, 0, W, H);
   let lum = 0.2;
@@ -514,57 +548,55 @@ async function render() {
   const logoSize = Math.round(u * 0.09);
   if (logo) {
     const r = Math.min(logoSize / logo.width, logoSize / logo.height);
-    ctx.drawImage(logo, pad + (logoSize - logo.width * r) / 2, pad + (logoSize - logo.height * r) / 2, logo.width * r, logo.height * r);
+    ctx.drawImage(logo, x0 + (logoSize - logo.width * r) / 2, pad + (logoSize - logo.height * r) / 2, logo.width * r, logo.height * r);
   }
   shadow(true);
   ctx.fillStyle = "#fff"; ctx.textBaseline = "middle"; ctx.textAlign = "left";
-  ctx.font = `700 ${Math.round(logoSize * .42)}px Arial, Helvetica, sans-serif`;
-  ctx.fillText(state.site.label, pad + logoSize + 14, pad + logoSize / 2);
+  ctx.font = `700 ${Math.round(logoSize * .42)}px ${FONT}`;
+  ctx.fillText(state.site.label, x0 + logoSize + 14, pad + logoSize / 2);
   shadow(false);
 
-  // Bottom meta row
-  const qrSize = Math.round(Math.min(u * 0.24, 200));
-  const metaY = H - pad;
+  // QR code in the chosen corner
   if (qr) {
-    ctx.fillStyle = "#fff"; ctx.fillRect(W - pad - qrSize, metaY - qrSize, qrSize, qrSize);
-    ctx.drawImage(qr, W - pad - qrSize + 6, metaY - qrSize + 6, qrSize - 12, qrSize - 12);
-  }
-  const textW = W - pad * 2 - (qr ? qrSize + 30 : 0);
-  ctx.textBaseline = "alphabetic"; shadow(true);
-  const urlSize = Math.round(u * 0.03), titleSize = Math.round(u * 0.045), tagSize = Math.round(u * 0.032);
-  ctx.fillStyle = "rgba(255,255,255,.92)";
-  ctx.font = `${urlSize}px Arial, Helvetica, sans-serif`;
-  const host = state.shown;
-  let shown = host; while (ctx.measureText(shown).width > textW && shown.length > 8) shown = shown.slice(0, -2);
-  ctx.fillText(shown === host ? host : shown + "…", pad, metaY - 4);
-  ctx.fillStyle = "#fff";
-  ctx.font = `700 ${titleSize}px Arial, Helvetica, sans-serif`;
-  let t = state.title; while (ctx.measureText(t).width > textW && t.length > 4) t = t.slice(0, -2);
-  const titleY = metaY - urlSize - 16;
-  ctx.fillText(t === state.title ? t : t + "…", pad, titleY);
-  let stackH = urlSize + 16 + titleSize;
-  const showTags = $("imgTags").checked && tagsLine();
-  if (showTags) { // optional hashtag line above the title; tags that don't fit are left out
-    ctx.font = `700 ${tagSize}px Arial, Helvetica, sans-serif`; ctx.fillStyle = "rgba(255,255,255,.95)";
-    let line = "";
-    for (const x of state.tags.filter(x => x.on)) { const n = (line ? line + " " : "") + "#" + x.t; if (ctx.measureText(n).width > textW) break; line = n; }
-    if (line) { ctx.fillText(line, pad, titleY - titleSize - 10); stackH += titleSize + 10 + tagSize; }
+    const qx = qrLeft ? pad : W - pad - qrSize, qy = qrTop ? pad : metaY - qrSize;
+    ctx.fillStyle = "#fff"; ctx.fillRect(qx, qy, qrSize, qrSize);
+    ctx.drawImage(qr, qx + 6, qy + 6, qrSize - 12, qrSize - 12);
   }
 
-  // Fact text, auto-fitted between the top row and the bottom block
+  // Bottom block: title and link, then the hashtag line
+  ctx.textBaseline = "alphabetic"; shadow(true);
+  const urlSize = Math.round(u * 0.03), titleSize = Math.round(u * 0.045);
+  ctx.fillStyle = "rgba(255,255,255,.92)";
+  ctx.font = `${urlSize}px ${FONT}`;
+  const host = state.shown;
+  let shown = host; while (ctx.measureText(shown).width > colW && shown.length > 8) shown = shown.slice(0, -2);
+  ctx.fillText(shown === host ? host : shown + "…", x0, metaY - 4);
+  ctx.fillStyle = "#fff";
+  ctx.font = `700 ${titleSize}px ${FONT}`;
+  let t = state.title; while (ctx.measureText(t).width > colW && t.length > 4) t = t.slice(0, -2);
+  ctx.fillText(t === state.title ? t : t + "…", x0, metaY - urlSize - 16);
+  const stackH = urlSize + 16 + titleSize;
+  if (tagLine) {
+    ctx.font = `700 ${tagSize}px ${FONT}`; ctx.fillStyle = "rgba(255,255,255,.95)";
+    ctx.textAlign = "center"; ctx.fillText(tagLine, W / 2, H - pad * 0.65); ctx.textAlign = "left";
+  }
+
+  // Fact text, auto-fitted between the top row and the bottom block, placed top, middle or bottom
   const text = ($("dykPrefix").checked ? "Did you know… " : "") + fact;
   const top = pad + logoSize + pad * 0.6;
-  const bottom = metaY - Math.max(qrSize, stackH) - pad * 0.5;
+  const bottom = metaY - stackH - pad * 0.5;
   const maxH = bottom - top;
   ctx.fillStyle = "#fff"; ctx.textBaseline = "top";
   let size = Math.round(u * 0.11), lines;
   for (; size >= 18; size -= 2) {
-    ctx.font = `700 ${size}px Arial, Helvetica, sans-serif`;
-    lines = wrapLines(ctx, text, W - pad * 2);
+    ctx.font = `700 ${size}px ${FONT}`;
+    lines = wrapLines(ctx, text, colW);
     if (lines.length * size * 1.25 <= maxH) break;
   }
   const blockH = lines.length * size * 1.25;
-  lines.forEach((l, i) => ctx.fillText(l, pad, top + (maxH - blockH) / 2 + i * size * 1.25));
+  const pos = document.querySelector("input[name=pos]:checked").value;
+  const offset = pos === "top" ? 0 : pos === "middle" ? (maxH - blockH) / 2 : maxH - blockH;
+  lines.forEach((l, i) => ctx.fillText(l, x0, top + offset + i * size * 1.25));
   shadow(false);
 
   c.hidden = false; $("emptyMsg").hidden = true;
@@ -661,7 +693,7 @@ $("loadBtn").onclick = loadArticle;
 $("wikiURL").addEventListener("keydown", e => { if (e.key === "Enter") loadArticle(); });
 $("factText").addEventListener("input", () => { updateCount(); scheduleRender(); });
 $("dykPrefix").addEventListener("change", scheduleRender);
-document.querySelectorAll("input[name=size]").forEach(r => r.addEventListener("change", scheduleRender));
+document.querySelectorAll("input[name=size], input[name=pos], input[name=qr]").forEach(r => r.addEventListener("change", scheduleRender));
 $("downloadBtn").onclick = download;
 $("shareBtn").onclick = nativeShare;
 $("copyBtn").onclick = copyCaption;
@@ -688,7 +720,26 @@ $("tagAdd").onclick = () => { addTags($("tagInput").value); $("tagInput").value 
 $("tagInput").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); $("tagAdd").click(); } });
 $("tagsOn").addEventListener("change", updateCaptionBox);
 $("imgTags").addEventListener("change", scheduleRender);
-$("tagsOn").addEventListener("change", () => { if ($("imgTags").checked) scheduleRender(); });
+/* ---------- Remember settings in this browser ---------- */
+const picked = (name) => document.querySelector(`input[name=${name}]:checked`)?.value;
+function saveSettings() {
+  try {
+    localStorage.setItem("dykSettings", JSON.stringify({
+      size: picked("size"), pos: picked("pos"), qr: picked("qr"),
+      prefix: $("dykPrefix").checked, tagsOn: $("tagsOn").checked, imgTags: $("imgTags").checked,
+    }));
+  } catch {}
+}
+function loadSettings() {
+  try {
+    const o = JSON.parse(localStorage.getItem("dykSettings") || "{}");
+    ["size", "pos", "qr"].forEach(n => { const el = document.querySelector(`input[name=${n}][value="${o[n]}"]`); if (el) el.checked = true; });
+    [["dykPrefix", "prefix"], ["tagsOn", "tagsOn"], ["imgTags", "imgTags"]].forEach(([id, k]) => { if (typeof o[k] === "boolean") $(id).checked = o[k]; });
+  } catch {}
+}
+document.querySelectorAll("input[name=size], input[name=pos], input[name=qr], #dykPrefix, #tagsOn, #imgTags")
+  .forEach(el => el.addEventListener("change", saveSettings));
+loadSettings();
 renderTags();
 render();
 </script>
