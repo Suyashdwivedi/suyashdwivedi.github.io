@@ -124,6 +124,8 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
   #articleContainer [style*="width"] { width: auto !important; }
   input[type=text] { width: 100%; font: inherit; padding: 10px 12px; color: var(--text);
     background: var(--bg); border: 1px solid var(--line); border-radius: 6px; flex: 1 1 200px; width: auto; }
+  .credit-box { margin: 4px 0 14px; }
+  .credit-box input[type=text] { width: 100%; }
   .tags-box { margin-top: 14px; }
   .tags-box > label:first-child { display: block; font-size: .9rem; font-weight: 700; margin-bottom: 6px; }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
@@ -205,6 +207,11 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
       <p class="hint" id="galleryHint">Images found on the page appear here.</p>
       <div class="gallery" id="gallery" role="radiogroup" aria-label="Background image"></div>
 
+      <div class="credit-box">
+        <label class="check" style="margin:6px 0"><input type="checkbox" id="creditOn" checked /> Show image credit (author and licence)</label>
+        <input type="text" id="creditInput" placeholder="The credit appears here when you pick an image. You can edit it." aria-label="Image credit" autocomplete="off" />
+      </div>
+
       <h2 class="step-title">4. Pick a format</h2>
       <div class="check" style="margin:0 0 6px"><strong>Text position</strong></div>
       <div class="seg" role="radiogroup" aria-label="Text position">
@@ -224,14 +231,12 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
         <label><input type="radio" name="size" value="fb" checked /><span>Facebook<small>1200 × 630</small></span></label>
         <label><input type="radio" name="size" value="fbwide" /><span>Facebook wide<small>1200 × 675</small></span></label>
         <label><input type="radio" name="size" value="linkedin" /><span>LinkedIn<small>1200 × 627</small></span></label>
-        <label><input type="radio" name="size" value="igsquare" /><span>Instagram square<small>1080 × 1080</small></span></label>
         <label><input type="radio" name="size" value="igportrait" /><span>Instagram portrait<small>1080 × 1350</small></span></label>
-        <label><input type="radio" name="size" value="igstory" /><span>Instagram Story<small>1080 × 1920</small></span></label>
-        <label><input type="radio" name="size" value="wastatus" /><span>WhatsApp Status<small>1080 × 1920</small></span></label>
-        <label><input type="radio" name="size" value="tgstory" /><span>Telegram Story<small>1080 × 1920</small></span></label>
-        <label><input type="radio" name="size" value="chat" /><span>Telegram / WhatsApp chat<small>1080 × 1080</small></span></label>
+        <label><input type="radio" name="size" value="square" /><span>Square<small>Instagram, Telegram, WhatsApp<br>1080 × 1080</small></span></label>
+        <label><input type="radio" name="size" value="story" /><span>Story / Status<small>Instagram, WhatsApp, Telegram<br>1080 × 1920</small></span></label>
       </div>
       <p class="hint" id="sizeHint" aria-live="polite"></p>
+      <label class="check" style="margin:0 0 12px"><input type="checkbox" id="hiRes" checked /> High quality export (twice the pixels, sharper text and QR code, bigger file)</label>
 
       <div class="canvas-wrap">
         <div class="empty" id="emptyMsg">Your image preview appears here.</div>
@@ -286,15 +291,12 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
 <script>
 const $ = (id) => document.getElementById(id);
 const FORMATS = {
-  fb:         { name: "Facebook",                 w: 1200, h: 630,  ratio: "1.91:1", use: "link previews and shared posts" },
-  fbwide:     { name: "Facebook wide",            w: 1200, h: 675,  ratio: "16:9",   use: "landscape announcements" },
-  linkedin:   { name: "LinkedIn",                 w: 1200, h: 627,  ratio: "1.91:1", use: "link previews and shared graphics" },
-  igsquare:   { name: "Instagram square",         w: 1080, h: 1080, ratio: "1:1",    use: "square feed posts" },
-  igportrait: { name: "Instagram portrait",       w: 1080, h: 1350, ratio: "4:5",    use: "portrait feed posts" },
-  igstory:    { name: "Instagram Story",          w: 1080, h: 1920, ratio: "9:16",   use: "Stories" },
-  wastatus:   { name: "WhatsApp Status",          w: 1080, h: 1920, ratio: "9:16",   use: "status updates" },
-  tgstory:    { name: "Telegram Story",           w: 1080, h: 1920, ratio: "9:16",   use: "Stories" },
-  chat:       { name: "Telegram / WhatsApp chat", w: 1080, h: 1080, ratio: "1:1",    use: "shared images and announcements" },
+  fb:         { name: "Facebook",           w: 1200, h: 630,  ratio: "1.91:1", use: "Facebook link previews and shared posts" },
+  fbwide:     { name: "Facebook wide",      w: 1200, h: 675,  ratio: "16:9",   use: "Facebook landscape announcements" },
+  linkedin:   { name: "LinkedIn",           w: 1200, h: 627,  ratio: "1.91:1", use: "LinkedIn link previews and shared graphics" },
+  igportrait: { name: "Instagram portrait", w: 1080, h: 1350, ratio: "4:5",    use: "Instagram portrait feed posts" },
+  square:     { name: "Square",             w: 1080, h: 1080, ratio: "1:1",    use: "Instagram square feed posts, and shared images and announcements in Telegram and WhatsApp chats" },
+  story:      { name: "Story / Status",     w: 1080, h: 1920, ratio: "9:16",   use: "Instagram Stories, WhatsApp Status and Telegram Stories" },
 };
 function updateSizeHint() {
   const f = FORMATS[document.querySelector("input[name=size]:checked").value];
@@ -392,7 +394,7 @@ async function loadArticle() {
         }
       }
     }
-    buildGallery();
+    buildGallery(); refreshCredit();
     buildTags((cats.query?.pages?.[0]?.categories || []).map(c => c.title.replace(/^[^:]*:/, "")));
     const ts = meta.query?.pages?.[0]?.revisions?.[0]?.timestamp;
     $("lastModifiedDisplay").textContent = ts
@@ -429,7 +431,51 @@ function markGallery() {
   const cur = state.images[state.sel];
   if (cur) [...document.querySelectorAll("#articleContainer img")].filter(i => i.getAttribute("src") === cur.thumb).forEach(i => i.classList.add("picked"));
 }
-function selectImage(idx) { state.sel = idx; markGallery(); scheduleRender(); }
+function selectImage(idx) { state.sel = idx; markGallery(); refreshCredit(); }
+
+/* ---------- Image credit (author and licence from Commons) ---------- */
+const creditCache = {};
+function fileFromSrc(src) {
+  const m = (src || "").match(/(?:upload|thumb)\.wikimedia\.org\/wikipedia\/([\w-]+)\/(?:thumb\/)?[0-9a-f]\/[0-9a-f]{2}\/([^\/?#]+)/);
+  if (!m) return null;
+  try { return { proj: m[1], name: decodeURIComponent(m[2]) }; } catch { return null; }
+}
+async function getCredit(src) {
+  const f = fileFromSrc(src);
+  if (!f) return { text: "", note: "this image is not a Wikimedia file" };
+  const key = f.proj + ":" + f.name;
+  if (creditCache[key]) return { text: creditCache[key] };
+  const hosts = f.proj === "commons" ? ["commons.wikimedia.org"] : [`${f.proj}.wikipedia.org`, "commons.wikimedia.org"];
+  let note = "no data returned for this file";
+  for (const host of hosts) {
+    try {
+      const r = await fetch(api(host, { action: "query", prop: "imageinfo", iiprop: "extmetadata",
+        iiextmetadatafilter: "Artist|LicenseShortName", titles: "File:" + f.name }));
+      if (!r.ok) { note = `server answered ${r.status}`; continue; }
+      const d = await r.json();
+      const m = d.query?.pages?.[0]?.imageinfo?.[0]?.extmetadata;
+      if (!m) { note = "file page not found"; continue; }
+      let artist = new DOMParser().parseFromString(m.Artist?.value || "", "text/html").body.textContent.replace(/\s+/g, " ").trim();
+      if (artist.length > 45) artist = artist.slice(0, 44) + "…";
+      const lic = (m.LicenseShortName?.value || "").trim();
+      const text = (artist ? `Image © ${artist}` : `Image via ${host.startsWith("commons") ? "Wikimedia Commons" : "Wikipedia"}`) + (lic ? `, ${lic}` : "");
+      return { text: (creditCache[key] = text) };
+    } catch (e) { note = "network error: " + (e.message || e); console.warn("Credit lookup failed", host, e); }
+  }
+  return { text: "", note };
+}
+async function refreshCredit() {
+  const k = state.sel, cur = state.images[k], box = $("creditInput");
+  const hint = "The credit appears here when you pick an image. You can edit it.";
+  box.value = ""; box.placeholder = cur ? "Looking up the author and licence…" : hint;
+  updateCaptionBox(); scheduleRender();
+  if (!cur) return;
+  const r = await getCredit(cur.thumb);
+  if (k !== state.sel) return;
+  box.value = r.text;
+  box.placeholder = r.text ? hint : `Couldn’t find the credit (${r.note}). Type it here, for example: Image © Name, CC BY-SA 4.0`;
+  updateCaptionBox(); scheduleRender();
+}
 
 async function getLogo(site) {
   const key = site.label;
@@ -477,13 +523,16 @@ const loadImage = (src) => new Promise((res) => {
 /* Wikimedia only serves fixed thumbnail widths (1280, 1920, ...), and refuses sizes above the original.
    So try big standard sizes first, then the untouched original file, then the small page thumbnail. */
 function imageCandidates(src) {
+  // Wikipedia now serves thumbnails from thumb.wikimedia.org with tracking parameters; use the plain upload host.
+  const clean = src.split("?")[0].replace("//thumb.wikimedia.org/", "//upload.wikimedia.org/");
   const out = [];
-  if (/\/thumb\//.test(src)) {
-    for (const w of [1920, 1280]) out.push(src.replace(/\/((?:lossy-|lossless-)?(?:page\d+-)?)\d+px-/, `/$1${w}px-`));
-    const orig = src.replace("/thumb/", "/").replace(/\/[^/]+$/, "");
+  if (/\/thumb\//.test(clean)) {
+    for (const w of [1920, 1280]) out.push(clean.replace(/\/((?:lossy-|lossless-)?(?:page\d+-)?)\d+px-/, `/$1${w}px-`));
+    const orig = clean.replace("/thumb/", "/").replace(/\/[^/]+$/, "");
     if (/\.(jpe?g|png|webp|gif)$/i.test(orig)) out.push(orig);
   }
-  out.push(src);
+  out.push(clean);
+  if (clean !== src) out.push(src);
   return out;
 }
 async function loadFirst(list) {
@@ -514,14 +563,18 @@ async function render() {
   const token = ++renderToken;
   const F = FORMATS[document.querySelector("input[name=size]:checked").value], W = F.w, H = F.h;
   const cur = state.images[state.sel];
+  const S = $("hiRes").checked ? 2 : 1; // export scale: 2 means twice the pixels, so text and QR stay sharp
+  const qrPx = Math.max(40, Math.round(Math.min(Math.min(H, W * 0.525) * 0.24, 200)) - 12) * S;
   const [bg, logo, qr] = await Promise.all([
     cur ? loadFirst(imageCandidates(cur.thumb)) : null, getLogo(state.site),
-    QRCode.toCanvas(document.createElement("canvas"), state.url, { width: 220, margin: 1 }).catch(() => null),
+    QRCode.toCanvas(document.createElement("canvas"), state.url, { width: qrPx, margin: 1, errorCorrectionLevel: "M" }).catch(() => null),
   ]);
   if (token !== renderToken) return;
 
-  const c = $("previewCanvas"); c.width = W; c.height = H;
+  const c = $("previewCanvas"); c.width = W * S; c.height = H * S;
   const ctx = c.getContext("2d");
+  ctx.setTransform(S, 0, 0, S, 0, 0);
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
   const pad = Math.round(W * 0.05);
   const safeY = H / W > 1.7 ? Math.round(H * 0.12) : 0; // keeps content clear of Story/Status app buttons
   const padTop = pad + safeY, padBot = pad + safeY;
@@ -556,7 +609,7 @@ async function render() {
     ctx.drawImage(bg, (W - bg.width * sc) / 2, (H - bg.height * sc) / 2, bg.width * sc, bg.height * sc);
     try { // measure how bright the photo is, so bright photos get a darker overlay
       const t = document.createElement("canvas"); t.width = t.height = 24;
-      const tc = t.getContext("2d"); tc.drawImage(c, 0, 0, 24, 24);
+      const tc = t.getContext("2d"); tc.drawImage(c, 0, 0, c.width, c.height, 0, 0, 24, 24);
       const d = tc.getImageData(0, 0, 24, 24).data; let sum = 0;
       for (let i = 0; i < d.length; i += 4) sum += (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255;
       lum = sum / (d.length / 4);
@@ -583,22 +636,33 @@ async function render() {
   if (qr) {
     const qx = qrLeft ? pad : W - pad - qrSize, qy = qrTop ? padTop : metaY - qrSize;
     ctx.fillStyle = "#fff"; ctx.fillRect(qx, qy, qrSize, qrSize);
+    ctx.imageSmoothingEnabled = false; // keep QR squares pin sharp
     ctx.drawImage(qr, qx + 6, qy + 6, qrSize - 12, qrSize - 12);
+    ctx.imageSmoothingEnabled = true;
   }
 
   // Bottom block: title and link, then the hashtag line
   ctx.textBaseline = "alphabetic"; shadow(true);
   const urlSize = Math.round(u * 0.03), titleSize = Math.round(u * 0.045);
+  const creditText = creditLine(), creditSize = Math.round(u * 0.026);
+  let y = metaY - 4;
+  if (creditText) { // photo credit, small, under the link
+    ctx.fillStyle = "rgba(255,255,255,.88)"; ctx.font = `italic ${creditSize}px ${FONT}`;
+    let ct = creditText; while (ctx.measureText(ct).width > colW && ct.length > 8) ct = ct.slice(0, -2);
+    ctx.fillText(ct === creditText ? ct : ct + "…", x0, y);
+    y -= creditSize + 14;
+  }
   ctx.fillStyle = "rgba(255,255,255,.92)";
   ctx.font = `${urlSize}px ${FONT}`;
   const host = state.shown;
   let shown = host; while (ctx.measureText(shown).width > colW && shown.length > 8) shown = shown.slice(0, -2);
-  ctx.fillText(shown === host ? host : shown + "…", x0, metaY - 4);
+  ctx.fillText(shown === host ? host : shown + "…", x0, y);
+  y -= urlSize + 12;
   ctx.fillStyle = "#fff";
   ctx.font = `700 ${titleSize}px ${FONT}`;
   let t = state.title; while (ctx.measureText(t).width > colW && t.length > 4) t = t.slice(0, -2);
-  ctx.fillText(t === state.title ? t : t + "…", x0, metaY - urlSize - 16);
-  const stackH = urlSize + 16 + titleSize;
+  ctx.fillText(t === state.title ? t : t + "…", x0, y);
+  const stackH = metaY - y + titleSize;
   if (tagLine) {
     ctx.font = `700 ${tagSize}px ${FONT}`; ctx.fillStyle = "rgba(255,255,255,.95)";
     ctx.textAlign = "center"; ctx.fillText(tagLine, W / 2, H - padBot + pad * 0.35); ctx.textAlign = "left";
@@ -633,7 +697,8 @@ const slug = () => (state.title || "wikipedia").replace(/\W+/g, "_").slice(0, 40
 const cleanFact = () => $("factText").value.replace(/(\s*(?:🔗\s*)?Read more:?\s*\S+)+\s*$/i, "").trim();
 const factText = () => ($("dykPrefix").checked ? "Did you know… " : "") + cleanFact();
 const tagsLine = () => $("tagsOn").checked ? state.tags.filter(x => x.on).map(x => "#" + x.t).join(" ") : "";
-const caption = () => `${factText()}\n\nRead more: ${state.shown}` + (tagsLine() ? `\n\n${tagsLine()}` : "");
+const creditLine = () => ($("creditOn").checked ? $("creditInput").value.trim() : "");
+const caption = () => `${factText()}\n\nRead more: ${state.shown}` + (creditLine() ? `\n${creditLine()}` : "") + (tagsLine() ? `\n\n${tagsLine()}` : "");
 const updateCaptionBox = () => { $("captionBox").value = cleanFact() && state.url ? caption() : ""; };
 
 /* ---------- Hashtags ---------- */
@@ -751,18 +816,24 @@ function saveSettings() {
     localStorage.setItem("dykSettings", JSON.stringify({
       size: picked("size"), pos: picked("pos"), qr: picked("qr"),
       prefix: $("dykPrefix").checked, tagsOn: $("tagsOn").checked, imgTags: $("imgTags").checked,
+      creditOn: $("creditOn").checked, hiRes: $("hiRes").checked,
     }));
   } catch {}
 }
 function loadSettings() {
   try {
     const o = JSON.parse(localStorage.getItem("dykSettings") || "{}");
+    const moved = { igsquare: "square", chat: "square", instagram: "square", igstory: "story", wastatus: "story", tgstory: "story", facebook: "fb", x: "fbwide" };
+    if (moved[o.size]) o.size = moved[o.size];
     ["size", "pos", "qr"].forEach(n => { const el = document.querySelector(`input[name=${n}][value="${o[n]}"]`); if (el) el.checked = true; });
-    [["dykPrefix", "prefix"], ["tagsOn", "tagsOn"], ["imgTags", "imgTags"]].forEach(([id, k]) => { if (typeof o[k] === "boolean") $(id).checked = o[k]; });
+    [["dykPrefix", "prefix"], ["tagsOn", "tagsOn"], ["imgTags", "imgTags"], ["creditOn", "creditOn"], ["hiRes", "hiRes"]].forEach(([id, k]) => { if (typeof o[k] === "boolean") $(id).checked = o[k]; });
   } catch {}
 }
-document.querySelectorAll("input[name=size], input[name=pos], input[name=qr], #dykPrefix, #tagsOn, #imgTags")
+document.querySelectorAll("input[name=size], input[name=pos], input[name=qr], #dykPrefix, #tagsOn, #imgTags, #creditOn, #hiRes")
   .forEach(el => el.addEventListener("change", saveSettings));
+$("creditOn").addEventListener("change", () => { updateCaptionBox(); scheduleRender(); });
+$("hiRes").addEventListener("change", scheduleRender);
+$("creditInput").addEventListener("input", () => { updateCaptionBox(); scheduleRender(); });
 loadSettings();
 updateSizeHint();
 renderTags();
