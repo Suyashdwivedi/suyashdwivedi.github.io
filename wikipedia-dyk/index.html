@@ -186,9 +186,9 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
   <div>
     <section class="panel">
       <h2 class="step-title">1. Load an article</h2>
-      <p class="hint">Paste a link from any Wikipedia language or Wikimedia project. Add a #section to start there.</p>
+      <p class="hint">Paste a link from any Wikipedia language or Wikimedia project, or a w.wiki short link. Add a #section to start there.</p>
       <div class="row">
-        <input type="url" id="wikiURL" placeholder="https://en.wikipedia.org/wiki/… or https://meta.wikimedia.org/wiki/…" aria-label="Wikipedia article URL" autocomplete="off" />
+        <input type="url" id="wikiURL" placeholder="https://en.wikipedia.org/wiki/… or a w.wiki short link" aria-label="Wikipedia article URL" autocomplete="off" />
         <button id="loadBtn" type="button">Load article</button>
       </div>
       <p id="status" role="status" aria-live="polite"></p>
@@ -233,6 +233,7 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
         <label><input type="radio" name="pos" value="middle" /><span>Middle</span></label>
         <label><input type="radio" name="pos" value="bottom" checked /><span>Bottom</span></label>
       </div>
+      <label class="check" style="margin:0 0 8px"><input type="checkbox" id="qrOn" checked /> Show QR code</label>
       <div class="check" style="margin:0 0 6px"><strong>QR code position</strong></div>
       <div class="seg" role="radiogroup" aria-label="QR code position">
         <label><input type="radio" name="qr" value="tl" /><span>Top left</span></label>
@@ -240,6 +241,7 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
         <label><input type="radio" name="qr" value="bl" /><span>Bottom left</span></label>
         <label><input type="radio" name="qr" value="br" checked /><span>Bottom right</span></label>
       </div>
+      <p class="hint" style="margin:-6px 0 12px">If you paste a w.wiki short link, the QR code uses it (smaller and easier to scan) while the image shows the full link.</p>
       <div class="check" style="margin:0 0 6px"><strong>Image format</strong></div>
       <div class="seg" role="radiogroup" aria-label="Image format">
         <label><input type="radio" name="size" value="fb" checked /><span>Facebook<small>1200 × 630</small></span></label>
@@ -334,7 +336,7 @@ const SITES = {
   mediawiki: { label: "MediaWiki", files: ["MediaWiki-2020-icon.svg"] },
   other: { label: "Wikimedia", files: ["Wikimedia-logo.svg"] },
 };
-const state = { loading: false, fx: 0.5, fy: 0.5, zoom: 1, ov: { x: 0, y: 0 }, W: 1200, tags: [], blob: null, url: "", shown: "", title: "", host: "", site: SITES.wikipedia, images: [], sel: -1 };
+const state = { qrUrl: "", siteLabel: "", loading: false, fx: 0.5, fy: 0.5, zoom: 1, ov: { x: 0, y: 0 }, W: 1200, tags: [], blob: null, url: "", shown: "", title: "", host: "", site: SITES.wikipedia, images: [], sel: -1 };
 const logoCache = {};
 let renderTimer, renderToken = 0;
 
@@ -365,20 +367,39 @@ const api = (host, params) =>
   `https://${host}/w/api.php?origin=*&format=json&formatversion=2&` + new URLSearchParams(params);
 const fixSrc = (s) => (s || "").startsWith("//") ? "https:" + s : s;
 
+const LANG_PROJECT = /^[a-z][a-z0-9-]*\.(wikipedia|wiktionary|wikibooks|wikiquote|wikisource|wikinews|wikiversity|wikivoyage)\.org$/;
 async function loadArticle() {
-  const info = parseWikiURL($("wikiURL").value.trim());
-  if (!info) { setStatus("That doesn’t look like a Wikimedia link. Try one like https://en.wikipedia.org/wiki/Tiger or https://meta.wikimedia.org/wiki/User:Example.", true); return; }
-  $("loadBtn").disabled = true; setStatus("Loading page…");
-  Object.assign(state, { url: info.href, shown: info.shown, host: info.host, site: siteFor(info.host), images: [], sel: -1 });
+  let raw = $("wikiURL").value.trim(), shortUrl = "";
+  let u0 = null; try { u0 = new URL(raw); } catch {}
+  $("loadBtn").disabled = true;
+  if (u0 && u0.hostname === "w.wiki") { // short link: find the full address (asked from the resolve.php helper on Toolforge)
+    setStatus("Opening the short link…");
+    try {
+      const r = await fetch("https://wiki-dyk.toolforge.org/resolve.php?u=" + encodeURIComponent(u0.href)); // always asked from Toolforge, so it also works from other places (GitHub Pages, a local file)
+      const d = await r.json();
+      if (!r.ok || !d.url) throw new Error(d.error || "failed");
+      shortUrl = u0.href; raw = d.url;
+    } catch {
+      setStatus("Couldn’t open that short link. Check your connection, or paste the full article link instead.", true);
+      $("loadBtn").disabled = false; return;
+    }
+  }
+  const info = parseWikiURL(raw);
+  if (!info) { setStatus("That doesn’t look like a Wikimedia link. Try one like https://en.wikipedia.org/wiki/Tiger or https://meta.wikimedia.org/wiki/User:Example.", true); $("loadBtn").disabled = false; return; }
+  setStatus("Loading page…");
+  Object.assign(state, { url: info.href, qrUrl: shortUrl || info.href, shown: info.shown, host: info.host, site: siteFor(info.host), siteLabel: "", images: [], sel: -1 });
   try {
-    const [content, img, meta, cats] = await Promise.all([
+    const [content, img, meta, cats, siteinfo] = await Promise.all([
       fetch(api(info.host, { action: "parse", page: info.title, prop: "text|displaytitle", redirects: 1 })).then(r => r.json()),
       fetch(api(info.host, { action: "query", prop: "pageimages", titles: info.title, pithumbsize: 1200, redirects: 1 })).then(r => r.json()),
       fetch(api(info.host, { action: "query", prop: "revisions", rvprop: "timestamp", titles: info.title, redirects: 1 })).then(r => r.json()),
       fetch(api(info.host, { action: "query", prop: "categories", titles: info.title, cllimit: 12, clshow: "!hidden", redirects: 1 })).then(r => r.json()).catch(() => ({})),
+      fetch(api(info.host, { action: "query", meta: "siteinfo", siprop: "general" })).then(r => r.json()).catch(() => ({})),
     ]);
     if (content.error) throw new Error(content.error.info || "Page not found");
     state.title = content.parse.title;
+    const siteName = siteinfo.query?.general?.sitename; // the project name in its own language, e.g. Wikipédia or विकिपीडिया
+    state.siteLabel = LANG_PROJECT.test(info.host) && siteName ? siteName : state.site.label;
     $("articleTitle").textContent = state.title;
     const box = $("articleContainer");
     box.innerHTML = content.parse.text;
@@ -633,7 +654,7 @@ async function render() {
   if (bestRank < 0) bestRank = Infinity;
   const [logo, qr] = await Promise.all([
     getLogo(state.site),
-    QRCode.toCanvas(document.createElement("canvas"), state.url, { width: qrPx, margin: 1, errorCorrectionLevel: "M" }).catch(() => null),
+    $("qrOn").checked ? QRCode.toCanvas(document.createElement("canvas"), state.qrUrl || state.url, { width: qrPx, margin: 1, errorCorrectionLevel: "M" }).catch(() => null) : null,
   ]);
   if (token !== renderToken) return;
 
@@ -700,7 +721,7 @@ async function render() {
   shadow(true);
   ctx.fillStyle = "#fff"; ctx.textBaseline = "middle"; ctx.textAlign = "left";
   ctx.font = `700 ${Math.round(logoSize * .42)}px ${FONT}`;
-  ctx.fillText(state.site.label, x0 + logoSize + 14, padTop + logoSize / 2);
+  ctx.fillText(state.siteLabel || state.site.label, x0 + logoSize + 14, padTop + logoSize / 2);
   shadow(false);
 
   // QR code in the chosen corner
@@ -945,7 +966,7 @@ function saveSettings() {
     localStorage.setItem("dykSettings", JSON.stringify({
       size: picked("size"), pos: picked("pos"), qr: picked("qr"),
       prefix: $("dykPrefix").checked, tagsOn: $("tagsOn").checked, imgTags: $("imgTags").checked,
-      creditOn: $("creditOn").checked, hiRes: $("hiRes").checked,
+      creditOn: $("creditOn").checked, hiRes: $("hiRes").checked, qrOn: $("qrOn").checked,
     }));
   } catch {}
 }
@@ -955,15 +976,18 @@ function loadSettings() {
     const moved = { igsquare: "square", chat: "square", instagram: "square", igstory: "story", wastatus: "story", tgstory: "story", facebook: "fb", x: "fbwide" };
     if (moved[o.size]) o.size = moved[o.size];
     ["size", "pos", "qr"].forEach(n => { const el = document.querySelector(`input[name=${n}][value="${o[n]}"]`); if (el) el.checked = true; });
-    [["dykPrefix", "prefix"], ["tagsOn", "tagsOn"], ["imgTags", "imgTags"], ["creditOn", "creditOn"], ["hiRes", "hiRes"]].forEach(([id, k]) => { if (typeof o[k] === "boolean") $(id).checked = o[k]; });
+    [["dykPrefix", "prefix"], ["tagsOn", "tagsOn"], ["imgTags", "imgTags"], ["creditOn", "creditOn"], ["hiRes", "hiRes"], ["qrOn", "qrOn"]].forEach(([id, k]) => { if (typeof o[k] === "boolean") $(id).checked = o[k]; });
   } catch {}
 }
-document.querySelectorAll("input[name=size], input[name=pos], input[name=qr], #dykPrefix, #tagsOn, #imgTags, #creditOn, #hiRes")
+document.querySelectorAll("input[name=size], input[name=pos], input[name=qr], #dykPrefix, #tagsOn, #imgTags, #creditOn, #hiRes, #qrOn")
   .forEach(el => el.addEventListener("change", saveSettings));
+const updateQrControls = () => document.querySelectorAll("input[name=qr]").forEach(r => { r.disabled = !$("qrOn").checked; });
+$("qrOn").addEventListener("change", () => { updateQrControls(); scheduleRender(); });
 $("creditOn").addEventListener("change", () => { updateCaptionBox(); scheduleRender(); });
 $("hiRes").addEventListener("change", scheduleRender);
 $("creditInput").addEventListener("input", () => { updateCaptionBox(); scheduleRender(); });
 loadSettings();
+updateQrControls();
 updateSizeHint();
 renderTags();
 render();
@@ -978,14 +1002,5 @@ render();
   if (document.readyState === "complete") addCounter(); else addEventListener("load", addCounter);
 })();
 </script>
-</script>
-   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-GC8PGC89NB');
-  </script>
-  <script src="https://cdn.counter.dev/script.js" data-id="cc7a036d-a904-4d76-bcac-37ea4196c014" data-utcoffset="6"></script>  
 </body>
 </html>
