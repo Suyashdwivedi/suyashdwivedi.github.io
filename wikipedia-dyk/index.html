@@ -124,6 +124,12 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
   #articleContainer [style*="width"] { width: auto !important; }
   input[type=text] { width: 100%; font: inherit; padding: 10px 12px; color: var(--text);
     background: var(--bg); border: 1px solid var(--line); border-radius: 6px; flex: 1 1 200px; width: auto; }
+  .pos-box { margin: 4px 0 12px; }
+  .slider { display: flex; align-items: center; gap: 10px; font-size: .9rem; margin: 4px 0; }
+  .slider span { flex: 0 0 82px; }
+  .slider input { flex: 1; min-width: 0; accent-color: var(--accent); }
+  canvas { cursor: grab; }
+  canvas.dragging { cursor: grabbing; }
   .credit-box { margin: 4px 0 14px; }
   .credit-box input[type=text] { width: 100%; }
   .tags-box { margin-top: 14px; }
@@ -207,6 +213,14 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
       <p class="hint" id="galleryHint">Images found on the page appear here.</p>
       <div class="gallery" id="gallery" role="radiogroup" aria-label="Background image"></div>
 
+      <div class="pos-box">
+        <div class="check" style="margin:6px 0 4px"><strong>Position the photo</strong></div>
+        <p class="hint" style="margin:0 0 6px">Slide the photo to keep the important part in the frame. With a mouse you can also drag the preview.</p>
+        <label class="slider"><span>Left / right</span><input type="range" id="posX" min="0" max="100" value="50" /></label>
+        <label class="slider"><span>Up / down</span><input type="range" id="posY" min="0" max="100" value="50" /></label>
+        <label class="slider"><span>Zoom</span><input type="range" id="posZ" min="100" max="300" value="100" /></label>
+        <button id="posReset" type="button" class="ghost" style="margin-top:6px">Reset position</button>
+      </div>
       <div class="credit-box">
         <label class="check" style="margin:6px 0"><input type="checkbox" id="creditOn" checked /> Show image credit (author and licence)</label>
         <input type="text" id="creditInput" placeholder="The credit appears here when you pick an image. You can edit it." aria-label="Image credit" autocomplete="off" />
@@ -242,6 +256,7 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
         <div class="empty" id="emptyMsg">Your image preview appears here.</div>
         <canvas id="previewCanvas" hidden></canvas>
       </div>
+      <p class="hint" id="photoStatus" role="status" style="margin:6px 0 0"></p>
 
       <div class="actions">
         <button id="shareBtn" type="button" disabled>Share image + caption</button>
@@ -273,10 +288,9 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
 </div>
 
 <footer>
-  Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener">Suyash Dwivedi</a> | Project: <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank" rel="noopener">Wiki's Lazy Coders</a> | Updated on: <strong>29 October 2026</strong><br />
+  Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener">Suyash Dwivedi</a> | Project: <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank" rel="noopener">Wiki's Lazy Coders</a> | Updated on: <strong>30 October 2026</strong><br />
   👁 Views: <span id="tc-views"></span> &nbsp; 👤 Unique: <span id="tc-sessions"></span><br />
   <small>Loaded page last edited: <span id="lastModifiedDisplay">not loaded</span></small>
-  <script src="https://toolcounter.toolforge.org/embed.js.php?tool=wiki-dyk&page=index"></script>
 </footer>
 <div class="jump">
   <button type="button" id="toTop" aria-label="Go to top of page" title="Go to top" hidden>
@@ -320,7 +334,7 @@ const SITES = {
   mediawiki: { label: "MediaWiki", files: ["MediaWiki-2020-icon.svg"] },
   other: { label: "Wikimedia", files: ["Wikimedia-logo.svg"] },
 };
-const state = { tags: [], blob: null, url: "", shown: "", title: "", host: "", site: SITES.wikipedia, images: [], sel: -1 };
+const state = { loading: false, fx: 0.5, fy: 0.5, zoom: 1, ov: { x: 0, y: 0 }, W: 1200, tags: [], blob: null, url: "", shown: "", title: "", host: "", site: SITES.wikipedia, images: [], sel: -1 };
 const logoCache = {};
 let renderTimer, renderToken = 0;
 
@@ -369,7 +383,7 @@ async function loadArticle() {
     const box = $("articleContainer");
     box.innerHTML = content.parse.text;
     box.querySelectorAll("sup.reference, .mw-editsection, .noprint").forEach(n => n.remove());
-    box.querySelectorAll("img").forEach(i => { i.setAttribute("src", fixSrc(i.getAttribute("src"))); i.removeAttribute("srcset"); i.alt = i.alt || "Page image"; });
+    box.querySelectorAll("img").forEach(i => { i.setAttribute("src", fixSrc(i.getAttribute("src"))); i.removeAttribute("srcset"); i.loading = "lazy"; i.alt = i.alt || "Page image"; });
     box.scrollTop = 0;
 
     // Collect every usable image on the page
@@ -394,7 +408,7 @@ async function loadArticle() {
         }
       }
     }
-    buildGallery(); refreshCredit();
+    buildGallery(); resetPos(); refreshCredit();
     buildTags((cats.query?.pages?.[0]?.categories || []).map(c => c.title.replace(/^[^:]*:/, "")));
     const ts = meta.query?.pages?.[0]?.revisions?.[0]?.timestamp;
     $("lastModifiedDisplay").textContent = ts
@@ -431,7 +445,7 @@ function markGallery() {
   const cur = state.images[state.sel];
   if (cur) [...document.querySelectorAll("#articleContainer img")].filter(i => i.getAttribute("src") === cur.thumb).forEach(i => i.classList.add("picked"));
 }
-function selectImage(idx) { state.sel = idx; markGallery(); refreshCredit(); }
+function selectImage(idx) { state.sel = idx; resetPos(); markGallery(); refreshCredit(); }
 
 /* ---------- Image credit (author and licence from Commons) ---------- */
 const creditCache = {};
@@ -514,10 +528,25 @@ $("articleContainer").addEventListener("click", (e) => {
 function updateCount() { $("charCount").textContent = $("factText").value.length; }
 
 /* ---------- Rendering ---------- */
+const imgCache = new Map(); // keeps recently loaded photos so dragging the photo doesn't reload it
+const inflight = new Map(); // photo downloads in progress, so unneeded ones can be cancelled (a pending download keeps the browser's loading spinner going)
+function abortLoad(src) {
+  const x = inflight.get(src);
+  if (!x) return;
+  inflight.delete(src); clearTimeout(x.timer);
+  x.img.onload = x.img.onerror = null; x.img.src = ""; x.res(null);
+}
 const loadImage = (src) => new Promise((res) => {
   if (!src) return res(null);
+  if (imgCache.has(src)) return res(imgCache.get(src));
+  abortLoad(src);
   const i = new Image(); i.crossOrigin = "anonymous";
-  i.onload = () => res(i); i.onerror = () => res(null); i.src = src;
+  const timer = setTimeout(() => abortLoad(src), 15000); // give up on a stuck download
+  const done = (v) => { clearTimeout(timer); inflight.delete(src); res(v); };
+  i.onload = () => { imgCache.set(src, i); if (imgCache.size > 6) imgCache.delete(imgCache.keys().next().value); done(i); };
+  i.onerror = () => done(null);
+  inflight.set(src, { img: i, timer, res });
+  i.src = src;
 });
 
 /* Wikimedia only serves fixed thumbnail widths (1280, 1920, ...), and refuses sizes above the original.
@@ -527,13 +556,46 @@ function imageCandidates(src) {
   const clean = src.split("?")[0].replace("//thumb.wikimedia.org/", "//upload.wikimedia.org/");
   const out = [];
   if (/\/thumb\//.test(clean)) {
-    for (const w of [1920, 1280]) out.push(clean.replace(/\/((?:lossy-|lossless-)?(?:page\d+-)?)\d+px-/, `/$1${w}px-`));
+    for (const w of [1280, 960]) out.push(clean.replace(/\/((?:lossy-|lossless-)?(?:page\d+-)?)\d+px-/, `/$1${w}px-`));
     const orig = clean.replace("/thumb/", "/").replace(/\/[^/]+$/, "");
     if (/\.(jpe?g|png|webp|gif)$/i.test(orig)) out.push(orig);
   }
   out.push(clean);
   if (clean !== src) out.push(src);
   return out;
+}
+function photoCandidates(src, S) { // ordered best to worst; all are requested at the same time
+  const clean = src.split("?")[0].replace("//thumb.wikimedia.org/", "//upload.wikimedia.org/");
+  const size = (u, w) => u.replace(/\/((?:lossy-|lossless-)?(?:page\d+-)?)\d+px-/, `/$1${w}px-`);
+  const out = [];
+  if (/\/thumb\//.test(clean)) {
+    if (S === 2) out.push(size(clean, 1920));
+    out.push(size(clean, 1280));
+    if (src !== clean) out.push(size(src, 1280)); // same address style the article itself uses
+    out.push(size(clean, 960));
+  }
+  out.push(src);
+  if (src !== clean) out.push(clean);
+  return [...new Set(out)];
+}
+function origUrl(src) {
+  const clean = src.split("?")[0].replace("//thumb.wikimedia.org/", "//upload.wikimedia.org/");
+  const orig = clean.replace("/thumb/", "/").replace(/\/[^/]+$/, "");
+  return /\/thumb\//.test(clean) && /\.(jpe?g|png|webp|gif)$/i.test(orig) ? orig : null;
+}
+function bigUrl(src) { // sharper version, fetched after the first photo is already showing
+  const clean = src.split("?")[0].replace("//thumb.wikimedia.org/", "//upload.wikimedia.org/");
+  return /\/thumb\//.test(clean) ? clean.replace(/\/((?:lossy-|lossless-)?(?:page\d+-)?)\d+px-/, "/$11920px-") : null;
+}
+async function apiThumbUrl(src, w) { // last resort: ask the Wikimedia API which thumbnail URL it wants us to use
+  const f = fileFromSrc(src);
+  if (!f) return null;
+  try {
+    const host = f.proj === "commons" ? "commons.wikimedia.org" : `${f.proj}.wikipedia.org`;
+    const d = await fetch(api(host, { action: "query", prop: "imageinfo", iiprop: "url", iiurlwidth: w, titles: "File:" + f.name })).then(r => r.json());
+    const ii = d.query?.pages?.[0]?.imageinfo?.[0];
+    return ii?.thumburl || ii?.url || null;
+  } catch { return null; }
 }
 async function loadFirst(list) {
   for (const u of list) { const i = await loadImage(u); if (i) return i; }
@@ -550,7 +612,7 @@ function wrapLines(ctx, text, maxW) {
   return lines;
 }
 
-function scheduleRender() { clearTimeout(renderTimer); renderTimer = setTimeout(render, 200); }
+function scheduleRender(ms) { clearTimeout(renderTimer); renderTimer = setTimeout(render, typeof ms === "number" ? ms : 200); }
 
 async function render() {
   const fact = cleanFact();
@@ -565,16 +627,23 @@ async function render() {
   const cur = state.images[state.sel];
   const S = $("hiRes").checked ? 2 : 1; // export scale: 2 means twice the pixels, so text and QR stay sharp
   const qrPx = Math.max(40, Math.round(Math.min(Math.min(H, W * 0.525) * 0.24, 200)) - 12) * S;
-  const [bg, logo, qr] = await Promise.all([
-    cur ? loadFirst(imageCandidates(cur.thumb)) : null, getLogo(state.site),
+  const cand = cur ? photoCandidates(cur.thumb, S) : [];
+  let bestRank = cand.findIndex(u => imgCache.has(u)); // position of the best photo already loaded, if any
+  const cachedBg = bestRank >= 0 ? imgCache.get(cand[bestRank]) : null;
+  if (bestRank < 0) bestRank = Infinity;
+  const [logo, qr] = await Promise.all([
+    getLogo(state.site),
     QRCode.toCanvas(document.createElement("canvas"), state.url, { width: qrPx, margin: 1, errorCorrectionLevel: "M" }).catch(() => null),
   ]);
   if (token !== renderToken) return;
 
+  const paint = (bg) => {
   const c = $("previewCanvas"); c.width = W * S; c.height = H * S;
   const ctx = c.getContext("2d");
   ctx.setTransform(S, 0, 0, S, 0, 0);
   ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+  state.W = W; if (!bg) state.ov = { x: 0, y: 0 };
+  $("posX").disabled = !bg || state.ov.x < 2; $("posY").disabled = !bg || state.ov.y < 2; $("posZ").disabled = !bg;
   const pad = Math.round(W * 0.05);
   const safeY = H / W > 1.7 ? Math.round(H * 0.12) : 0; // keeps content clear of Story/Status app buttons
   const padTop = pad + safeY, padBot = pad + safeY;
@@ -605,8 +674,10 @@ async function render() {
   ctx.fillStyle = "#1c2733"; ctx.fillRect(0, 0, W, H);
   let lum = 0.2;
   if (bg) {
-    const sc = Math.max(W / bg.width, H / bg.height);
-    ctx.drawImage(bg, (W - bg.width * sc) / 2, (H - bg.height * sc) / 2, bg.width * sc, bg.height * sc);
+    const sc = Math.max(W / bg.width, H / bg.height) * state.zoom;
+    const dw = bg.width * sc, dh = bg.height * sc;
+    state.ov = { x: Math.max(0, dw - W), y: Math.max(0, dh - H) };
+    ctx.drawImage(bg, -state.ov.x * state.fx, -state.ov.y * state.fy, dw, dh);
     try { // measure how bright the photo is, so bright photos get a darker overlay
       const t = document.createElement("canvas"); t.width = t.height = 24;
       const tc = t.getContext("2d"); tc.drawImage(c, 0, 0, c.width, c.height, 0, 0, 24, 24);
@@ -687,8 +758,40 @@ async function render() {
   shadow(false);
 
   c.hidden = false; $("emptyMsg").hidden = true;
-  const blob = await new Promise(r => c.toBlob(r, "image/png"));
-  if (token === renderToken) state.blob = blob;
+  state.blob = null; clearTimeout(render.blobTimer); // encode the PNG shortly after the last change, so dragging stays smooth
+  render.blobTimer = setTimeout(async () => {
+    const blob = await new Promise(r => c.toBlob(r, "image/png"));
+    if (token === renderToken) state.blob = blob;
+  }, 350);
+  };
+
+  paint(cachedBg); // draw the text right away, then add the photo as soon as any size arrives
+  if (cur && bestRank > 0) {
+    if (!cachedBg) { state.loading = true; $("photoStatus").textContent = "Loading the photo…"; }
+    await new Promise(done => {
+      let pending = 0;
+      cand.slice(0, bestRank === Infinity ? cand.length : bestRank).forEach((u, i) => {
+        pending++;
+        loadImage(u).then(img => {
+          if (token === renderToken && img && i < bestRank) { // a better size than the one showing
+            bestRank = i; paint(img); state.loading = false; cand.slice(i + 1).forEach(abortLoad); // cancel the lower-quality downloads
+            $("photoStatus").textContent = i === 0 ? "" : "Improving the photo quality…";
+          }
+          if (--pending === 0) done();
+        });
+      });
+      if (!pending) done();
+    });
+    if (token !== renderToken) return;
+    if (bestRank === Infinity) { // nothing loaded: ask the API for a thumbnail, then try the original file
+      let img = await loadImage(await apiThumbUrl(cur.thumb, 1280));
+      if (!img) img = await loadImage(origUrl(cur.thumb));
+      if (token !== renderToken) return;
+      if (img) paint(img);
+      state.loading = false;
+      $("photoStatus").textContent = img ? "" : "Couldn’t load this photo (it may be very large or blocked). Pick another image or use a plain background.";
+    } else { state.loading = false; $("photoStatus").textContent = ""; }
+  } else { state.loading = false; $("photoStatus").textContent = ""; }
 }
 
 /* ---------- Output ---------- */
@@ -747,20 +850,21 @@ function addTags(raw) {
 state.tags = asCustom([]);
 
 async function download() {
+  if (!state.blob || state.loading) { toast("The photo is still loading. Try again in a moment."); return; }
   const a = document.createElement("a");
   a.download = `dyk_${slug()}.png`; a.href = URL.createObjectURL(await getBlob()); a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   toast("Image downloaded");
 }
 async function copyImage() {
-  if (!state.blob) { toast("The image is still being drawn. Try again in a moment."); return; }
+  if (!state.blob || state.loading) { toast("The photo is still loading. Try again in a moment."); return; }
   try {
     await navigator.clipboard.write([new ClipboardItem({ "image/png": state.blob })]);
     toast("Image copied. Paste it in your chat, then paste the caption (use Copy caption).");
   } catch { toast("Couldn’t copy the image. Use Download image instead."); }
 }
 function nativeShare() {
-  if (!state.blob) { toast("The image is still being drawn. Try again in a moment."); return; }
+  if (!state.blob || state.loading) { toast("The photo is still loading. Try again in a moment."); return; }
   const file = new File([state.blob], `dyk_${slug()}.png`, { type: "image/png" });
   const data = { files: [file], text: caption(), title: factText() };
   if (navigator.canShare?.(data)) {
@@ -809,6 +913,31 @@ $("tagAdd").onclick = () => { addTags($("tagInput").value); $("tagInput").value 
 $("tagInput").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); $("tagAdd").click(); } });
 $("tagsOn").addEventListener("change", updateCaptionBox);
 $("imgTags").addEventListener("change", scheduleRender);
+/* ---------- Photo position: sliders and mouse drag ---------- */
+function syncPos() { $("posX").value = Math.round(state.fx * 100); $("posY").value = Math.round(state.fy * 100); $("posZ").value = Math.round(state.zoom * 100); }
+function resetPos() { state.fx = state.fy = 0.5; state.zoom = 1; syncPos(); }
+["posX", "posY", "posZ"].forEach(id => $(id).addEventListener("input", () => {
+  state.fx = $("posX").value / 100; state.fy = $("posY").value / 100; state.zoom = $("posZ").value / 100; scheduleRender(30);
+}));
+$("posReset").onclick = () => { resetPos(); scheduleRender(0); };
+(() => {
+  const cv = $("previewCanvas"); let drag = null;
+  cv.addEventListener("pointerdown", e => {
+    if (e.pointerType !== "mouse" || !state.images[state.sel]) return; // phones use the sliders, so the page can still scroll
+    drag = { x: e.clientX, y: e.clientY, fx: state.fx, fy: state.fy };
+    cv.setPointerCapture(e.pointerId); cv.classList.add("dragging");
+  });
+  cv.addEventListener("pointermove", e => {
+    if (!drag) return;
+    const k = state.W / cv.getBoundingClientRect().width;
+    if (state.ov.x > 0) state.fx = Math.min(1, Math.max(0, drag.fx - (e.clientX - drag.x) * k / state.ov.x));
+    if (state.ov.y > 0) state.fy = Math.min(1, Math.max(0, drag.fy - (e.clientY - drag.y) * k / state.ov.y));
+    syncPos(); scheduleRender(16);
+  });
+  const end = () => { drag = null; cv.classList.remove("dragging"); };
+  cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+})();
+
 /* ---------- Remember settings in this browser ---------- */
 const picked = (name) => document.querySelector(`input[name=${name}]:checked`)?.value;
 function saveSettings() {
@@ -838,6 +967,17 @@ loadSettings();
 updateSizeHint();
 renderTags();
 render();
+
+/* Visitor counter: loaded after the page has finished loading, so a slow counter server can't keep the tab's loading spinner going. */
+(() => {
+  const addCounter = () => {
+    const t = document.createElement("script");
+    t.async = true; t.src = "https://toolcounter.toolforge.org/embed.js.php?tool=wiki-dyk&page=index";
+    document.body.appendChild(t);
+  };
+  if (document.readyState === "complete") addCounter(); else addEventListener("load", addCounter);
+})();
+</script>
 </script>
    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
   <script>
@@ -846,6 +986,6 @@ render();
     gtag('js', new Date());
     gtag('config', 'G-GC8PGC89NB');
   </script>
-  <script src="https://cdn.counter.dev/script.js" data-id="cc7a036d-a904-4d76-bcac-37ea4196c014" data-utcoffset="6"></script>
+  <script src="https://cdn.counter.dev/script.js" data-id="cc7a036d-a904-4d76-bcac-37ea4196c014" data-utcoffset="6"></script>  
 </body>
 </html>
