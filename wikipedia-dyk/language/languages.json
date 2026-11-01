@@ -1,3 +1,5 @@
+
+```json
 {
   "languages": [
     {
@@ -11,7 +13,13 @@
       "name": "svenska",
       "file": "sv.json",
       "dir": "ltr"
+    },
+    {
+      "code": "uz",
+      "name": "oʻzbek tili",
+      "file": "uz.json",
+      "dir": "ltr"
     }
   ]
 }
- 
+```
