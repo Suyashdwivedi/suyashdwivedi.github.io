@@ -23,6 +23,12 @@
       "name": "संस्कृतम्",
       "file": "sa.json",
       "dir": "ltr"
+    },
+    {
+      "code": "fil",
+      "name": "Filipino",
+      "file": "fil.json",
+      "dir": "ltr"
     }
   ]
 }
