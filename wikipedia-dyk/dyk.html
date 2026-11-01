@@ -335,106 +335,130 @@ const $ = (id) => document.getElementById(id);
 const LOCALE_BASE_URL = "https://suyashdwivedi.github.io/wikipedia-dyk/language/";
 const LOCALE_STORAGE_KEY = "wikiDykLocales";
 const LOCALE_ACTIVE_KEY = "wikiDykLocale";
-const localeState = { code: "en", dict: {}, observer: null, original: new WeakMap(), catalog: [] };
+const LOCALE_COOKIE = "wikiDykLocale";
+const localeState = {
+  code: "en", dict: {}, observer: null, originalText: new WeakMap(),
+  lastText: new WeakMap(), internalWrites: new WeakSet(), catalog: []
+};
 const localeSkip = new Set(["SCRIPT", "STYLE", "CODE", "PRE", "CANVAS"]);
-const localeAttrs = ["placeholder", "aria-label", "title"];
+const localeAttrs = ["placeholder", "aria-label", "title", "alt"];
+
 function localeStore() {
   try { return JSON.parse(localStorage.getItem(LOCALE_STORAGE_KEY) || "{}"); }
   catch { return {}; }
 }
 function localeSave(store) {
-  try { localStorage.setItem(LOCALE_STORAGE_KEY, JSON.stringify(store)); }
-  catch { /* Translation still works for this page view if storage is unavailable. */ }
+  try { localStorage.setItem(LOCALE_STORAGE_KEY, JSON.stringify(store)); } catch {}
+}
+function savePreferredLocale(code) {
+  try { localStorage.setItem(LOCALE_ACTIVE_KEY, code); } catch {}
+  try {
+    document.cookie = `${LOCALE_COOKIE}=${encodeURIComponent(code)}; path=/; max-age=31536000; SameSite=Lax`;
+  } catch {}
+}
+function readPreferredLocale() {
+  try {
+    const saved = localStorage.getItem(LOCALE_ACTIVE_KEY);
+    if (saved) return saved;
+  } catch {}
+  try {
+    const match = document.cookie.match(new RegExp("(?:^|; )" + LOCALE_COOKIE + "=([^;]*)"));
+    if (match) return decodeURIComponent(match[1]);
+  } catch {}
+  return "en";
 }
 function localeText(value) {
-  const source = String(value || "");
+  const source = String(value ?? "");
   const trimmed = source.trim();
   if (!trimmed) return source;
   const translated = localeState.dict[trimmed];
-  if (!translated) return source;
-  const leading = source.match(/^\\s*/)?.[0] || "";
-  const trailing = source.match(/\\s*$/)?.[0] || "";
+  if (typeof translated !== "string" || !translated.trim()) return source;
+  const leading = source.match(/^\s*/)?.[0] || "";
+  const trailing = source.match(/\s*$/)?.[0] || "";
   return leading + translated + trailing;
 }
-function translateNode(node) {
-  if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
-  if (node.closest("#articleContainer")) return; // Article content stays in its own language.
-  if (localeSkip.has(node.tagName)) return;
-  if (node.tagName !== "TEXTAREA") {
-    for (const child of node.childNodes) {
-      if (child.nodeType === Node.TEXT_NODE) {
-        if (!localeState.original.has(child)) localeState.original.set(child, child.nodeValue);
-        child.nodeValue = localeText(localeState.original.get(child));
-      } else if (child.nodeType === Node.ELEMENT_NODE) translateNode(child);
-    }
+function setLocaleText(node) {
+  if (!localeState.originalText.has(node)) localeState.originalText.set(node, node.nodeValue);
+  const translated = localeText(localeState.originalText.get(node));
+  if (node.nodeValue !== translated) {
+    localeState.internalWrites.add(node);
+    node.nodeValue = translated;
   }
+  localeState.lastText.set(node, translated);
+}
+function shouldSkipLocaleNode(node) {
+  if (!node || node.nodeType !== Node.ELEMENT_NODE) return true;
+  if (localeSkip.has(node.tagName)) return true;
+  if (node.closest("#articleContainer")) return true;
+  return false;
+}
+function translateElementAttributes(el) {
   for (const attr of localeAttrs) {
-    if (!node.hasAttribute(attr)) continue;
-    if (!node.dataset["localeOriginal" + attr]) node.dataset["localeOriginal" + attr] = node.getAttribute(attr);
-    const original = node.dataset["localeOriginal" + attr];
-    node.setAttribute(attr, localeState.dict["@" + attr + ":" + original] || localeState.dict[original] || original);
+    if (!el.hasAttribute(attr)) continue;
+    const dataKey = "localeOriginal" + attr;
+    if (!el.dataset[dataKey]) el.dataset[dataKey] = el.getAttribute(attr);
+    const original = el.dataset[dataKey];
+    el.setAttribute(attr, localeState.dict["@"+attr+":"+original] || localeState.dict[original] || original);
   }
 }
-function applyLocale(code) {
-  const store = localeStore();
-  const locale = code === "en" ? null : store[code];
-  localeState.code = locale ? code : "en";
-  localeState.dict = locale && locale.translations ? locale.translations : {};
-  document.documentElement.lang = localeState.code;
-  document.documentElement.dir = locale && locale.dir === "rtl" ? "rtl" : "ltr";
-  document.querySelectorAll("body *").forEach(el => {
-    if (el.closest("#articleContainer")) return;
-    for (const child of el.childNodes) {
-      if (child.nodeType === Node.TEXT_NODE && localeState.original.has(child))
-        child.nodeValue = localeState.original.get(child);
-    }
-    for (const attr of localeAttrs) {
-      const original = el.dataset["localeOriginal" + attr];
-      if (original !== undefined) el.setAttribute(attr, original);
+function translateTree(root = document.body) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      const parent = node.parentElement;
+      if (!parent || parent.closest("#articleContainer")) return NodeFilter.FILTER_REJECT;
+      if (localeSkip.has(parent.tagName)) return NodeFilter.FILTER_REJECT;
+      return node.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
     }
   });
-  translateNode(document.body);
-  try { localStorage.setItem(LOCALE_ACTIVE_KEY, localeState.code); } catch {}
-  $("languageSelect").value = localeState.code;
+  let node;
+  while ((node = walker.nextNode())) setLocaleText(node);
+
+  const elements = root.nodeType === Node.ELEMENT_NODE ? [root, ...root.querySelectorAll("*")] : [...root.querySelectorAll("*")];
+  for (const el of elements) {
+    if (!shouldSkipLocaleNode(el)) translateElementAttributes(el);
+  }
+}
+function applyLocale(code, locale = null) {
+  const cached = locale || (code === "en" ? null : localeStore()[code]);
+  localeState.code = code;
+  localeState.dict = cached && cached.translations ? cached.translations : {};
+  document.documentElement.lang = code || "en";
+  document.documentElement.dir = cached && cached.dir === "rtl" ? "rtl" : "ltr";
+  translateTree(document.body);
+  const select = $("languageSelect");
+  if (select) select.value = code;
+  savePreferredLocale(code);
 }
 function localeStrings() {
   const strings = new Set();
-  const walk = node => {
-    if (node.nodeType === Node.TEXT_NODE) {
-      const raw = localeState.original.has(node) ? localeState.original.get(node) : node.nodeValue;
-      const t = raw.trim();
-      if (t && !node.parentElement?.closest("#articleContainer") && !localeSkip.has(node.parentElement?.tagName)) strings.add(t);
-    } else if (node.nodeType === Node.ELEMENT_NODE && !localeSkip.has(node.tagName) && !node.closest("#articleContainer")) {
-      for (const attr of localeAttrs) if (node.hasAttribute(attr)) strings.add(node.dataset["localeOriginal" + attr] || node.getAttribute(attr));
-      node.childNodes.forEach(walk);
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      const p = node.parentElement;
+      if (!p || p.closest("#articleContainer") || localeSkip.has(p.tagName)) return NodeFilter.FILTER_REJECT;
+      return node.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
     }
-  };
-  walk(document.body);
+  });
+  let n;
+  while ((n = walker.nextNode())) strings.add((localeState.originalText.get(n) || n.nodeValue).trim());
+  document.querySelectorAll("body *").forEach(el => {
+    if (shouldSkipLocaleNode(el)) return;
+    for (const attr of localeAttrs) if (el.hasAttribute(attr))
+      strings.add(el.dataset["localeOriginal" + attr] || el.getAttribute(attr));
+  });
   [
+    "Loading languages…", "Loading page…", "Loaded “{title}”. Now select a sentence.",
+    "Couldn’t load that page. Check the link and your connection, then try again.",
     "Opening the short link…", "Couldn’t open that short link. Check your connection, or paste the full article link instead.",
     "That doesn’t look like a Wikimedia link. Try one like https://en.wikipedia.org/wiki/Tiger or https://meta.wikimedia.org/wiki/User:Example.",
-    "Loading page…", "Loaded “{title}”. Now select a sentence.", "Couldn’t load that page. Check the link and your connection, then try again.",
-    "The article will appear here. Select any sentence to use it as your fact.",
-    "Select text to use it as your fact. Click an image to use it as the background.",
-    "Select text in the article, or type your own fact.", "Did you know…", "Position the photo",
-    "Slide the photo to keep the important part in the frame. With a mouse you can also drag the preview.",
-    "Left / right", "Up / down", "Zoom", "Reset position", "Show image credit (author and licence)",
-    "The credit appears here when you pick an image. You can edit it.", "Looking up the author and licence…",
-    "Top", "Middle", "Bottom", "Top left", "Top right", "Bottom left", "Bottom right",
-    "Show QR code", "QR code position", "Image format", "High quality export (twice the pixels, sharper text and QR code, bigger file)",
-    "Your image preview appears here.", "Share image + caption", "Copy image", "Download image", "Copy caption",
-    "Telegram", "WhatsApp", "Mastodon", "Facebook", "X", "Hashtags", "(tap to turn on or off)",
-    "Add your own, then press Enter", "Add", "Include hashtags in the caption",
-    "Show hashtags on the image (works separately from the caption)", "Caption",
-    "Your caption appears here once you have a fact.", "Interface language", "Download translation template",
-    "No image", "No background image", "Image {number}", "Couldn’t find the credit ({note}). Type it here, for example: Image © Name, CC BY-SA 4.0",
+    "Looking up the author and licence…", "Couldn’t find the credit ({note}). Type it here, for example: Image © Name, CC BY-SA 4.0",
     "The photo is still loading. Try again in a moment.", "Image downloaded", "Image copied. Paste it in your chat, then paste the caption (use Copy caption).",
-    "Couldn’t copy the image. Use Download image instead.", "Caption copied", "Couldn’t copy. Select the text and copy it manually.",
+    "Couldn’t copy the image. Use Download image instead.", "Caption copied",
+    "Couldn’t copy. Select the text and copy it manually.",
     "Couldn’t load this photo (it may be very large or blocked). Pick another image or use a plain background.",
-    "Images found on the page appear here.", "No images found on this page, so a plain background will be used.",
-    "Page image", "Go to top of page", "Go to bottom of page"
+    "No images found on this page, so a plain background will be used.",
+    "English", "Fact text", "Article text", "Wiki's Lazy Coders Logo"
   ].forEach(x => strings.add(x));
-  return [...strings].sort((a, b) => a.localeCompare(b));
+  return [...strings].filter(Boolean).sort((a, b) => a.localeCompare(b));
 }
 function refreshLocaleOptions() {
   const select = $("languageSelect"), current = localeState.code;
@@ -449,9 +473,7 @@ function refreshLocaleOptions() {
 }
 function downloadLocaleTemplate() {
   const template = {
-    code: "xx",
-    name: "Language name in its own language",
-    dir: "ltr",
+    code: "xx", name: "Language name in its own language", dir: "ltr",
     translations: Object.fromEntries(localeStrings().map(x => [x, ""]))
   };
   const blob = new Blob([JSON.stringify(template, null, 2)], { type: "application/json;charset=utf-8" });
@@ -460,16 +482,23 @@ function downloadLocaleTemplate() {
   setTimeout(() => URL.revokeObjectURL(url), 3000);
 }
 async function loadLocale(code) {
-  if (code === "en") { applyLocale("en"); $("localeStatus").textContent = ""; return; }
-  try { localStorage.setItem(LOCALE_ACTIVE_KEY, code); } catch {}
+  savePreferredLocale(code);
+  if (code === "en") {
+    applyLocale("en");
+    $("localeStatus").textContent = "";
+    return;
+  }
   const item = localeState.catalog.find(entry => entry.code === code);
-  if (!item) { applyLocale("en"); return; }
+  if (!item) {
+    $("localeStatus").textContent = `Language ${code} is not listed in languages.json.`;
+    return;
+  }
   const status = $("localeStatus");
   status.textContent = `Loading ${item.name}…`;
   try {
     const filename = item.file || `${code}.json`;
     if (!/^[a-z0-9_-]+\.json$/i.test(filename)) throw new Error("Invalid translation filename in language catalogue.");
-    const response = await fetch(LOCALE_BASE_URL + filename, { cache: "no-cache" });
+    const response = await fetch(LOCALE_BASE_URL + filename, { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const downloaded = await response.json();
     if (downloaded.code !== code || !downloaded.translations || typeof downloaded.translations !== "object" || Array.isArray(downloaded.translations))
@@ -479,29 +508,33 @@ async function loadLocale(code) {
       if (typeof key === "string" && typeof value === "string" && value.trim()) clean[key] = value;
     });
     const locale = { code, name: downloaded.name || item.name, dir: downloaded.dir === "rtl" ? "rtl" : "ltr", translations: clean };
-    const store = localeStore(); store[code] = locale; localeSave(store);
-    applyLocale(code);
+    const store = localeStore();
+    store[code] = locale;
+    localeSave(store);
+    applyLocale(code, locale);
     status.textContent = "";
   } catch (error) {
     const cached = localeStore()[code];
     if (cached) {
-      applyLocale(code);
+      applyLocale(code, cached);
       status.textContent = `${item.name}: using the saved translation (online update unavailable).`;
     } else {
-      localeState.code = "en";
+      // Keep the selected language as the saved preference even if its file cannot load.
+      localeState.code = code;
       localeState.dict = {};
-      document.documentElement.lang = "en";
+      document.documentElement.lang = code;
       document.documentElement.dir = "ltr";
       $("languageSelect").value = code;
-      status.textContent = `Could not load ${item.name}; showing English for now. Your language preference is saved; it will be retried on the next visit.`;
+      status.textContent = `Could not load ${item.name}; showing English temporarily. Your language preference is saved.`;
     }
     console.warn("Wiki DYK localisation error:", error);
   }
 }
 async function loadLocaleCatalog() {
   const status = $("localeStatus");
+  const preferred = readPreferredLocale();
   try {
-    const response = await fetch(LOCALE_BASE_URL + "languages.json", { cache: "no-cache" });
+    const response = await fetch(LOCALE_BASE_URL + "languages.json", { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
     const entries = Array.isArray(data) ? data : data.languages;
@@ -510,13 +543,24 @@ async function loadLocaleCatalog() {
       .map(item => ({ code: item.code, name: item.name, file: item.file || `${item.code}.json` }))
       .filter(item => item.code !== "en");
     refreshLocaleOptions();
-    const preferred = localStorage.getItem(LOCALE_ACTIVE_KEY) || "en";
-    if (preferred !== "en" && localeState.catalog.some(item => item.code === preferred)) await loadLocale(preferred);
-    else applyLocale("en");
-    if (!status.textContent.startsWith("Could not load")) status.textContent = "";
+    if (preferred !== "en" && localeState.catalog.some(item => item.code === preferred)) {
+      $("languageSelect").value = preferred;
+      await loadLocale(preferred);
+    } else {
+      applyLocale("en");
+      if (preferred !== "en") status.textContent = `Saved language "${preferred}" is not yet listed in languages.json.`;
+      else status.textContent = "";
+    }
   } catch (error) {
-    status.textContent = "Language list unavailable; showing English.";
-    applyLocale("en");
+    // The saved language can still be restored from the local translation cache.
+    const cached = preferred === "en" ? null : localeStore()[preferred];
+    if (cached) {
+      applyLocale(preferred, cached);
+      status.textContent = `${cached.name}: using the saved translation (language list unavailable).`;
+    } else {
+      applyLocale(preferred || "en");
+      status.textContent = "Language list unavailable; showing English until it can be loaded.";
+    }
     console.warn("Wiki DYK language catalogue error:", error);
   }
 }
@@ -524,15 +568,22 @@ $("languageSelect").addEventListener("change", e => loadLocale(e.target.value));
 $("downloadLocale").addEventListener("click", downloadLocaleTemplate);
 localeState.observer = new MutationObserver(records => {
   for (const record of records) {
-    if (record.type === "childList") record.addedNodes.forEach(n => {
-      if (n.nodeType === Node.ELEMENT_NODE) translateNode(n);
-    });
-    else if (record.type === "characterData" && !record.target.parentElement?.closest("#articleContainer")) {
+    if (record.type === "childList") {
+      record.addedNodes.forEach(n => {
+        if (n.nodeType === Node.TEXT_NODE) setLocaleText(n);
+        else if (n.nodeType === Node.ELEMENT_NODE) translateTree(n);
+      });
+    } else if (record.type === "characterData") {
       const n = record.target;
-      if (!localeState.original.has(n) || n.nodeValue !== localeText(localeState.original.get(n)))
-        localeState.original.set(n, n.nodeValue);
-      const translated = localeText(localeState.original.get(n));
-      if (n.nodeValue !== translated) n.nodeValue = translated;
+      if (localeState.internalWrites.has(n)) {
+        localeState.internalWrites.delete(n);
+        continue;
+      }
+      const current = n.nodeValue;
+      const last = localeState.lastText.get(n);
+      if (last !== undefined && current === last) continue;
+      localeState.originalText.set(n, current);
+      setLocaleText(n);
     }
   }
 });
@@ -1242,17 +1293,20 @@ render();
   if (document.readyState === "complete") addCounter(); else addEventListener("load", addCounter);
 })();
 </script>
+
+<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
 <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-GC8PGC89NB');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-GC8PGC89NB');
 </script>
-	</script>
-	<script src="https://cdn.counter.dev/script.js"
-        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
-        data-utcoffset="6">
-</script>
+
+<!-- Counter.dev analytics -->
+<script src="https://cdn.counter.dev/script.js"
+        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
+        data-utcoffset="6"></script>
+
 </body>
 </html>
