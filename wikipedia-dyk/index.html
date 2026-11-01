@@ -267,6 +267,7 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
         <button id="copyBtn" type="button" class="ghost" disabled>Copy caption</button>
         <button id="tgBtn" type="button" class="ghost" disabled>Telegram</button>
         <button id="waBtn" type="button" class="ghost" disabled>WhatsApp</button>
+        <button id="mastoBtn" type="button" class="ghost" disabled>Mastodon</button>
         <button id="fbBtn" type="button" class="ghost" disabled>Facebook</button>
         <button id="xBtn" type="button" class="ghost" disabled>X</button>
       </div>
@@ -290,7 +291,7 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
 </div>
 
 <footer>
-  Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener">Suyash Dwivedi</a> | Project: <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank" rel="noopener">Wiki's Lazy Coders</a> | Updated on: <strong>31 October 2026</strong><br />
+  Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener">Suyash Dwivedi</a> | Project: <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank" rel="noopener">Wiki's Lazy Coders</a> | Updated on: <strong>1 November 2026</strong><br />
   👁 Views: <span id="tc-views"></span> &nbsp; 👤 Unique: <span id="tc-sessions"></span><br />
   <small>Loaded page last edited: <span id="lastModifiedDisplay">not loaded</span></small>
 </footer>
@@ -639,7 +640,7 @@ async function render() {
   const fact = cleanFact();
   updateCaptionBox();
   const ready = fact && state.url;
-  ["downloadBtn", "shareBtn", "copyBtn", "copyBothBtn", "tgBtn", "waBtn", "fbBtn", "xBtn"].forEach(id => $(id).disabled = !ready);
+  ["downloadBtn", "shareBtn", "copyBtn", "copyBothBtn", "tgBtn", "waBtn", "mastoBtn", "fbBtn", "xBtn"].forEach(id => $(id).disabled = !ready);
   if (!ready) { $("previewCanvas").hidden = true; $("emptyMsg").hidden = false;
     $("emptyMsg").textContent = state.url ? "Select or type a fact to see your image." : "Load an article to begin."; return; }
 
@@ -822,7 +823,7 @@ const cleanFact = () => $("factText").value.replace(/(\s*(?:🔗\s*)?Read more:?
 const factText = () => ($("dykPrefix").checked ? "Did you know… " : "") + cleanFact();
 const tagsLine = () => $("tagsOn").checked ? state.tags.filter(x => x.on).map(x => "#" + x.t).join(" ") : "";
 const creditLine = () => ($("creditOn").checked ? $("creditInput").value.trim() : "");
-const caption = () => `${factText()}\n\nRead more: ${state.shown}` + (creditLine() ? `\n${creditLine()}` : "") + (tagsLine() ? `\n\n${tagsLine()}` : "");
+const caption = () => `${factText()}\n\nRead more: ${state.shown}` + (creditLine() ? `\n${creditLine()}` : "") + "\nMade with https://wiki-dyk.toolforge.org/" + (tagsLine() ? `\n\n${tagsLine()}` : "");
 const updateCaptionBox = () => { $("captionBox").value = cleanFact() && state.url ? caption() : ""; };
 
 /* ---------- Hashtags ---------- */
@@ -877,11 +878,11 @@ async function download() {
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   toast("Image downloaded");
 }
-async function copyImage() {
+async function copyImage(msg) {
   if (!state.blob || state.loading) { toast("The photo is still loading. Try again in a moment."); return; }
   try {
     await navigator.clipboard.write([new ClipboardItem({ "image/png": state.blob })]);
-    toast("Image copied. Paste it in your chat, then paste the caption (use Copy caption).");
+    toast(typeof msg === "string" ? msg : "Image copied. Paste it in your chat, then paste the caption (use Copy caption).");
   } catch { toast("Couldn’t copy the image. Use Download image instead."); }
 }
 function nativeShare() {
@@ -911,7 +912,13 @@ document.querySelectorAll("input[name=size]").forEach(r => r.addEventListener("c
 $("downloadBtn").onclick = download;
 $("shareBtn").onclick = nativeShare;
 $("copyBtn").onclick = copyCaption;
-$("copyBothBtn").onclick = copyImage;
+$("copyBothBtn").onclick = () => copyImage();
+$("mastoBtn").onclick = () => { // the share page only carries text, so the image is copied for you to paste into the post
+  open(`https://share.joinmastodon.org/#text=${encodeURIComponent(caption())}`);
+  copyImage("Image copied. In your Mastodon post, paste it to attach it.");
+  const n = caption().replace(/https?:\/\/\S+/g, "x".repeat(23)).length; // Mastodon counts every link as 23 characters
+  if (n > 500) setTimeout(() => toast(`The caption is about ${n} characters. Most Mastodon servers allow 500, so shorten it before you post.`, 8000), 2500);
+};
 $("tgBtn").onclick = () => { open(`https://t.me/share/url?url=${encodeURIComponent(state.url)}&text=${encodeURIComponent(factText() + (tagsLine() ? "\n" + tagsLine() : ""))}`); copyImage(); };
 $("waBtn").onclick = () => { open(`https://wa.me/?text=${encodeURIComponent(caption())}`); copyImage(); };
 $("fbBtn").onclick = () => open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(state.url)}&quote=${encodeURIComponent(factText())}${state.tags.find(x => x.on) && $("tagsOn").checked ? "&hashtag=" + encodeURIComponent("#" + state.tags.find(x => x.on).t) : ""}`);
@@ -1002,15 +1009,5 @@ render();
   if (document.readyState === "complete") addCounter(); else addEventListener("load", addCounter);
 })();
 </script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-GC8PGC89NB');
-</script>
-<script src="https://cdn.counter.dev/script.js"
-        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
-        data-utcoffset="6"></script>
 </body>
 </html>
