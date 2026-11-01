@@ -1,393 +1,1013 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wikipedia DYK Share Tool</title>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-GC8PGC89NB');
-    </script>
-    <script src="https://cdn.counter.dev/script.js"
-            data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
-            data-utcoffset="6">
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.7/dayjs.min.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Turn any fact from a Wikipedia or Wikimedia page into a shareable Did you know image with a QR code. Works in any language. Download it or share it to Facebook, X, LinkedIn and Instagram." />
+<meta name="keywords" content="Wikipedia, Did you know, DYK, share image, QR code, Wikimedia, multilingual, Wiki's Lazy Coders" />
+<link rel="canonical" href="https://wiki-dyk.toolforge.org/" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://wiki-dyk.toolforge.org/" />
+<meta property="og:title" content="Wiki DYK Share Tool" />
+<meta property="og:description" content="Turn any fact from a Wikipedia or Wikimedia page into a shareable Did you know image with a QR code. Works in any language. Download it or share it to Facebook, X, LinkedIn and Instagram." />
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content="https://wiki-dyk.toolforge.org/" />
+<meta property="twitter:title" content="Wiki DYK Share Tool" />
+<meta property="twitter:description" content="Turn any fact from a Wikipedia or Wikimedia page into a shareable Did you know image with a QR code. Works in any language. Download it or share it to Facebook, X, LinkedIn and Instagram." />
+<meta property="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" />
+<link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" />
+<title>Wiki DYK Share Tool</title>
+<!-- qrcode 1.5.1 (MIT, soldair/node-qrcode), inlined so Toolforge serves no third-party scripts -->
+<script>
+var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof Promise&&Promise.prototype&&Promise.prototype.then},n=[0,26,44,70,100,134,172,196,242,292,346,404,466,532,581,655,733,815,901,991,1085,1156,1258,1364,1474,1588,1706,1828,1921,2051,2185,2323,2465,2611,2761,2876,3034,3196,3362,3532,3706],o=function(t){if(!t)throw new Error('"version" cannot be null or undefined');if(t<1||t>40)throw new Error('"version" should be in range from 1 to 40');return 4*t+17},a=function(t){return n[t]},i=function(t){for(var r=0;0!==t;)r++,t>>>=1;return r},u=function(t){if("function"!=typeof t)throw new Error('"toSJISFunc" is not a valid function.');r=t},s=function(){return void 0!==r},f=function(t){return r(t)};function h(t,r){return t(r={exports:{}},r.exports),r.exports}var c=h((function(t,r){r.L={bit:1},r.M={bit:0},r.Q={bit:3},r.H={bit:2},r.isValid=function(t){return t&&void 0!==t.bit&&t.bit>=0&&t.bit<4},r.from=function(t,e){if(r.isValid(t))return t;try{return function(t){if("string"!=typeof t)throw new Error("Param is not a string");switch(t.toLowerCase()){case"l":case"low":return r.L;case"m":case"medium":return r.M;case"q":case"quartile":return r.Q;case"h":case"high":return r.H;default:throw new Error("Unknown EC Level: "+t)}}(t)}catch(t){return e}}}));function g(){this.buffer=[],this.length=0}c.L,c.M,c.Q,c.H,c.isValid,g.prototype={get:function(t){var r=Math.floor(t/8);return 1==(this.buffer[r]>>>7-t%8&1)},put:function(t,r){for(var e=0;e<r;e++)this.putBit(1==(t>>>r-e-1&1))},getLengthInBits:function(){return this.length},putBit:function(t){var r=Math.floor(this.length/8);this.buffer.length<=r&&this.buffer.push(0),t&&(this.buffer[r]|=128>>>this.length%8),this.length++}};var d=g;function l(t){if(!t||t<1)throw new Error("BitMatrix size must be defined and greater than 0");this.size=t,this.data=new Uint8Array(t*t),this.reservedBit=new Uint8Array(t*t)}l.prototype.set=function(t,r,e,n){var o=t*this.size+r;this.data[o]=e,n&&(this.reservedBit[o]=!0)},l.prototype.get=function(t,r){return this.data[t*this.size+r]},l.prototype.xor=function(t,r,e){this.data[t*this.size+r]^=e},l.prototype.isReserved=function(t,r){return this.reservedBit[t*this.size+r]};var v=l,p=h((function(t,r){var e=o;r.getRowColCoords=function(t){if(1===t)return[];for(var r=Math.floor(t/7)+2,n=e(t),o=145===n?26:2*Math.ceil((n-13)/(2*r-2)),a=[n-7],i=1;i<r-1;i++)a[i]=a[i-1]-o;return a.push(6),a.reverse()},r.getPositions=function(t){for(var e=[],n=r.getRowColCoords(t),o=n.length,a=0;a<o;a++)for(var i=0;i<o;i++)0===a&&0===i||0===a&&i===o-1||a===o-1&&0===i||e.push([n[a],n[i]]);return e}}));p.getRowColCoords,p.getPositions;var w=o,m=function(t){var r=w(t);return[[0,0],[r-7,0],[0,r-7]]},E=h((function(t,r){r.Patterns={PATTERN000:0,PATTERN001:1,PATTERN010:2,PATTERN011:3,PATTERN100:4,PATTERN101:5,PATTERN110:6,PATTERN111:7};var e=3,n=3,o=40,a=10;function i(t,e,n){switch(t){case r.Patterns.PATTERN000:return(e+n)%2==0;case r.Patterns.PATTERN001:return e%2==0;case r.Patterns.PATTERN010:return n%3==0;case r.Patterns.PATTERN011:return(e+n)%3==0;case r.Patterns.PATTERN100:return(Math.floor(e/2)+Math.floor(n/3))%2==0;case r.Patterns.PATTERN101:return e*n%2+e*n%3==0;case r.Patterns.PATTERN110:return(e*n%2+e*n%3)%2==0;case r.Patterns.PATTERN111:return(e*n%3+(e+n)%2)%2==0;default:throw new Error("bad maskPattern:"+t)}}r.isValid=function(t){return null!=t&&""!==t&&!isNaN(t)&&t>=0&&t<=7},r.from=function(t){return r.isValid(t)?parseInt(t,10):void 0},r.getPenaltyN1=function(t){for(var r=t.size,n=0,o=0,a=0,i=null,u=null,s=0;s<r;s++){o=a=0,i=u=null;for(var f=0;f<r;f++){var h=t.get(s,f);h===i?o++:(o>=5&&(n+=e+(o-5)),i=h,o=1),(h=t.get(f,s))===u?a++:(a>=5&&(n+=e+(a-5)),u=h,a=1)}o>=5&&(n+=e+(o-5)),a>=5&&(n+=e+(a-5))}return n},r.getPenaltyN2=function(t){for(var r=t.size,e=0,o=0;o<r-1;o++)for(var a=0;a<r-1;a++){var i=t.get(o,a)+t.get(o,a+1)+t.get(o+1,a)+t.get(o+1,a+1);4!==i&&0!==i||e++}return e*n},r.getPenaltyN3=function(t){for(var r=t.size,e=0,n=0,a=0,i=0;i<r;i++){n=a=0;for(var u=0;u<r;u++)n=n<<1&2047|t.get(i,u),u>=10&&(1488===n||93===n)&&e++,a=a<<1&2047|t.get(u,i),u>=10&&(1488===a||93===a)&&e++}return e*o},r.getPenaltyN4=function(t){for(var r=0,e=t.data.length,n=0;n<e;n++)r+=t.data[n];return Math.abs(Math.ceil(100*r/e/5)-10)*a},r.applyMask=function(t,r){for(var e=r.size,n=0;n<e;n++)for(var o=0;o<e;o++)r.isReserved(o,n)||r.xor(o,n,i(t,o,n))},r.getBestMask=function(t,e){for(var n=Object.keys(r.Patterns).length,o=0,a=1/0,i=0;i<n;i++){e(i),r.applyMask(i,t);var u=r.getPenaltyN1(t)+r.getPenaltyN2(t)+r.getPenaltyN3(t)+r.getPenaltyN4(t);r.applyMask(i,t),u<a&&(a=u,o=i)}return o}}));E.Patterns,E.isValid,E.getPenaltyN1,E.getPenaltyN2,E.getPenaltyN3,E.getPenaltyN4,E.applyMask,E.getBestMask;var y=[1,1,1,1,1,1,1,1,1,1,2,2,1,2,2,4,1,2,4,4,2,4,4,4,2,4,6,5,2,4,6,6,2,5,8,8,4,5,8,8,4,5,8,11,4,8,10,11,4,9,12,16,4,9,16,16,6,10,12,18,6,10,17,16,6,11,16,19,6,13,18,21,7,14,21,25,8,16,20,25,8,17,23,25,9,17,23,34,9,18,25,30,10,20,27,32,12,21,29,35,12,23,34,37,12,25,34,40,13,26,35,42,14,28,38,45,15,29,40,48,16,31,43,51,17,33,45,54,18,35,48,57,19,37,51,60,19,38,53,63,20,40,56,66,21,43,59,70,22,45,62,74,24,47,65,77,25,49,68,81],A=[7,10,13,17,10,16,22,28,15,26,36,44,20,36,52,64,26,48,72,88,36,64,96,112,40,72,108,130,48,88,132,156,60,110,160,192,72,130,192,224,80,150,224,264,96,176,260,308,104,198,288,352,120,216,320,384,132,240,360,432,144,280,408,480,168,308,448,532,180,338,504,588,196,364,546,650,224,416,600,700,224,442,644,750,252,476,690,816,270,504,750,900,300,560,810,960,312,588,870,1050,336,644,952,1110,360,700,1020,1200,390,728,1050,1260,420,784,1140,1350,450,812,1200,1440,480,868,1290,1530,510,924,1350,1620,540,980,1440,1710,570,1036,1530,1800,570,1064,1590,1890,600,1120,1680,1980,630,1204,1770,2100,660,1260,1860,2220,720,1316,1950,2310,750,1372,2040,2430],I=function(t,r){switch(r){case c.L:return y[4*(t-1)+0];case c.M:return y[4*(t-1)+1];case c.Q:return y[4*(t-1)+2];case c.H:return y[4*(t-1)+3];default:return}},M=function(t,r){switch(r){case c.L:return A[4*(t-1)+0];case c.M:return A[4*(t-1)+1];case c.Q:return A[4*(t-1)+2];case c.H:return A[4*(t-1)+3];default:return}},N=new Uint8Array(512),B=new Uint8Array(256);!function(){for(var t=1,r=0;r<255;r++)N[r]=t,B[t]=r,256&(t<<=1)&&(t^=285);for(var e=255;e<512;e++)N[e]=N[e-255]}();var C=function(t){return N[t]},P=function(t,r){return 0===t||0===r?0:N[B[t]+B[r]]},R=h((function(t,r){r.mul=function(t,r){for(var e=new Uint8Array(t.length+r.length-1),n=0;n<t.length;n++)for(var o=0;o<r.length;o++)e[n+o]^=P(t[n],r[o]);return e},r.mod=function(t,r){for(var e=new Uint8Array(t);e.length-r.length>=0;){for(var n=e[0],o=0;o<r.length;o++)e[o]^=P(r[o],n);for(var a=0;a<e.length&&0===e[a];)a++;e=e.slice(a)}return e},r.generateECPolynomial=function(t){for(var e=new Uint8Array([1]),n=0;n<t;n++)e=r.mul(e,new Uint8Array([1,C(n)]));return e}}));function T(t){this.genPoly=void 0,this.degree=t,this.degree&&this.initialize(this.degree)}R.mul,R.mod,R.generateECPolynomial,T.prototype.initialize=function(t){this.degree=t,this.genPoly=R.generateECPolynomial(this.degree)},T.prototype.encode=function(t){if(!this.genPoly)throw new Error("Encoder not initialized");var r=new Uint8Array(t.length+this.degree);r.set(t);var e=R.mod(r,this.genPoly),n=this.degree-e.length;if(n>0){var o=new Uint8Array(this.degree);return o.set(e,n),o}return e};var L=T,b=function(t){return!isNaN(t)&&t>=1&&t<=40},U="(?:[u3000-u303F]|[u3040-u309F]|[u30A0-u30FF]|[uFF00-uFFEF]|[u4E00-u9FAF]|[u2605-u2606]|[u2190-u2195]|u203B|[u2010u2015u2018u2019u2025u2026u201Cu201Du2225u2260]|[u0391-u0451]|[u00A7u00A8u00B1u00B4u00D7u00F7])+",x="(?:(?![A-Z0-9 $%*+\\-./:]|"+(U=U.replace(/u/g,"\\u"))+")(?:.|[\r\n]))+",k=new RegExp(U,"g"),F=new RegExp("[^A-Z0-9 $%*+\\-./:]+","g"),S=new RegExp(x,"g"),D=new RegExp("[0-9]+","g"),Y=new RegExp("[A-Z $%*+\\-./:]+","g"),_=new RegExp("^"+U+"$"),z=new RegExp("^[0-9]+$"),H=new RegExp("^[A-Z0-9 $%*+\\-./:]+$"),J={KANJI:k,BYTE_KANJI:F,BYTE:S,NUMERIC:D,ALPHANUMERIC:Y,testKanji:function(t){return _.test(t)},testNumeric:function(t){return z.test(t)},testAlphanumeric:function(t){return H.test(t)}},K=h((function(t,r){r.NUMERIC={id:"Numeric",bit:1,ccBits:[10,12,14]},r.ALPHANUMERIC={id:"Alphanumeric",bit:2,ccBits:[9,11,13]},r.BYTE={id:"Byte",bit:4,ccBits:[8,16,16]},r.KANJI={id:"Kanji",bit:8,ccBits:[8,10,12]},r.MIXED={bit:-1},r.getCharCountIndicator=function(t,r){if(!t.ccBits)throw new Error("Invalid mode: "+t);if(!b(r))throw new Error("Invalid version: "+r);return r>=1&&r<10?t.ccBits[0]:r<27?t.ccBits[1]:t.ccBits[2]},r.getBestModeForData=function(t){return J.testNumeric(t)?r.NUMERIC:J.testAlphanumeric(t)?r.ALPHANUMERIC:J.testKanji(t)?r.KANJI:r.BYTE},r.toString=function(t){if(t&&t.id)return t.id;throw new Error("Invalid mode")},r.isValid=function(t){return t&&t.bit&&t.ccBits},r.from=function(t,e){if(r.isValid(t))return t;try{return function(t){if("string"!=typeof t)throw new Error("Param is not a string");switch(t.toLowerCase()){case"numeric":return r.NUMERIC;case"alphanumeric":return r.ALPHANUMERIC;case"kanji":return r.KANJI;case"byte":return r.BYTE;default:throw new Error("Unknown mode: "+t)}}(t)}catch(t){return e}}}));K.NUMERIC,K.ALPHANUMERIC,K.BYTE,K.KANJI,K.MIXED,K.getCharCountIndicator,K.getBestModeForData,K.isValid;var O=h((function(t,r){var e=i(7973);function n(t,r){return K.getCharCountIndicator(t,r)+4}function o(t,r){var e=0;return t.forEach((function(t){var o=n(t.mode,r);e+=o+t.getBitsLength()})),e}r.from=function(t,r){return b(t)?parseInt(t,10):r},r.getCapacity=function(t,r,e){if(!b(t))throw new Error("Invalid QR Code version");void 0===e&&(e=K.BYTE);var o=8*(a(t)-M(t,r));if(e===K.MIXED)return o;var i=o-n(e,t);switch(e){case K.NUMERIC:return Math.floor(i/10*3);case K.ALPHANUMERIC:return Math.floor(i/11*2);case K.KANJI:return Math.floor(i/13);case K.BYTE:default:return Math.floor(i/8)}},r.getBestVersionForData=function(t,e){var n,a=c.from(e,c.M);if(Array.isArray(t)){if(t.length>1)return function(t,e){for(var n=1;n<=40;n++){if(o(t,n)<=r.getCapacity(n,e,K.MIXED))return n}}(t,a);if(0===t.length)return 1;n=t[0]}else n=t;return function(t,e,n){for(var o=1;o<=40;o++)if(e<=r.getCapacity(o,n,t))return o}(n.mode,n.getLength(),a)},r.getEncodedBits=function(t){if(!b(t)||t<7)throw new Error("Invalid QR Code version");for(var r=t<<12;i(r)-e>=0;)r^=7973<<i(r)-e;return t<<12|r}}));O.getCapacity,O.getBestVersionForData,O.getEncodedBits;var Q=i(1335),V=function(t,r){for(var e=t.bit<<3|r,n=e<<10;i(n)-Q>=0;)n^=1335<<i(n)-Q;return 21522^(e<<10|n)};function q(t){this.mode=K.NUMERIC,this.data=t.toString()}q.getBitsLength=function(t){return 10*Math.floor(t/3)+(t%3?t%3*3+1:0)},q.prototype.getLength=function(){return this.data.length},q.prototype.getBitsLength=function(){return q.getBitsLength(this.data.length)},q.prototype.write=function(t){var r,e,n;for(r=0;r+3<=this.data.length;r+=3)e=this.data.substr(r,3),n=parseInt(e,10),t.put(n,10);var o=this.data.length-r;o>0&&(e=this.data.substr(r),n=parseInt(e,10),t.put(n,3*o+1))};var j=q,$=["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"," ","$","%","*","+","-",".","/",":"];function X(t){this.mode=K.ALPHANUMERIC,this.data=t}X.getBitsLength=function(t){return 11*Math.floor(t/2)+t%2*6},X.prototype.getLength=function(){return this.data.length},X.prototype.getBitsLength=function(){return X.getBitsLength(this.data.length)},X.prototype.write=function(t){var r;for(r=0;r+2<=this.data.length;r+=2){var e=45*$.indexOf(this.data[r]);e+=$.indexOf(this.data[r+1]),t.put(e,11)}this.data.length%2&&t.put($.indexOf(this.data[r]),6)};var Z=X;function W(t){this.mode=K.BYTE,"string"==typeof t&&(t=function(t){for(var r=[],e=t.length,n=0;n<e;n++){var o=t.charCodeAt(n);if(o>=55296&&o<=56319&&e>n+1){var a=t.charCodeAt(n+1);a>=56320&&a<=57343&&(o=1024*(o-55296)+a-56320+65536,n+=1)}o<128?r.push(o):o<2048?(r.push(o>>6|192),r.push(63&o|128)):o<55296||o>=57344&&o<65536?(r.push(o>>12|224),r.push(o>>6&63|128),r.push(63&o|128)):o>=65536&&o<=1114111?(r.push(o>>18|240),r.push(o>>12&63|128),r.push(o>>6&63|128),r.push(63&o|128)):r.push(239,191,189)}return new Uint8Array(r).buffer}(t)),this.data=new Uint8Array(t)}W.getBitsLength=function(t){return 8*t},W.prototype.getLength=function(){return this.data.length},W.prototype.getBitsLength=function(){return W.getBitsLength(this.data.length)},W.prototype.write=function(t){for(var r=0,e=this.data.length;r<e;r++)t.put(this.data[r],8)};var G=W;function tt(t){this.mode=K.KANJI,this.data=t}tt.getBitsLength=function(t){return 13*t},tt.prototype.getLength=function(){return this.data.length},tt.prototype.getBitsLength=function(){return tt.getBitsLength(this.data.length)},tt.prototype.write=function(t){var r;for(r=0;r<this.data.length;r++){var e=f(this.data[r]);if(e>=33088&&e<=40956)e-=33088;else{if(!(e>=57408&&e<=60351))throw new Error("Invalid SJIS character: "+this.data[r]+"\nMake sure your charset is UTF-8");e-=49472}e=192*(e>>>8&255)+(255&e),t.put(e,13)}};var rt=tt,et=h((function(t){var r={single_source_shortest_paths:function(t,e,n){var o={},a={};a[e]=0;var i,u,s,f,h,c,g,d=r.PriorityQueue.make();for(d.push(e,0);!d.empty();)for(s in u=(i=d.pop()).value,f=i.cost,h=t[u]||{})h.hasOwnProperty(s)&&(c=f+h[s],g=a[s],(void 0===a[s]||g>c)&&(a[s]=c,d.push(s,c),o[s]=u));if(void 0!==n&&void 0===a[n]){var l=["Could not find a path from ",e," to ",n,"."].join("");throw new Error(l)}return o},extract_shortest_path_from_predecessor_list:function(t,r){for(var e=[],n=r;n;)e.push(n),n=t[n];return e.reverse(),e},find_path:function(t,e,n){var o=r.single_source_shortest_paths(t,e,n);return r.extract_shortest_path_from_predecessor_list(o,n)},PriorityQueue:{make:function(t){var e,n=r.PriorityQueue,o={};for(e in t=t||{},n)n.hasOwnProperty(e)&&(o[e]=n[e]);return o.queue=[],o.sorter=t.sorter||n.default_sorter,o},default_sorter:function(t,r){return t.cost-r.cost},push:function(t,r){var e={value:t,cost:r};this.queue.push(e),this.queue.sort(this.sorter)},pop:function(){return this.queue.shift()},empty:function(){return 0===this.queue.length}}};t.exports=r})),nt=h((function(t,r){function e(t){return unescape(encodeURIComponent(t)).length}function n(t,r,e){for(var n,o=[];null!==(n=t.exec(e));)o.push({data:n[0],index:n.index,mode:r,length:n[0].length});return o}function o(t){var r,e,o=n(J.NUMERIC,K.NUMERIC,t),a=n(J.ALPHANUMERIC,K.ALPHANUMERIC,t);return s()?(r=n(J.BYTE,K.BYTE,t),e=n(J.KANJI,K.KANJI,t)):(r=n(J.BYTE_KANJI,K.BYTE,t),e=[]),o.concat(a,r,e).sort((function(t,r){return t.index-r.index})).map((function(t){return{data:t.data,mode:t.mode,length:t.length}}))}function a(t,r){switch(r){case K.NUMERIC:return j.getBitsLength(t);case K.ALPHANUMERIC:return Z.getBitsLength(t);case K.KANJI:return rt.getBitsLength(t);case K.BYTE:return G.getBitsLength(t)}}function i(t,r){var e,n=K.getBestModeForData(t);if((e=K.from(r,n))!==K.BYTE&&e.bit<n.bit)throw new Error('"'+t+'" cannot be encoded with mode '+K.toString(e)+".\n Suggested mode is: "+K.toString(n));switch(e!==K.KANJI||s()||(e=K.BYTE),e){case K.NUMERIC:return new j(t);case K.ALPHANUMERIC:return new Z(t);case K.KANJI:return new rt(t);case K.BYTE:return new G(t)}}r.fromArray=function(t){return t.reduce((function(t,r){return"string"==typeof r?t.push(i(r,null)):r.data&&t.push(i(r.data,r.mode)),t}),[])},r.fromString=function(t,n){for(var i=function(t,r){for(var e={},n={start:{}},o=["start"],i=0;i<t.length;i++){for(var u=t[i],s=[],f=0;f<u.length;f++){var h=u[f],c=""+i+f;s.push(c),e[c]={node:h,lastCount:0},n[c]={};for(var g=0;g<o.length;g++){var d=o[g];e[d]&&e[d].node.mode===h.mode?(n[d][c]=a(e[d].lastCount+h.length,h.mode)-a(e[d].lastCount,h.mode),e[d].lastCount+=h.length):(e[d]&&(e[d].lastCount=h.length),n[d][c]=a(h.length,h.mode)+4+K.getCharCountIndicator(h.mode,r))}}o=s}for(var l=0;l<o.length;l++)n[o[l]].end=0;return{map:n,table:e}}(function(t){for(var r=[],n=0;n<t.length;n++){var o=t[n];switch(o.mode){case K.NUMERIC:r.push([o,{data:o.data,mode:K.ALPHANUMERIC,length:o.length},{data:o.data,mode:K.BYTE,length:o.length}]);break;case K.ALPHANUMERIC:r.push([o,{data:o.data,mode:K.BYTE,length:o.length}]);break;case K.KANJI:r.push([o,{data:o.data,mode:K.BYTE,length:e(o.data)}]);break;case K.BYTE:r.push([{data:o.data,mode:K.BYTE,length:e(o.data)}])}}return r}(o(t)),n),u=et.find_path(i.map,"start","end"),s=[],f=1;f<u.length-1;f++)s.push(i.table[u[f]].node);return r.fromArray(function(t){return t.reduce((function(t,r){var e=t.length-1>=0?t[t.length-1]:null;return e&&e.mode===r.mode?(t[t.length-1].data+=r.data,t):(t.push(r),t)}),[])}(s))},r.rawSplit=function(t){return r.fromArray(o(t))}}));function ot(t,r,e){var n,o,a=t.size,i=V(r,e);for(n=0;n<15;n++)o=1==(i>>n&1),n<6?t.set(n,8,o,!0):n<8?t.set(n+1,8,o,!0):t.set(a-15+n,8,o,!0),n<8?t.set(8,a-n-1,o,!0):n<9?t.set(8,15-n-1+1,o,!0):t.set(8,15-n-1,o,!0);t.set(a-8,8,1,!0)}function at(t,r,e){var n=new d;e.forEach((function(r){n.put(r.mode.bit,4),n.put(r.getLength(),K.getCharCountIndicator(r.mode,t)),r.write(n)}));var o=8*(a(t)-M(t,r));for(n.getLengthInBits()+4<=o&&n.put(0,4);n.getLengthInBits()%8!=0;)n.putBit(0);for(var i=(o-n.getLengthInBits())/8,u=0;u<i;u++)n.put(u%2?17:236,8);return function(t,r,e){for(var n=a(r),o=M(r,e),i=n-o,u=I(r,e),s=u-n%u,f=Math.floor(n/u),h=Math.floor(i/u),c=h+1,g=f-h,d=new L(g),l=0,v=new Array(u),p=new Array(u),w=0,m=new Uint8Array(t.buffer),E=0;E<u;E++){var y=E<s?h:c;v[E]=m.slice(l,l+y),p[E]=d.encode(v[E]),l+=y,w=Math.max(w,y)}var A,N,B=new Uint8Array(n),C=0;for(A=0;A<w;A++)for(N=0;N<u;N++)A<v[N].length&&(B[C++]=v[N][A]);for(A=0;A<g;A++)for(N=0;N<u;N++)B[C++]=p[N][A];return B}(n,t,r)}function it(t,r,e,n){var a;if(Array.isArray(t))a=nt.fromArray(t);else{if("string"!=typeof t)throw new Error("Invalid data");var i=r;if(!i){var u=nt.rawSplit(t);i=O.getBestVersionForData(u,e)}a=nt.fromString(t,i||40)}var s=O.getBestVersionForData(a,e);if(!s)throw new Error("The amount of data is too big to be stored in a QR Code");if(r){if(r<s)throw new Error("\nThe chosen QR Code version cannot contain this amount of data.\nMinimum version required to store current data is: "+s+".\n")}else r=s;var f=at(r,e,a),h=o(r),c=new v(h);return function(t,r){for(var e=t.size,n=m(r),o=0;o<n.length;o++)for(var a=n[o][0],i=n[o][1],u=-1;u<=7;u++)if(!(a+u<=-1||e<=a+u))for(var s=-1;s<=7;s++)i+s<=-1||e<=i+s||(u>=0&&u<=6&&(0===s||6===s)||s>=0&&s<=6&&(0===u||6===u)||u>=2&&u<=4&&s>=2&&s<=4?t.set(a+u,i+s,!0,!0):t.set(a+u,i+s,!1,!0))}(c,r),function(t){for(var r=t.size,e=8;e<r-8;e++){var n=e%2==0;t.set(e,6,n,!0),t.set(6,e,n,!0)}}(c),function(t,r){for(var e=p.getPositions(r),n=0;n<e.length;n++)for(var o=e[n][0],a=e[n][1],i=-2;i<=2;i++)for(var u=-2;u<=2;u++)-2===i||2===i||-2===u||2===u||0===i&&0===u?t.set(o+i,a+u,!0,!0):t.set(o+i,a+u,!1,!0)}(c,r),ot(c,e,0),r>=7&&function(t,r){for(var e,n,o,a=t.size,i=O.getEncodedBits(r),u=0;u<18;u++)e=Math.floor(u/3),n=u%3+a-8-3,o=1==(i>>u&1),t.set(e,n,o,!0),t.set(n,e,o,!0)}(c,r),function(t,r){for(var e=t.size,n=-1,o=e-1,a=7,i=0,u=e-1;u>0;u-=2)for(6===u&&u--;;){for(var s=0;s<2;s++)if(!t.isReserved(o,u-s)){var f=!1;i<r.length&&(f=1==(r[i]>>>a&1)),t.set(o,u-s,f),-1===--a&&(i++,a=7)}if((o+=n)<0||e<=o){o-=n,n=-n;break}}}(c,f),isNaN(n)&&(n=E.getBestMask(c,ot.bind(null,c,e))),E.applyMask(n,c),ot(c,e,n),{modules:c,version:r,errorCorrectionLevel:e,maskPattern:n,segments:a}}nt.fromArray,nt.fromString,nt.rawSplit;var ut=function(t,r){if(void 0===t||""===t)throw new Error("No input text");var e,n,o=c.M;return void 0!==r&&(o=c.from(r.errorCorrectionLevel,c.M),e=O.from(r.version),n=E.from(r.maskPattern),r.toSJISFunc&&u(r.toSJISFunc)),it(t,e,o,n)},st=h((function(t,r){function e(t){if("number"==typeof t&&(t=t.toString()),"string"!=typeof t)throw new Error("Color should be defined as hex string");var r=t.slice().replace("#","").split("");if(r.length<3||5===r.length||r.length>8)throw new Error("Invalid hex color: "+t);3!==r.length&&4!==r.length||(r=Array.prototype.concat.apply([],r.map((function(t){return[t,t]})))),6===r.length&&r.push("F","F");var e=parseInt(r.join(""),16);return{r:e>>24&255,g:e>>16&255,b:e>>8&255,a:255&e,hex:"#"+r.slice(0,6).join("")}}r.getOptions=function(t){t||(t={}),t.color||(t.color={});var r=void 0===t.margin||null===t.margin||t.margin<0?4:t.margin,n=t.width&&t.width>=21?t.width:void 0,o=t.scale||4;return{width:n,scale:n?4:o,margin:r,color:{dark:e(t.color.dark||"#000000ff"),light:e(t.color.light||"#ffffffff")},type:t.type,rendererOpts:t.rendererOpts||{}}},r.getScale=function(t,r){return r.width&&r.width>=t+2*r.margin?r.width/(t+2*r.margin):r.scale},r.getImageWidth=function(t,e){var n=r.getScale(t,e);return Math.floor((t+2*e.margin)*n)},r.qrToImageData=function(t,e,n){for(var o=e.modules.size,a=e.modules.data,i=r.getScale(o,n),u=Math.floor((o+2*n.margin)*i),s=n.margin*i,f=[n.color.light,n.color.dark],h=0;h<u;h++)for(var c=0;c<u;c++){var g=4*(h*u+c),d=n.color.light;if(h>=s&&c>=s&&h<u-s&&c<u-s)d=f[a[Math.floor((h-s)/i)*o+Math.floor((c-s)/i)]?1:0];t[g++]=d.r,t[g++]=d.g,t[g++]=d.b,t[g]=d.a}}}));st.getOptions,st.getScale,st.getImageWidth,st.qrToImageData;var ft=h((function(t,r){r.render=function(t,r,e){var n=e,o=r;void 0!==n||r&&r.getContext||(n=r,r=void 0),r||(o=function(){try{return document.createElement("canvas")}catch(t){throw new Error("You need to specify a canvas element")}}()),n=st.getOptions(n);var a=st.getImageWidth(t.modules.size,n),i=o.getContext("2d"),u=i.createImageData(a,a);return st.qrToImageData(u.data,t,n),function(t,r,e){t.clearRect(0,0,r.width,r.height),r.style||(r.style={}),r.height=e,r.width=e,r.style.height=e+"px",r.style.width=e+"px"}(i,o,a),i.putImageData(u,0,0),o},r.renderToDataURL=function(t,e,n){var o=n;void 0!==o||e&&e.getContext||(o=e,e=void 0),o||(o={});var a=r.render(t,e,o),i=o.type||"image/png",u=o.rendererOpts||{};return a.toDataURL(i,u.quality)}}));function ht(t,r){var e=t.a/255,n=r+'="'+t.hex+'"';return e<1?n+" "+r+'-opacity="'+e.toFixed(2).slice(1)+'"':n}function ct(t,r,e){var n=t+r;return void 0!==e&&(n+=" "+e),n}ft.render,ft.renderToDataURL;var gt=function(t,r,e){var n=st.getOptions(r),o=t.modules.size,a=t.modules.data,i=o+2*n.margin,u=n.color.light.a?"<path "+ht(n.color.light,"fill")+' d="M0 0h'+i+"v"+i+'H0z"/>':"",s="<path "+ht(n.color.dark,"stroke")+' d="'+function(t,r,e){for(var n="",o=0,a=!1,i=0,u=0;u<t.length;u++){var s=Math.floor(u%r),f=Math.floor(u/r);s||a||(a=!0),t[u]?(i++,u>0&&s>0&&t[u-1]||(n+=a?ct("M",s+e,.5+f+e):ct("m",o,0),o=0,a=!1),s+1<r&&t[u+1]||(n+=ct("h",i),i=0)):o++}return n}(a,o,n.margin)+'"/>',f='viewBox="0 0 '+i+" "+i+'"',h='<svg xmlns="http://www.w3.org/2000/svg" '+(n.width?'width="'+n.width+'" height="'+n.width+'" ':"")+f+' shape-rendering="crispEdges">'+u+s+"</svg>\n";return"function"==typeof e&&e(null,h),h};function dt(t,r,n,o,a){var i=[].slice.call(arguments,1),u=i.length,s="function"==typeof i[u-1];if(!s&&!e())throw new Error("Callback required as last argument");if(!s){if(u<1)throw new Error("Too few arguments provided");return 1===u?(n=r,r=o=void 0):2!==u||r.getContext||(o=n,n=r,r=void 0),new Promise((function(e,a){try{var i=ut(n,o);e(t(i,r,o))}catch(t){a(t)}}))}if(u<2)throw new Error("Too few arguments provided");2===u?(a=n,n=r,r=o=void 0):3===u&&(r.getContext&&void 0===a?(a=o,o=void 0):(a=o,o=n,n=r,r=void 0));try{var f=ut(n,o);a(null,t(f,r,o))}catch(t){a(t)}}var lt=ut,vt=dt.bind(null,ft.render),pt=dt.bind(null,ft.renderToDataURL),wt=dt.bind(null,(function(t,r,e){return gt(t,e)})),mt={create:lt,toCanvas:vt,toDataURL:pt,toString:wt};return t.create=lt,t.default=mt,t.toCanvas=vt,t.toDataURL=pt,t.toString=wt,Object.defineProperty(t,"__esModule",{value:!0}),t}({});
+</script>
+<style>
+  :root {
+    --bg: #f6f7f9; --surface: #fff; --text: #202122; --muted: #54595d;
+    --line: #dde0e4; --accent: #36c; --accent-hover: #2a4b8d; --accent-soft: #eaf3ff;
+    --ok: #14866d; --radius: 8px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101418; --surface: #1a1f25; --text: #eaecf0; --muted: #a2a9b1;
+      --line: #313840; --accent: #6b9bff; --accent-hover: #8fb3ff; --accent-soft: #1d2a40;
+      --ok: #4cc9a8; color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.5 Arial, "Helvetica Neue", Helvetica, sans-serif; }
+  h1, h2 { font-family: inherit; font-weight: 700; margin: 0; }
+  a { color: var(--accent); }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-image: url('https://picsum.photos/1600/900');
-            background-position: center top;
-            background-size: cover;
-            background-attachment: fixed;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        body.night-mode {
-            background-color: #2c3e50;
-            color: #ecf0f1;
-            background-image: none; /* Remove background image in night mode */
-        }
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-            transition: background 0.3s, box-shadow 0.3s;
-        }
-        body.night-mode .container {
-            background: rgba(44, 62, 80, 0.9);
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        body.night-mode h1 {
-            color: #3498db;
-        }
-        textarea, input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            background-color: #fff;
-            color: #333;
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-        }
-        body.night-mode textarea, body.night-mode input[type="text"] {
-            background-color: #3b5998;
-            color: #ecf0f1;
-            border-color: #555;
-        }
-        button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-bottom: 10px;
-            display: block;
-            width: 100%;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        body.night-mode button {
-            background-color: #1da1f2;
-        }
-        body.night-mode button:hover {
-            background-color: #0c85d0;
-        }
-        #articleContent {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 15px;
-            background: #fff;
-            min-height: 200px;
-            overflow-y: auto;
-            max-height: 400px;
-            transition: background 0.3s, border-color 0.3s;
-        }
-        body.night-mode #articleContent {
-            background: #4a6c8e;
-            border-color: #555;
-        }
-        #articleContent p {
-            font-weight: normal; /* Changed from bold */
-            color: #333; /* Default text color */
-            font-size: 16px; /* Default font size */
-        }
-        body.night-mode #articleContent p {
-            color: #ecf0f1;
-        }
-        #articleContent span {
-            color: #e74c3c; /* Red for selected text */
-        }
-        .share-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            justify-content: center;
-            flex-wrap: wrap; /* Allow buttons to wrap */
-        }
-        .share-buttons a {
-            padding: 8px 12px;
-            border-radius: 5px;
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-            transition: background-color 0.3s;
-        }
-        .share-buttons a.facebook {
-            background: #3b5998;
-        }
-        .share-buttons a.facebook:hover {
-            background: #2d4373;
-        }
-        .share-buttons a.twitter {
-            background: #1da1f2;
-        }
-        .share-buttons a.twitter:hover {
-            background: #0c85d0;
-        }
-        .share-buttons a.instagram {
-            background: #e1306c;
-        }
-        .share-buttons a.instagram:hover {
-            background: #c20f4c;
-        }
-        #generateImageBtn {
-            display: none; /* Hidden by default */
-        }
-        .night-mode-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: #f39c12;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            z-index: 1000;
-            transition: background-color 0.3s;
-        }
-        .night-mode-toggle:hover {
-            background-color: #e67e22;
-        }
-        #dateTime {
-            text-align: center;
-            margin-top: 10px;
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 20px;
-        }
-        body.night-mode #dateTime {
-            color: #bbb;
-        }
-    </style>
+  header { background: var(--surface); border-bottom: 1px solid var(--line); }
+  .logo-row { max-width: 1200px; margin: auto; padding: 14px 20px; display: flex; align-items: center; gap: 14px; }
+  .logo-img { height: 52px; width: auto; }
+  .logo-row h1 { font-size: 1.5rem; line-height: 1.2; }
+  .tagline { margin: 2px 0 0; color: var(--muted); font-size: .9rem; }
+
+  .layout { max-width: 1200px; margin: 20px auto; padding: 0 20px;
+    display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+  .panel + .panel { margin-top: 20px; }
+  .step-title { font-size: 1.15rem; margin-bottom: 4px; }
+  .hint { margin: 0 0 12px; color: var(--muted); font-size: .92rem; }
+
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  input[type=url], textarea { width: 100%; font: inherit; padding: 10px 12px; color: var(--text);
+    background: var(--bg); border: 1px solid var(--line); border-radius: 6px; }
+  input[type=url] { flex: 1 1 260px; width: auto; }
+  textarea { resize: vertical; min-height: 110px; }
+  button { font: inherit; font-weight: 600; padding: 10px 16px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--accent); background: var(--accent); color: #fff; }
+  button:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+  button.ghost { background: transparent; color: var(--accent); }
+  button.ghost:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent-hover); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  @media (prefers-color-scheme: dark) { button:not(.ghost) { color: #0b1220; } }
+
+  #status { min-height: 1.4em; margin: 10px 0 0; font-size: .92rem; color: var(--muted); }
+  #status.error { color: #d33; }
+
+  .article-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; margin: 16px 0 8px; }
+  .article-head h2 { font-size: 1.3rem; }
+  #articleContainer { border: 1px solid var(--line); border-radius: 6px; padding: 16px; max-height: 520px;
+    overflow-y: auto; font-size: .95rem; line-height: 1.65; background: var(--bg); }
+  #articleContainer:empty::before { content: "The article will appear here. Select any sentence to use it as your fact.";
+    color: var(--muted); }
+  #articleContainer a { color: inherit; text-decoration: none; pointer-events: none; }
+  #articleContainer img { max-width: 100%; height: auto; cursor: pointer; border-radius: 3px; }
+  #articleContainer img.picked { outline: 4px solid var(--accent); }
+  #articleContainer .mw-editsection, #articleContainer style, #articleContainer .navbox,
+  #articleContainer .reflist, #articleContainer .mw-empty-elt { display: none; }
+  #articleContainer table { max-width: 100%; display: block; overflow-x: auto; }
+
+  .seg { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 14px; }
+  .seg label { cursor: pointer; }
+  .seg input { position: absolute; opacity: 0; }
+  .seg span { display: block; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: .9rem; }
+  .seg small { display: block; color: var(--muted); font-size: .75rem; }
+  .seg input:checked + span { border-color: var(--accent); background: var(--accent-soft); }
+  .seg input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .gallery { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 10px; margin-bottom: 8px; }
+  .gallery:empty { display: none; }
+  .gallery button { flex: 0 0 auto; width: 92px; height: 68px; padding: 0; border-radius: 6px; overflow: hidden;
+    background: var(--bg); color: var(--muted); border: 2px solid var(--line); font-size: .75rem; font-weight: 400; }
+  .gallery button:hover:not(:disabled) { background: var(--bg); border-color: var(--accent); }
+  .gallery button[aria-checked=true] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+  .gallery img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .count { color: var(--muted); font-size: .82rem; text-align: right; margin: 4px 0 12px; }
+  .check { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; font-size: .95rem; }
+
+  .preview { position: sticky; top: 16px; }
+  .canvas-wrap { background: var(--bg); border: 1px dashed var(--line); border-radius: 6px; overflow: hidden; }
+  canvas { display: block; width: auto; height: auto; max-width: 100%; max-height: 72vh; margin: 0 auto; }
+  .empty { padding: 40px 20px; text-align: center; color: var(--muted); font-size: .92rem; }
+  .actions { margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
+
+  .jump { position: fixed; right: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 8px; z-index: 20; }
+  .jump button { width: 44px; height: 44px; padding: 0; border-radius: 50%; display: grid; place-items: center;
+    background: var(--surface); color: var(--accent); border: 1px solid var(--line); box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+  .jump button:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent-hover); border-color: var(--accent); }
+  .jump button[hidden] { display: none; }
+  .jump svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  html, body { max-width: 100%; overflow-x: hidden; }
+  .layout > * { min-width: 0; }
+  #articleContainer { overflow-wrap: anywhere; }
+  #articleContainer * { max-width: 100%; }
+  #articleContainer .infobox, #articleContainer .thumb, #articleContainer figure, #articleContainer [style*="float"] {
+    float: none !important; width: auto !important; margin: 8px 0 !important; }
+  #articleContainer [style*="width"] { width: auto !important; }
+  input[type=text] { width: 100%; font: inherit; padding: 10px 12px; color: var(--text);
+    background: var(--bg); border: 1px solid var(--line); border-radius: 6px; flex: 1 1 200px; width: auto; }
+  .pos-box { margin: 4px 0 12px; }
+  .slider { display: flex; align-items: center; gap: 10px; font-size: .9rem; margin: 4px 0; }
+  .slider span { flex: 0 0 82px; }
+  .slider input { flex: 1; min-width: 0; accent-color: var(--accent); }
+  canvas { cursor: grab; }
+  canvas.dragging { cursor: grabbing; }
+  .credit-box { margin: 4px 0 14px; }
+  .credit-box input[type=text] { width: 100%; }
+  .tags-box { margin-top: 14px; }
+  .tags-box > label:first-child { display: block; font-size: .9rem; font-weight: 700; margin-bottom: 6px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .chips:empty::before { content: "Suggestions appear when a page is loaded. You can also add your own."; color: var(--muted); font-size: .88rem; }
+  .chip { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+  .chip button { border: 0; border-radius: 0; background: transparent; color: var(--muted); padding: 6px 12px; min-height: 0; font-size: .88rem; font-weight: 600; }
+  .chip.on { border-color: var(--accent); background: var(--accent-soft); }
+  .chip.on button { color: var(--accent); }
+  .chip .rm { padding: 6px 10px 6px 4px; }
+  .caption-box { margin-top: 14px; }
+  .caption-box label { display: block; font-size: .9rem; font-weight: 700; margin-bottom: 4px; }
+  .caption-box textarea { min-height: 96px; font-size: .92rem; }
+  @media (max-width: 600px) {
+    .logo-row { padding: 10px 12px; gap: 10px; }
+    .logo-img { height: 40px; }
+    .logo-row h1 { font-size: 1.15rem; }
+    .tagline { font-size: .8rem; }
+    .layout { padding: 0 12px; margin: 12px auto; gap: 12px; }
+    .panel { padding: 14px; }
+    .preview { position: static; }
+    .row button, input[type=url] { flex: 1 1 100%; }
+    button { min-height: 44px; }
+    #articleContainer { max-height: 55vh; padding: 12px; font-size: .92rem; }
+    .article-head { flex-direction: column; gap: 2px; }
+    .seg { display: grid; grid-template-columns: 1fr 1fr; }
+    .actions { grid-template-columns: 1fr 1fr; }
+    .actions #shareBtn { grid-column: 1 / -1; }
+    .jump { right: 10px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+    .jump button { width: 40px; height: 40px; }
+    footer { padding: 20px 12px 80px; }
+  }
+  #toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); opacity: 0;
+    background: #202122; color: #fff; padding: 10px 16px; border-radius: 6px; font-size: .92rem;
+    transition: opacity .2s, transform .2s; pointer-events: none; max-width: 90vw; }
+  #toast.show { opacity: 1; transform: translateX(-50%); }
+  footer { text-align: center; padding: 24px 20px 32px; color: var(--muted); font-size: .88rem; }
+  @media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
+</style>
 </head>
 <body>
-    <button id="nightModeToggle" class="night-mode-toggle">Night Mode</button>
-    <div class="container">
-        <h1>Wikipedia DYK Share Tool</h1>
-        <div id="dateTime"></div>
-        <input type="text" id="wikipediaUrl" placeholder="Paste Wikipedia URL or short URL here" value="">
-        <button id="loadArticleBtn">Load Article</button>
-        <button id="generateImageBtn">Generate Shareable Image</button>
-        <div id="articleContent"></div>
-        <div class="share-buttons">
-            <a href="#" class="facebook" id="shareFb">Share on Facebook</a>
-            <a href="#" class="twitter" id="shareX">Share on X</a>
-            <a href="#" class="instagram" id="shareIg">Share on Instagram</a>
-        </div>
+<header>
+  <div class="logo-row">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" alt="Wiki's Lazy Coders Logo" class="logo-img" />
+    <div>
+      <h1>Wiki DYK Share Tool</h1>
+      <p class="tagline">Turn a fact from any Wikipedia or Wikimedia page into a shareable image with a QR code</p>
     </div>
+  </div>
+</header>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const wikipediaUrlInput = document.getElementById('wikipediaUrl');
-            const loadArticleBtn = document.getElementById('loadArticleBtn');
-            const generateImageBtn = document.getElementById('generateImageBtn');
-            const articleContentDiv = document.getElementById('articleContent');
-            const shareFb = document.getElementById('shareFb');
-            const shareX = document.getElementById('shareX');
-            const shareIg = document.getElementById('shareIg');
-            const nightModeToggle = document.getElementById('nightModeToggle');
-            const dateTimeDisplay = document.getElementById('dateTime');
+<div class="layout">
+  <div>
+    <section class="panel">
+      <h2 class="step-title">1. Load an article</h2>
+      <p class="hint">Paste a link from any Wikipedia language or Wikimedia project, or a w.wiki short link. Add a #section to start there.</p>
+      <div class="row">
+        <input type="url" id="wikiURL" placeholder="https://en.wikipedia.org/wiki/… or a w.wiki short link" aria-label="Wikipedia article URL" autocomplete="off" />
+        <button id="loadBtn" type="button">Load article</button>
+      </div>
+      <p id="status" role="status" aria-live="polite"></p>
 
-            // --- Night Mode Logic ---
-            const enableNightMode = () => {
-                document.body.classList.add('night-mode');
-                nightModeToggle.textContent = 'Day Mode';
-                Cookies.set('nightMode', 'enabled', { expires: 365 });
-            };
+      <div class="article-head">
+        <h2 id="articleTitle"></h2>
+        <span class="hint" id="updated" style="margin:0"></span>
+      </div>
+      <div id="articleContainer" tabindex="0" aria-label="Article text"></div>
+      <p class="hint" style="margin-top:8px">Select text to use it as your fact. Click an image to use it as the background.</p>
+    </section>
+  </div>
 
-            const disableNightMode = () => {
-                document.body.classList.remove('night-mode');
-                nightModeToggle.textContent = 'Night Mode';
-                Cookies.set('nightMode', 'disabled', { expires: 365 });
-            };
+  <div class="preview">
+    <section class="panel">
+      <h2 class="step-title">2. Write your fact</h2>
+      <textarea id="factText" maxlength="320" aria-label="Fact text" placeholder="Select text in the article, or type your own fact."></textarea>
+      <div class="count"><span id="charCount">0</span> / 320</div>
+      <label class="check"><input type="checkbox" id="dykPrefix" checked /> Start with “Did you know…”</label>
 
-            // Check for saved night mode preference
-            if (Cookies.get('nightMode') === 'enabled') {
-                enableNightMode();
-            }
+      <h2 class="step-title">3. Choose a background image</h2>
+      <p class="hint" id="galleryHint">Images found on the page appear here.</p>
+      <div class="gallery" id="gallery" role="radiogroup" aria-label="Background image"></div>
 
-            nightModeToggle.addEventListener('click', () => {
-                if (document.body.classList.contains('night-mode')) {
-                    disableNightMode();
-                } else {
-                    enableNightMode();
-                }
-            });
+      <div class="pos-box">
+        <div class="check" style="margin:6px 0 4px"><strong>Position the photo</strong></div>
+        <p class="hint" style="margin:0 0 6px">Slide the photo to keep the important part in the frame. With a mouse you can also drag the preview.</p>
+        <label class="slider"><span>Left / right</span><input type="range" id="posX" min="0" max="100" value="50" /></label>
+        <label class="slider"><span>Up / down</span><input type="range" id="posY" min="0" max="100" value="50" /></label>
+        <label class="slider"><span>Zoom</span><input type="range" id="posZ" min="100" max="300" value="100" /></label>
+        <button id="posReset" type="button" class="ghost" style="margin-top:6px">Reset position</button>
+      </div>
+      <div class="credit-box">
+        <label class="check" style="margin:6px 0"><input type="checkbox" id="creditOn" checked /> Show image credit (author and licence)</label>
+        <input type="text" id="creditInput" placeholder="The credit appears here when you pick an image. You can edit it." aria-label="Image credit" autocomplete="off" />
+      </div>
 
-            // --- Date and Time Display ---
-            const updateDateTime = () => {
-                dateTimeDisplay.textContent = dayjs().format('MMMM D, YYYY h:mm:ss A [IST]');
-            };
-            setInterval(updateDateTime, 1000); // Update every second
-            updateDateTime(); // Initial call
+      <h2 class="step-title">4. Pick a format</h2>
+      <div class="check" style="margin:0 0 6px"><strong>Text position</strong></div>
+      <div class="seg" role="radiogroup" aria-label="Text position">
+        <label><input type="radio" name="pos" value="top" /><span>Top</span></label>
+        <label><input type="radio" name="pos" value="middle" /><span>Middle</span></label>
+        <label><input type="radio" name="pos" value="bottom" checked /><span>Bottom</span></label>
+      </div>
+      <label class="check" style="margin:0 0 8px"><input type="checkbox" id="qrOn" checked /> Show QR code</label>
+      <div class="check" style="margin:0 0 6px"><strong>QR code position</strong></div>
+      <div class="seg" role="radiogroup" aria-label="QR code position">
+        <label><input type="radio" name="qr" value="tl" /><span>Top left</span></label>
+        <label><input type="radio" name="qr" value="tr" /><span>Top right</span></label>
+        <label><input type="radio" name="qr" value="bl" /><span>Bottom left</span></label>
+        <label><input type="radio" name="qr" value="br" checked /><span>Bottom right</span></label>
+      </div>
+      <p class="hint" style="margin:-6px 0 12px">If you paste a w.wiki short link, the QR code uses it (smaller and easier to scan) while the image shows the full link.</p>
+      <div class="check" style="margin:0 0 6px"><strong>Image format</strong></div>
+      <div class="seg" role="radiogroup" aria-label="Image format">
+        <label><input type="radio" name="size" value="fb" checked /><span>Facebook<small>1200 × 630</small></span></label>
+        <label><input type="radio" name="size" value="fbwide" /><span>Facebook wide<small>1200 × 675</small></span></label>
+        <label><input type="radio" name="size" value="linkedin" /><span>LinkedIn<small>1200 × 627</small></span></label>
+        <label><input type="radio" name="size" value="igportrait" /><span>Instagram portrait<small>1080 × 1350</small></span></label>
+        <label><input type="radio" name="size" value="square" /><span>Square<small>Instagram, Telegram, WhatsApp<br>1080 × 1080</small></span></label>
+        <label><input type="radio" name="size" value="story" /><span>Story / Status<small>Instagram, WhatsApp, Telegram<br>1080 × 1920</small></span></label>
+      </div>
+      <p class="hint" id="sizeHint" aria-live="polite"></p>
+      <label class="check" style="margin:0 0 12px"><input type="checkbox" id="hiRes" checked /> High quality export (twice the pixels, sharper text and QR code, bigger file)</label>
 
-            // --- Load Article Logic ---
-            loadArticleBtn.addEventListener('click', loadArticle);
+      <div class="canvas-wrap">
+        <div class="empty" id="emptyMsg">Your image preview appears here.</div>
+        <canvas id="previewCanvas" hidden></canvas>
+      </div>
+      <p class="hint" id="photoStatus" role="status" style="margin:6px 0 0"></p>
 
-            async function loadArticle() {
-                let url = wikipediaUrlInput.value.trim();
-                if (!url) {
-                    alert('Please enter a Wikipedia URL or short URL.');
-                    return;
-                }
+      <div class="actions">
+        <button id="shareBtn" type="button" disabled>Share image + caption</button>
+        <button id="copyBothBtn" type="button" class="ghost" disabled>Copy image</button>
+        <button id="downloadBtn" type="button" class="ghost" disabled>Download image</button>
+        <button id="copyBtn" type="button" class="ghost" disabled>Copy caption</button>
+        <button id="tgBtn" type="button" class="ghost" disabled>Telegram</button>
+        <button id="waBtn" type="button" class="ghost" disabled>WhatsApp</button>
+        <button id="mastoBtn" type="button" class="ghost" disabled>Mastodon</button>
+        <button id="fbBtn" type="button" class="ghost" disabled>Facebook</button>
+        <button id="xBtn" type="button" class="ghost" disabled>X</button>
+      </div>
+      <div class="tags-box">
+        <label for="tagInput">Hashtags <span style="font-weight:400;color:var(--muted)">(tap to turn on or off)</span></label>
+        <div id="tagList" class="chips"></div>
+        <div class="row">
+          <input type="text" id="tagInput" placeholder="Add your own, then press Enter" aria-label="Add hashtags" autocomplete="off" />
+          <button id="tagAdd" type="button" class="ghost">Add</button>
+        </div>
+        <label class="check" style="margin:10px 0 0"><input type="checkbox" id="tagsOn" checked /> Include hashtags in the caption</label>
+        <label class="check" style="margin:6px 0 0"><input type="checkbox" id="imgTags" checked /> Show hashtags on the image (works separately from the caption)</label>
+      </div>
+      <div class="caption-box">
+        <label for="captionBox">Caption</label>
+        <textarea id="captionBox" readonly placeholder="Your caption appears here once you have a fact."></textarea>
+      </div>
+      <p class="hint" style="margin:10px 0 0">WhatsApp, Instagram and X only take the image from a share, so they leave the caption out. Share image + caption copies the caption first, so after you pick the app, paste it into the caption field. On desktop, use Copy image, paste it in the chat, then Copy caption.</p>
+    </section>
+  </div>
+</div>
 
-                articleContentDiv.innerHTML = '<p>Loading article content...</p>';
-                generateImageBtn.style.display = 'none'; // Hide image button while loading
+<footer>
+  Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener">Suyash Dwivedi</a> | Project: <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank" rel="noopener">Wiki's Lazy Coders</a> | Updated on: <strong>1 November 2026</strong><br />
+  👁 Views: <span id="tc-views"></span> &nbsp; 👤 Unique: <span id="tc-sessions"></span><br />
+  <small>Loaded page last edited: <span id="lastModifiedDisplay">not loaded</span></small>
+</footer>
+<div class="jump">
+  <button type="button" id="toTop" aria-label="Go to top of page" title="Go to top" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+  <button type="button" id="toBottom" aria-label="Go to bottom of page" title="Go to bottom">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  </button>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
 
-                let pageTitle;
-                let lang = 'en'; // Default language
+<script>
+const $ = (id) => document.getElementById(id);
+const FORMATS = {
+  fb:         { name: "Facebook",           w: 1200, h: 630,  ratio: "1.91:1", use: "Facebook link previews and shared posts" },
+  fbwide:     { name: "Facebook wide",      w: 1200, h: 675,  ratio: "16:9",   use: "Facebook landscape announcements" },
+  linkedin:   { name: "LinkedIn",           w: 1200, h: 627,  ratio: "1.91:1", use: "LinkedIn link previews and shared graphics" },
+  igportrait: { name: "Instagram portrait", w: 1080, h: 1350, ratio: "4:5",    use: "Instagram portrait feed posts" },
+  square:     { name: "Square",             w: 1080, h: 1080, ratio: "1:1",    use: "Instagram square feed posts, and shared images and announcements in Telegram and WhatsApp chats" },
+  story:      { name: "Story / Status",     w: 1080, h: 1920, ratio: "9:16",   use: "Instagram Stories, WhatsApp Status and Telegram Stories" },
+};
+function updateSizeHint() {
+  const f = FORMATS[document.querySelector("input[name=size]:checked").value];
+  $("sizeHint").textContent = `${f.name}: ${f.w} × ${f.h} px, ${f.ratio}. Best for ${f.use}.` +
+    (f.h / f.w > 1.7 ? " Text and QR code stay clear of the top and bottom edges, where the app places its own buttons." : "");
+}
+const WP_LOGO = "https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png";
+const SITES = {
+  wikipedia: { label: "Wikipedia", logo: WP_LOGO },
+  meta: { label: "Meta-Wiki", files: ["Wikimedia Community Logo.svg", "Wikimedia-logo.svg"] },
+  commons: { label: "Wikimedia Commons", files: ["Commons-logo.svg"] },
+  wikidata: { label: "Wikidata", files: ["Wikidata-logo.svg"] },
+  species: { label: "Wikispecies", files: ["Wikispecies-logo.svg"] },
+  wiktionary: { label: "Wiktionary", files: ["Wiktionary-logo-v2.svg"] },
+  wikibooks: { label: "Wikibooks", files: ["Wikibooks-logo.svg"] },
+  wikiquote: { label: "Wikiquote", files: ["Wikiquote-logo.svg"] },
+  wikisource: { label: "Wikisource", files: ["Wikisource-logo.svg"] },
+  wikinews: { label: "Wikinews", files: ["Wikinews-logo.svg"] },
+  wikiversity: { label: "Wikiversity", files: ["Wikiversity-logo.svg"] },
+  wikivoyage: { label: "Wikivoyage", files: ["Wikivoyage-Logo-v3-icon.svg"] },
+  mediawiki: { label: "MediaWiki", files: ["MediaWiki-2020-icon.svg"] },
+  other: { label: "Wikimedia", files: ["Wikimedia-logo.svg"] },
+};
+const state = { qrUrl: "", siteLabel: "", loading: false, fx: 0.5, fy: 0.5, zoom: 1, ov: { x: 0, y: 0 }, W: 1200, tags: [], blob: null, url: "", shown: "", title: "", host: "", site: SITES.wikipedia, images: [], sel: -1 };
+const logoCache = {};
+let renderTimer, renderToken = 0;
 
-                try {
-                    const urlObj = new URL(url);
-                    let hostname = urlObj.hostname;
-                    if (hostname.includes('wikipedia.org')) {
-                        const parts = hostname.split('.');
-                        if (parts.length >= 3 && parts[0] !== 'www') {
-                            lang = parts[0]; // e.g., 'en', 'hi', 'es'
-                        }
-                        const pathSegments = urlObj.pathname.split('/wiki/');
-                        if (pathSegments.length > 1) {
-                            pageTitle = decodeURIComponent(pathSegments[1].split('#')[0].split('?')[0]);
-                        } else {
-                            throw new Error('Invalid Wikipedia URL format.');
-                        }
-                    } else if (url.includes('w.wiki')) {
-                        alert('Short URL detected. Attempting to resolve, but direct API lookup might fail.');
-                        pageTitle = url.split('/').pop(); // Fallback for short URLs
-                    } else {
-                        throw new Error('Not a recognized Wikipedia or w.wiki URL.');
-                    }
-                } catch (e) {
-                    articleContentDiv.innerHTML = `<p>Error parsing URL: ${e.message}. Please use a valid Wikipedia URL.</p>`;
-                    alert(`Error: ${e.message}`);
-                    return;
-                }
+const toast = (msg, ms = 2600) => {
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), ms);
+};
+const setStatus = (msg, err) => { const s = $("status"); s.textContent = msg; s.className = err ? "error" : ""; };
 
-                // Use Wikipedia API for the detected language
-                const apiUrl = `https://${lang}.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=true&explaintext=true&titles=${encodeURIComponent(pageTitle)}&origin=*`;
+/* ---------- Loading ---------- */
+function siteFor(host) {
+  const m = host.match(/^(?:(meta|commons|species|incubator|outreach)\.wikimedia\.org|(?:[\w-]+\.)?(wiktionary|wikibooks|wikiquote|wikisource|wikinews|wikiversity|wikivoyage|wikidata|mediawiki|wikipedia)\.org)$/);
+  return SITES[m && (m[1] === "incubator" || m[1] === "outreach" ? "other" : (m[1] || m[2]))] || SITES.other;
+}
+function parseWikiURL(raw) {
+  let u;
+  try { u = new URL(raw); } catch { return null; }
+  if (!/(wikipedia|wiktionary|wikibooks|wikiquote|wikisource|wikinews|wikiversity|wikivoyage|wikimedia|wikidata|mediawiki)\.org$/.test(u.hostname)) return null;
+  const host = u.hostname.replace(".m.", ".");
+  let title;
+  try { title = u.searchParams.get("title") || decodeURIComponent(u.pathname.replace(/^\/wiki\//, "")); } catch { return null; }
+  if (!title || title === "/") return null;
+  u.hostname = host;
+  let shown = u.href; try { shown = decodeURI(u.href); } catch {}
+  return { host, title, hash: decodeURIComponent(u.hash.slice(1)), href: u.href, shown: shown.replace(/^https?:\/\//, "") };
+}
+const api = (host, params) =>
+  `https://${host}/w/api.php?origin=*&format=json&formatversion=2&` + new URLSearchParams(params);
+const fixSrc = (s) => (s || "").startsWith("//") ? "https:" + s : s;
 
-                try {
-                    const response = await fetch(apiUrl);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const data = await response.json();
+const LANG_PROJECT = /^[a-z][a-z0-9-]*\.(wikipedia|wiktionary|wikibooks|wikiquote|wikisource|wikinews|wikiversity|wikivoyage)\.org$/;
+async function loadArticle() {
+  let raw = $("wikiURL").value.trim(), shortUrl = "";
+  let u0 = null; try { u0 = new URL(raw); } catch {}
+  $("loadBtn").disabled = true;
+  if (u0 && u0.hostname === "w.wiki") { // short link: find the full address (asked from the resolve.php helper on Toolforge)
+    setStatus("Opening the short link…");
+    try {
+      const r = await fetch("https://wiki-dyk.toolforge.org/resolve.php?u=" + encodeURIComponent(u0.href)); // always asked from Toolforge, so it also works from other places (GitHub Pages, a local file)
+      const d = await r.json();
+      if (!r.ok || !d.url) throw new Error(d.error || "failed");
+      shortUrl = u0.href; raw = d.url;
+    } catch {
+      setStatus("Couldn’t open that short link. Check your connection, or paste the full article link instead.", true);
+      $("loadBtn").disabled = false; return;
+    }
+  }
+  const info = parseWikiURL(raw);
+  if (!info) { setStatus("That doesn’t look like a Wikimedia link. Try one like https://en.wikipedia.org/wiki/Tiger or https://meta.wikimedia.org/wiki/User:Example.", true); $("loadBtn").disabled = false; return; }
+  setStatus("Loading page…");
+  Object.assign(state, { url: info.href, qrUrl: shortUrl || info.href, shown: info.shown, host: info.host, site: siteFor(info.host), siteLabel: "", images: [], sel: -1 });
+  try {
+    const [content, img, meta, cats, siteinfo] = await Promise.all([
+      fetch(api(info.host, { action: "parse", page: info.title, prop: "text|displaytitle", redirects: 1 })).then(r => r.json()),
+      fetch(api(info.host, { action: "query", prop: "pageimages", titles: info.title, pithumbsize: 1200, redirects: 1 })).then(r => r.json()),
+      fetch(api(info.host, { action: "query", prop: "revisions", rvprop: "timestamp", titles: info.title, redirects: 1 })).then(r => r.json()),
+      fetch(api(info.host, { action: "query", prop: "categories", titles: info.title, cllimit: 12, clshow: "!hidden", redirects: 1 })).then(r => r.json()).catch(() => ({})),
+      fetch(api(info.host, { action: "query", meta: "siteinfo", siprop: "general" })).then(r => r.json()).catch(() => ({})),
+    ]);
+    if (content.error) throw new Error(content.error.info || "Page not found");
+    state.title = content.parse.title;
+    const siteName = siteinfo.query?.general?.sitename; // the project name in its own language, e.g. Wikipédia or विकिपीडिया
+    state.siteLabel = LANG_PROJECT.test(info.host) && siteName ? siteName : state.site.label;
+    $("articleTitle").textContent = state.title;
+    const box = $("articleContainer");
+    box.innerHTML = content.parse.text;
+    box.querySelectorAll("sup.reference, .mw-editsection, .noprint").forEach(n => n.remove());
+    box.querySelectorAll("img").forEach(i => { i.setAttribute("src", fixSrc(i.getAttribute("src"))); i.removeAttribute("srcset"); i.loading = "lazy"; i.alt = i.alt || "Page image"; });
+    box.scrollTop = 0;
 
-                    const pages = data.query.pages;
-                    const pageId = Object.keys(pages)[0];
-                    const content = pages[pageId].extract;
+    // Collect every usable image on the page
+    const seen = new Set();
+    box.querySelectorAll("img").forEach(i => {
+      const t = i.getAttribute("src"), w = +i.getAttribute("width") || 0;
+      if (!t || w < 60 || seen.has(t) || /\/(static|api\/rest_v1)\/|\/math\//.test(t) || state.images.length >= 40) return;
+      seen.add(t); state.images.push({ thumb: t, full: t.replace(/\/\d+px-/, "/1200px-") });
+    });
+    const lead = img.query?.pages?.[0]?.thumbnail?.source;
+    if (!state.images.length && lead) state.images.push({ thumb: lead, full: lead });
+    state.sel = state.images.length ? 0 : -1;
+    if (info.hash) {
+      const el = box.querySelector(`[id="${CSS.escape(info.hash)}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        let sib = (el.closest(".mw-heading") || el).nextElementSibling;
+        while (sib) {
+          const i = sib.querySelector("img"), k = i && state.images.findIndex(x => x.thumb === i.getAttribute("src"));
+          if (i && k >= 0) { state.sel = k; break; }
+          sib = sib.nextElementSibling;
+        }
+      }
+    }
+    buildGallery(); resetPos(); refreshCredit();
+    buildTags((cats.query?.pages?.[0]?.categories || []).map(c => c.title.replace(/^[^:]*:/, "")));
+    const ts = meta.query?.pages?.[0]?.revisions?.[0]?.timestamp;
+    $("lastModifiedDisplay").textContent = ts
+      ? new Date(ts).toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" }) : "unknown";
+    setStatus(`Loaded “${state.title}”. Now select a sentence.`);
+    scheduleRender();
+  } catch (e) {
+    setStatus("Couldn’t load that page. Check the link and your connection, then try again.", true);
+  } finally { $("loadBtn").disabled = false; }
+}
 
-                    if (content) {
-                        articleContentDiv.innerHTML = `<p>${content.replace(/\n/g, '<br>')}</p>`;
-                        generateImageBtn.style.display = 'block';
-                    } else {
-                        articleContentDiv.innerHTML = '<p>Article not found or content unavailable. Please ensure the URL is correct and the article exists.</p>';
-                    }
-                } catch (error) {
-                    articleContentDiv.innerHTML = `<p>Error loading article: ${error.message}. This might be due to an invalid URL, network issues, or CORS restrictions for certain languages.</p>`;
-                    alert(`Failed to load article: ${error.message}`);
-                }
-            }
+/* ---------- Image gallery ---------- */
+function buildGallery() {
+  const g = $("gallery"); g.textContent = "";
+  $("galleryHint").textContent = state.images.length
+    ? `${state.images.length} image${state.images.length > 1 ? "s" : ""} found. Choose one, or use a plain background.`
+    : "No images found on this page, so a plain background will be used.";
+  if (!state.images.length) return;
+  const mk = (idx, content, label) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "ghost"; b.setAttribute("role", "radio"); b.dataset.idx = idx;
+    b.setAttribute("aria-label", label); b.append(content); b.onclick = () => selectImage(idx); g.append(b);
+  };
+  state.images.forEach((im, i) => {
+    const t = document.createElement("img"); t.src = im.thumb; t.alt = ""; t.loading = "lazy";
+    mk(i, t, `Image ${i + 1}`);
+  });
+  mk(-1, document.createTextNode("No image"), "No background image");
+  markGallery();
+}
+function markGallery() {
+  document.querySelectorAll("#gallery button").forEach(b => b.setAttribute("aria-checked", String(+b.dataset.idx === state.sel)));
+  document.querySelectorAll("#articleContainer img.picked").forEach(i => i.classList.remove("picked"));
+  const cur = state.images[state.sel];
+  if (cur) [...document.querySelectorAll("#articleContainer img")].filter(i => i.getAttribute("src") === cur.thumb).forEach(i => i.classList.add("picked"));
+}
+function selectImage(idx) { state.sel = idx; resetPos(); markGallery(); refreshCredit(); }
 
-            // --- Generate Image Logic ---
-            generateImageBtn.addEventListener('click', generateShareableImage);
+/* ---------- Image credit (author and licence from Commons) ---------- */
+const creditCache = {};
+function fileFromSrc(src) {
+  const m = (src || "").match(/(?:upload|thumb)\.wikimedia\.org\/wikipedia\/([\w-]+)\/(?:thumb\/)?[0-9a-f]\/[0-9a-f]{2}\/([^\/?#]+)/);
+  if (!m) return null;
+  try { return { proj: m[1], name: decodeURIComponent(m[2]) }; } catch { return null; }
+}
+async function getCredit(src) {
+  const f = fileFromSrc(src);
+  if (!f) return { text: "", note: "this image is not a Wikimedia file" };
+  const key = f.proj + ":" + f.name;
+  if (creditCache[key]) return { text: creditCache[key] };
+  const hosts = f.proj === "commons" ? ["commons.wikimedia.org"] : [`${f.proj}.wikipedia.org`, "commons.wikimedia.org"];
+  let note = "no data returned for this file";
+  for (const host of hosts) {
+    try {
+      const r = await fetch(api(host, { action: "query", prop: "imageinfo", iiprop: "extmetadata",
+        iiextmetadatafilter: "Artist|LicenseShortName", titles: "File:" + f.name }));
+      if (!r.ok) { note = `server answered ${r.status}`; continue; }
+      const d = await r.json();
+      const m = d.query?.pages?.[0]?.imageinfo?.[0]?.extmetadata;
+      if (!m) { note = "file page not found"; continue; }
+      let artist = new DOMParser().parseFromString(m.Artist?.value || "", "text/html").body.textContent.replace(/\s+/g, " ").trim();
+      if (artist.length > 45) artist = artist.slice(0, 44) + "…";
+      const lic = (m.LicenseShortName?.value || "").trim();
+      const text = (artist ? `Image © ${artist}` : `Image via ${host.startsWith("commons") ? "Wikimedia Commons" : "Wikipedia"}`) + (lic ? `, ${lic}` : "");
+      return { text: (creditCache[key] = text) };
+    } catch (e) { note = "network error: " + (e.message || e); console.warn("Credit lookup failed", host, e); }
+  }
+  return { text: "", note };
+}
+async function refreshCredit() {
+  const k = state.sel, cur = state.images[k], box = $("creditInput");
+  const hint = "The credit appears here when you pick an image. You can edit it.";
+  box.value = ""; box.placeholder = cur ? "Looking up the author and licence…" : hint;
+  updateCaptionBox(); scheduleRender();
+  if (!cur) return;
+  const r = await getCredit(cur.thumb);
+  if (k !== state.sel) return;
+  box.value = r.text;
+  box.placeholder = r.text ? hint : `Couldn’t find the credit (${r.note}). Type it here, for example: Image © Name, CC BY-SA 4.0`;
+  updateCaptionBox(); scheduleRender();
+}
 
-            function generateShareableImage() {
-                const container = document.querySelector('.container');
-                if (!container) {
-                    alert('Error: Could not find content to capture for image.');
-                    return;
-                }
+async function getLogo(site) {
+  const key = site.label;
+  if (logoCache[key] !== undefined) return logoCache[key];
+  let img = null;
+  if (site.logo) img = await loadImage(site.logo);
+  for (const f of site.files || []) {
+    if (img) break;
+    try {
+      const d = await fetch(api("commons.wikimedia.org", { action: "query", prop: "imageinfo", iiprop: "url", iiurlwidth: 300, titles: "File:" + f })).then(r => r.json());
+      img = await loadImage(d.query?.pages?.[0]?.imageinfo?.[0]?.thumburl);
+    } catch {}
+  }
+  return (logoCache[key] = img);
+}
 
-                // Temporarily hide elements not desired in the image
-                const elementsToHide = [loadArticleBtn, wikipediaUrlInput, shareFb.parentElement, nightModeToggle, dateTimeDisplay];
-                elementsToHide.forEach(el => {
-                    if (el) el.style.display = 'none';
-                });
+/* ---------- Selection ---------- */
+function useSelection() {
+  const sel = window.getSelection();
+  const box = $("articleContainer");
+  if (!sel.rangeCount || sel.isCollapsed || !box.contains(sel.anchorNode)) return;
+  const text = sel.toString().replace(/\[\d+\]/g, "").replace(/\s+/g, " ").trim();
+  if (text) { $("factText").value = text.slice(0, 320); updateCount(); scheduleRender(); }
+}
+document.addEventListener("selectionchange", () => { clearTimeout(useSelection.t); useSelection.t = setTimeout(useSelection, 250); });
 
-                // Set a temporary fixed width for consistent image generation
-                const originalContainerWidth = container.style.width;
-                container.style.width = '700px'; // Match max-width
+$("articleContainer").addEventListener("click", (e) => {
+  if (e.target.tagName !== "IMG") return;
+  e.preventDefault();
+  const t = e.target.getAttribute("src");
+  let k = state.images.findIndex(x => x.thumb === t);
+  if (k < 0) { state.images.push({ thumb: t, full: t.replace(/\/\d+px-/, "/1200px-") }); k = state.images.length - 1; buildGallery(); }
+  selectImage(k); toast("Background image updated");
+});
 
-                // Capture the div using html2canvas
-                html2canvas(container, {
-                    scale: 2, // Increase scale for better quality
-                    useCORS: true, // Important if background image is from external domain
-                    allowTaint: true // Allows cross-origin images to be rendered (may not work with all browsers/CORS configs)
-                }).then(canvas => {
-                    // Restore hidden elements and original width
-                    elementsToHide.forEach(el => {
-                        if (el) el.style.display = ''; // Restore original display property
-                    });
-                    container.style.width = originalContainerWidth; // Restore original width
+function updateCount() { $("charCount").textContent = $("factText").value.length; }
 
-                    // Create a download link for the image
-                    const image = canvas.toDataURL('image/png');
-                    const link = document.createElement('a');
-                    link.href = image;
-                    link.download = 'wikipedia_dyk_share.png';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    alert('Shareable image generated and downloaded!');
-                }).catch(error => {
-                    console.error('Error generating image:', error);
-                    alert('Failed to generate image. Please try again. (Check console for details)');
-                    // Ensure elements are restored even if there's an error
-                    elementsToHide.forEach(el => {
-                        if (el) el.style.display = '';
-                    });
-                    container.style.width = originalContainerWidth;
-                });
-            }
+/* ---------- Rendering ---------- */
+const imgCache = new Map(); // keeps recently loaded photos so dragging the photo doesn't reload it
+const inflight = new Map(); // photo downloads in progress, so unneeded ones can be cancelled (a pending download keeps the browser's loading spinner going)
+function abortLoad(src) {
+  const x = inflight.get(src);
+  if (!x) return;
+  inflight.delete(src); clearTimeout(x.timer);
+  x.img.onload = x.img.onerror = null; x.img.src = ""; x.res(null);
+}
+const loadImage = (src) => new Promise((res) => {
+  if (!src) return res(null);
+  if (imgCache.has(src)) return res(imgCache.get(src));
+  abortLoad(src);
+  const i = new Image(); i.crossOrigin = "anonymous";
+  const timer = setTimeout(() => abortLoad(src), 15000); // give up on a stuck download
+  const done = (v) => { clearTimeout(timer); inflight.delete(src); res(v); };
+  i.onload = () => { imgCache.set(src, i); if (imgCache.size > 6) imgCache.delete(imgCache.keys().next().value); done(i); };
+  i.onerror = () => done(null);
+  inflight.set(src, { img: i, timer, res });
+  i.src = src;
+});
 
-            // --- Social Media Share Links ---
-            shareFb.addEventListener('click', function(e) {
-                e.preventDefault();
-                let url = encodeURIComponent(wikipediaUrlInput.value || window.location.href);
-                window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
-            });
+/* Wikimedia only serves fixed thumbnail widths (1280, 1920, ...), and refuses sizes above the original.
+   So try big standard sizes first, then the untouched original file, then the small page thumbnail. */
+function imageCandidates(src) {
+  // Wikipedia now serves thumbnails from thumb.wikimedia.org with tracking parameters; use the plain upload host.
+  const clean = src.split("?")[0].replace("//thumb.wikimedia.org/", "//upload.wikimedia.org/");
+  const out = [];
+  if (/\/thumb\//.test(clean)) {
+    for (const w of [1280, 960]) out.push(clean.replace(/\/((?:lossy-|lossless-)?(?:page\d+-)?)\d+px-/, `/$1${w}px-`));
+    const orig = clean.replace("/thumb/", "/").replace(/\/[^/]+$/, "");
+    if (/\.(jpe?g|png|webp|gif)$/i.test(orig)) out.push(orig);
+  }
+  out.push(clean);
+  if (clean !== src) out.push(src);
+  return out;
+}
+function photoCandidates(src, S) { // ordered best to worst; all are requested at the same time
+  const clean = src.split("?")[0].replace("//thumb.wikimedia.org/", "//upload.wikimedia.org/");
+  const size = (u, w) => u.replace(/\/((?:lossy-|lossless-)?(?:page\d+-)?)\d+px-/, `/$1${w}px-`);
+  const out = [];
+  if (/\/thumb\//.test(clean)) {
+    if (S === 2) out.push(size(clean, 1920));
+    out.push(size(clean, 1280));
+    if (src !== clean) out.push(size(src, 1280)); // same address style the article itself uses
+    out.push(size(clean, 960));
+  }
+  out.push(src);
+  if (src !== clean) out.push(clean);
+  return [...new Set(out)];
+}
+function origUrl(src) {
+  const clean = src.split("?")[0].replace("//thumb.wikimedia.org/", "//upload.wikimedia.org/");
+  const orig = clean.replace("/thumb/", "/").replace(/\/[^/]+$/, "");
+  return /\/thumb\//.test(clean) && /\.(jpe?g|png|webp|gif)$/i.test(orig) ? orig : null;
+}
+function bigUrl(src) { // sharper version, fetched after the first photo is already showing
+  const clean = src.split("?")[0].replace("//thumb.wikimedia.org/", "//upload.wikimedia.org/");
+  return /\/thumb\//.test(clean) ? clean.replace(/\/((?:lossy-|lossless-)?(?:page\d+-)?)\d+px-/, "/$11920px-") : null;
+}
+async function apiThumbUrl(src, w) { // last resort: ask the Wikimedia API which thumbnail URL it wants us to use
+  const f = fileFromSrc(src);
+  if (!f) return null;
+  try {
+    const host = f.proj === "commons" ? "commons.wikimedia.org" : `${f.proj}.wikipedia.org`;
+    const d = await fetch(api(host, { action: "query", prop: "imageinfo", iiprop: "url", iiurlwidth: w, titles: "File:" + f.name })).then(r => r.json());
+    const ii = d.query?.pages?.[0]?.imageinfo?.[0];
+    return ii?.thumburl || ii?.url || null;
+  } catch { return null; }
+}
+async function loadFirst(list) {
+  for (const u of list) { const i = await loadImage(u); if (i) return i; }
+  return null;
+}
 
-            shareX.addEventListener('click', function(e) {
-                e.preventDefault();
-                let url = encodeURIComponent(wikipediaUrlInput.value || window.location.href);
-                let text = encodeURIComponent("Check out this interesting Wikipedia fact!");
-                window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank', 'width=600,height=400');
-            });
+function wrapLines(ctx, text, maxW) {
+  const lines = []; let line = "";
+  for (const w of text.split(" ")) {
+    const t = line ? line + " " + w : w;
+    if (ctx.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t;
+  }
+  if (line) lines.push(line);
+  return lines;
+}
 
-            shareIg.addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('Instagram does not support direct link sharing from websites. Please save the generated image and post it manually on Instagram, or copy the URL and paste it into your Instagram story/bio.');
-                // Optionally open Instagram in a new tab
-                window.open('https://www.instagram.com/', '_blank');
-            });
+function scheduleRender(ms) { clearTimeout(renderTimer); renderTimer = setTimeout(render, typeof ms === "number" ? ms : 200); }
+
+async function render() {
+  const fact = cleanFact();
+  updateCaptionBox();
+  const ready = fact && state.url;
+  ["downloadBtn", "shareBtn", "copyBtn", "copyBothBtn", "tgBtn", "waBtn", "mastoBtn", "fbBtn", "xBtn"].forEach(id => $(id).disabled = !ready);
+  if (!ready) { $("previewCanvas").hidden = true; $("emptyMsg").hidden = false;
+    $("emptyMsg").textContent = state.url ? "Select or type a fact to see your image." : "Load an article to begin."; return; }
+
+  const token = ++renderToken;
+  const F = FORMATS[document.querySelector("input[name=size]:checked").value], W = F.w, H = F.h;
+  const cur = state.images[state.sel];
+  const S = $("hiRes").checked ? 2 : 1; // export scale: 2 means twice the pixels, so text and QR stay sharp
+  const qrPx = Math.max(40, Math.round(Math.min(Math.min(H, W * 0.525) * 0.24, 200)) - 12) * S;
+  const cand = cur ? photoCandidates(cur.thumb, S) : [];
+  let bestRank = cand.findIndex(u => imgCache.has(u)); // position of the best photo already loaded, if any
+  const cachedBg = bestRank >= 0 ? imgCache.get(cand[bestRank]) : null;
+  if (bestRank < 0) bestRank = Infinity;
+  const [logo, qr] = await Promise.all([
+    getLogo(state.site),
+    $("qrOn").checked ? QRCode.toCanvas(document.createElement("canvas"), state.qrUrl || state.url, { width: qrPx, margin: 1, errorCorrectionLevel: "M" }).catch(() => null) : null,
+  ]);
+  if (token !== renderToken) return;
+
+  const paint = (bg) => {
+  const c = $("previewCanvas"); c.width = W * S; c.height = H * S;
+  const ctx = c.getContext("2d");
+  ctx.setTransform(S, 0, 0, S, 0, 0);
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+  state.W = W; if (!bg) state.ov = { x: 0, y: 0 };
+  $("posX").disabled = !bg || state.ov.x < 2; $("posY").disabled = !bg || state.ov.y < 2; $("posZ").disabled = !bg;
+  const pad = Math.round(W * 0.05);
+  const safeY = H / W > 1.7 ? Math.round(H * 0.12) : 0; // keeps content clear of Story/Status app buttons
+  const padTop = pad + safeY, padBot = pad + safeY;
+  // Sizes are based on u, so the square Instagram format gets the same text scale as the wide ones.
+  const u = Math.min(H, W * 0.525);
+  const shadow = (on) => { ctx.shadowColor = on ? "rgba(0,0,0,.75)" : "transparent"; ctx.shadowBlur = on ? 12 : 0; ctx.shadowOffsetY = on ? 2 : 0; };
+  const FONT = "Arial, Helvetica, sans-serif";
+
+  // Layout: the QR code takes one corner, and all text lives in the column beside it.
+  const qrPos = document.querySelector("input[name=qr]:checked").value; // tl, tr, bl, br
+  const qrLeft = qrPos[1] === "l", qrTop = qrPos[0] === "t";
+  const qrSize = Math.round(Math.min(u * 0.24, 200));
+  const tagSize = Math.round(u * 0.032);
+  let tagLine = ""; // optional hashtag line, centred at the very bottom; tags that don't fit are left out
+  if ($("imgTags").checked && state.tags.some(x => x.on)) {
+    ctx.font = `700 ${tagSize}px ${FONT}`;
+    for (const x of state.tags.filter(x => x.on)) {
+      const n = (tagLine ? tagLine + " " : "") + "#" + x.t;
+      if (ctx.measureText(n).width > W - pad * 2) break;
+      tagLine = n;
+    }
+  }
+  const metaY = H - padBot - (tagLine ? tagSize + 20 : 0);
+  const x0 = pad + (qr && qrLeft ? qrSize + 30 : 0);
+  const x1 = W - pad - (qr && !qrLeft ? qrSize + 30 : 0);
+  const colW = x1 - x0;
+
+  ctx.fillStyle = "#1c2733"; ctx.fillRect(0, 0, W, H);
+  let lum = 0.2;
+  if (bg) {
+    const sc = Math.max(W / bg.width, H / bg.height) * state.zoom;
+    const dw = bg.width * sc, dh = bg.height * sc;
+    state.ov = { x: Math.max(0, dw - W), y: Math.max(0, dh - H) };
+    ctx.drawImage(bg, -state.ov.x * state.fx, -state.ov.y * state.fy, dw, dh);
+    try { // measure how bright the photo is, so bright photos get a darker overlay
+      const t = document.createElement("canvas"); t.width = t.height = 24;
+      const tc = t.getContext("2d"); tc.drawImage(c, 0, 0, c.width, c.height, 0, 0, 24, 24);
+      const d = tc.getImageData(0, 0, 24, 24).data; let sum = 0;
+      for (let i = 0; i < d.length; i += 4) sum += (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255;
+      lum = sum / (d.length / 4);
+    } catch {}
+  }
+  ctx.fillStyle = `rgba(8,12,18,${(0.28 + 0.4 * lum).toFixed(2)})`; ctx.fillRect(0, 0, W, H);
+  const scrim = ctx.createLinearGradient(0, 0, 0, H);
+  scrim.addColorStop(0, "rgba(8,12,18,.30)"); scrim.addColorStop(.5, "rgba(8,12,18,.15)"); scrim.addColorStop(1, "rgba(8,12,18,.80)");
+  ctx.fillStyle = scrim; ctx.fillRect(0, 0, W, H);
+
+  // Top row: logo and label
+  const logoSize = Math.round(u * 0.09);
+  if (logo) {
+    const r = Math.min(logoSize / logo.width, logoSize / logo.height);
+    ctx.drawImage(logo, x0 + (logoSize - logo.width * r) / 2, padTop + (logoSize - logo.height * r) / 2, logo.width * r, logo.height * r);
+  }
+  shadow(true);
+  ctx.fillStyle = "#fff"; ctx.textBaseline = "middle"; ctx.textAlign = "left";
+  ctx.font = `700 ${Math.round(logoSize * .42)}px ${FONT}`;
+  ctx.fillText(state.siteLabel || state.site.label, x0 + logoSize + 14, padTop + logoSize / 2);
+  shadow(false);
+
+  // QR code in the chosen corner
+  if (qr) {
+    const qx = qrLeft ? pad : W - pad - qrSize, qy = qrTop ? padTop : metaY - qrSize;
+    ctx.fillStyle = "#fff"; ctx.fillRect(qx, qy, qrSize, qrSize);
+    ctx.imageSmoothingEnabled = false; // keep QR squares pin sharp
+    ctx.drawImage(qr, qx + 6, qy + 6, qrSize - 12, qrSize - 12);
+    ctx.imageSmoothingEnabled = true;
+  }
+
+  // Bottom block: title and link, then the hashtag line
+  ctx.textBaseline = "alphabetic"; shadow(true);
+  const urlSize = Math.round(u * 0.03), titleSize = Math.round(u * 0.045);
+  const creditText = creditLine(), creditSize = Math.round(u * 0.026);
+  let y = metaY - 4;
+  if (creditText) { // photo credit, small, under the link
+    ctx.fillStyle = "rgba(255,255,255,.88)"; ctx.font = `italic ${creditSize}px ${FONT}`;
+    let ct = creditText; while (ctx.measureText(ct).width > colW && ct.length > 8) ct = ct.slice(0, -2);
+    ctx.fillText(ct === creditText ? ct : ct + "…", x0, y);
+    y -= creditSize + 14;
+  }
+  ctx.fillStyle = "rgba(255,255,255,.92)";
+  ctx.font = `${urlSize}px ${FONT}`;
+  const host = state.shown;
+  let shown = host; while (ctx.measureText(shown).width > colW && shown.length > 8) shown = shown.slice(0, -2);
+  ctx.fillText(shown === host ? host : shown + "…", x0, y);
+  y -= urlSize + 12;
+  ctx.fillStyle = "#fff";
+  ctx.font = `700 ${titleSize}px ${FONT}`;
+  let t = state.title; while (ctx.measureText(t).width > colW && t.length > 4) t = t.slice(0, -2);
+  ctx.fillText(t === state.title ? t : t + "…", x0, y);
+  const stackH = metaY - y + titleSize;
+  if (tagLine) {
+    ctx.font = `700 ${tagSize}px ${FONT}`; ctx.fillStyle = "rgba(255,255,255,.95)";
+    ctx.textAlign = "center"; ctx.fillText(tagLine, W / 2, H - padBot + pad * 0.35); ctx.textAlign = "left";
+  }
+
+  // Fact text, auto-fitted between the top row and the bottom block, placed top, middle or bottom
+  const text = ($("dykPrefix").checked ? "Did you know… " : "") + fact;
+  const top = padTop + logoSize + pad * 0.6;
+  const bottom = metaY - stackH - pad * 0.5;
+  const maxH = bottom - top;
+  ctx.fillStyle = "#fff"; ctx.textBaseline = "top";
+  let size = Math.round(u * 0.11), lines;
+  for (; size >= 18; size -= 2) {
+    ctx.font = `700 ${size}px ${FONT}`;
+    lines = wrapLines(ctx, text, colW);
+    if (lines.length * size * 1.25 <= maxH) break;
+  }
+  const blockH = lines.length * size * 1.25;
+  const pos = document.querySelector("input[name=pos]:checked").value;
+  const offset = pos === "top" ? 0 : pos === "middle" ? (maxH - blockH) / 2 : maxH - blockH;
+  lines.forEach((l, i) => ctx.fillText(l, x0, top + offset + i * size * 1.25));
+  shadow(false);
+
+  c.hidden = false; $("emptyMsg").hidden = true;
+  state.blob = null; clearTimeout(render.blobTimer); // encode the PNG shortly after the last change, so dragging stays smooth
+  render.blobTimer = setTimeout(async () => {
+    const blob = await new Promise(r => c.toBlob(r, "image/png"));
+    if (token === renderToken) state.blob = blob;
+  }, 350);
+  };
+
+  paint(cachedBg); // draw the text right away, then add the photo as soon as any size arrives
+  if (cur && bestRank > 0) {
+    if (!cachedBg) { state.loading = true; $("photoStatus").textContent = "Loading the photo…"; }
+    await new Promise(done => {
+      let pending = 0;
+      cand.slice(0, bestRank === Infinity ? cand.length : bestRank).forEach((u, i) => {
+        pending++;
+        loadImage(u).then(img => {
+          if (token === renderToken && img && i < bestRank) { // a better size than the one showing
+            bestRank = i; paint(img); state.loading = false; cand.slice(i + 1).forEach(abortLoad); // cancel the lower-quality downloads
+            $("photoStatus").textContent = i === 0 ? "" : "Improving the photo quality…";
+          }
+          if (--pending === 0) done();
         });
-    </script>
+      });
+      if (!pending) done();
+    });
+    if (token !== renderToken) return;
+    if (bestRank === Infinity) { // nothing loaded: ask the API for a thumbnail, then try the original file
+      let img = await loadImage(await apiThumbUrl(cur.thumb, 1280));
+      if (!img) img = await loadImage(origUrl(cur.thumb));
+      if (token !== renderToken) return;
+      if (img) paint(img);
+      state.loading = false;
+      $("photoStatus").textContent = img ? "" : "Couldn’t load this photo (it may be very large or blocked). Pick another image or use a plain background.";
+    } else { state.loading = false; $("photoStatus").textContent = ""; }
+  } else { state.loading = false; $("photoStatus").textContent = ""; }
+}
+
+/* ---------- Output ---------- */
+const getBlob = () => Promise.resolve(state.blob);
+const slug = () => (state.title || "wikipedia").replace(/\W+/g, "_").slice(0, 40);
+const cleanFact = () => $("factText").value.replace(/(\s*(?:🔗\s*)?Read more:?\s*\S+)+\s*$/i, "").trim();
+const factText = () => ($("dykPrefix").checked ? "Did you know… " : "") + cleanFact();
+const tagsLine = () => $("tagsOn").checked ? state.tags.filter(x => x.on).map(x => "#" + x.t).join(" ") : "";
+const creditLine = () => ($("creditOn").checked ? $("creditInput").value.trim() : "");
+const caption = () => `${factText()}\n\nRead more: ${state.shown}` + (creditLine() ? `\n${creditLine()}` : "") + "\nMade with https://wiki-dyk.toolforge.org/" + (tagsLine() ? `\n\n${tagsLine()}` : "");
+const updateCaptionBox = () => { $("captionBox").value = cleanFact() && state.url ? caption() : ""; };
+
+/* ---------- Hashtags ---------- */
+const toTag = (str) => (str || "").replace(/\(.*?\)/g, " ").split(/[\s_\-–\/,.:;]+/)
+  .map(w => w.replace(/[^\p{L}\p{N}\p{M}]/gu, "")).filter(Boolean)
+  .map(w => w.charAt(0).toLocaleUpperCase() + w.slice(1)).join("");
+let customTags = [];
+try { customTags = JSON.parse(localStorage.getItem("dykTags") || "[]"); } catch {}
+const saveCustom = () => { try { localStorage.setItem("dykTags", JSON.stringify(customTags)); } catch {} };
+const asCustom = (auto) => customTags.filter(c => !auto.some(a => a.t.toLowerCase() === c.toLowerCase())).map(t => ({ t, on: true, custom: true }));
+
+function buildTags(cats) {
+  const auto = [];
+  const add = (t, on) => { if (t && t.length > 1 && t.length <= 30 && !auto.some(x => x.t.toLowerCase() === t.toLowerCase())) auto.push({ t, on }); };
+  add(toTag(state.title), true); add("Wikipedia", true); add("DidYouKnow", true); add("DYK", true); add(toTag(state.site.label), true); add("Wikimedia", false);
+  cats.slice(0, 6).forEach(c => add(toTag(c), false));
+  state.tags = [...auto, ...asCustom(auto)];
+  renderTags();
+}
+function renderTags() {
+  const box = $("tagList"); box.textContent = "";
+  state.tags.forEach((x, i) => {
+    const w = document.createElement("span"); w.className = "chip" + (x.on ? " on" : "");
+    const b = document.createElement("button"); b.type = "button"; b.textContent = "#" + x.t;
+    b.setAttribute("aria-pressed", String(x.on)); b.onclick = () => { x.on = !x.on; renderTags(); };
+    w.append(b);
+    if (x.custom) {
+      const r = document.createElement("button"); r.type = "button"; r.className = "rm"; r.textContent = "×";
+      r.setAttribute("aria-label", "Remove #" + x.t);
+      r.onclick = () => { state.tags.splice(i, 1); customTags = customTags.filter(c => c !== x.t); saveCustom(); renderTags(); };
+      w.append(r);
+    }
+    box.append(w);
+  });
+  updateCaptionBox();
+  if ($("imgTags").checked) scheduleRender();
+}
+function addTags(raw) {
+  raw.split(/[\s,#]+/).map(toTag).filter(Boolean).forEach(t => {
+    const ex = state.tags.find(x => x.t.toLowerCase() === t.toLowerCase());
+    if (ex) { ex.on = true; return; }
+    state.tags.push({ t, on: true, custom: true }); customTags.push(t);
+  });
+  saveCustom(); renderTags();
+}
+state.tags = asCustom([]);
+
+async function download() {
+  if (!state.blob || state.loading) { toast("The photo is still loading. Try again in a moment."); return; }
+  const a = document.createElement("a");
+  a.download = `dyk_${slug()}.png`; a.href = URL.createObjectURL(await getBlob()); a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  toast("Image downloaded");
+}
+async function copyImage(msg) {
+  if (!state.blob || state.loading) { toast("The photo is still loading. Try again in a moment."); return; }
+  try {
+    await navigator.clipboard.write([new ClipboardItem({ "image/png": state.blob })]);
+    toast(typeof msg === "string" ? msg : "Image copied. Paste it in your chat, then paste the caption (use Copy caption).");
+  } catch { toast("Couldn’t copy the image. Use Download image instead."); }
+}
+function nativeShare() {
+  if (!state.blob || state.loading) { toast("The photo is still loading. Try again in a moment."); return; }
+  const file = new File([state.blob], `dyk_${slug()}.png`, { type: "image/png" });
+  const data = { files: [file], text: caption(), title: factText() };
+  if (navigator.canShare?.(data)) {
+    // Many apps ignore the text when a file is shared, so keep the caption on the clipboard as a backup.
+    navigator.clipboard?.writeText(caption()).catch(() => {});
+    navigator.share(data)
+      .then(() => toast("Caption is copied. If WhatsApp, X or Instagram left it out, paste it as the caption.", 8000))
+      .catch(() => {});
+  } else copyImage();
+}
+async function copyCaption() {
+  try { await navigator.clipboard.writeText(caption()); toast("Caption copied"); }
+  catch { toast("Couldn’t copy. Select the text and copy it manually."); }
+}
+const open = (u) => window.open(u, "_blank", "noopener");
+
+$("loadBtn").onclick = loadArticle;
+$("wikiURL").addEventListener("keydown", e => { if (e.key === "Enter") loadArticle(); });
+$("factText").addEventListener("input", () => { updateCount(); scheduleRender(); });
+$("dykPrefix").addEventListener("change", scheduleRender);
+document.querySelectorAll("input[name=size], input[name=pos], input[name=qr]").forEach(r => r.addEventListener("change", scheduleRender));
+document.querySelectorAll("input[name=size]").forEach(r => r.addEventListener("change", updateSizeHint));
+$("downloadBtn").onclick = download;
+$("shareBtn").onclick = nativeShare;
+$("copyBtn").onclick = copyCaption;
+$("copyBothBtn").onclick = () => copyImage();
+$("mastoBtn").onclick = () => { // the share page only carries text, so the image is copied for you to paste into the post
+  open(`https://share.joinmastodon.org/#text=${encodeURIComponent(caption())}`);
+  copyImage("Image copied. In your Mastodon post, paste it to attach it.");
+  const n = caption().replace(/https?:\/\/\S+/g, "x".repeat(23)).length; // Mastodon counts every link as 23 characters
+  if (n > 500) setTimeout(() => toast(`The caption is about ${n} characters. Most Mastodon servers allow 500, so shorten it before you post.`, 8000), 2500);
+};
+$("tgBtn").onclick = () => { open(`https://t.me/share/url?url=${encodeURIComponent(state.url)}&text=${encodeURIComponent(factText() + (tagsLine() ? "\n" + tagsLine() : ""))}`); copyImage(); };
+$("waBtn").onclick = () => { open(`https://wa.me/?text=${encodeURIComponent(caption())}`); copyImage(); };
+$("fbBtn").onclick = () => open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(state.url)}&quote=${encodeURIComponent(factText())}${state.tags.find(x => x.on) && $("tagsOn").checked ? "&hashtag=" + encodeURIComponent("#" + state.tags.find(x => x.on).t) : ""}`);
+$("xBtn").onclick = () => open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(state.url)}&text=${encodeURIComponent(factText())}${tagsLine() ? "&hashtags=" + encodeURIComponent(state.tags.filter(x => x.on).map(x => x.t).join(",")) : ""}`);
+
+/* ---------- Jump to top / bottom ---------- */
+const smooth = () => matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+function updateJump() {
+  const y = window.scrollY, max = document.documentElement.scrollHeight - window.innerHeight;
+  $("toTop").hidden = y < 200;
+  $("toBottom").hidden = max < 200 || y > max - 200;
+}
+$("toTop").onclick = () => window.scrollTo({ top: 0, behavior: smooth() });
+$("toBottom").onclick = () => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: smooth() });
+addEventListener("scroll", updateJump, { passive: true });
+addEventListener("resize", updateJump);
+new ResizeObserver(updateJump).observe(document.body);
+updateJump();
+$("tagAdd").onclick = () => { addTags($("tagInput").value); $("tagInput").value = ""; $("tagInput").focus(); };
+$("tagInput").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); $("tagAdd").click(); } });
+$("tagsOn").addEventListener("change", updateCaptionBox);
+$("imgTags").addEventListener("change", scheduleRender);
+/* ---------- Photo position: sliders and mouse drag ---------- */
+function syncPos() { $("posX").value = Math.round(state.fx * 100); $("posY").value = Math.round(state.fy * 100); $("posZ").value = Math.round(state.zoom * 100); }
+function resetPos() { state.fx = state.fy = 0.5; state.zoom = 1; syncPos(); }
+["posX", "posY", "posZ"].forEach(id => $(id).addEventListener("input", () => {
+  state.fx = $("posX").value / 100; state.fy = $("posY").value / 100; state.zoom = $("posZ").value / 100; scheduleRender(30);
+}));
+$("posReset").onclick = () => { resetPos(); scheduleRender(0); };
+(() => {
+  const cv = $("previewCanvas"); let drag = null;
+  cv.addEventListener("pointerdown", e => {
+    if (e.pointerType !== "mouse" || !state.images[state.sel]) return; // phones use the sliders, so the page can still scroll
+    drag = { x: e.clientX, y: e.clientY, fx: state.fx, fy: state.fy };
+    cv.setPointerCapture(e.pointerId); cv.classList.add("dragging");
+  });
+  cv.addEventListener("pointermove", e => {
+    if (!drag) return;
+    const k = state.W / cv.getBoundingClientRect().width;
+    if (state.ov.x > 0) state.fx = Math.min(1, Math.max(0, drag.fx - (e.clientX - drag.x) * k / state.ov.x));
+    if (state.ov.y > 0) state.fy = Math.min(1, Math.max(0, drag.fy - (e.clientY - drag.y) * k / state.ov.y));
+    syncPos(); scheduleRender(16);
+  });
+  const end = () => { drag = null; cv.classList.remove("dragging"); };
+  cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+})();
+
+/* ---------- Remember settings in this browser ---------- */
+const picked = (name) => document.querySelector(`input[name=${name}]:checked`)?.value;
+function saveSettings() {
+  try {
+    localStorage.setItem("dykSettings", JSON.stringify({
+      size: picked("size"), pos: picked("pos"), qr: picked("qr"),
+      prefix: $("dykPrefix").checked, tagsOn: $("tagsOn").checked, imgTags: $("imgTags").checked,
+      creditOn: $("creditOn").checked, hiRes: $("hiRes").checked, qrOn: $("qrOn").checked,
+    }));
+  } catch {}
+}
+function loadSettings() {
+  try {
+    const o = JSON.parse(localStorage.getItem("dykSettings") || "{}");
+    const moved = { igsquare: "square", chat: "square", instagram: "square", igstory: "story", wastatus: "story", tgstory: "story", facebook: "fb", x: "fbwide" };
+    if (moved[o.size]) o.size = moved[o.size];
+    ["size", "pos", "qr"].forEach(n => { const el = document.querySelector(`input[name=${n}][value="${o[n]}"]`); if (el) el.checked = true; });
+    [["dykPrefix", "prefix"], ["tagsOn", "tagsOn"], ["imgTags", "imgTags"], ["creditOn", "creditOn"], ["hiRes", "hiRes"], ["qrOn", "qrOn"]].forEach(([id, k]) => { if (typeof o[k] === "boolean") $(id).checked = o[k]; });
+  } catch {}
+}
+document.querySelectorAll("input[name=size], input[name=pos], input[name=qr], #dykPrefix, #tagsOn, #imgTags, #creditOn, #hiRes, #qrOn")
+  .forEach(el => el.addEventListener("change", saveSettings));
+const updateQrControls = () => document.querySelectorAll("input[name=qr]").forEach(r => { r.disabled = !$("qrOn").checked; });
+$("qrOn").addEventListener("change", () => { updateQrControls(); scheduleRender(); });
+$("creditOn").addEventListener("change", () => { updateCaptionBox(); scheduleRender(); });
+$("hiRes").addEventListener("change", scheduleRender);
+$("creditInput").addEventListener("input", () => { updateCaptionBox(); scheduleRender(); });
+loadSettings();
+updateQrControls();
+updateSizeHint();
+renderTags();
+render();
+
+/* Visitor counter: loaded after the page has finished loading, so a slow counter server can't keep the tab's loading spinner going. */
+(() => {
+  const addCounter = () => {
+    const t = document.createElement("script");
+    t.async = true; t.src = "https://toolcounter.toolforge.org/embed.js.php?tool=wiki-dyk&page=index";
+    document.body.appendChild(t);
+  };
+  if (document.readyState === "complete") addCounter(); else addEventListener("load", addCounter);
+})();
+</script>
 </body>
 </html>
