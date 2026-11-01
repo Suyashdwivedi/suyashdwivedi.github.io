@@ -446,6 +446,7 @@ function localeStrings() {
       strings.add(el.dataset["localeOriginal" + attr] || el.getAttribute(attr));
   });
   [
+    "Did you know…", "Read more:", "Made with",
     "Loading languages…", "Loading page…", "Loaded “{title}”. Now select a sentence.",
     "Couldn’t load that page. Check the link and your connection, then try again.",
     "Opening the short link…", "Couldn’t open that short link. Check your connection, or paste the full article link instead.",
@@ -1046,7 +1047,7 @@ async function render() {
   }
 
   // Fact text, auto-fitted between the top row and the bottom block, placed top, middle or bottom
-  const text = ($("dykPrefix").checked ? "Did you know… " : "") + fact;
+  const text = ($("dykPrefix").checked ? (localeText("Did you know…") + " ") : "") + fact;
   const top = padTop + logoSize + pad * 0.6;
   const bottom = metaY - stackH - pad * 0.5;
   const maxH = bottom - top;
@@ -1104,10 +1105,10 @@ async function render() {
 const getBlob = () => Promise.resolve(state.blob);
 const slug = () => (state.title || "wikipedia").replace(/\W+/g, "_").slice(0, 40);
 const cleanFact = () => $("factText").value.replace(/(\s*(?:🔗\s*)?Read more:?\s*\S+)+\s*$/i, "").trim();
-const factText = () => ($("dykPrefix").checked ? "Did you know… " : "") + cleanFact();
+const factText = () => ($("dykPrefix").checked ? (localeText("Did you know…") + " ") : "") + cleanFact();
 const tagsLine = () => $("tagsOn").checked ? state.tags.filter(x => x.on).map(x => "#" + x.t).join(" ") : "";
 const creditLine = () => ($("creditOn").checked ? $("creditInput").value.trim() : "");
-const caption = () => `${factText()}\n\nRead more: ${state.shown}` + (creditLine() ? `\n${creditLine()}` : "") + "\nMade with https://wiki-dyk.toolforge.org/" + (tagsLine() ? `\n\n${tagsLine()}` : "");
+const caption = () => `${factText()}\n\n${localeText("Read more:")} ${state.shown}` + (creditLine() ? `\n${creditLine()}` : "") + `\n${localeText("Made with")} https://wiki-dyk.toolforge.org/` + (tagsLine() ? `\n\n${tagsLine()}` : "");
 const updateCaptionBox = () => { $("captionBox").value = cleanFact() && state.url ? caption() : ""; };
 
 /* ---------- Hashtags ---------- */
