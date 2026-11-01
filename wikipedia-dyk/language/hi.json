@@ -122,6 +122,11 @@
     "X": "X",
     "Your caption appears here once you have a fact.": "तथ्य चुनने के बाद आपका कैप्शन यहाँ दिखाई देगा।",
     "Your image preview appears here.": "आपके चित्र का प्रीव्यू यहाँ दिखाई देगा।",
-    "Zoom": "ज़ूम"
+    "Zoom": "ज़ूम",
+    "Loading languages…": "भाषाओं की सूची लोड हो रही है…",
+    "English": "अंग्रेज़ी",
+    "Fact text": "तथ्य का पाठ",
+    "Article text": "लेख का पाठ",
+    "Wiki's Lazy Coders Logo": "विकी के लेज़ी कोडर्स का लोगो"
   }
 }
