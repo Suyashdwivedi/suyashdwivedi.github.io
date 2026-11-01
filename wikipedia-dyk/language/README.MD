@@ -20,9 +20,20 @@ https://suyashdwivedi.github.io/wikipedia-dyk/language/
 
 ```json
 {
-  "code": "bn",
-  "name": "বাংলা",
-  "file": "bn.json"
+  "languages": [
+    {
+      "code": "hi",
+      "name": "हिन्दी",
+      "file": "hi.json",
+      "dir": "ltr"
+    },
+    {
+      "code": "sv",
+      "name": "svenska",
+      "file": "sv.json",
+      "dir": "ltr"
+    }
+  ]
 }
 ```
 
