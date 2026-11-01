@@ -48,6 +48,13 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
   .logo-img { height: 52px; width: auto; }
   .logo-row h1 { font-size: 1.5rem; line-height: 1.2; }
   .tagline { margin: 2px 0 0; color: var(--muted); font-size: .9rem; }
+  .language-tools { margin-left: auto; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .language-tools label { color: var(--muted); font-size: .85rem; }
+  .language-tools select { max-width: 180px; min-width: 120px; padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--text); font: inherit; }
+  .language-tools button { padding: 7px 10px; font-size: .82rem; }
+  .locale-status { color: var(--muted); font-size: .78rem; }
+  @media (max-width: 860px) { .logo-row { flex-wrap: wrap; } .language-tools { margin-left: 0; width: 100%; justify-content: flex-start; } }
+
 
   .layout { max-width: 1200px; margin: 20px auto; padding: 0 20px;
     display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
@@ -145,7 +152,7 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
   .caption-box label { display: block; font-size: .9rem; font-weight: 700; margin-bottom: 4px; }
   .caption-box textarea { min-height: 96px; font-size: .92rem; }
   @media (max-width: 600px) {
-    .logo-row { padding: 10px 12px; gap: 10px; }
+    .logo-row { padding: 10px 12px; gap: 10px; }\n    .language-tools button { flex: 1 1 auto; }\n    .language-tools select { flex: 1 1 140px; max-width: none; }
     .logo-img { height: 40px; }
     .logo-row h1 { font-size: 1.15rem; }
     .tagline { font-size: .8rem; }
@@ -178,6 +185,14 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
     <div>
       <h1>Wiki DYK Share Tool</h1>
       <p class="tagline">Turn a fact from any Wikipedia or Wikimedia page into a shareable image with a QR code</p>
+    </div>
+    <div class="language-tools" aria-label="Language settings">
+      <label for="languageSelect" id="languageLabel">Interface language</label>
+      <select id="languageSelect" aria-label="Interface language">
+        <option value="en">English</option>
+      </select>
+      <button type="button" id="downloadLocale" class="ghost">Download translation template</button>
+      <span id="localeStatus" class="locale-status" role="status" aria-live="polite">Loading languages…</span>
     </div>
   </div>
 </header>
@@ -306,7 +321,212 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script>
+
 const $ = (id) => document.getElementById(id);
+
+/* ---------- Community localisation ---------- */
+/*
+ * Community translations are maintained in the GitHub Pages folder:
+ * https://suyashdwivedi.github.io/wikipedia-dyk/language/
+ *
+ * languages.json lists available languages. Each language has its own JSON file
+ * (for example hi.json). Missing messages fall back to English.
+ */
+const LOCALE_BASE_URL = "https://suyashdwivedi.github.io/wikipedia-dyk/language/";
+const LOCALE_STORAGE_KEY = "wikiDykLocales";
+const LOCALE_ACTIVE_KEY = "wikiDykLocale";
+const localeState = { code: "en", dict: {}, observer: null, original: new WeakMap(), catalog: [] };
+const localeSkip = new Set(["SCRIPT", "STYLE", "TEXTAREA", "CODE", "PRE", "CANVAS", "OPTION"]);
+const localeAttrs = ["placeholder", "aria-label", "title"];
+function localeStore() {
+  try { return JSON.parse(localStorage.getItem(LOCALE_STORAGE_KEY) || "{}"); }
+  catch { return {}; }
+}
+function localeSave(store) {
+  try { localStorage.setItem(LOCALE_STORAGE_KEY, JSON.stringify(store)); }
+  catch { /* Translation still works for this page view if storage is unavailable. */ }
+}
+function localeText(value) {
+  const source = String(value || "");
+  return localeState.dict[source] || source;
+}
+function translateNode(node) {
+  if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
+  if (node.closest("#articleContainer")) return; // Article content stays in its own language.
+  if (localeSkip.has(node.tagName)) return;
+  for (const child of node.childNodes) {
+    if (child.nodeType === Node.TEXT_NODE) {
+      if (!localeState.original.has(child)) localeState.original.set(child, child.nodeValue);
+      child.nodeValue = localeText(localeState.original.get(child));
+    } else if (child.nodeType === Node.ELEMENT_NODE) translateNode(child);
+  }
+  for (const attr of localeAttrs) {
+    if (!node.hasAttribute(attr)) continue;
+    if (!node.dataset["localeOriginal" + attr]) node.dataset["localeOriginal" + attr] = node.getAttribute(attr);
+    const original = node.dataset["localeOriginal" + attr];
+    node.setAttribute(attr, localeState.dict["@" + attr + ":" + original] || localeState.dict[original] || original);
+  }
+}
+function applyLocale(code) {
+  const store = localeStore();
+  const locale = code === "en" ? null : store[code];
+  localeState.code = locale ? code : "en";
+  localeState.dict = locale && locale.translations ? locale.translations : {};
+  document.documentElement.lang = localeState.code;
+  document.documentElement.dir = locale && locale.dir === "rtl" ? "rtl" : "ltr";
+  document.querySelectorAll("body *").forEach(el => {
+    if (el.closest("#articleContainer")) return;
+    for (const child of el.childNodes) {
+      if (child.nodeType === Node.TEXT_NODE && localeState.original.has(child))
+        child.nodeValue = localeState.original.get(child);
+    }
+    for (const attr of localeAttrs) {
+      const original = el.dataset["localeOriginal" + attr];
+      if (original !== undefined) el.setAttribute(attr, original);
+    }
+  });
+  translateNode(document.body);
+  try { localStorage.setItem(LOCALE_ACTIVE_KEY, localeState.code); } catch {}
+  $("languageSelect").value = localeState.code;
+}
+function localeStrings() {
+  const strings = new Set();
+  const walk = node => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const raw = localeState.original.has(node) ? localeState.original.get(node) : node.nodeValue;
+      const t = raw.trim();
+      if (t && !node.parentElement?.closest("#articleContainer") && !localeSkip.has(node.parentElement?.tagName)) strings.add(t);
+    } else if (node.nodeType === Node.ELEMENT_NODE && !localeSkip.has(node.tagName) && !node.closest("#articleContainer")) {
+      for (const attr of localeAttrs) if (node.hasAttribute(attr)) strings.add(node.dataset["localeOriginal" + attr] || node.getAttribute(attr));
+      node.childNodes.forEach(walk);
+    }
+  };
+  walk(document.body);
+  [
+    "Opening the short link…", "Couldn’t open that short link. Check your connection, or paste the full article link instead.",
+    "That doesn’t look like a Wikimedia link. Try one like https://en.wikipedia.org/wiki/Tiger or https://meta.wikimedia.org/wiki/User:Example.",
+    "Loading page…", "Loaded “{title}”. Now select a sentence.", "Couldn’t load that page. Check the link and your connection, then try again.",
+    "The article will appear here. Select any sentence to use it as your fact.",
+    "Select text to use it as your fact. Click an image to use it as the background.",
+    "Select text in the article, or type your own fact.", "Did you know…", "Position the photo",
+    "Slide the photo to keep the important part in the frame. With a mouse you can also drag the preview.",
+    "Left / right", "Up / down", "Zoom", "Reset position", "Show image credit (author and licence)",
+    "The credit appears here when you pick an image. You can edit it.", "Looking up the author and licence…",
+    "Top", "Middle", "Bottom", "Top left", "Top right", "Bottom left", "Bottom right",
+    "Show QR code", "QR code position", "Image format", "High quality export (twice the pixels, sharper text and QR code, bigger file)",
+    "Your image preview appears here.", "Share image + caption", "Copy image", "Download image", "Copy caption",
+    "Telegram", "WhatsApp", "Mastodon", "Facebook", "X", "Hashtags", "(tap to turn on or off)",
+    "Add your own, then press Enter", "Add", "Include hashtags in the caption",
+    "Show hashtags on the image (works separately from the caption)", "Caption",
+    "Your caption appears here once you have a fact.", "Interface language", "Download translation template",
+    "No image", "No background image", "Image {number}", "Couldn’t find the credit ({note}). Type it here, for example: Image © Name, CC BY-SA 4.0",
+    "The photo is still loading. Try again in a moment.", "Image downloaded", "Image copied. Paste it in your chat, then paste the caption (use Copy caption).",
+    "Couldn’t copy the image. Use Download image instead.", "Caption copied", "Couldn’t copy. Select the text and copy it manually.",
+    "Couldn’t load this photo (it may be very large or blocked). Pick another image or use a plain background.",
+    "Images found on the page appear here.", "No images found on this page, so a plain background will be used.",
+    "Page image", "Go to top of page", "Go to bottom of page"
+  ].forEach(x => strings.add(x));
+  return [...strings].sort((a, b) => a.localeCompare(b));
+}
+function refreshLocaleOptions() {
+  const select = $("languageSelect"), current = localeState.code;
+  select.innerHTML = '<option value="en">English</option>';
+  localeState.catalog.forEach(item => {
+    const opt = document.createElement("option");
+    opt.value = item.code;
+    opt.textContent = `${item.name} (${item.code})`;
+    select.append(opt);
+  });
+  select.value = current;
+}
+function downloadLocaleTemplate() {
+  const template = {
+    code: "xx",
+    name: "Language name in its own language",
+    dir: "ltr",
+    translations: Object.fromEntries(localeStrings().map(x => [x, ""]))
+  };
+  const blob = new Blob([JSON.stringify(template, null, 2)], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob), a = document.createElement("a");
+  a.href = url; a.download = "wiki-dyk-translation-template.json"; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
+}
+async function loadLocale(code) {
+  if (code === "en") { applyLocale("en"); $("localeStatus").textContent = ""; return; }
+  const item = localeState.catalog.find(entry => entry.code === code);
+  if (!item) { applyLocale("en"); return; }
+  const status = $("localeStatus");
+  status.textContent = `Loading ${item.name}…`;
+  try {
+    const filename = item.file || `${code}.json`;
+    if (!/^[a-z0-9_-]+\.json$/i.test(filename)) throw new Error("Invalid translation filename in language catalogue.");
+    const response = await fetch(LOCALE_BASE_URL + filename, { cache: "no-cache" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const downloaded = await response.json();
+    if (downloaded.code !== code || !downloaded.translations || typeof downloaded.translations !== "object" || Array.isArray(downloaded.translations))
+      throw new Error("The translation file has an invalid format.");
+    const clean = {};
+    Object.entries(downloaded.translations).forEach(([key, value]) => {
+      if (typeof key === "string" && typeof value === "string" && value.trim()) clean[key] = value;
+    });
+    const locale = { code, name: downloaded.name || item.name, dir: downloaded.dir === "rtl" ? "rtl" : "ltr", translations: clean };
+    const store = localeStore(); store[code] = locale; localeSave(store);
+    applyLocale(code);
+    status.textContent = "";
+  } catch (error) {
+    const cached = localeStore()[code];
+    if (cached) {
+      applyLocale(code);
+      status.textContent = `${item.name}: using the saved translation (online update unavailable).`;
+    } else {
+      applyLocale("en");
+      status.textContent = `Could not load ${item.name}; showing English.`;
+    }
+    console.warn("Wiki DYK localisation error:", error);
+  }
+}
+async function loadLocaleCatalog() {
+  const status = $("localeStatus");
+  try {
+    const response = await fetch(LOCALE_BASE_URL + "languages.json", { cache: "no-cache" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    const entries = Array.isArray(data) ? data : data.languages;
+    if (!Array.isArray(entries)) throw new Error("languages.json must contain a languages array.");
+    localeState.catalog = entries.filter(item => item && /^[a-z][a-z0-9-]{1,14}$/i.test(item.code || "") && item.name)
+      .map(item => ({ code: item.code, name: item.name, file: item.file || `${item.code}.json` }))
+      .filter(item => item.code !== "en");
+    refreshLocaleOptions();
+    const preferred = localStorage.getItem(LOCALE_ACTIVE_KEY) || "en";
+    if (preferred !== "en" && localeState.catalog.some(item => item.code === preferred)) await loadLocale(preferred);
+    else applyLocale("en");
+    if (!status.textContent.startsWith("Could not load")) status.textContent = "";
+  } catch (error) {
+    status.textContent = "Language list unavailable; showing English.";
+    applyLocale("en");
+    console.warn("Wiki DYK language catalogue error:", error);
+  }
+}
+$("languageSelect").addEventListener("change", e => loadLocale(e.target.value));
+$("downloadLocale").addEventListener("click", downloadLocaleTemplate);
+localeState.observer = new MutationObserver(records => {
+  for (const record of records) {
+    if (record.type === "childList") record.addedNodes.forEach(n => {
+      if (n.nodeType === Node.ELEMENT_NODE) translateNode(n);
+    });
+    else if (record.type === "characterData" && !record.target.parentElement?.closest("#articleContainer")) {
+      const n = record.target;
+      if (!localeState.original.has(n) || n.nodeValue !== localeText(localeState.original.get(n)))
+        localeState.original.set(n, n.nodeValue);
+      const translated = localeText(localeState.original.get(n));
+      if (n.nodeValue !== translated) n.nodeValue = translated;
+    }
+  }
+});
+localeState.observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+refreshLocaleOptions();
+loadLocaleCatalog();
+
 const FORMATS = {
   fb:         { name: "Facebook",           w: 1200, h: 630,  ratio: "1.91:1", use: "Facebook link previews and shared posts" },
   fbwide:     { name: "Facebook wide",      w: 1200, h: 675,  ratio: "16:9",   use: "Facebook landscape announcements" },
