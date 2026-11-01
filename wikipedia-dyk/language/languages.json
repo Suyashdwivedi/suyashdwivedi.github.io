@@ -29,6 +29,12 @@
       "name": "Filipino",
       "file": "fil.json",
       "dir": "ltr"
+     },
+    {
+      "code": "uk",
+      "name": "українська",
+      "file": "uk.json",
+      "dir": "ltr"
     }
   ]
 }
