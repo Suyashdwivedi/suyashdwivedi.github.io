@@ -336,7 +336,7 @@ const LOCALE_BASE_URL = "https://suyashdwivedi.github.io/wikipedia-dyk/language/
 const LOCALE_STORAGE_KEY = "wikiDykLocales";
 const LOCALE_ACTIVE_KEY = "wikiDykLocale";
 const localeState = { code: "en", dict: {}, observer: null, original: new WeakMap(), catalog: [] };
-const localeSkip = new Set(["SCRIPT", "STYLE", "TEXTAREA", "CODE", "PRE", "CANVAS", "OPTION"]);
+const localeSkip = new Set(["SCRIPT", "STYLE", "CODE", "PRE", "CANVAS"]);
 const localeAttrs = ["placeholder", "aria-label", "title"];
 function localeStore() {
   try { return JSON.parse(localStorage.getItem(LOCALE_STORAGE_KEY) || "{}"); }
@@ -348,17 +348,25 @@ function localeSave(store) {
 }
 function localeText(value) {
   const source = String(value || "");
-  return localeState.dict[source] || source;
+  const trimmed = source.trim();
+  if (!trimmed) return source;
+  const translated = localeState.dict[trimmed];
+  if (!translated) return source;
+  const leading = source.match(/^\\s*/)?.[0] || "";
+  const trailing = source.match(/\\s*$/)?.[0] || "";
+  return leading + translated + trailing;
 }
 function translateNode(node) {
   if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
   if (node.closest("#articleContainer")) return; // Article content stays in its own language.
   if (localeSkip.has(node.tagName)) return;
-  for (const child of node.childNodes) {
-    if (child.nodeType === Node.TEXT_NODE) {
-      if (!localeState.original.has(child)) localeState.original.set(child, child.nodeValue);
-      child.nodeValue = localeText(localeState.original.get(child));
-    } else if (child.nodeType === Node.ELEMENT_NODE) translateNode(child);
+  if (node.tagName !== "TEXTAREA") {
+    for (const child of node.childNodes) {
+      if (child.nodeType === Node.TEXT_NODE) {
+        if (!localeState.original.has(child)) localeState.original.set(child, child.nodeValue);
+        child.nodeValue = localeText(localeState.original.get(child));
+      } else if (child.nodeType === Node.ELEMENT_NODE) translateNode(child);
+    }
   }
   for (const attr of localeAttrs) {
     if (!node.hasAttribute(attr)) continue;
@@ -453,6 +461,7 @@ function downloadLocaleTemplate() {
 }
 async function loadLocale(code) {
   if (code === "en") { applyLocale("en"); $("localeStatus").textContent = ""; return; }
+  try { localStorage.setItem(LOCALE_ACTIVE_KEY, code); } catch {}
   const item = localeState.catalog.find(entry => entry.code === code);
   if (!item) { applyLocale("en"); return; }
   const status = $("localeStatus");
@@ -479,8 +488,12 @@ async function loadLocale(code) {
       applyLocale(code);
       status.textContent = `${item.name}: using the saved translation (online update unavailable).`;
     } else {
-      applyLocale("en");
-      status.textContent = `Could not load ${item.name}; showing English.`;
+      localeState.code = "en";
+      localeState.dict = {};
+      document.documentElement.lang = "en";
+      document.documentElement.dir = "ltr";
+      $("languageSelect").value = code;
+      status.textContent = `Could not load ${item.name}; showing English for now. Your language preference is saved; it will be retried on the next visit.`;
     }
     console.warn("Wiki DYK localisation error:", error);
   }
@@ -1228,6 +1241,18 @@ render();
   };
   if (document.readyState === "complete") addCounter(); else addEventListener("load", addCounter);
 })();
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GC8PGC89NB');
+</script>
+	</script>
+	<script src="https://cdn.counter.dev/script.js"
+        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
+        data-utcoffset="6">
 </script>
 </body>
 </html>
