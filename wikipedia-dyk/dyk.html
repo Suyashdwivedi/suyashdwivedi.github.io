@@ -367,11 +367,30 @@ function readPreferredLocale() {
   } catch {}
   return "en";
 }
+function buildLocaleTemplates(dict) { // keys with {name} placeholders become patterns, so messages with a value in them can be translated too
+  const out = [];
+  for (const [key, value] of Object.entries(dict)) {
+    if (!/\{\w+\}/.test(key) || typeof value !== "string" || !value.trim()) continue;
+    try {
+      const pattern = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\\\{(\w+)\\\}/g, "(?<$1>[\\s\\S]+?)");
+      out.push({ re: new RegExp("^" + pattern + "$"), value });
+    } catch {}
+  }
+  return out;
+}
+function localeTemplate(trimmed) {
+  for (const t of localeState.templates || []) {
+    const m = trimmed.match(t.re);
+    if (m) return t.value.replace(/\{(\w+)\}/g, (x, k) => (m.groups && m.groups[k] !== undefined ? m.groups[k] : x));
+  }
+  return null;
+}
 function localeText(value) {
   const source = String(value ?? "");
   const trimmed = source.trim();
   if (!trimmed) return source;
-  const translated = localeState.dict[trimmed];
+  let translated = localeState.dict[trimmed];
+  if (typeof translated !== "string" || !translated.trim()) translated = localeTemplate(trimmed);
   if (typeof translated !== "string" || !translated.trim()) return source;
   const leading = source.match(/^\s*/)?.[0] || "";
   const trailing = source.match(/\s*$/)?.[0] || "";
@@ -395,9 +414,9 @@ function shouldSkipLocaleNode(node) {
 function translateElementAttributes(el) {
   for (const attr of localeAttrs) {
     if (!el.hasAttribute(attr)) continue;
-    const dataKey = "localeOriginal" + attr;
-    if (!el.dataset[dataKey]) el.dataset[dataKey] = el.getAttribute(attr);
-    const original = el.dataset[dataKey];
+    const dataKey = "data-locale-original-" + attr; // plain attribute: dataset["...aria-label"] is not a valid name and used to crash
+    if (!el.hasAttribute(dataKey)) el.setAttribute(dataKey, el.getAttribute(attr));
+    const original = el.getAttribute(dataKey);
     el.setAttribute(attr, localeState.dict["@"+attr+":"+original] || localeState.dict[original] || original);
   }
 }
@@ -422,6 +441,7 @@ function applyLocale(code, locale = null) {
   const cached = locale || (code === "en" ? null : localeStore()[code]);
   localeState.code = code;
   localeState.dict = cached && cached.translations ? cached.translations : {};
+  localeState.templates = buildLocaleTemplates(localeState.dict);
   document.documentElement.lang = code || "en";
   document.documentElement.dir = cached && cached.dir === "rtl" ? "rtl" : "ltr";
   translateTree(document.body);
@@ -443,7 +463,7 @@ function localeStrings() {
   document.querySelectorAll("body *").forEach(el => {
     if (shouldSkipLocaleNode(el)) return;
     for (const attr of localeAttrs) if (el.hasAttribute(attr))
-      strings.add(el.dataset["localeOriginal" + attr] || el.getAttribute(attr));
+      strings.add(el.getAttribute("data-locale-original-" + attr) || el.getAttribute(attr));
   });
   [
     "Did you know…", "Read more:", "Made with",
@@ -457,7 +477,7 @@ function localeStrings() {
     "Couldn’t copy. Select the text and copy it manually.",
     "Couldn’t load this photo (it may be very large or blocked). Pick another image or use a plain background.",
     "No images found on this page, so a plain background will be used.",
-    "English", "Fact text", "Article text", "Wiki's Lazy Coders Logo"
+    "{name}: {w} × {h} px, {ratio}. Best for {use}.", "Background image updated", "Loading the photo…", "Improving the photo quality…", "Caption is copied. If WhatsApp, X or Instagram left it out, paste it as the caption.", "The caption is about {n} characters. Most Mastodon servers allow 500, so shorten it before you post.", "Select or type a fact to see your image.", "Text and QR code stay clear of the top and bottom edges, where the app places its own buttons.", "1 image found. Choose one, or use a plain background.", "{n} images found. Choose one, or use a plain background.", "unknown", "English", "Fact text", "Article text", "Wiki's Lazy Coders Logo"
   ].forEach(x => strings.add(x));
   return [...strings].filter(Boolean).sort((a, b) => a.localeCompare(b));
 }
@@ -602,8 +622,9 @@ const FORMATS = {
 };
 function updateSizeHint() {
   const f = FORMATS[document.querySelector("input[name=size]:checked").value];
-  $("sizeHint").textContent = `${f.name}: ${f.w} × ${f.h} px, ${f.ratio}. Best for ${f.use}.` +
-    (f.h / f.w > 1.7 ? " Text and QR code stay clear of the top and bottom edges, where the app places its own buttons." : "");
+  const hint = $("sizeHint");
+  hint.textContent = `${f.name}: ${f.w} × ${f.h} px, ${f.ratio}. Best for ${f.use}.`;
+  if (f.h / f.w > 1.7) hint.append(" ", "Text and QR code stay clear of the top and bottom edges, where the app places its own buttons.");
 }
 const WP_LOGO = "https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png";
 const SITES = {
