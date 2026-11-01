@@ -5,6 +5,12 @@
       "name": "हिन्दी",
       "file": "hi.json",
       "dir": "ltr"
+    },
+    {
+      "code": "sv",
+      "name": "svenska",
+      "file": "sv.json",
+      "dir": "ltr"
     }
   ]
 }
