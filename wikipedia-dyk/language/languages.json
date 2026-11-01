@@ -3,7 +3,8 @@
     {
       "code": "hi",
       "name": "हिन्दी",
-      "file": "hi.json"
+      "file": "hi.json",
+      "dir": "ltr"
     }
   ]
 }
