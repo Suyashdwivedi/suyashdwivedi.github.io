@@ -129,6 +129,17 @@
     "Article text": "लेख का पाठ",
     "Wiki's Lazy Coders Logo": "विकी के लेज़ी कोडर्स का लोगो",
     "Read more:": "और पढ़ें:",
-    "Made with": "निर्मित:"
+    "Made with": "निर्मित:",
+    "{name}: {w} × {h} px, {ratio}. Best for {use}.": "{name}: {w} × {h} px, {ratio}। इसके लिए सर्वोत्तम: {use}।",
+    "Background image updated": "पृष्ठभूमि का चित्र बदल दिया गया",
+    "Loading the photo…": "चित्र लोड हो रहा है…",
+    "Improving the photo quality…": "चित्र की गुणवत्ता सुधारी जा रही है…",
+    "Caption is copied. If WhatsApp, X or Instagram left it out, paste it as the caption.": "कैप्शन कॉपी हो गया है। यदि WhatsApp, X या Instagram ने इसे छोड़ दिया हो, तो इसे कैप्शन के रूप में चिपकाएँ।",
+    "The caption is about {n} characters. Most Mastodon servers allow 500, so shorten it before you post.": "कैप्शन लगभग {n} अक्षरों का है। अधिकांश Mastodon सर्वर 500 अक्षरों की अनुमति देते हैं, इसलिए पोस्ट करने से पहले इसे छोटा करें।",
+    "Select or type a fact to see your image.": "अपना चित्र देखने के लिए कोई तथ्य चुनें या लिखें।",
+    "Text and QR code stay clear of the top and bottom edges, where the app places its own buttons.": "टेक्स्ट और QR कोड ऊपर और नीचे के किनारों से दूर रहते हैं, जहाँ ऐप अपने बटन रखता है।",
+    "1 image found. Choose one, or use a plain background.": "1 चित्र मिला। कोई एक चुनें, या सादी पृष्ठभूमि इस्तेमाल करें।",
+    "{n} images found. Choose one, or use a plain background.": "{n} चित्र मिले। कोई एक चुनें, या सादी पृष्ठभूमि इस्तेमाल करें।",
+    "unknown": "अज्ञात"
   }
 }
