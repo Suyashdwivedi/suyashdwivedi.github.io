@@ -335,12 +335,11 @@ const $ = (id) => document.getElementById(id);
 const LOCALE_BASE_URL = "https://suyashdwivedi.github.io/wikipedia-dyk/language/";
 const LOCALE_STORAGE_KEY = "wikiDykLocales";
 const LOCALE_ACTIVE_KEY = "wikiDykLocale";
+const LOCALE_CATALOG_CACHE_KEY = "wikiDykLanguageCatalog";
 const LOCALE_COOKIE = "wikiDykLocale";
 const localeState = {
   code: "en", dict: {}, observer: null, originalText: new WeakMap(),
-  lastText: new WeakMap(), internalWrites: new WeakSet(),
-  // Keep Hindi available even if the remote languages.json catalogue is temporarily unavailable.
-  catalog: [{ code: "hi", name: "हिन्दी", file: "hi.json", dir: "ltr" }]
+  lastText: new WeakMap(), internalWrites: new WeakSet(), catalog: []
 };
 const localeSkip = new Set(["SCRIPT", "STYLE", "CODE", "PRE", "CANVAS"]);
 const localeAttrs = ["placeholder", "aria-label", "title", "alt"];
@@ -556,56 +555,94 @@ async function loadLocale(code) {
 async function loadLocaleCatalog() {
   const status = $("localeStatus");
   const preferred = readPreferredLocale();
+  const catalogueUrl = LOCALE_BASE_URL + "languages.json";
 
-  // Built-in entries ensure Hindi remains selectable if the catalogue cannot be fetched.
-  const fallbackLanguages = [
-    { code: "hi", name: "हिन्दी", file: "hi.json", dir: "ltr" }
-  ];
-
-  try {
-    const response = await fetch(LOCALE_BASE_URL + "languages.json", {
-      cache: "no-store"
-    });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-    const data = await response.json();
-    const entries = Array.isArray(data) ? data : data.languages;
+  // Normalise and validate the remote catalogue. No language names or codes
+  // are hardcoded here: adding an entry to languages.json adds it to the UI.
+  function normaliseCatalogue(data) {
+    const entries = Array.isArray(data) ? data : data && data.languages;
     if (!Array.isArray(entries)) {
-      throw new Error("languages.json must contain a languages array.");
+      throw new Error("Invalid languages.json: expected an array named 'languages'.");
     }
 
-    const validEntries = entries
-      .filter(item => item && /^[a-z][a-z0-9-]{0,14}$/i.test(item.code || "") && item.name)
-      .map(item => ({
-        code: String(item.code).toLowerCase(),
-        name: item.name,
-        file: item.file || `${String(item.code).toLowerCase()}.json`,
-        dir: item.dir === "rtl" ? "rtl" : "ltr"
-      }))
-      .filter(item => item.code !== "en");
-
-    // Merge remote entries with built-ins. Remote entries take precedence,
-    // but Hindi is added if it is missing from languages.json.
-    const byCode = new Map(fallbackLanguages.map(item => [item.code, item]));
-    validEntries.forEach(item => byCode.set(item.code, item));
-    localeState.catalog = [...byCode.values()];
-  } catch (error) {
-    // Do not leave the language selector empty when the remote catalogue fails.
-    localeState.catalog = fallbackLanguages;
-    console.warn("Wiki DYK language catalogue error; using built-in language list:", error);
+    const seen = new Set();
+    return entries
+      .filter(item => item && typeof item.code === "string" &&
+        /^[a-z][a-z0-9-]{0,14}$/i.test(item.code) &&
+        typeof item.name === "string" && item.name.trim())
+      .map(item => {
+        const code = item.code.trim().toLowerCase();
+        const file = typeof item.file === "string" && item.file.trim()
+          ? item.file.trim() : `${code}.json`;
+        if (!/^[a-z0-9_-]+\.json$/i.test(file)) return null;
+        return {
+          code,
+          name: item.name.trim(),
+          file,
+          dir: item.dir === "rtl" ? "rtl" : "ltr"
+        };
+      })
+      .filter(item => {
+        if (!item || item.code === "en" || seen.has(item.code)) return false;
+        seen.add(item.code);
+        return true;
+      });
   }
 
-  refreshLocaleOptions();
+  try {
+    console.info("Wiki DYK: fetching language catalogue", catalogueUrl);
+    const response = await fetch(catalogueUrl + "?v=" + Date.now(), {
+      method: "GET",
+      cache: "no-store",
+      headers: { "Accept": "application/json" }
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} ${response.statusText}`.trim());
+    }
 
-  if (preferred !== "en" && localeState.catalog.some(item => item.code === preferred)) {
-    $("languageSelect").value = preferred;
-    await loadLocale(preferred);
-  } else {
-    applyLocale("en");
-    if (preferred !== "en") {
-      status.textContent = `Saved language "${preferred}" is not yet available in the language list.`;
+    const data = await response.json();
+    const catalogue = normaliseCatalogue(data);
+    if (!catalogue.length) {
+      throw new Error("languages.json loaded, but it contains no valid non-English languages.");
+    }
+
+    // Save the latest successful catalogue for temporary offline use.
+    localeState.catalog = catalogue;
+    try { localStorage.setItem(LOCALE_CATALOG_CACHE_KEY, JSON.stringify(catalogue)); } catch {}
+    console.info("Wiki DYK: available languages:", catalogue.map(item => `${item.name} (${item.code})`));
+    refreshLocaleOptions();
+
+    if (preferred !== "en" && catalogue.some(item => item.code === preferred.toLowerCase())) {
+      await loadLocale(preferred.toLowerCase());
     } else {
-      status.textContent = "";
+      applyLocale("en");
+      if (preferred !== "en") {
+        status.textContent = `Saved language "${preferred}" is not listed in languages.json.`;
+      } else {
+        status.textContent = "";
+      }
+    }
+  } catch (error) {
+    console.error("Wiki DYK language catalogue request failed:", error);
+
+    // Use only a previously downloaded catalogue; do not maintain a manual list.
+    let cachedCatalogue = [];
+    try {
+      const saved = JSON.parse(localStorage.getItem(LOCALE_CATALOG_CACHE_KEY) || "[]");
+      cachedCatalogue = normaliseCatalogue(saved);
+    } catch (cacheError) {
+      console.warn("Wiki DYK: cached language catalogue is unavailable:", cacheError);
+    }
+
+    localeState.catalog = cachedCatalogue;
+    refreshLocaleOptions();
+
+    if (preferred !== "en" && cachedCatalogue.some(item => item.code === preferred.toLowerCase())) {
+      await loadLocale(preferred.toLowerCase());
+      status.textContent = `Language list could not be refreshed (${error.message}); using the last saved list.`;
+    } else {
+      applyLocale("en");
+      status.textContent = `Could not load languages.json (${error.message}). Check the browser console and Network tab.`;
     }
   }
 }
