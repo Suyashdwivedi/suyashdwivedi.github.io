@@ -381,7 +381,7 @@ function buildLocaleTemplates(dict) { // keys with {name} placeholders become pa
 function localeTemplate(trimmed) {
   for (const t of localeState.templates || []) {
     const m = trimmed.match(t.re);
-    if (m) return t.value.replace(/\{(\w+)\}/g, (x, k) => (m.groups && m.groups[k] !== undefined ? m.groups[k] : x));
+    if (m) return t.value.replace(/\{(\w+)\}/g, (x, k) => (m.groups && m.groups[k] !== undefined ? (localeState.dict[m.groups[k]] || m.groups[k]) : x));
   }
   return null;
 }
@@ -477,7 +477,7 @@ function localeStrings() {
     "Couldn’t copy. Select the text and copy it manually.",
     "Couldn’t load this photo (it may be very large or blocked). Pick another image or use a plain background.",
     "No images found on this page, so a plain background will be used.",
-    "{name}: {w} × {h} px, {ratio}. Best for {use}.", "Background image updated", "Loading the photo…", "Improving the photo quality…", "Caption is copied. If WhatsApp, X or Instagram left it out, paste it as the caption.", "The caption is about {n} characters. Most Mastodon servers allow 500, so shorten it before you post.", "Select or type a fact to see your image.", "Text and QR code stay clear of the top and bottom edges, where the app places its own buttons.", "1 image found. Choose one, or use a plain background.", "{n} images found. Choose one, or use a plain background.", "unknown", "English", "Fact text", "Article text", "Wiki's Lazy Coders Logo"
+    "{name}: {w} × {h} px, {ratio}. Best for {use}.", "Facebook link previews and shared posts", "Facebook landscape announcements", "LinkedIn link previews and shared graphics", "Instagram portrait feed posts", "Instagram square feed posts, and shared images and announcements in Telegram and WhatsApp chats", "Instagram Stories, WhatsApp Status and Telegram Stories", "Background image updated", "Loading the photo…", "Improving the photo quality…", "Caption is copied. If WhatsApp, X or Instagram left it out, paste it as the caption.", "The caption is about {n} characters. Most Mastodon servers allow 500, so shorten it before you post.", "Select or type a fact to see your image.", "Text and QR code stay clear of the top and bottom edges, where the app places its own buttons.", "1 image found. Choose one, or use a plain background.", "{n} images found. Choose one, or use a plain background.", "unknown", "English", "Fact text", "Article text", "Wiki's Lazy Coders Logo"
   ].forEach(x => strings.add(x));
   return [...strings].filter(Boolean).sort((a, b) => a.localeCompare(b));
 }
