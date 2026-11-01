@@ -17,6 +17,12 @@
       "name": "oʻzbek tili",
       "file": "uz.json",
       "dir": "ltr"
+    },
+    {
+      "code": "sa",
+      "name": "संस्कृतम्",
+      "file": "sa.json",
+      "dir": "ltr"
     }
   ]
 }
