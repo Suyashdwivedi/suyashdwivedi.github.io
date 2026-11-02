@@ -35,7 +35,13 @@
       "name": "українська",
       "file": "uk.json",
       "dir": "ltr"
-    }
+      },
+     {
+       "code": "pt",
+       "name": "português",
+       "file": "pt.json",
+       "dir": "ltr"
+      }
   ]
 }
 
