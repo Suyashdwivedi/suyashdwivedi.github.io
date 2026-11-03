@@ -4,8 +4,6 @@
   "dir": "ltr",
   "translations": {
     "0": "०",
-    "362": "३६२",
-    "678": "६७८",
     "(tap to turn on or off)": "(चालू या बंद करने के लिए टैप करें)",
     "{n} images found. Choose one, or use a plain background.": "{n} चित्र मिले। कोई चित्र चुनें या सादी पृष्ठभूमि इस्तेमाल करें।",
     "{name}: {w} × {h} px, {ratio}. Best for {use}.": "{name}: {w} × {h} पिक्सेल, {ratio}। {use} के लिए उपयुक्त।",
