@@ -170,6 +170,8 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
     .jump button { width: 40px; height: 40px; }
     footer { padding: 20px 12px 80px; }
   }
+  .seg input:disabled + span { opacity: .45; cursor: not-allowed; }
+  .gallery img, #articleContainer img { background: repeating-conic-gradient(#d8dde2 0% 25%, #fff 0% 50%) 0 0 / 14px 14px; }
   #toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); opacity: 0;
     background: #202122; color: #fff; padding: 10px 16px; border-radius: 6px; font-size: .92rem;
     transition: opacity .2s, transform .2s; pointer-events: none; max-width: 90vw; }
@@ -233,7 +235,14 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
         <p class="hint" style="margin:0 0 6px">Slide the photo to keep the important part in the frame. With a mouse you can also drag the preview.</p>
         <label class="slider"><span>Left / right</span><input type="range" id="posX" min="0" max="100" value="50" /></label>
         <label class="slider"><span>Up / down</span><input type="range" id="posY" min="0" max="100" value="50" /></label>
-        <label class="slider"><span>Zoom</span><input type="range" id="posZ" min="100" max="300" value="100" /></label>
+        <label class="slider"><span>Zoom</span><input type="range" id="posZ" min="30" max="300" value="100" /></label>
+        <div class="check" style="margin:8px 0 4px"><strong>Backdrop for transparent pictures</strong></div>
+        <div class="seg" role="radiogroup" aria-label="Backdrop for transparent pictures">
+          <label><input type="radio" name="backdrop" value="auto" checked /><span>Auto</span></label>
+          <label><input type="radio" name="backdrop" value="light" /><span>Light</span></label>
+          <label><input type="radio" name="backdrop" value="dark" /><span>Dark</span></label>
+        </div>
+        <p class="hint" style="margin:-6px 0 6px">Only used when the picture has a transparent background. Auto picks light for dark artwork and dark for light artwork.</p>
         <button id="posReset" type="button" class="ghost" style="margin-top:6px">Reset position</button>
       </div>
       <div class="credit-box">
@@ -335,7 +344,6 @@ const $ = (id) => document.getElementById(id);
 const LOCALE_BASE_URL = "https://suyashdwivedi.github.io/wikipedia-dyk/language/";
 const LOCALE_STORAGE_KEY = "wikiDykLocales";
 const LOCALE_ACTIVE_KEY = "wikiDykLocale";
-const LOCALE_CATALOG_CACHE_KEY = "wikiDykLanguageCatalog";
 const LOCALE_COOKIE = "wikiDykLocale";
 const localeState = {
   code: "en", dict: {}, observer: null, originalText: new WeakMap(),
@@ -555,95 +563,35 @@ async function loadLocale(code) {
 async function loadLocaleCatalog() {
   const status = $("localeStatus");
   const preferred = readPreferredLocale();
-  const catalogueUrl = LOCALE_BASE_URL + "languages.json";
-
-  // Normalise and validate the remote catalogue. No language names or codes
-  // are hardcoded here: adding an entry to languages.json adds it to the UI.
-  function normaliseCatalogue(data) {
-    const entries = Array.isArray(data) ? data : data && data.languages;
-    if (!Array.isArray(entries)) {
-      throw new Error("Invalid languages.json: expected an array named 'languages'.");
-    }
-
-    const seen = new Set();
-    return entries
-      .filter(item => item && typeof item.code === "string" &&
-        /^[a-z][a-z0-9-]{0,14}$/i.test(item.code) &&
-        typeof item.name === "string" && item.name.trim())
-      .map(item => {
-        const code = item.code.trim().toLowerCase();
-        const file = typeof item.file === "string" && item.file.trim()
-          ? item.file.trim() : `${code}.json`;
-        if (!/^[a-z0-9_-]+\.json$/i.test(file)) return null;
-        return {
-          code,
-          name: item.name.trim(),
-          file,
-          dir: item.dir === "rtl" ? "rtl" : "ltr"
-        };
-      })
-      .filter(item => {
-        if (!item || item.code === "en" || seen.has(item.code)) return false;
-        seen.add(item.code);
-        return true;
-      });
-  }
-
   try {
-    console.info("Wiki DYK: fetching language catalogue", catalogueUrl);
-    const response = await fetch(catalogueUrl + "?v=" + Date.now(), {
-      method: "GET",
-      cache: "no-store",
-      headers: { "Accept": "application/json" }
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status} ${response.statusText}`.trim());
-    }
-
+    const response = await fetch(LOCALE_BASE_URL + "languages.json", { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
-    const catalogue = normaliseCatalogue(data);
-    if (!catalogue.length) {
-      throw new Error("languages.json loaded, but it contains no valid non-English languages.");
-    }
-
-    // Save the latest successful catalogue for temporary offline use.
-    localeState.catalog = catalogue;
-    try { localStorage.setItem(LOCALE_CATALOG_CACHE_KEY, JSON.stringify(catalogue)); } catch {}
-    console.info("Wiki DYK: available languages:", catalogue.map(item => `${item.name} (${item.code})`));
+    const entries = Array.isArray(data) ? data : data.languages;
+    if (!Array.isArray(entries)) throw new Error("languages.json must contain a languages array.");
+    localeState.catalog = entries.filter(item => item && /^[a-z][a-z0-9-]{1,14}$/i.test(item.code || "") && item.name)
+      .map(item => ({ code: item.code, name: item.name, file: item.file || `${item.code}.json` }))
+      .filter(item => item.code !== "en");
     refreshLocaleOptions();
-
-    if (preferred !== "en" && catalogue.some(item => item.code === preferred.toLowerCase())) {
-      await loadLocale(preferred.toLowerCase());
+    if (preferred !== "en" && localeState.catalog.some(item => item.code === preferred)) {
+      $("languageSelect").value = preferred;
+      await loadLocale(preferred);
     } else {
       applyLocale("en");
-      if (preferred !== "en") {
-        status.textContent = `Saved language "${preferred}" is not listed in languages.json.`;
-      } else {
-        status.textContent = "";
-      }
+      if (preferred !== "en") status.textContent = `Saved language "${preferred}" is not yet listed in languages.json.`;
+      else status.textContent = "";
     }
   } catch (error) {
-    console.error("Wiki DYK language catalogue request failed:", error);
-
-    // Use only a previously downloaded catalogue; do not maintain a manual list.
-    let cachedCatalogue = [];
-    try {
-      const saved = JSON.parse(localStorage.getItem(LOCALE_CATALOG_CACHE_KEY) || "[]");
-      cachedCatalogue = normaliseCatalogue(saved);
-    } catch (cacheError) {
-      console.warn("Wiki DYK: cached language catalogue is unavailable:", cacheError);
-    }
-
-    localeState.catalog = cachedCatalogue;
-    refreshLocaleOptions();
-
-    if (preferred !== "en" && cachedCatalogue.some(item => item.code === preferred.toLowerCase())) {
-      await loadLocale(preferred.toLowerCase());
-      status.textContent = `Language list could not be refreshed (${error.message}); using the last saved list.`;
+    // The saved language can still be restored from the local translation cache.
+    const cached = preferred === "en" ? null : localeStore()[preferred];
+    if (cached) {
+      applyLocale(preferred, cached);
+      status.textContent = `${cached.name}: using the saved translation (language list unavailable).`;
     } else {
-      applyLocale("en");
-      status.textContent = `Could not load languages.json (${error.message}). Check the browser console and Network tab.`;
+      applyLocale(preferred || "en");
+      status.textContent = "Language list unavailable; showing English until it can be loaded.";
     }
+    console.warn("Wiki DYK language catalogue error:", error);
   }
 }
 $("languageSelect").addEventListener("change", e => loadLocale(e.target.value));
@@ -704,7 +652,7 @@ const SITES = {
   mediawiki: { label: "MediaWiki", files: ["MediaWiki-2020-icon.svg"] },
   other: { label: "Wikimedia", files: ["Wikimedia-logo.svg"] },
 };
-const state = { qrUrl: "", siteLabel: "", loading: false, fx: 0.5, fy: 0.5, zoom: 1, ov: { x: 0, y: 0 }, W: 1200, tags: [], blob: null, url: "", shown: "", title: "", host: "", site: SITES.wikipedia, images: [], sel: -1 };
+const state = { autoFit: true, qrUrl: "", siteLabel: "", loading: false, fx: 0.5, fy: 0.5, zoom: 1, ov: { x: 0, y: 0 }, W: 1200, tags: [], blob: null, url: "", shown: "", title: "", host: "", site: SITES.wikipedia, images: [], sel: -1 };
 const logoCache = {};
 let renderTimer, renderToken = 0;
 
@@ -917,6 +865,23 @@ $("articleContainer").addEventListener("click", (e) => {
 function updateCount() { $("charCount").textContent = $("factText").value.length; }
 
 /* ---------- Rendering ---------- */
+const bgInfoCache = new WeakMap();
+function bgInfo(img) { // does the picture have transparent areas, and are its visible pixels dark or light?
+  if (bgInfoCache.has(img)) return bgInfoCache.get(img);
+  let info = { alpha: false, lum: 0.5 };
+  try {
+    const t = document.createElement("canvas"); t.width = t.height = 40;
+    const tc = t.getContext("2d"); tc.drawImage(img, 0, 0, 40, 40);
+    const d = tc.getImageData(0, 0, 40, 40).data; let clear = 0, n = 0, sum = 0;
+    for (let i = 0; i < d.length; i += 4) {
+      if (d[i + 3] < 200) clear++;
+      if (d[i + 3] > 128) { sum += (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255; n++; }
+    }
+    info = { alpha: clear / 1600 > 0.08, lum: n ? sum / n : 0.5 };
+  } catch {}
+  bgInfoCache.set(img, info);
+  return info;
+}
 const imgCache = new Map(); // keeps recently loaded photos so dragging the photo doesn't reload it
 const inflight = new Map(); // photo downloads in progress, so unneeded ones can be cancelled (a pending download keeps the browser's loading spinner going)
 function abortLoad(src) {
@@ -1038,7 +1003,9 @@ async function render() {
   const padTop = pad + safeY, padBot = pad + safeY;
   // Sizes are based on u, so the square Instagram format gets the same text scale as the wide ones.
   const u = Math.min(H, W * 0.525);
-  const shadow = (on) => { ctx.shadowColor = on ? "rgba(0,0,0,.75)" : "transparent"; ctx.shadowBlur = on ? 12 : 0; ctx.shadowOffsetY = on ? 2 : 0; };
+  let lightBack = false; // true when dark artwork on a transparent background gets a light backdrop and dark text
+  const ink = (a) => (lightBack ? `rgba(17,24,32,${a})` : `rgba(255,255,255,${a})`);
+  const shadow = (on) => { ctx.shadowColor = on && !lightBack ? "rgba(0,0,0,.75)" : "transparent"; ctx.shadowBlur = on ? 12 : 0; ctx.shadowOffsetY = on ? 2 : 0; };
   const FONT = "Arial, Helvetica, sans-serif";
 
   // Layout: the QR code takes one corner, and all text lives in the column beside it.
@@ -1060,13 +1027,21 @@ async function render() {
   const x1 = W - pad - (qr && !qrLeft ? qrSize + 30 : 0);
   const colW = x1 - x0;
 
-  ctx.fillStyle = "#1c2733"; ctx.fillRect(0, 0, W, H);
+  const info = bg ? bgInfo(bg) : null;
+  const mode = document.querySelector("input[name=backdrop]:checked")?.value || "auto";
+  lightBack = !!(info && info.alpha && (mode === "light" || (mode === "auto" && info.lum < 0.55)));
+  document.querySelectorAll("input[name=backdrop]").forEach(r => { r.disabled = !(info && info.alpha); });
+  ctx.fillStyle = lightBack ? "#f1f4f7" : "#1c2733"; ctx.fillRect(0, 0, W, H);
   let lum = 0.2;
   if (bg) {
-    const sc = Math.max(W / bg.width, H / bg.height) * state.zoom;
-    const dw = bg.width * sc, dh = bg.height * sc;
+    const cover = Math.max(W / bg.width, H / bg.height);
+    if (state.autoFit) { // logos and drawings with a transparent background start with the whole picture in view
+      state.autoFit = false;
+      if (info.alpha) { state.zoom = Math.min(1, Math.max(0.3, (Math.min(W / bg.width, H / bg.height) / cover) * 0.85)); syncPos(); }
+    }
+    const sc = cover * state.zoom, dw = bg.width * sc, dh = bg.height * sc;
     state.ov = { x: Math.max(0, dw - W), y: Math.max(0, dh - H) };
-    ctx.drawImage(bg, -state.ov.x * state.fx, -state.ov.y * state.fy, dw, dh);
+    ctx.drawImage(bg, dw >= W ? -state.ov.x * state.fx : (W - dw) / 2, dh >= H ? -state.ov.y * state.fy : (H - dh) / 2, dw, dh);
     try { // measure how bright the photo is, so bright photos get a darker overlay
       const t = document.createElement("canvas"); t.width = t.height = 24;
       const tc = t.getContext("2d"); tc.drawImage(c, 0, 0, c.width, c.height, 0, 0, 24, 24);
@@ -1075,10 +1050,12 @@ async function render() {
       lum = sum / (d.length / 4);
     } catch {}
   }
-  ctx.fillStyle = `rgba(8,12,18,${(0.28 + 0.4 * lum).toFixed(2)})`; ctx.fillRect(0, 0, W, H);
-  const scrim = ctx.createLinearGradient(0, 0, 0, H);
-  scrim.addColorStop(0, "rgba(8,12,18,.30)"); scrim.addColorStop(.5, "rgba(8,12,18,.15)"); scrim.addColorStop(1, "rgba(8,12,18,.80)");
-  ctx.fillStyle = scrim; ctx.fillRect(0, 0, W, H);
+  if (!lightBack) { // darken the photo so white text stays readable
+    ctx.fillStyle = `rgba(8,12,18,${(0.28 + 0.4 * lum).toFixed(2)})`; ctx.fillRect(0, 0, W, H);
+    const scrim = ctx.createLinearGradient(0, 0, 0, H);
+    scrim.addColorStop(0, "rgba(8,12,18,.30)"); scrim.addColorStop(.5, "rgba(8,12,18,.15)"); scrim.addColorStop(1, "rgba(8,12,18,.80)");
+    ctx.fillStyle = scrim; ctx.fillRect(0, 0, W, H);
+  }
 
   // Top row: logo and label
   const logoSize = Math.round(u * 0.09);
@@ -1087,7 +1064,7 @@ async function render() {
     ctx.drawImage(logo, x0 + (logoSize - logo.width * r) / 2, padTop + (logoSize - logo.height * r) / 2, logo.width * r, logo.height * r);
   }
   shadow(true);
-  ctx.fillStyle = "#fff"; ctx.textBaseline = "middle"; ctx.textAlign = "left";
+  ctx.fillStyle = ink(1); ctx.textBaseline = "middle"; ctx.textAlign = "left";
   ctx.font = `700 ${Math.round(logoSize * .42)}px ${FONT}`;
   ctx.fillText(state.siteLabel || state.site.label, x0 + logoSize + 14, padTop + logoSize / 2);
   shadow(false);
@@ -1096,6 +1073,7 @@ async function render() {
   if (qr) {
     const qx = qrLeft ? pad : W - pad - qrSize, qy = qrTop ? padTop : metaY - qrSize;
     ctx.fillStyle = "#fff"; ctx.fillRect(qx, qy, qrSize, qrSize);
+    if (lightBack) { ctx.strokeStyle = "rgba(17,24,32,.3)"; ctx.lineWidth = 2; ctx.strokeRect(qx, qy, qrSize, qrSize); }
     ctx.imageSmoothingEnabled = false; // keep QR squares pin sharp
     ctx.drawImage(qr, qx + 6, qy + 6, qrSize - 12, qrSize - 12);
     ctx.imageSmoothingEnabled = true;
@@ -1107,24 +1085,24 @@ async function render() {
   const creditText = creditLine(), creditSize = Math.round(u * 0.026);
   let y = metaY - 4;
   if (creditText) { // photo credit, small, under the link
-    ctx.fillStyle = "rgba(255,255,255,.88)"; ctx.font = `italic ${creditSize}px ${FONT}`;
+    ctx.fillStyle = ink(.88); ctx.font = `italic ${creditSize}px ${FONT}`;
     let ct = creditText; while (ctx.measureText(ct).width > colW && ct.length > 8) ct = ct.slice(0, -2);
     ctx.fillText(ct === creditText ? ct : ct + "…", x0, y);
     y -= creditSize + 14;
   }
-  ctx.fillStyle = "rgba(255,255,255,.92)";
+  ctx.fillStyle = ink(.92);
   ctx.font = `${urlSize}px ${FONT}`;
   const host = state.shown;
   let shown = host; while (ctx.measureText(shown).width > colW && shown.length > 8) shown = shown.slice(0, -2);
   ctx.fillText(shown === host ? host : shown + "…", x0, y);
   y -= urlSize + 12;
-  ctx.fillStyle = "#fff";
+  ctx.fillStyle = ink(1);
   ctx.font = `700 ${titleSize}px ${FONT}`;
   let t = state.title; while (ctx.measureText(t).width > colW && t.length > 4) t = t.slice(0, -2);
   ctx.fillText(t === state.title ? t : t + "…", x0, y);
   const stackH = metaY - y + titleSize;
   if (tagLine) {
-    ctx.font = `700 ${tagSize}px ${FONT}`; ctx.fillStyle = "rgba(255,255,255,.95)";
+    ctx.font = `700 ${tagSize}px ${FONT}`; ctx.fillStyle = ink(.95);
     ctx.textAlign = "center"; ctx.fillText(tagLine, W / 2, H - padBot + pad * 0.35); ctx.textAlign = "left";
   }
 
@@ -1133,7 +1111,7 @@ async function render() {
   const top = padTop + logoSize + pad * 0.6;
   const bottom = metaY - stackH - pad * 0.5;
   const maxH = bottom - top;
-  ctx.fillStyle = "#fff"; ctx.textBaseline = "top";
+  ctx.fillStyle = ink(1); ctx.textBaseline = "top";
   let size = Math.round(u * 0.11), lines;
   for (; size >= 18; size -= 2) {
     ctx.font = `700 ${size}px ${FONT}`;
@@ -1274,7 +1252,7 @@ $("loadBtn").onclick = loadArticle;
 $("wikiURL").addEventListener("keydown", e => { if (e.key === "Enter") loadArticle(); });
 $("factText").addEventListener("input", () => { updateCount(); scheduleRender(); });
 $("dykPrefix").addEventListener("change", scheduleRender);
-document.querySelectorAll("input[name=size], input[name=pos], input[name=qr]").forEach(r => r.addEventListener("change", scheduleRender));
+document.querySelectorAll("input[name=size], input[name=pos], input[name=qr], input[name=backdrop]").forEach(r => r.addEventListener("change", scheduleRender));
 document.querySelectorAll("input[name=size]").forEach(r => r.addEventListener("change", updateSizeHint));
 $("downloadBtn").onclick = download;
 $("shareBtn").onclick = nativeShare;
@@ -1310,7 +1288,7 @@ $("tagsOn").addEventListener("change", updateCaptionBox);
 $("imgTags").addEventListener("change", scheduleRender);
 /* ---------- Photo position: sliders and mouse drag ---------- */
 function syncPos() { $("posX").value = Math.round(state.fx * 100); $("posY").value = Math.round(state.fy * 100); $("posZ").value = Math.round(state.zoom * 100); }
-function resetPos() { state.fx = state.fy = 0.5; state.zoom = 1; syncPos(); }
+function resetPos() { state.fx = state.fy = 0.5; state.zoom = 1; state.autoFit = true; syncPos(); }
 ["posX", "posY", "posZ"].forEach(id => $(id).addEventListener("input", () => {
   state.fx = $("posX").value / 100; state.fy = $("posY").value / 100; state.zoom = $("posZ").value / 100; scheduleRender(30);
 }));
@@ -1338,7 +1316,7 @@ const picked = (name) => document.querySelector(`input[name=${name}]:checked`)?.
 function saveSettings() {
   try {
     localStorage.setItem("dykSettings", JSON.stringify({
-      size: picked("size"), pos: picked("pos"), qr: picked("qr"),
+      size: picked("size"), pos: picked("pos"), qr: picked("qr"), backdrop: picked("backdrop"),
       prefix: $("dykPrefix").checked, tagsOn: $("tagsOn").checked, imgTags: $("imgTags").checked,
       creditOn: $("creditOn").checked, hiRes: $("hiRes").checked, qrOn: $("qrOn").checked,
     }));
@@ -1349,11 +1327,11 @@ function loadSettings() {
     const o = JSON.parse(localStorage.getItem("dykSettings") || "{}");
     const moved = { igsquare: "square", chat: "square", instagram: "square", igstory: "story", wastatus: "story", tgstory: "story", facebook: "fb", x: "fbwide" };
     if (moved[o.size]) o.size = moved[o.size];
-    ["size", "pos", "qr"].forEach(n => { const el = document.querySelector(`input[name=${n}][value="${o[n]}"]`); if (el) el.checked = true; });
+    ["size", "pos", "qr", "backdrop"].forEach(n => { const el = document.querySelector(`input[name=${n}][value="${o[n]}"]`); if (el) el.checked = true; });
     [["dykPrefix", "prefix"], ["tagsOn", "tagsOn"], ["imgTags", "imgTags"], ["creditOn", "creditOn"], ["hiRes", "hiRes"], ["qrOn", "qrOn"]].forEach(([id, k]) => { if (typeof o[k] === "boolean") $(id).checked = o[k]; });
   } catch {}
 }
-document.querySelectorAll("input[name=size], input[name=pos], input[name=qr], #dykPrefix, #tagsOn, #imgTags, #creditOn, #hiRes, #qrOn")
+document.querySelectorAll("input[name=size], input[name=pos], input[name=qr], input[name=backdrop], #dykPrefix, #tagsOn, #imgTags, #creditOn, #hiRes, #qrOn")
   .forEach(el => el.addEventListener("change", saveSettings));
 const updateQrControls = () => document.querySelectorAll("input[name=qr]").forEach(r => { r.disabled = !$("qrOn").checked; });
 $("qrOn").addEventListener("change", () => { updateQrControls(); scheduleRender(); });
