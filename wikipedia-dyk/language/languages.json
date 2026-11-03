@@ -41,7 +41,13 @@
        "name": "português",
        "file": "pt.json",
        "dir": "ltr"
-      }
+      },
+     {
+       "code": "fr",
+       "name": "français",
+       "file": "fr.json",
+       "dir": "ltr"
+     }
   ]
 }
 
