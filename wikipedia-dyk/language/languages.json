@@ -1,21 +1,27 @@
 {
   "languages": [
     {
+      "code": "fil",
+      "name": "Filipino",
+      "file": "fil.json",
+      "dir": "ltr"
+    },
+    {
+      "code": "fr",
+      "name": "français",
+      "file": "fr.json",
+      "dir": "ltr"
+    },
+    {
       "code": "hi",
       "name": "हिन्दी",
       "file": "hi.json",
       "dir": "ltr"
     },
     {
-      "code": "sv",
-      "name": "svenska",
-      "file": "sv.json",
-      "dir": "ltr"
-    },
-    {
-      "code": "uz",
-      "name": "oʻzbekcha",
-      "file": "uz.json",
+      "code": "pt",
+      "name": "português",
+      "file": "pt.json",
       "dir": "ltr"
     },
     {
@@ -25,29 +31,22 @@
       "dir": "ltr"
     },
     {
-      "code": "fil",
-      "name": "Filipino",
-      "file": "fil.json",
+      "code": "sv",
+      "name": "svenska",
+      "file": "sv.json",
       "dir": "ltr"
-     },
+    },
     {
       "code": "uk",
       "name": "українська",
       "file": "uk.json",
       "dir": "ltr"
-      },
-     {
-       "code": "pt",
-       "name": "português",
-       "file": "pt.json",
-       "dir": "ltr"
-      },
-     {
-       "code": "fr",
-       "name": "français",
-       "file": "fr.json",
-       "dir": "ltr"
-     }
+    },
+    {
+      "code": "uz",
+      "name": "oʻzbekcha",
+      "file": "uz.json",
+      "dir": "ltr"
+    }
   ]
 }
-
