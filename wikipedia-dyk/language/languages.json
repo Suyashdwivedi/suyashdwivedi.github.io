@@ -17,6 +17,12 @@
       "name": "हिन्दी",
       "file": "hi.json",
       "dir": "ltr"
+      },
+    {
+      "code": "it",
+      "name": "italiano",
+      "file": "it.json",
+      "dir": "ltr"
     },
     {
       "code": "no",
