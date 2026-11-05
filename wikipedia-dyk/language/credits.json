@@ -1,9 +1,32 @@
+
 {
   "languages": [
     {
       "code": "hi",
       "name": "Hindi",
-      "translators": [https://meta.wikimedia.org/wiki/User:Suyash.dwivedi]
+      "translators": [
+        {
+          "name": "Suyash Dwivedi",
+          "username": "Suyash.dwivedi",
+          "url": "https://meta.wikimedia.org/wiki/User:Suyash.dwivedi"
+        },
+        {
+          "name": "Translator Name 2",
+          "username": "Username2",
+          "url": "https://meta.wikimedia.org/wiki/User:Username2"
+        }
+      ]
+    },
+    {
+      "code": "sa",
+      "name": "Sanskrit",
+      "translators": [
+        {
+          "name": "Suyash Dwivedi",
+          "username": "Suyash.dwivedi",
+          "url": "https://meta.wikimedia.org/wiki/User:Suyash.dwivedi"
+        }
+      ]
     }
   ]
 }
