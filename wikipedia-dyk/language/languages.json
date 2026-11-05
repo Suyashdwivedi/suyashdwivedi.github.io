@@ -19,6 +19,12 @@
       "dir": "ltr"
     },
     {
+      "code": "no",
+      "name": "norsk",
+      "file": "no.json",
+      "dir": "ltr"
+    },
+    {
       "code": "pt",
       "name": "português",
       "file": "pt.json",
