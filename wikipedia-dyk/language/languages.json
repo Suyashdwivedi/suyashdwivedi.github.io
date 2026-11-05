@@ -31,6 +31,12 @@
       "dir": "ltr"
     },
     {
+      "code": "ru",
+      "name": "русский",
+      "file": "ru.json",
+      "dir": "ltr"
+    },
+    {
       "code": "sa",
       "name": "संस्कृतम्",
       "file": "sa.json",
