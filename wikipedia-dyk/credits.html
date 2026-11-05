@@ -62,7 +62,7 @@ function render(data){
     const section=document.createElement("section");section.className="language";
     const h=document.createElement("h2");h.textContent=name+(lang.code?" ("+lang.code+")":"");section.append(h);
     if(!people.length){const p=document.createElement("p");p.textContent="Translator credits not listed yet.";section.append(p);}
-    else{const ul=document.createElement("ul");for(const person of people){const li=document.createElement("li"),url=profileUrl(person),label=safeText(person.name)||safeText(person.username)||"Contributor";if(url){const a=document.createElement("a");a.href=url;a.textContent=label;a.rel="noopener noreferrer";li.append(a);}else li.textContent=label;ul.append(li);}section.append(ul);}
+    else{const ul=document.createElement("ul");for(const person of people){const li=document.createElement("li"),url=profileUrl(person),label=safeText(person.name)||safeText(person.username)||"Contributor";if(url){const a=document.createElement("a");a.href=url;a.textContent=label;a.target="_blank";a.rel="noopener noreferrer";li.append(a);}else li.textContent=label;ul.append(li);}section.append(ul);}
     credits.append(section);
   }
 }
