@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Translation credits for Wiki DYK Share Tool">
+<link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" />
+<title>Translation Credits · Wiki DYK Share Tool</title>
+<style>
+:root{color-scheme:light dark;--bg:#f6f7f9;--surface:#fff;--text:#202122;--muted:#54595d;--line:#dde0e4;--accent:#36c}
+@media(prefers-color-scheme:dark){:root{--bg:#101418;--surface:#1a1f25;--text:#eaecf0;--muted:#a2a9b1;--line:#313840;--accent:#6b9bff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 Arial,Helvetica,sans-serif}
+main{max-width:1100px;margin:32px auto;padding:0 20px}.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:24px}
+header{max-width:1100px;margin:24px auto 0;padding:0 20px}.logo-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.logo-img{width:72px;height:72px;object-fit:contain}.logo-row h1{margin:0;font-size:1.8rem}.tagline{margin:4px 0 0;color:var(--muted)}
+h1{margin:0 0 6px;font-size:1.8rem}p{color:var(--muted)}a{color:var(--accent)}
+#credits{display:grid;gap:12px;margin:24px 0}.language{border:1px solid var(--line);border-radius:8px;padding:16px}
+.language h2{font-size:1.1rem;margin:0 0 8px}.language ul{margin:0;padding-left:20px}
+.empty{border:1px dashed var(--line);padding:18px;border-radius:8px;color:var(--muted)}
+footer{text-align:center;color:var(--muted);padding:20px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-row">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" alt="Wiki's Lazy Coders Logo" class="logo-img" />
+    <div>
+      <h1>Wiki DYK Share Tool</h1>
+      <p class="tagline">Turn a fact from any Wikipedia or Wikimedia page into a shareable image with a QR code</p>
+    </div>
+  </div>
+</header>
+<main>
+<section class="panel">
+<h1>Translation Credits</h1>
+<p>Thank you to everyone who helps make Wiki DYK Share Tool available in different languages. This page recognizes translators and language reviewers.</p>
+<div id="credits" aria-live="polite"><div class="empty">Loading translation credits…</div></div>
+<p><a href="https://wiki-dyk.toolforge.org/">← Back to Wiki DYK Share Tool</a></p>
+</section>
+<footer>
+  Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener">Suyash Dwivedi</a> | Project: <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank" rel="noopener">Wiki's Lazy Coders</a> | Updated on: <strong>5 November 2026</strong><br />
+  👁 Views: <span id="tc-views"></span> &nbsp; 👤 Unique: <span id="tc-sessions"></span><br />
+  <small>Loaded page last edited: <span id="lastModifiedDisplay">not loaded</span></small>
+</footer>
+</main>
+<script>
+const CREDIT_URL = "https://suyashdwivedi.github.io/wikipedia-dyk/language/credits.json";
+const credits = document.getElementById("credits");
+function safeText(value){return typeof value==="string"?value.trim():"";}
+function profileUrl(person){
+  const url=safeText(person.url);
+  if(url && /^https:\/\/(?:[a-z0-9-]+\.)?wikimedia\.org\//i.test(url)) return url;
+  const username=safeText(person.username);
+  return username ? "https://meta.wikimedia.org/wiki/User:"+encodeURIComponent(username.replace(/ /g,"_")) : "";
+}
+function render(data){
+  const languages=Array.isArray(data.languages)?data.languages:[];
+  credits.replaceChildren();
+  if(!languages.length){credits.innerHTML='<div class="empty">No translation credits have been added yet. Contributions are welcome!</div>';return;}
+  for(const lang of languages){
+    const name=safeText(lang.name)||safeText(lang.code)||"Language";
+    const people=Array.isArray(lang.translators)?lang.translators:[];
+    const section=document.createElement("section");section.className="language";
+    const h=document.createElement("h2");h.textContent=name+(lang.code?" ("+lang.code+")":"");section.append(h);
+    if(!people.length){const p=document.createElement("p");p.textContent="Translator credits not listed yet.";section.append(p);}
+    else{const ul=document.createElement("ul");for(const person of people){const li=document.createElement("li"),url=profileUrl(person),label=safeText(person.name)||safeText(person.username)||"Contributor";if(url){const a=document.createElement("a");a.href=url;a.textContent=label;a.rel="noopener noreferrer";li.append(a);}else li.textContent=label;ul.append(li);}section.append(ul);}
+    credits.append(section);
+  }
+}
+fetch(CREDIT_URL,{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("Credits file not found");return r.json();}).then(render).catch(()=>{credits.innerHTML='<div class="empty">Translation credits could not be loaded. Please check the credits.json file in the language folder.</div>';});
+</script>
+<script>
+// Visitor counter: load after the page finishes, so it cannot delay the page spinner.
+(() => {
+  const addCounter = () => {
+    const t = document.createElement("script");
+    t.async = true;
+    t.src = "https://toolcounter.toolforge.org/embed.js.php?tool=wiki-dyk&page=credits";
+    document.body.appendChild(t);
+  };
+  if (document.readyState === "complete") addCounter();
+  else addEventListener("load", addCounter, { once: true });
+})();
+</script>
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-GC8PGC89NB');
+</script>
+
+<!-- Counter.dev analytics -->
+<script src="https://cdn.counter.dev/script.js"
+        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
+        data-utcoffset="6"></script>
+
+</body>
+</html>
