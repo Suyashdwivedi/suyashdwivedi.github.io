@@ -47,6 +47,12 @@
       "name": "svenska",
       "file": "sv.json",
       "dir": "ltr"
+      },
+    {
+      "code": "tg",
+      "name": "тоҷикӣ",
+      "file": "tg.json",
+      "dir": "ltr"
     },
     {
       "code": "uk",
