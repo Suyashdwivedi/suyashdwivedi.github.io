@@ -3,6 +3,17 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<script>
+  // Apply saved theme before styles render to avoid resetting to system theme.
+  (() => {
+    try {
+      const saved = localStorage.getItem("wiki-dyk-theme");
+      if (saved === "dark" || saved === "light") {
+        document.documentElement.setAttribute("data-theme", saved);
+      }
+    } catch (_) {}
+  })();
+</script>
 <meta name="description" content="Turn any fact from a Wikipedia or Wikimedia page into a shareable Did you know image with a QR code. Works in any language. Download it or share it to Facebook, X, LinkedIn and Instagram." />
 <meta name="keywords" content="Wikipedia, Did you know, DYK, share image, QR code, Wikimedia, multilingual, Wiki's Lazy Coders" />
 <link rel="canonical" href="https://wiki-dyk.toolforge.org/" />
@@ -31,11 +42,21 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]):not([data-theme="dark"]) {
       --bg: #101418; --surface: #1a1f25; --text: #eaecf0; --muted: #a2a9b1;
       --line: #313840; --accent: #6b9bff; --accent-hover: #8fb3ff; --accent-soft: #1d2a40;
       --ok: #4cc9a8; color-scheme: dark;
     }
+  }
+  :root[data-theme="dark"] {
+    --bg: #101418; --surface: #1a1f25; --text: #eaecf0; --muted: #a2a9b1;
+    --line: #313840; --accent: #6b9bff; --accent-hover: #8fb3ff; --accent-soft: #1d2a40;
+    --ok: #4cc9a8; color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --bg: #f6f7f9; --surface: #fff; --text: #202122; --muted: #54595d;
+    --line: #dde0e4; --accent: #36c; --accent-hover: #2a4b8d; --accent-soft: #eaf3ff;
+    --ok: #14866d; color-scheme: light;
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--text);
@@ -53,7 +74,8 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
   .language-tools label { color: var(--muted); font-size: .85rem; }
   .language-tools select { max-width: 180px; min-width: 120px; padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--text); font: inherit; }
   .language-tools button { padding: 7px 10px; font-size: .82rem; }
-  .locale-status { color: var(--muted); font-size: .78rem; }
+  .locale-status { color: var(--muted); font-size: .78rem; }\n  .theme-toggle { white-space: nowrap; }
+
   @media (max-width: 860px) { .logo-row { flex-wrap: wrap; } .language-tools { margin-left: 0; width: 100%; justify-content: flex-start; } }
 
 
@@ -194,6 +216,7 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
       <select id="languageSelect" aria-label="Interface language">
         <option value="en">English</option>
       </select>
+      <button type="button" id="themeToggle" class="ghost theme-toggle" aria-label="Toggle light and dark mode">Dark mode</button>
       <button type="button" id="downloadLocale" class="ghost">Download translation template</button>
       <span id="localeStatus" class="locale-status" role="status" aria-live="polite">Loading languages…</span>
     </div>
@@ -319,7 +342,7 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
 </div>
 
 <footer>
-  Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener">Suyash Dwivedi</a> | Project: <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank" rel="noopener">Wiki's Lazy Coders</a> | Updated on: <strong>5 November 2026</strong><br />
+  Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener">Suyash Dwivedi</a> | Project: <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank" rel="noopener">Wiki's Lazy Coders</a> | <a href="credits.html">Translation credits</a> | Updated on: <strong>5 November 2026</strong><br />
   👁 Views: <span id="tc-views"></span> &nbsp; 👤 Unique: <span id="tc-sessions"></span><br />
   <small>Loaded page last edited: <span id="lastModifiedDisplay">not loaded</span></small>
 </footer>
@@ -1354,6 +1377,38 @@ $("creditInput").addEventListener("input", () => { updateCaptionBox(); scheduleR
 loadSettings();
 updateQrControls();
 updateSizeHint();
+// Theme switch: remember the user's choice in this browser.
+const themeToggle = document.getElementById('themeToggle');
+const THEME_STORAGE_KEY = 'wiki-dyk-theme';
+function getSavedTheme() {
+  try {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    return saved === 'dark' || saved === 'light' ? saved : null;
+  } catch (_) { return null; }
+}
+function applyTheme(theme, save = false) {
+  document.documentElement.setAttribute('data-theme', theme);
+  if (save) {
+    try { localStorage.setItem(THEME_STORAGE_KEY, theme); } catch (_) {}
+  }
+  updateThemeButton();
+}
+function updateThemeButton() {
+  const theme = document.documentElement.getAttribute('data-theme') ||
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  themeToggle.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+  themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+}
+themeToggle.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme') ||
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(current === 'dark' ? 'light' : 'dark', true);
+});
+// Keep the explicit saved choice; otherwise follow the system preference.
+const savedTheme = getSavedTheme();
+if (savedTheme) applyTheme(savedTheme);
+else updateThemeButton();
+
 renderTags();
 render();
 
