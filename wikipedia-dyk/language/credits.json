@@ -1,6 +1,27 @@
-
 {
   "languages": [
+    {
+      "code": "en",
+      "name": "English",
+      "translators": [
+        {
+          "name": "Suyash Dwivedi",
+          "username": "Suyash.dwivedi",
+          "url": "https://meta.wikimedia.org/wiki/User:Suyash.dwivedi"
+        }
+      ]
+    },
+    {
+      "code": "fr",
+      "name": "French",
+      "translators": [
+        {
+          "name": "Hugo Lopez",
+          "username": "Yug",
+          "url": "https://meta.wikimedia.org/wiki/User:Yug"
+        }
+      ]
+    },
     {
       "code": "hi",
       "name": "Hindi",
@@ -9,11 +30,61 @@
           "name": "Suyash Dwivedi",
           "username": "Suyash.dwivedi",
           "url": "https://meta.wikimedia.org/wiki/User:Suyash.dwivedi"
-        },
+        }
+      ]
+    },
+    {
+      "code": "id",
+      "name": "Bahasa Indonesia",
+      "translators": [
         {
-          "name": "",
-          "username": "Username2",
-          "url": "https://meta.wikimedia.org/wiki/User:Username2"
+          "name": "OwlyKnight",
+          "username": "OwlyKnight",
+          "url": "https://meta.wikimedia.org/wiki/User:OwlyKnight"
+        }
+      ]
+    },
+    {
+      "code": "it",
+      "name": "Italian",
+      "translators": [
+        {
+          "name": "Giovanni",
+          "username": "GiovanniPen",
+          "url": "https://meta.wikimedia.org/wiki/User:GiovanniPen"
+        }
+      ]
+    },
+    {
+      "code": "no",
+      "name": "Norwegian",
+      "translators": [
+        {
+          "name": "Mali Brødreskift",
+          "username": "Malikbr",
+          "url": "https://meta.wikimedia.org/wiki/User:Malikbr"
+        }
+      ]
+    },
+    {
+      "code": "pt",
+      "name": "Português",
+      "translators": [
+        {
+          "name": "Arcstur",
+          "username": "Arcstur",
+          "url": "https://meta.wikimedia.org/wiki/User:Arcstur"
+        }
+      ]
+    },
+    {
+      "code": "ru",
+      "name": "Russian",
+      "translators": [
+        {
+          "name": "Umarjon Rahimov",
+          "username": "Umarxon III",
+          "url": "https://meta.wikimedia.org/wiki/User:Umarxon_III"
         }
       ]
     },
@@ -25,6 +96,28 @@
           "name": "Suyash Dwivedi",
           "username": "Suyash.dwivedi",
           "url": "https://meta.wikimedia.org/wiki/User:Suyash.dwivedi"
+        }
+      ]
+    },
+    {
+      "code": "tg",
+      "name": "Tajik",
+      "translators": [
+        {
+          "name": "Zolfeqar Fatihzadeh",
+          "username": "Zolfeqar Fatihzadeh",
+          "url": "https://meta.wikimedia.org/wiki/User:Zolfeqar_Fatihzadeh"
+        }
+      ]
+    },
+    {
+      "code": "uz",
+      "name": "o‘zbekcha",
+      "translators": [
+        {
+          "name": "Qurbonbek Jurayev",
+          "username": "Mirishkorlik",
+          "url": "https://meta.wikimedia.org/wiki/User:Mirishkorlik"
         }
       ]
     }
