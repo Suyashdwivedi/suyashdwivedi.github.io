@@ -17,7 +17,13 @@
       "name": "हिन्दी",
       "file": "hi.json",
       "dir": "ltr"
-      },
+    },
+    {
+      "code": "id",
+      "name": "Indonesia",
+      "file": "id.json",
+      "dir": "ltr"
+    },
     {
       "code": "it",
       "name": "italiano",
