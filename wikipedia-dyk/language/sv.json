@@ -116,6 +116,7 @@
     "The caption is about {n} characters. Most Mastodon servers allow 500, so shorten it before you post.": "Bildtexten är cirka {n} tecken. De flesta Mastodon-servrar tillåter 500, så korta ner den innan du publicerar.",
     "The credit appears here when you pick an image. You can edit it.": "Attribueringen visas här när du väljer en bild. Du kan redigera den.",
     "The photo is still loading. Try again in a moment.": "Bilden laddas fortfarande. Försök igen om en stund.",
+    "The article will appear here. Select any sentence to use it as your fact.": "Artikeln visas här. Välj en mening för att använda den som faktauppgift.",
     "Top": "Topp",
     "Top left": "Vänster topp",
     "Top right": "Höger topp",
