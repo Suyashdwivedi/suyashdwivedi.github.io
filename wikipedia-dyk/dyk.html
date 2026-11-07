@@ -107,7 +107,7 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
   .article-head h2 { font-size: 1.3rem; }
   #articleContainer { border: 1px solid var(--line); border-radius: 6px; padding: 16px; max-height: 520px;
     overflow-y: auto; font-size: .95rem; line-height: 1.65; background: var(--bg); }
-  #articleContainer:empty::before { content: "The article will appear here. Select any sentence to use it as your fact.";
+  #articleContainer:empty::before { content: attr(data-empty-message);
     color: var(--muted); }
   #articleContainer a { color: inherit; text-decoration: none; pointer-events: none; }
   #articleContainer img { max-width: 100%; height: auto; cursor: pointer; border-radius: 3px; }
@@ -342,7 +342,7 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
 </div>
 
 <footer>
-  Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener">Suyash Dwivedi</a> | Project: <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank" rel="noopener">Wiki's Lazy Coders</a> | <a href="credits.html">Translation credits</a> | Updated on: <strong>6 November 2026</strong><br />
+  Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener">Suyash Dwivedi</a> | Project: <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank" rel="noopener">Wiki's Lazy Coders</a> | <a href="credits.html">Translation credits</a> | Updated on: <strong>7 November 2026</strong><br />
   👁 Views: <span id="tc-views"></span> &nbsp; 👤 Unique: <span id="tc-sessions"></span><br />
   <small>Loaded page last edited: <span id="lastModifiedDisplay">not loaded</span></small>
 </footer>
@@ -480,6 +480,8 @@ function applyLocale(code, locale = null) {
   localeState.templates = buildLocaleTemplates(localeState.dict);
   document.documentElement.lang = code || "en";
   document.documentElement.dir = cached && cached.dir === "rtl" ? "rtl" : "ltr";
+  const articleBox = $("articleContainer");
+  if (articleBox) articleBox.setAttribute("data-empty-message", localeText("The article will appear here. Select any sentence to use it as your fact."));
   translateTree(document.body);
   const select = $("languageSelect");
   if (select) select.value = code;
@@ -503,6 +505,7 @@ function localeStrings() {
   });
   [
     "Did you know…", "Read more:", "Made with",
+    "The article will appear here. Select any sentence to use it as your fact.",
     "Loading languages…", "Loading page…", "Loaded “{title}”. Now select a sentence.",
     "Couldn’t load that page. Check the link and your connection, then try again.",
     "Opening the short link…", "Couldn’t open that short link. Check your connection, or paste the full article link instead.",
