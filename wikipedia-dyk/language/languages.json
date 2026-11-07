@@ -1,16 +1,16 @@
 {
   "languages": [
     {
-      "code": "fil",
-      "name": "Filipino",
-      "file": "fil.json",
-      "dir": "ltr"
-    },
-    {
       "code": "fa",
       "name": "فارسی",
       "file": "fa.json",
       "dir": "rtl"
+    },
+    {
+      "code": "fil",
+      "name": "Filipino",
+      "file": "fil.json",
+      "dir": "ltr"
     },
     {
       "code": "fr",
@@ -65,7 +65,7 @@
       "name": "svenska",
       "file": "sv.json",
       "dir": "ltr"
-      },
+    },
     {
       "code": "tg",
       "name": "тоҷикӣ",
