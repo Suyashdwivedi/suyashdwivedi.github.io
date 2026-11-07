@@ -115,6 +115,7 @@
     "The caption is about {n} characters. Most Mastodon servers allow 500, so shorten it before you post.": "Izoh taxminan {n} ta belgidan iborat. Mastodon serverlarining aksariyati 500 tagacha belgiga ruxsat beradi, shuning uchun joylashdan oldin uni qisqartiring.",
     "The credit appears here when you pick an image. You can edit it.": "Surat tanlaganingizda mualliflik ma’lumoti shu yerda koʻrsatiladi. Uni tahrirlashingiz mumkin.",
     "The photo is still loading. Try again in a moment.": "Surat hali ham yuklanmoqda. Birozdan soʻng qayta urinib koʻring.",
+    "The article will appear here. Select any sentence to use it as your fact.": "Maqola shu yerda ko‘rinadi. Uni fakt sifatida ishlatish uchun istalgan jumlani tanlang.",
     "Top": "Yuqori",
     "Top left": "Yuqori chap",
     "Top right": "Yuqori oʻng",
