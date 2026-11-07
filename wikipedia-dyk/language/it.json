@@ -123,6 +123,7 @@
     "The caption is about {n} characters. Most Mastodon servers allow 500, so shorten it before you post.": "La didascalia è lunga circa {n} caratteri. La maggior parte dei server Mastodon ne consente 500, quindi accorciala prima di pubblicarla.",
     "The credit appears here when you pick an image. You can edit it.": "I crediti vengono visualizzati qui quando si seleziona un'immagine. È possibile modificarli.",
     "The photo is still loading. Try again in a moment.": "La foto è ancora in fase di caricamento. Riprova tra un attimo.",
+    "The article will appear here. Select any sentence to use it as your fact.":"L'articolo apparirà qui. Seleziona una frase qualsiasi per usarla come dato di fatto.",
     "Top": "In alto",
     "Top left": "In alto a sinistra",
     "Top right": "In alto a destra",
