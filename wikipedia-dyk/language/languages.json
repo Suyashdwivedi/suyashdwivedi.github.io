@@ -7,6 +7,12 @@
       "dir": "ltr"
     },
     {
+      "code": "fa",
+      "name": "فارسی",
+      "file": "fa.json",
+      "dir": "rtl"
+    },
+    {
       "code": "fr",
       "name": "français",
       "file": "fr.json",
