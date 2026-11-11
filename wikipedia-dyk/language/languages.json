@@ -73,6 +73,12 @@
       "dir": "ltr"
     },
     {
+      "code": "tcy",
+      "name": "ತುಳು",
+      "file": "tcy.json",
+      "dir": "ltr"
+    },
+    {
       "code": "uk",
       "name": "українська",
       "file": "uk.json",
