@@ -3,6 +3,17 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<script>
+  // Apply saved theme before styles render to avoid resetting to system theme.
+  (() => {
+    try {
+      const saved = localStorage.getItem("wiki-dyk-theme");
+      if (saved === "dark" || saved === "light") {
+        document.documentElement.setAttribute("data-theme", saved);
+      }
+    } catch (_) {}
+  })();
+</script>
 <meta name="description" content="Turn any fact from a Wikipedia or Wikimedia page into a shareable Did you know image with a QR code. Works in any language. Download it or share it to Facebook, X, LinkedIn and Instagram." />
 <meta name="keywords" content="Wikipedia, Did you know, DYK, share image, QR code, Wikimedia, multilingual, Wiki's Lazy Coders" />
 <link rel="canonical" href="https://wiki-dyk.toolforge.org/" />
@@ -10,7 +21,8 @@
 <meta property="og:url" content="https://wiki-dyk.toolforge.org/" />
 <meta property="og:title" content="Wiki DYK Share Tool" />
 <meta property="og:description" content="Turn any fact from a Wikipedia or Wikimedia page into a shareable Did you know image with a QR code. Works in any language. Download it or share it to Facebook, X, LinkedIn and Instagram." />
-<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" />
+
+  <!-- <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" /> -->
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:url" content="https://wiki-dyk.toolforge.org/" />
 <meta property="twitter:title" content="Wiki DYK Share Tool" />
@@ -30,11 +42,21 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]):not([data-theme="dark"]) {
       --bg: #101418; --surface: #1a1f25; --text: #eaecf0; --muted: #a2a9b1;
       --line: #313840; --accent: #6b9bff; --accent-hover: #8fb3ff; --accent-soft: #1d2a40;
       --ok: #4cc9a8; color-scheme: dark;
     }
+  }
+  :root[data-theme="dark"] {
+    --bg: #101418; --surface: #1a1f25; --text: #eaecf0; --muted: #a2a9b1;
+    --line: #313840; --accent: #6b9bff; --accent-hover: #8fb3ff; --accent-soft: #1d2a40;
+    --ok: #4cc9a8; color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --bg: #f6f7f9; --surface: #fff; --text: #202122; --muted: #54595d;
+    --line: #dde0e4; --accent: #36c; --accent-hover: #2a4b8d; --accent-soft: #eaf3ff;
+    --ok: #14866d; color-scheme: light;
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--text);
@@ -45,9 +67,17 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
 
   header { background: var(--surface); border-bottom: 1px solid var(--line); }
   .logo-row { max-width: 1200px; margin: auto; padding: 14px 20px; display: flex; align-items: center; gap: 14px; }
-  .logo-img { height: 52px; width: auto; }
+  .logo-img { height: 80px; width: auto; }
   .logo-row h1 { font-size: 1.5rem; line-height: 1.2; }
   .tagline { margin: 2px 0 0; color: var(--muted); font-size: .9rem; }
+  .language-tools { margin-left: auto; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .language-tools label { color: var(--muted); font-size: .85rem; }
+  .language-tools select { max-width: 180px; min-width: 120px; padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--text); font: inherit; }
+  .language-tools button { padding: 7px 10px; font-size: .82rem; }
+  .locale-status { color: var(--muted); font-size: .78rem; }\n  .theme-toggle { white-space: nowrap; }
+
+  @media (max-width: 860px) { .logo-row { flex-wrap: wrap; } .language-tools { margin-left: 0; width: 100%; justify-content: flex-start; } }
+
 
   .layout { max-width: 1200px; margin: 20px auto; padding: 0 20px;
     display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
@@ -77,7 +107,7 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
   .article-head h2 { font-size: 1.3rem; }
   #articleContainer { border: 1px solid var(--line); border-radius: 6px; padding: 16px; max-height: 520px;
     overflow-y: auto; font-size: .95rem; line-height: 1.65; background: var(--bg); }
-  #articleContainer:empty::before { content: "The article will appear here. Select any sentence to use it as your fact.";
+  #articleContainer:empty::before { content: attr(data-empty-message);
     color: var(--muted); }
   #articleContainer a { color: inherit; text-decoration: none; pointer-events: none; }
   #articleContainer img { max-width: 100%; height: auto; cursor: pointer; border-radius: 3px; }
@@ -145,7 +175,7 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
   .caption-box label { display: block; font-size: .9rem; font-weight: 700; margin-bottom: 4px; }
   .caption-box textarea { min-height: 96px; font-size: .92rem; }
   @media (max-width: 600px) {
-    .logo-row { padding: 10px 12px; gap: 10px; }
+    .logo-row { padding: 10px 12px; gap: 10px; }\n    .language-tools button { flex: 1 1 auto; }\n    .language-tools select { flex: 1 1 140px; max-width: none; }
     .logo-img { height: 40px; }
     .logo-row h1 { font-size: 1.15rem; }
     .tagline { font-size: .8rem; }
@@ -163,6 +193,8 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
     .jump button { width: 40px; height: 40px; }
     footer { padding: 20px 12px 80px; }
   }
+  .seg input:disabled + span { opacity: .45; cursor: not-allowed; }
+  .gallery img, #articleContainer img { background: repeating-conic-gradient(#d8dde2 0% 25%, #fff 0% 50%) 0 0 / 14px 14px; }
   #toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); opacity: 0;
     background: #202122; color: #fff; padding: 10px 16px; border-radius: 6px; font-size: .92rem;
     transition: opacity .2s, transform .2s; pointer-events: none; max-width: 90vw; }
@@ -178,6 +210,15 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
     <div>
       <h1>Wiki DYK Share Tool</h1>
       <p class="tagline">Turn a fact from any Wikipedia or Wikimedia page into a shareable image with a QR code</p>
+    </div>
+    <div class="language-tools" aria-label="Language settings">
+      <label for="languageSelect" id="languageLabel">Interface language</label>
+      <select id="languageSelect" aria-label="Interface language">
+        <option value="en">English</option>
+      </select>
+      <button type="button" id="themeToggle" class="ghost theme-toggle" aria-label="Toggle light and dark mode">Dark mode</button>
+      <button type="button" id="downloadLocale" class="ghost">Download translation template</button>
+      <span id="localeStatus" class="locale-status" role="status" aria-live="polite">Loading languages…</span>
     </div>
   </div>
 </header>
@@ -218,7 +259,17 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
         <p class="hint" style="margin:0 0 6px">Slide the photo to keep the important part in the frame. With a mouse you can also drag the preview.</p>
         <label class="slider"><span>Left / right</span><input type="range" id="posX" min="0" max="100" value="50" /></label>
         <label class="slider"><span>Up / down</span><input type="range" id="posY" min="0" max="100" value="50" /></label>
-        <label class="slider"><span>Zoom</span><input type="range" id="posZ" min="100" max="300" value="100" /></label>
+        <label class="slider"><span>Zoom</span><input type="range" id="posZ" min="15" max="300" value="100" /></label>
+        <div class="check" style="margin:8px 0 4px"><strong>Backdrop for transparent pictures</strong></div>
+        <div class="seg" role="radiogroup" aria-label="Backdrop for transparent pictures">
+          <label><input type="radio" name="backdrop" value="auto" checked /><span>Auto</span></label>
+          <label><input type="radio" name="backdrop" value="light" /><span>Light</span></label>
+          <label><input type="radio" name="backdrop" value="dark" /><span>Dark</span></label>
+        </div>
+        <p class="hint" style="margin:-6px 0 6px">Only used when the picture has a transparent background. Auto picks light for dark artwork and dark for light artwork.</p>
+        <button id="zoomOut" type="button" class="ghost" style="margin-top:6px">Zoom out</button>
+        <button id="zoomIn" type="button" class="ghost" style="margin-top:6px">Zoom in</button>
+        <button id="zoomFit" type="button" class="ghost" style="margin-top:6px">Fit whole picture</button>
         <button id="posReset" type="button" class="ghost" style="margin-top:6px">Reset position</button>
       </div>
       <div class="credit-box">
@@ -291,7 +342,7 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
 </div>
 
 <footer>
-  Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener">Suyash Dwivedi</a> | Project: <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank" rel="noopener">Wiki's Lazy Coders</a> | Updated on: <strong>1 November 2026</strong><br />
+  Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener">Suyash Dwivedi</a> | Project: <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank" rel="noopener">Wiki's Lazy Coders</a> | <a href="credits.html">Translation credits</a> | Updated on: <strong>7 November 2026</strong><br />
   👁 Views: <span id="tc-views"></span> &nbsp; 👤 Unique: <span id="tc-sessions"></span><br />
   <small>Loaded page last edited: <span id="lastModifiedDisplay">not loaded</span></small>
 </footer>
@@ -306,7 +357,300 @@ var QRCode=function(t){"use strict";var r,e=function(){return"function"==typeof 
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script>
+
 const $ = (id) => document.getElementById(id);
+
+/* ---------- Community localisation ---------- */
+/*
+ * Community translations are maintained in the GitHub Pages folder:
+ * https://suyashdwivedi.github.io/wikipedia-dyk/language/
+ *
+ * languages.json lists available languages. Each language has its own JSON file
+ * (for example hi.json). Missing messages fall back to English.
+ */
+const LOCALE_BASE_URL = "https://suyashdwivedi.github.io/wikipedia-dyk/language/";
+const LOCALE_STORAGE_KEY = "wikiDykLocales";
+const LOCALE_ACTIVE_KEY = "wikiDykLocale";
+const LOCALE_COOKIE = "wikiDykLocale";
+const localeState = {
+  code: "en", dict: {}, observer: null, originalText: new WeakMap(),
+  lastText: new WeakMap(), internalWrites: new WeakSet(), catalog: []
+};
+const localeSkip = new Set(["SCRIPT", "STYLE", "CODE", "PRE", "CANVAS"]);
+const localeAttrs = ["placeholder", "aria-label", "title", "alt"];
+
+function localeStore() {
+  try { return JSON.parse(localStorage.getItem(LOCALE_STORAGE_KEY) || "{}"); }
+  catch { return {}; }
+}
+function localeSave(store) {
+  try { localStorage.setItem(LOCALE_STORAGE_KEY, JSON.stringify(store)); } catch {}
+}
+function savePreferredLocale(code) {
+  try { localStorage.setItem(LOCALE_ACTIVE_KEY, code); } catch {}
+  try {
+    document.cookie = `${LOCALE_COOKIE}=${encodeURIComponent(code)}; path=/; max-age=31536000; SameSite=Lax`;
+  } catch {}
+}
+function readPreferredLocale() {
+  try {
+    const saved = localStorage.getItem(LOCALE_ACTIVE_KEY);
+    if (saved) return saved;
+  } catch {}
+  try {
+    const match = document.cookie.match(new RegExp("(?:^|; )" + LOCALE_COOKIE + "=([^;]*)"));
+    if (match) return decodeURIComponent(match[1]);
+  } catch {}
+  return "en";
+}
+function buildLocaleTemplates(dict) { // keys with {name} placeholders become patterns, so messages with a value in them can be translated too
+  const out = [];
+  for (const [key, value] of Object.entries(dict)) {
+    if (!/\{\w+\}/.test(key) || typeof value !== "string" || !value.trim()) continue;
+    try {
+      const pattern = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\\\{(\w+)\\\}/g, "(?<$1>[\\s\\S]+?)");
+      out.push({ re: new RegExp("^" + pattern + "$"), value });
+    } catch {}
+  }
+  return out;
+}
+function localeTemplate(trimmed) {
+  for (const t of localeState.templates || []) {
+    const m = trimmed.match(t.re);
+    if (m) return t.value.replace(/\{(\w+)\}/g, (x, k) => (m.groups && m.groups[k] !== undefined ? (localeState.dict[m.groups[k]] || m.groups[k]) : x));
+  }
+  return null;
+}
+function localeText(value) {
+  const source = String(value ?? "");
+  const trimmed = source.trim();
+  if (!trimmed) return source;
+  let translated = localeState.dict[trimmed];
+  if (typeof translated !== "string" || !translated.trim()) translated = localeTemplate(trimmed);
+  if (typeof translated !== "string" || !translated.trim()) return source;
+  const leading = source.match(/^\s*/)?.[0] || "";
+  const trailing = source.match(/\s*$/)?.[0] || "";
+  return leading + translated + trailing;
+}
+function setLocaleText(node) {
+  if (!localeState.originalText.has(node)) localeState.originalText.set(node, node.nodeValue);
+  const translated = localeText(localeState.originalText.get(node));
+  if (node.nodeValue !== translated) {
+    localeState.internalWrites.add(node);
+    node.nodeValue = translated;
+  }
+  localeState.lastText.set(node, translated);
+}
+function shouldSkipLocaleNode(node) {
+  if (!node || node.nodeType !== Node.ELEMENT_NODE) return true;
+  if (localeSkip.has(node.tagName)) return true;
+  if (node.closest("#articleContainer")) return true;
+  return false;
+}
+function translateElementAttributes(el) {
+  for (const attr of localeAttrs) {
+    if (!el.hasAttribute(attr)) continue;
+    const dataKey = "data-locale-original-" + attr; // plain attribute: dataset["...aria-label"] is not a valid name and used to crash
+    if (!el.hasAttribute(dataKey)) el.setAttribute(dataKey, el.getAttribute(attr));
+    const original = el.getAttribute(dataKey);
+    el.setAttribute(attr, localeState.dict["@"+attr+":"+original] || localeState.dict[original] || original);
+  }
+}
+function translateTree(root = document.body) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      const parent = node.parentElement;
+      if (!parent || parent.closest("#articleContainer")) return NodeFilter.FILTER_REJECT;
+      if (localeSkip.has(parent.tagName)) return NodeFilter.FILTER_REJECT;
+      return node.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    }
+  });
+  let node;
+  while ((node = walker.nextNode())) setLocaleText(node);
+
+  const elements = root.nodeType === Node.ELEMENT_NODE ? [root, ...root.querySelectorAll("*")] : [...root.querySelectorAll("*")];
+  for (const el of elements) {
+    if (!shouldSkipLocaleNode(el)) translateElementAttributes(el);
+  }
+}
+function applyLocale(code, locale = null) {
+  const cached = locale || (code === "en" ? null : localeStore()[code]);
+  localeState.code = code;
+  localeState.dict = cached && cached.translations ? cached.translations : {};
+  localeState.templates = buildLocaleTemplates(localeState.dict);
+  document.documentElement.lang = code || "en";
+  document.documentElement.dir = cached && cached.dir === "rtl" ? "rtl" : "ltr";
+  const articleBox = $("articleContainer");
+  if (articleBox) articleBox.setAttribute("data-empty-message", localeText("The article will appear here. Select any sentence to use it as your fact."));
+  translateTree(document.body);
+  const select = $("languageSelect");
+  if (select) select.value = code;
+  savePreferredLocale(code);
+}
+function localeStrings() {
+  const strings = new Set();
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      const p = node.parentElement;
+      if (!p || p.closest("#articleContainer") || localeSkip.has(p.tagName)) return NodeFilter.FILTER_REJECT;
+      return node.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    }
+  });
+  let n;
+  while ((n = walker.nextNode())) strings.add((localeState.originalText.get(n) || n.nodeValue).trim());
+  document.querySelectorAll("body *").forEach(el => {
+    if (shouldSkipLocaleNode(el)) return;
+    for (const attr of localeAttrs) if (el.hasAttribute(attr))
+      strings.add(el.getAttribute("data-locale-original-" + attr) || el.getAttribute(attr));
+  });
+  [
+    "Did you know…", "Read more:", "Made with",
+    "The article will appear here. Select any sentence to use it as your fact.",
+    "Loading languages…", "Loading page…", "Loaded “{title}”. Now select a sentence.",
+    "Couldn’t load that page. Check the link and your connection, then try again.",
+    "Opening the short link…", "Couldn’t open that short link. Check your connection, or paste the full article link instead.",
+    "That doesn’t look like a Wikimedia link. Try one like https://en.wikipedia.org/wiki/Tiger or https://meta.wikimedia.org/wiki/User:Example.",
+    "Looking up the author and licence…", "Couldn’t find the credit ({note}). Type it here, for example: Image © Name, CC BY-SA 4.0",
+    "The photo is still loading. Try again in a moment.", "Image downloaded", "Image copied. Paste it in your chat, then paste the caption (use Copy caption).",
+    "Couldn’t copy the image. Use Download image instead.", "Caption copied",
+    "Couldn’t copy. Select the text and copy it manually.",
+    "Couldn’t load this photo (it may be very large or blocked). Pick another image or use a plain background.",
+    "No images found on this page, so a plain background will be used.",
+    "{name}: {w} × {h} px, {ratio}. Best for {use}.", "Facebook link previews and shared posts", "Facebook landscape announcements", "LinkedIn link previews and shared graphics", "Instagram portrait feed posts", "Instagram square feed posts, and shared images and announcements in Telegram and WhatsApp chats", "Instagram Stories, WhatsApp Status and Telegram Stories", "Background image updated", "Loading the photo…", "Improving the photo quality…", "Caption is copied. If WhatsApp, X or Instagram left it out, paste it as the caption.", "The caption is about {n} characters. Most Mastodon servers allow 500, so shorten it before you post.", "Select or type a fact to see your image.", "Text and QR code stay clear of the top and bottom edges, where the app places its own buttons.", "1 image found. Choose one, or use a plain background.", "{n} images found. Choose one, or use a plain background.", "unknown", "English", "Fact text", "Article text", "Wiki's Lazy Coders Logo"
+  ].forEach(x => strings.add(x));
+  return [...strings].filter(Boolean).sort((a, b) => a.localeCompare(b));
+}
+function refreshLocaleOptions() {
+  const select = $("languageSelect"), current = localeState.code;
+  select.innerHTML = '<option value="en">English</option>';
+  localeState.catalog.forEach(item => {
+    const opt = document.createElement("option");
+    opt.value = item.code;
+    opt.textContent = `${item.name} (${item.code})`;
+    select.append(opt);
+  });
+  select.value = current;
+}
+function downloadLocaleTemplate() {
+  const template = {
+    code: "xx", name: "Language name in its own language", dir: "ltr",
+    translations: Object.fromEntries(localeStrings().map(x => [x, ""]))
+  };
+  const blob = new Blob([JSON.stringify(template, null, 2)], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob), a = document.createElement("a");
+  a.href = url; a.download = "wiki-dyk-translation-template.json"; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
+}
+async function loadLocale(code) {
+  savePreferredLocale(code);
+  if (code === "en") {
+    applyLocale("en");
+    $("localeStatus").textContent = "";
+    return;
+  }
+  const item = localeState.catalog.find(entry => entry.code === code);
+  if (!item) {
+    $("localeStatus").textContent = `Language ${code} is not listed in languages.json.`;
+    return;
+  }
+  const status = $("localeStatus");
+  status.textContent = `Loading ${item.name}…`;
+  try {
+    const filename = item.file || `${code}.json`;
+    if (!/^[a-z0-9_-]+\.json$/i.test(filename)) throw new Error("Invalid translation filename in language catalogue.");
+    const response = await fetch(LOCALE_BASE_URL + filename, { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const downloaded = await response.json();
+    if (downloaded.code !== code || !downloaded.translations || typeof downloaded.translations !== "object" || Array.isArray(downloaded.translations))
+      throw new Error("The translation file has an invalid format.");
+    const clean = {};
+    Object.entries(downloaded.translations).forEach(([key, value]) => {
+      if (typeof key === "string" && typeof value === "string" && value.trim()) clean[key] = value;
+    });
+    const locale = { code, name: downloaded.name || item.name, dir: downloaded.dir === "rtl" ? "rtl" : "ltr", translations: clean };
+    const store = localeStore();
+    store[code] = locale;
+    localeSave(store);
+    applyLocale(code, locale);
+    status.textContent = "";
+  } catch (error) {
+    const cached = localeStore()[code];
+    if (cached) {
+      applyLocale(code, cached);
+      status.textContent = `${item.name}: using the saved translation (online update unavailable).`;
+    } else {
+      // Keep the selected language as the saved preference even if its file cannot load.
+      localeState.code = code;
+      localeState.dict = {};
+      document.documentElement.lang = code;
+      document.documentElement.dir = "ltr";
+      $("languageSelect").value = code;
+      status.textContent = `Could not load ${item.name}; showing English temporarily. Your language preference is saved.`;
+    }
+    console.warn("Wiki DYK localisation error:", error);
+  }
+}
+async function loadLocaleCatalog() {
+  const status = $("localeStatus");
+  const preferred = readPreferredLocale();
+  try {
+    const response = await fetch(LOCALE_BASE_URL + "languages.json", { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    const entries = Array.isArray(data) ? data : data.languages;
+    if (!Array.isArray(entries)) throw new Error("languages.json must contain a languages array.");
+    localeState.catalog = entries.filter(item => item && /^[a-z][a-z0-9-]{1,14}$/i.test(item.code || "") && item.name)
+      .map(item => ({ code: item.code, name: item.name, file: item.file || `${item.code}.json` }))
+      .filter(item => item.code !== "en");
+    refreshLocaleOptions();
+    if (preferred !== "en" && localeState.catalog.some(item => item.code === preferred)) {
+      $("languageSelect").value = preferred;
+      await loadLocale(preferred);
+    } else {
+      applyLocale("en");
+      if (preferred !== "en") status.textContent = `Saved language "${preferred}" is not yet listed in languages.json.`;
+      else status.textContent = "";
+    }
+  } catch (error) {
+    // The saved language can still be restored from the local translation cache.
+    const cached = preferred === "en" ? null : localeStore()[preferred];
+    if (cached) {
+      applyLocale(preferred, cached);
+      status.textContent = `${cached.name}: using the saved translation (language list unavailable).`;
+    } else {
+      applyLocale(preferred || "en");
+      status.textContent = "Language list unavailable; showing English until it can be loaded.";
+    }
+    console.warn("Wiki DYK language catalogue error:", error);
+  }
+}
+$("languageSelect").addEventListener("change", e => loadLocale(e.target.value));
+$("downloadLocale").addEventListener("click", downloadLocaleTemplate);
+localeState.observer = new MutationObserver(records => {
+  for (const record of records) {
+    if (record.type === "childList") {
+      record.addedNodes.forEach(n => {
+        if (n.nodeType === Node.TEXT_NODE) setLocaleText(n);
+        else if (n.nodeType === Node.ELEMENT_NODE) translateTree(n);
+      });
+    } else if (record.type === "characterData") {
+      const n = record.target;
+      if (localeState.internalWrites.has(n)) {
+        localeState.internalWrites.delete(n);
+        continue;
+      }
+      const current = n.nodeValue;
+      const last = localeState.lastText.get(n);
+      if (last !== undefined && current === last) continue;
+      localeState.originalText.set(n, current);
+      setLocaleText(n);
+    }
+  }
+});
+localeState.observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+refreshLocaleOptions();
+loadLocaleCatalog();
+
 const FORMATS = {
   fb:         { name: "Facebook",           w: 1200, h: 630,  ratio: "1.91:1", use: "Facebook link previews and shared posts" },
   fbwide:     { name: "Facebook wide",      w: 1200, h: 675,  ratio: "16:9",   use: "Facebook landscape announcements" },
@@ -317,8 +661,9 @@ const FORMATS = {
 };
 function updateSizeHint() {
   const f = FORMATS[document.querySelector("input[name=size]:checked").value];
-  $("sizeHint").textContent = `${f.name}: ${f.w} × ${f.h} px, ${f.ratio}. Best for ${f.use}.` +
-    (f.h / f.w > 1.7 ? " Text and QR code stay clear of the top and bottom edges, where the app places its own buttons." : "");
+  const hint = $("sizeHint");
+  hint.textContent = `${f.name}: ${f.w} × ${f.h} px, ${f.ratio}. Best for ${f.use}.`;
+  if (f.h / f.w > 1.7) hint.append(" ", "Text and QR code stay clear of the top and bottom edges, where the app places its own buttons.");
 }
 const WP_LOGO = "https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png";
 const SITES = {
@@ -337,7 +682,7 @@ const SITES = {
   mediawiki: { label: "MediaWiki", files: ["MediaWiki-2020-icon.svg"] },
   other: { label: "Wikimedia", files: ["Wikimedia-logo.svg"] },
 };
-const state = { qrUrl: "", siteLabel: "", loading: false, fx: 0.5, fy: 0.5, zoom: 1, ov: { x: 0, y: 0 }, W: 1200, tags: [], blob: null, url: "", shown: "", title: "", host: "", site: SITES.wikipedia, images: [], sel: -1 };
+const state = { autoFit: true, qrUrl: "", siteLabel: "", loading: false, fx: 0.5, fy: 0.5, zoom: 1, ov: { x: 0, y: 0 }, W: 1200, tags: [], blob: null, url: "", shown: "", title: "", host: "", site: SITES.wikipedia, images: [], sel: -1 };
 const logoCache = {};
 let renderTimer, renderToken = 0;
 
@@ -550,6 +895,23 @@ $("articleContainer").addEventListener("click", (e) => {
 function updateCount() { $("charCount").textContent = $("factText").value.length; }
 
 /* ---------- Rendering ---------- */
+const bgInfoCache = new WeakMap();
+function bgInfo(img) { // does the picture have transparent areas, and are its visible pixels dark or light?
+  if (bgInfoCache.has(img)) return bgInfoCache.get(img);
+  let info = { alpha: false, lum: 0.5 };
+  try {
+    const t = document.createElement("canvas"); t.width = t.height = 40;
+    const tc = t.getContext("2d"); tc.drawImage(img, 0, 0, 40, 40);
+    const d = tc.getImageData(0, 0, 40, 40).data; let clear = 0, n = 0, sum = 0;
+    for (let i = 0; i < d.length; i += 4) {
+      if (d[i + 3] < 200) clear++;
+      if (d[i + 3] > 128) { sum += (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255; n++; }
+    }
+    info = { alpha: clear / 1600 > 0.08, lum: n ? sum / n : 0.5 };
+  } catch {}
+  bgInfoCache.set(img, info);
+  return info;
+}
 const imgCache = new Map(); // keeps recently loaded photos so dragging the photo doesn't reload it
 const inflight = new Map(); // photo downloads in progress, so unneeded ones can be cancelled (a pending download keeps the browser's loading spinner going)
 function abortLoad(src) {
@@ -665,13 +1027,15 @@ async function render() {
   ctx.setTransform(S, 0, 0, S, 0, 0);
   ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
   state.W = W; if (!bg) state.ov = { x: 0, y: 0 };
-  $("posX").disabled = !bg || state.ov.x < 2; $("posY").disabled = !bg || state.ov.y < 2; $("posZ").disabled = !bg;
+  $("posX").disabled = !bg || state.ov.x < 2; $("posY").disabled = !bg || state.ov.y < 2; $("posZ").disabled = !bg; ["zoomOut", "zoomIn", "zoomFit"].forEach(id => { $(id).disabled = !bg; });
   const pad = Math.round(W * 0.05);
   const safeY = H / W > 1.7 ? Math.round(H * 0.12) : 0; // keeps content clear of Story/Status app buttons
   const padTop = pad + safeY, padBot = pad + safeY;
   // Sizes are based on u, so the square Instagram format gets the same text scale as the wide ones.
   const u = Math.min(H, W * 0.525);
-  const shadow = (on) => { ctx.shadowColor = on ? "rgba(0,0,0,.75)" : "transparent"; ctx.shadowBlur = on ? 12 : 0; ctx.shadowOffsetY = on ? 2 : 0; };
+  let lightBack = false; // true when dark artwork on a transparent background gets a light backdrop and dark text
+  const ink = (a) => (lightBack ? `rgba(17,24,32,${a})` : `rgba(255,255,255,${a})`);
+  const shadow = (on) => { ctx.shadowColor = on && !lightBack ? "rgba(0,0,0,.75)" : "transparent"; ctx.shadowBlur = on ? 12 : 0; ctx.shadowOffsetY = on ? 2 : 0; };
   const FONT = "Arial, Helvetica, sans-serif";
 
   // Layout: the QR code takes one corner, and all text lives in the column beside it.
@@ -693,13 +1057,22 @@ async function render() {
   const x1 = W - pad - (qr && !qrLeft ? qrSize + 30 : 0);
   const colW = x1 - x0;
 
-  ctx.fillStyle = "#1c2733"; ctx.fillRect(0, 0, W, H);
+  const info = bg ? bgInfo(bg) : null;
+  const mode = document.querySelector("input[name=backdrop]:checked")?.value || "auto";
+  lightBack = !!(info && info.alpha && (mode === "light" || (mode === "auto" && info.lum < 0.55)));
+  document.querySelectorAll("input[name=backdrop]").forEach(r => { r.disabled = !(info && info.alpha); });
+  ctx.fillStyle = lightBack ? "#f1f4f7" : "#1c2733"; ctx.fillRect(0, 0, W, H);
   let lum = 0.2;
   if (bg) {
-    const sc = Math.max(W / bg.width, H / bg.height) * state.zoom;
-    const dw = bg.width * sc, dh = bg.height * sc;
+    const cover = Math.max(W / bg.width, H / bg.height);
+    if (state.autoFit) { // logos and drawings with a transparent background start with the whole picture in view
+      state.autoFit = false;
+      if (info.alpha) { state.zoom = Math.min(1, Math.max(0.15, (Math.min(W / bg.width, H / bg.height) / cover) * 0.85)); syncPos(); }
+    }
+    state.fitZoom = Math.min(W / bg.width, H / bg.height) / cover; // zoom at which the whole picture is visible
+    const sc = cover * state.zoom, dw = bg.width * sc, dh = bg.height * sc;
     state.ov = { x: Math.max(0, dw - W), y: Math.max(0, dh - H) };
-    ctx.drawImage(bg, -state.ov.x * state.fx, -state.ov.y * state.fy, dw, dh);
+    ctx.drawImage(bg, dw >= W ? -state.ov.x * state.fx : (W - dw) / 2, dh >= H ? -state.ov.y * state.fy : (H - dh) / 2, dw, dh);
     try { // measure how bright the photo is, so bright photos get a darker overlay
       const t = document.createElement("canvas"); t.width = t.height = 24;
       const tc = t.getContext("2d"); tc.drawImage(c, 0, 0, c.width, c.height, 0, 0, 24, 24);
@@ -708,10 +1081,12 @@ async function render() {
       lum = sum / (d.length / 4);
     } catch {}
   }
-  ctx.fillStyle = `rgba(8,12,18,${(0.28 + 0.4 * lum).toFixed(2)})`; ctx.fillRect(0, 0, W, H);
-  const scrim = ctx.createLinearGradient(0, 0, 0, H);
-  scrim.addColorStop(0, "rgba(8,12,18,.30)"); scrim.addColorStop(.5, "rgba(8,12,18,.15)"); scrim.addColorStop(1, "rgba(8,12,18,.80)");
-  ctx.fillStyle = scrim; ctx.fillRect(0, 0, W, H);
+  if (!lightBack) { // darken the photo so white text stays readable
+    ctx.fillStyle = `rgba(8,12,18,${(0.28 + 0.4 * lum).toFixed(2)})`; ctx.fillRect(0, 0, W, H);
+    const scrim = ctx.createLinearGradient(0, 0, 0, H);
+    scrim.addColorStop(0, "rgba(8,12,18,.30)"); scrim.addColorStop(.5, "rgba(8,12,18,.15)"); scrim.addColorStop(1, "rgba(8,12,18,.80)");
+    ctx.fillStyle = scrim; ctx.fillRect(0, 0, W, H);
+  }
 
   // Top row: logo and label
   const logoSize = Math.round(u * 0.09);
@@ -720,7 +1095,7 @@ async function render() {
     ctx.drawImage(logo, x0 + (logoSize - logo.width * r) / 2, padTop + (logoSize - logo.height * r) / 2, logo.width * r, logo.height * r);
   }
   shadow(true);
-  ctx.fillStyle = "#fff"; ctx.textBaseline = "middle"; ctx.textAlign = "left";
+  ctx.fillStyle = ink(1); ctx.textBaseline = "middle"; ctx.textAlign = "left";
   ctx.font = `700 ${Math.round(logoSize * .42)}px ${FONT}`;
   ctx.fillText(state.siteLabel || state.site.label, x0 + logoSize + 14, padTop + logoSize / 2);
   shadow(false);
@@ -729,6 +1104,7 @@ async function render() {
   if (qr) {
     const qx = qrLeft ? pad : W - pad - qrSize, qy = qrTop ? padTop : metaY - qrSize;
     ctx.fillStyle = "#fff"; ctx.fillRect(qx, qy, qrSize, qrSize);
+    if (lightBack) { ctx.strokeStyle = "rgba(17,24,32,.3)"; ctx.lineWidth = 2; ctx.strokeRect(qx, qy, qrSize, qrSize); }
     ctx.imageSmoothingEnabled = false; // keep QR squares pin sharp
     ctx.drawImage(qr, qx + 6, qy + 6, qrSize - 12, qrSize - 12);
     ctx.imageSmoothingEnabled = true;
@@ -740,33 +1116,33 @@ async function render() {
   const creditText = creditLine(), creditSize = Math.round(u * 0.026);
   let y = metaY - 4;
   if (creditText) { // photo credit, small, under the link
-    ctx.fillStyle = "rgba(255,255,255,.88)"; ctx.font = `italic ${creditSize}px ${FONT}`;
+    ctx.fillStyle = ink(.88); ctx.font = `italic ${creditSize}px ${FONT}`;
     let ct = creditText; while (ctx.measureText(ct).width > colW && ct.length > 8) ct = ct.slice(0, -2);
     ctx.fillText(ct === creditText ? ct : ct + "…", x0, y);
     y -= creditSize + 14;
   }
-  ctx.fillStyle = "rgba(255,255,255,.92)";
+  ctx.fillStyle = ink(.92);
   ctx.font = `${urlSize}px ${FONT}`;
   const host = state.shown;
   let shown = host; while (ctx.measureText(shown).width > colW && shown.length > 8) shown = shown.slice(0, -2);
   ctx.fillText(shown === host ? host : shown + "…", x0, y);
   y -= urlSize + 12;
-  ctx.fillStyle = "#fff";
+  ctx.fillStyle = ink(1);
   ctx.font = `700 ${titleSize}px ${FONT}`;
   let t = state.title; while (ctx.measureText(t).width > colW && t.length > 4) t = t.slice(0, -2);
   ctx.fillText(t === state.title ? t : t + "…", x0, y);
   const stackH = metaY - y + titleSize;
   if (tagLine) {
-    ctx.font = `700 ${tagSize}px ${FONT}`; ctx.fillStyle = "rgba(255,255,255,.95)";
+    ctx.font = `700 ${tagSize}px ${FONT}`; ctx.fillStyle = ink(.95);
     ctx.textAlign = "center"; ctx.fillText(tagLine, W / 2, H - padBot + pad * 0.35); ctx.textAlign = "left";
   }
 
   // Fact text, auto-fitted between the top row and the bottom block, placed top, middle or bottom
-  const text = ($("dykPrefix").checked ? "Did you know… " : "") + fact;
+  const text = ($("dykPrefix").checked ? (localeText("Did you know…") + " ") : "") + fact;
   const top = padTop + logoSize + pad * 0.6;
   const bottom = metaY - stackH - pad * 0.5;
   const maxH = bottom - top;
-  ctx.fillStyle = "#fff"; ctx.textBaseline = "top";
+  ctx.fillStyle = ink(1); ctx.textBaseline = "top";
   let size = Math.round(u * 0.11), lines;
   for (; size >= 18; size -= 2) {
     ctx.font = `700 ${size}px ${FONT}`;
@@ -820,10 +1196,10 @@ async function render() {
 const getBlob = () => Promise.resolve(state.blob);
 const slug = () => (state.title || "wikipedia").replace(/\W+/g, "_").slice(0, 40);
 const cleanFact = () => $("factText").value.replace(/(\s*(?:🔗\s*)?Read more:?\s*\S+)+\s*$/i, "").trim();
-const factText = () => ($("dykPrefix").checked ? "Did you know… " : "") + cleanFact();
+const factText = () => ($("dykPrefix").checked ? (localeText("Did you know…") + " ") : "") + cleanFact();
 const tagsLine = () => $("tagsOn").checked ? state.tags.filter(x => x.on).map(x => "#" + x.t).join(" ") : "";
 const creditLine = () => ($("creditOn").checked ? $("creditInput").value.trim() : "");
-const caption = () => `${factText()}\n\nRead more: ${state.shown}` + (creditLine() ? `\n${creditLine()}` : "") + "\nMade with https://wiki-dyk.toolforge.org/" + (tagsLine() ? `\n\n${tagsLine()}` : "");
+const caption = () => `${factText()}\n\n${localeText("Read more:")} ${state.shown}` + (creditLine() ? `\n${creditLine()}` : "") + `\n${localeText("Made with")} https://wiki-dyk.toolforge.org/` + (tagsLine() ? `\n\n${tagsLine()}` : "");
 const updateCaptionBox = () => { $("captionBox").value = cleanFact() && state.url ? caption() : ""; };
 
 /* ---------- Hashtags ---------- */
@@ -907,7 +1283,7 @@ $("loadBtn").onclick = loadArticle;
 $("wikiURL").addEventListener("keydown", e => { if (e.key === "Enter") loadArticle(); });
 $("factText").addEventListener("input", () => { updateCount(); scheduleRender(); });
 $("dykPrefix").addEventListener("change", scheduleRender);
-document.querySelectorAll("input[name=size], input[name=pos], input[name=qr]").forEach(r => r.addEventListener("change", scheduleRender));
+document.querySelectorAll("input[name=size], input[name=pos], input[name=qr], input[name=backdrop]").forEach(r => r.addEventListener("change", scheduleRender));
 document.querySelectorAll("input[name=size]").forEach(r => r.addEventListener("change", updateSizeHint));
 $("downloadBtn").onclick = download;
 $("shareBtn").onclick = nativeShare;
@@ -943,10 +1319,18 @@ $("tagsOn").addEventListener("change", updateCaptionBox);
 $("imgTags").addEventListener("change", scheduleRender);
 /* ---------- Photo position: sliders and mouse drag ---------- */
 function syncPos() { $("posX").value = Math.round(state.fx * 100); $("posY").value = Math.round(state.fy * 100); $("posZ").value = Math.round(state.zoom * 100); }
-function resetPos() { state.fx = state.fy = 0.5; state.zoom = 1; syncPos(); }
+function resetPos() { state.fx = state.fy = 0.5; state.zoom = 1; state.autoFit = true; syncPos(); }
 ["posX", "posY", "posZ"].forEach(id => $(id).addEventListener("input", () => {
   state.fx = $("posX").value / 100; state.fy = $("posY").value / 100; state.zoom = $("posZ").value / 100; scheduleRender(30);
 }));
+$("zoomOut").onclick = () => { state.zoom = Math.max(0.15, state.zoom / 1.15); syncPos(); scheduleRender(0); };
+$("zoomIn").onclick = () => { state.zoom = Math.min(3, state.zoom * 1.15); syncPos(); scheduleRender(0); };
+$("zoomFit").onclick = () => { state.zoom = Math.max(0.15, Math.min(1, state.fitZoom || 1)); state.fx = state.fy = 0.5; syncPos(); scheduleRender(0); };
+$("previewCanvas").addEventListener("wheel", e => { // Ctrl + mouse wheel over the preview zooms; a plain wheel still scrolls the page
+  if (!(e.ctrlKey || e.metaKey) || !state.images[state.sel]) return;
+  e.preventDefault();
+  state.zoom = Math.min(3, Math.max(0.15, state.zoom * (e.deltaY < 0 ? 1.08 : 1 / 1.08))); syncPos(); scheduleRender(16);
+}, { passive: false });
 $("posReset").onclick = () => { resetPos(); scheduleRender(0); };
 (() => {
   const cv = $("previewCanvas"); let drag = null;
@@ -971,7 +1355,7 @@ const picked = (name) => document.querySelector(`input[name=${name}]:checked`)?.
 function saveSettings() {
   try {
     localStorage.setItem("dykSettings", JSON.stringify({
-      size: picked("size"), pos: picked("pos"), qr: picked("qr"),
+      size: picked("size"), pos: picked("pos"), qr: picked("qr"), backdrop: picked("backdrop"),
       prefix: $("dykPrefix").checked, tagsOn: $("tagsOn").checked, imgTags: $("imgTags").checked,
       creditOn: $("creditOn").checked, hiRes: $("hiRes").checked, qrOn: $("qrOn").checked,
     }));
@@ -982,11 +1366,11 @@ function loadSettings() {
     const o = JSON.parse(localStorage.getItem("dykSettings") || "{}");
     const moved = { igsquare: "square", chat: "square", instagram: "square", igstory: "story", wastatus: "story", tgstory: "story", facebook: "fb", x: "fbwide" };
     if (moved[o.size]) o.size = moved[o.size];
-    ["size", "pos", "qr"].forEach(n => { const el = document.querySelector(`input[name=${n}][value="${o[n]}"]`); if (el) el.checked = true; });
+    ["size", "pos", "qr", "backdrop"].forEach(n => { const el = document.querySelector(`input[name=${n}][value="${o[n]}"]`); if (el) el.checked = true; });
     [["dykPrefix", "prefix"], ["tagsOn", "tagsOn"], ["imgTags", "imgTags"], ["creditOn", "creditOn"], ["hiRes", "hiRes"], ["qrOn", "qrOn"]].forEach(([id, k]) => { if (typeof o[k] === "boolean") $(id).checked = o[k]; });
   } catch {}
 }
-document.querySelectorAll("input[name=size], input[name=pos], input[name=qr], #dykPrefix, #tagsOn, #imgTags, #creditOn, #hiRes, #qrOn")
+document.querySelectorAll("input[name=size], input[name=pos], input[name=qr], input[name=backdrop], #dykPrefix, #tagsOn, #imgTags, #creditOn, #hiRes, #qrOn")
   .forEach(el => el.addEventListener("change", saveSettings));
 const updateQrControls = () => document.querySelectorAll("input[name=qr]").forEach(r => { r.disabled = !$("qrOn").checked; });
 $("qrOn").addEventListener("change", () => { updateQrControls(); scheduleRender(); });
@@ -996,6 +1380,38 @@ $("creditInput").addEventListener("input", () => { updateCaptionBox(); scheduleR
 loadSettings();
 updateQrControls();
 updateSizeHint();
+// Theme switch: remember the user's choice in this browser.
+const themeToggle = document.getElementById('themeToggle');
+const THEME_STORAGE_KEY = 'wiki-dyk-theme';
+function getSavedTheme() {
+  try {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    return saved === 'dark' || saved === 'light' ? saved : null;
+  } catch (_) { return null; }
+}
+function applyTheme(theme, save = false) {
+  document.documentElement.setAttribute('data-theme', theme);
+  if (save) {
+    try { localStorage.setItem(THEME_STORAGE_KEY, theme); } catch (_) {}
+  }
+  updateThemeButton();
+}
+function updateThemeButton() {
+  const theme = document.documentElement.getAttribute('data-theme') ||
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  themeToggle.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+  themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+}
+themeToggle.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme') ||
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(current === 'dark' ? 'light' : 'dark', true);
+});
+// Keep the explicit saved choice; otherwise follow the system preference.
+const savedTheme = getSavedTheme();
+if (savedTheme) applyTheme(savedTheme);
+else updateThemeButton();
+
 renderTags();
 render();
 
@@ -1009,17 +1425,20 @@ render();
   if (document.readyState === "complete") addCounter(); else addEventListener("load", addCounter);
 })();
 </script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
 <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-GC8PGC89NB');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-GC8PGC89NB');
 </script>
-	</script>
-	<script src="https://cdn.counter.dev/script.js"
-        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
-        data-utcoffset="6">
-</script>
+
+<!-- Counter.dev analytics -->
+<script src="https://cdn.counter.dev/script.js"
+        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
+        data-utcoffset="6"></script>
+
 </body>
 </html>
