@@ -29,7 +29,13 @@
       "name": "Indonesia",
       "file": "id.json",
       "dir": "ltr"
-    },
+     },
+     {
+      "code": "kcg",
+      "name": "Tyap",
+      "file": "kcg.json",
+      "dir": "ltr"
+     },
     {
       "code": "it",
       "name": "italiano",
