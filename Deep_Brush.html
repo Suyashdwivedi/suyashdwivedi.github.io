@@ -89,6 +89,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
     <fieldset><legend>Spray bottle / colour painting</legend>
       <label>Paint colour <input type="color" id="paintColor" value="#e53935"></label>
       <label>Tool <select id="tool"><option value="brush">Colour brush / recolour</option><option value="spray">Spray paint</option><option value="select">Select / move designs</option></select></label>
+      <p style="font-size:12px;color:var(--mute);margin:4px 0">To move text or a logo, click it directly on the photo and drag. You do not need to switch tools first.</p>
       <label>Spray intensity <input type="range" id="sprayIntensity" min="5" max="100" value="45"></label>
       <p style="font-size:12px;color:var(--mute);margin:4px 0">Use the colour brush to recolour a bottle or another object. Keep the edge control high to reduce spill onto the background.</p>
     </fieldset>
@@ -334,7 +335,9 @@ function addTextObject(){
   if(!W)return;
   const text=$('objectText').value.trim()||'Text';
   objects.push({type:'text',text,x:W*.2,y:H*.2,size:64,color:$('objectColor').value,opacity:1,rotation:0});
+  $('tool').value='select';
   selectObject(objects.length-1);
+  say('Text added. Drag it directly on the photo to position it.');
 }
 $('addText').onclick=addTextObject;
 $('addLogo').onclick=()=>$('objectFile').click();
@@ -343,7 +346,9 @@ $('objectFile').onchange=e=>{
   loadFile(f,img=>{
     const w=Math.min(220,W*.35),h=w*img.height/img.width;
     objects.push({type:'image',image:img,x:W*.2,y:H*.2,w,h,opacity:1,rotation:0});
+    $('tool').value='select';
     selectObject(objects.length-1);
+    say('Design added. Drag it directly on the photo to position it.');
   });
   e.target.value='';
 };
@@ -436,22 +441,41 @@ function seedAt(cx,cy){
 cv.addEventListener('pointerdown',e=>{
   if(!W||showD)return;
   const [x,y]=pos(e);
-  if($('tool').value==='select'){
-    const i=hitObject(x,y);
-    if(i>=0){
-      selectObject(i);
-      const o=objects[i],a=-(o.rotation||0),dx=x-o.x,dy=y-o.y;
-      const lx=dx*Math.cos(a)-dy*Math.sin(a),ly=dx*Math.sin(a)+dy*Math.cos(a);
-      octx.save();octx.font='700 '+(o.size||64)+'px "Segoe UI",Arial,sans-serif';
-      const tw=o.type==='text'?octx.measureText(o.text).width:0;octx.restore();
-      const resize=o.type==='image'?(lx>o.w-18&&ly>o.h-18):(lx>tw-18&&ly>o.size*.8);
-      objectDrag={index:i,startX:x,startY:y,origX:o.x,origY:o.y,origW:o.w,origH:o.h,origSize:o.size,resize};
-      cv.setPointerCapture(e.pointerId);
-    }else{selectedObject=-1;objectDrag=null;renderObjectList();drawObjects();}
+
+  // Object hit-testing comes first: clicking a visible text/logo selects it
+  // and starts dragging immediately, without requiring a tool-mode switch.
+  const hit=hitObject(x,y);
+  if(hit>=0){
+    selectObject(hit);
+    const o=objects[hit],a=-(o.rotation||0),dx=x-o.x,dy=y-o.y;
+    const lx=dx*Math.cos(a)-dy*Math.sin(a),ly=dx*Math.sin(a)+dy*Math.cos(a);
+    octx.save();
+    octx.font='700 '+(o.size||64)+'px "Segoe UI",Arial,sans-serif';
+    const textWidth=o.type==='text'?octx.measureText(o.text).width:0;
+    octx.restore();
+    const handleSize=22;
+    const resize=o.type==='image'
+      ? (lx>o.w-handleSize&&ly>o.h-handleSize)
+      : (lx>textWidth-handleSize&&ly>o.size*1.0);
+    objectDrag={
+      index:hit,startX:x,startY:y,
+      origX:o.x,origY:o.y,origW:o.w,origH:o.h,
+      origSize:o.size,resize
+    };
+    cv.setPointerCapture(e.pointerId);
+    say('Selected '+(o.type==='text'?'text':'design')+'. Drag to move; drag the corner handle to resize.');
     return;
   }
-  cv.setPointerCapture(e.pointerId);drawing=true;
-  seedAt(x,y);last=[x,y];
+
+  // In Select mode, clicking empty canvas must not paint.
+  if($('tool').value==='select'){
+    selectedObject=-1;objectDrag=null;renderObjectList();drawObjects();
+    say('No design at this position. Select a text or logo, or add a new one.');
+    return;
+  }
+
+  cv.setPointerCapture(e.pointerId);
+  drawing=true;seedAt(x,y);last=[x,y];
   if($('tool').value==='spray')sprayAt(x,y);else stamp(x,y);
 });
 cv.addEventListener('pointermove',e=>{
@@ -473,7 +497,7 @@ cv.addEventListener('pointermove',e=>{
   }
   last=[x,y];
 });
-['pointerup','pointercancel'].forEach(t=>cv.addEventListener(t,()=>{drawing=false;objectDrag=null;}));
+['pointerup','pointercancel'].forEach(t=>addEventListener(t,()=>{drawing=false;objectDrag=null;}));
 
 /* Files */
 function loadFile(f,cb){
