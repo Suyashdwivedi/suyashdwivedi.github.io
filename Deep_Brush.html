@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>LazyCoders Deep Brush v3</title>
+<title>LazyCoders Deep Brush</title>
 <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" />
 
 <!-- Google Analytics -->
@@ -103,8 +103,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
       <label>Selected colour <input type="color" id="objectColor" value="#ffffff"></label>
       <label>Selected opacity <input type="range" id="objectOpacity" min="5" max="100" value="100"></label>
       <label>Angle <span><input type="range" id="objectAngle" min="-180" max="180" value="0" style="width:112px"><output id="angleValue">0°</output></span></label>
+      <label>Surface wrap <input type="range" id="objectWarp" min="0" max="100" value="65"></label>
       <button id="deleteObject">Delete selected</button>
-      <p style="font-size:12px;color:var(--mute);margin:4px 0">Choose Select / move designs, then drag an object. Drag an item to move it, use its corner handle to resize it, and use the Angle slider to rotate it.</p>
+      <p style="font-size:12px;color:var(--mute);margin:4px 0">Choose Select / move designs, then drag an object. Drag an item to move it, resize it with its corner handle, rotate it with Angle, and adjust Surface wrap to make it follow the photo.</p>
     </fieldset>
 
     <fieldset><legend>Surface</legend>
@@ -183,8 +184,8 @@ function init(img){
   shade=new Float32Array(W*H);det=new Float32Array(W*H);
   for(let i=0;i<W*H;i++){shade[i]=clamp(Ls[i]/m,.15,2.2);det[i]=clamp(L[i]/(Lf[i]+.02),.6,1.6);}
   setDepth(blur(L,5));
-  mask=new Float32Array(W*H);paint=null;showD=false;
-  buildPaint();comp(0,0,W,H);
+  mask=new Float32Array(W*H);paint=null;showD=false;objects=[];selectedObject=-1;
+  renderObjectList();buildPaint();comp(0,0,W,H);drawObjects();
 }
 
 function makePattern(){
@@ -270,27 +271,64 @@ function selectObject(i){
   }
   renderObjectList();drawObjects();
 }
-function drawObjects(){
+function drawObjects(includeSelection=true){
   if(!W||!ov.width)return;
   octx.clearRect(0,0,W,H);
+  const warpAmount=+$('objectWarp').value*.65;
+  const lightAmount=+$('light').value/100;
+  const textureAmount=+$('tex').value/100;
+
   objects.forEach((o,i)=>{
-    octx.save();octx.globalAlpha=o.opacity;
+    // Render each editable object to its own transparent source layer.
+    const source=document.createElement('canvas');source.width=W;source.height=H;
+    const sg=source.getContext('2d',{willReadFrequently:true});
+    sg.save();sg.globalAlpha=o.opacity;
+    sg.translate(o.x,o.y);sg.rotate(o.rotation||0);
     if(o.type==='text'){
-      octx.translate(o.x,o.y);octx.rotate(o.rotation||0);
-      octx.font='700 '+o.size+'px "Segoe UI",Arial,sans-serif';
-      octx.textBaseline='top';octx.fillStyle=o.color||'#ffffff';
-      octx.fillText(o.text,0,0);
-      if(i===selectedObject){
-        const m=octx.measureText(o.text);octx.globalAlpha=1;octx.strokeStyle='#3157d5';octx.lineWidth=2;
-        octx.strokeRect(-4,-4,m.width+8,o.size*1.25+8);
-        octx.fillStyle='#3157d5';octx.fillRect(m.width-5,o.size*1.25-5,12,12);
+      sg.font='700 '+o.size+'px "Segoe UI",Arial,sans-serif';
+      sg.textBaseline='top';sg.fillStyle=o.color||'#ffffff';sg.fillText(o.text,0,0);
+    }else if(o.image){sg.drawImage(o.image,0,0,o.w,o.h);}
+    sg.restore();
+
+    const src=sg.getImageData(0,0,W,H),warped=sg.createImageData(W,H);
+    const sd=src.data,wd=warped.data;
+    // Warp the artwork using the image's depth gradients. Apply original
+    // illumination and fine texture so the layer looks printed on the surface.
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+      const i=y*W+x,p=i*4;
+      let sx=x,sy=y;
+      if(warpAmount>0&&gx&&gy){
+        sx=clamp(Math.round(x+gx[i]*warpAmount),0,W-1);
+        sy=clamp(Math.round(y+gy[i]*warpAmount),0,H-1);
       }
-    }else if(o.image){
-      octx.translate(o.x,o.y);octx.rotate(o.rotation||0);octx.drawImage(o.image,0,0,o.w,o.h);
-      if(i===selectedObject){octx.globalAlpha=1;octx.strokeStyle='#3157d5';octx.lineWidth=2;octx.strokeRect(0,0,o.w,o.h);octx.fillStyle='#3157d5';octx.fillRect(o.w-6,o.h-6,12,12);}
+      const q=(sy*W+sx)*4,alpha=sd[q+3];
+      if(alpha===0)continue;
+      const shadeFactor=shade?((1-lightAmount)+lightAmount*shade[i]):1;
+      const textureFactor=det?((1-textureAmount)+textureAmount*det[i]):1;
+      const k=clamp(shadeFactor*textureFactor,.25,2.1);
+      wd[p]=clamp(sd[q]*k,0,255);
+      wd[p+1]=clamp(sd[q+1]*k,0,255);
+      wd[p+2]=clamp(sd[q+2]*k,0,255);
+      wd[p+3]=alpha;
+    }
+    const warpedCanvas=document.createElement('canvas');warpedCanvas.width=W;warpedCanvas.height=H;
+    warpedCanvas.getContext('2d').putImageData(warped,0,0);
+    octx.drawImage(warpedCanvas,0,0);
+  });
+
+  // Selection handles are editor UI only; they are excluded from exported artwork.
+  if(includeSelection&&selectedObject>=0&&objects[selectedObject]){
+    const o=objects[selectedObject];octx.save();octx.translate(o.x,o.y);octx.rotate(o.rotation||0);
+    octx.strokeStyle='#3157d5';octx.lineWidth=2;octx.setLineDash([5,3]);
+    if(o.type==='text'){
+      octx.font='700 '+o.size+'px "Segoe UI",Arial,sans-serif';
+      const m=octx.measureText(o.text);octx.strokeRect(-5,-5,m.width+10,o.size*1.3+10);
+      octx.setLineDash([]);octx.fillStyle='#3157d5';octx.fillRect(m.width-6,o.size*1.3-6,12,12);
+    }else{
+      octx.strokeRect(0,0,o.w,o.h);octx.setLineDash([]);octx.fillStyle='#3157d5';octx.fillRect(o.w-6,o.h-6,12,12);
     }
     octx.restore();
-  });
+  }
 }
 function addTextObject(){
   if(!W)return;
@@ -327,6 +365,7 @@ $('objectOpacity').oninput=()=>{
   const o=objects[selectedObject];if(!o)return;
   o.opacity=+$('objectOpacity').value/100;drawObjects();
 };
+$('objectWarp').oninput=()=>drawObjects();
 $('objectAngle').oninput=()=>{
   const o=objects[selectedObject];if(!o)return;
   const angle=+$('objectAngle').value;
@@ -476,8 +515,23 @@ $('dv').onclick=()=>{
 
 $('clear').onclick=()=>{if(!W)return;mask.fill(0);showD=false;$('dv').textContent='Show depth';comp(0,0,W,H);};
 $('save').onclick=()=>{
-  if(!W)return;showD=false;comp(0,0,W,H);
-  cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='deep_brush.png';a.click();});
+  if(!W)return;
+  showD=false;$('dv').textContent='Show depth';
+  comp(0,0,W,H);
+  // Re-render without selection outlines, then flatten base paint + editable layers.
+  drawObjects(false);
+  const exportCanvas=document.createElement('canvas');exportCanvas.width=W;exportCanvas.height=H;
+  const exportCtx=exportCanvas.getContext('2d');
+  exportCtx.drawImage(cv,0,0);
+  exportCtx.drawImage(ov,0,0);
+  exportCanvas.toBlob(blob=>{
+    if(!blob){say('Export failed. Please try again.');drawObjects(true);return;}
+    const url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download='lazycoders_deep_brush.png';a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+    say('PNG exported with all text and design layers.');
+    drawObjects(true);
+  },'image/png');
 };
 
 function alignObjectCanvas(){
