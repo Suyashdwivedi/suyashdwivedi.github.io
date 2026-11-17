@@ -26,11 +26,11 @@ html,body{margin:0;height:100%}
 body{display:flex;flex-direction:column}
 body{font:14px/1.4 "Gill Sans","Trebuchet MS",sans-serif;color:var(--ink);background:var(--bg)}
 .app{display:grid;grid-template-columns:1fr 310px;flex:1;min-height:0}
-.stage{display:flex;align-items:center;justify-content:center;padding:18px;min-width:0;min-height:0;position:relative}
-canvas{max-width:100%;max-height:100%;cursor:crosshair;touch-action:none;box-shadow:0 8px 40px #0008;background:#fff}#objectsCanvas{position:absolute;pointer-events:none;box-shadow:none;background:transparent}
+.stage{display:block;padding:18px;min-width:0;min-height:0;position:relative;overflow:auto;overscroll-behavior:contain}
+canvas{display:block;max-width:none;max-height:none;flex:none;cursor:crosshair;touch-action:none;box-shadow:0 8px 40px #0008;background:#fff}#objectsCanvas{position:absolute;pointer-events:none;box-shadow:none;background:transparent;z-index:2}
 aside{background:var(--panel);padding:18px;overflow:auto;border-left:1px solid var(--line)}
 header{display:flex;align-items:center;gap:12px;padding:8px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.logo-img{height:44px;width:auto}
+.logo-img{height:75px;width:auto}
 h1{font:italic 700 26px Georgia,serif;margin:0}
 .tagline{margin:0;color:var(--mute)}
 footer{padding:8px 18px;background:var(--panel);border-top:1px solid var(--line);font-size:12px;color:var(--mute);text-align:center}
@@ -65,6 +65,14 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
       <button class="p" id="open">Open photo</button>
       <button id="ai">Use AI depth</button>
       <button id="dv">Show depth</button>
+      <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:6px">
+        <button id="zoomOut" title="Zoom out">−</button>
+        <button id="zoomFit">Fit</button>
+        <button id="zoom100" class="p">100%</button>
+        <button id="zoomIn" title="Zoom in">+</button>
+        <span id="zoomLabel" style="font-size:12px;color:var(--mute)">100%</span>
+      </div>
+      <div style="font-size:11px;color:var(--mute)">Mouse wheel over image: zoom in/out. Ctrl + drag a design corner: preserve image/logo proportions.</div>
       <div id="msg">Drop a photo anywhere, or paint on the sample.</div>
     </fieldset>
 
@@ -102,7 +110,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
       <div id="objectList" style="font-size:12px;margin-top:6px"></div>
       <label>Selected size <input type="range" id="objectSize" min="12" max="300" value="64"></label>
       <label>Selected colour <input type="color" id="objectColor" value="#ffffff"></label>
-      <label>Selected opacity <input type="range" id="objectOpacity" min="5" max="100" value="100"></label>
+      <label>Layer opacity / transparency <span><input type="range" id="objectOpacity" min="0" max="100" value="100"><output id="opacityValue">100%</output></span></label>
       <label>Angle <span><input type="range" id="objectAngle" min="-180" max="180" value="0" style="width:112px"><output id="angleValue">0°</output></span></label>
       <label>Surface wrap <input type="range" id="objectWarp" min="0" max="100" value="65"></label>
       <button id="deleteObject">Delete selected</button>
@@ -137,6 +145,7 @@ const ov=$('objectsCanvas'),octx=ov.getContext('2d');
 const bc=document.createElement('canvas'),bg=bc.getContext('2d',{willReadFrequently:true});
 let W=0,H=0,base,out,L,shade,det,depth,gx,gy,paint,mask,logo=null,showD=false,depthPipe=null,depthPromise=null;
 let objects=[],selectedObject=-1,objectDrag=null;
+let viewZoom=1;
 const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const say=t=>$('msg').textContent=t;
 
@@ -187,6 +196,7 @@ function init(img){
   setDepth(blur(L,5));
   mask=new Float32Array(W*H);paint=null;showD=false;objects=[];selectedObject=-1;
   renderObjectList();buildPaint();comp(0,0,W,H);drawObjects();
+  requestAnimationFrame(()=>setZoomToFit());
 }
 
 function makePattern(){
@@ -267,6 +277,7 @@ function selectObject(i){
     $('objectSize').value=Math.round(o.type==='text'?o.size:o.w);
     $('objectColor').value=o.color||'#ffffff';
     $('objectOpacity').value=Math.round(o.opacity*100);
+    $('opacityValue').textContent=Math.round(o.opacity*100)+'%';
     const angle=Math.round((o.rotation||0)*180/Math.PI);
     $('objectAngle').value=angle;$('angleValue').textContent=angle+'°';
   }
@@ -275,7 +286,7 @@ function selectObject(i){
 function drawObjects(includeSelection=true){
   if(!W||!ov.width)return;
   octx.clearRect(0,0,W,H);
-  const warpAmount=+$('objectWarp').value*.65;
+  const warpAmount=+$('objectWarp').value*1.35;
   const lightAmount=+$('light').value/100;
   const textureAmount=+$('tex').value/100;
 
@@ -299,17 +310,25 @@ function drawObjects(includeSelection=true){
       const i=y*W+x,p=i*4;
       let sx=x,sy=y;
       if(warpAmount>0&&gx&&gy){
-        sx=clamp(Math.round(x+gx[i]*warpAmount),0,W-1);
-        sy=clamp(Math.round(y+gy[i]*warpAmount),0,H-1);
+        // Depth gradients bend the design across raised areas and folds.
+        // Clamp displacement to avoid large jumps at depth-map discontinuities.
+        const dx=clamp(gx[i]*warpAmount,-22,22);
+        const dy=clamp(gy[i]*warpAmount,-22,22);
+        sx=clamp(x+dx,0,W-1);sy=clamp(y+dy,0,H-1);
       }
-      const q=(sy*W+sx)*4,alpha=sd[q+3];
-      if(alpha===0)continue;
+      // Bilinear sampling keeps warped lettering and logos smoother.
+      const x0=Math.floor(sx),y0=Math.floor(sy),x1=Math.min(W-1,x0+1),y1=Math.min(H-1,y0+1);
+      const fx=sx-x0,fy=sy-y0;
+      const q00=(y0*W+x0)*4,q10=(y0*W+x1)*4,q01=(y1*W+x0)*4,q11=(y1*W+x1)*4;
+      const alpha=(sd[q00+3]*(1-fx)+sd[q10+3]*fx)*(1-fy)+(sd[q01+3]*(1-fx)+sd[q11+3]*fx)*fy;
+      if(alpha<1)continue;
       const shadeFactor=shade?((1-lightAmount)+lightAmount*shade[i]):1;
       const textureFactor=det?((1-textureAmount)+textureAmount*det[i]):1;
       const k=clamp(shadeFactor*textureFactor,.25,2.1);
-      wd[p]=clamp(sd[q]*k,0,255);
-      wd[p+1]=clamp(sd[q+1]*k,0,255);
-      wd[p+2]=clamp(sd[q+2]*k,0,255);
+      for(let ch=0;ch<3;ch++){
+        const value=(sd[q00+ch]*(1-fx)+sd[q10+ch]*fx)*(1-fy)+(sd[q01+ch]*(1-fx)+sd[q11+ch]*fx)*fy;
+        wd[p+ch]=clamp(value*k,0,255);
+      }
       wd[p+3]=alpha;
     }
     const warpedCanvas=document.createElement('canvas');warpedCanvas.width=W;warpedCanvas.height=H;
@@ -368,7 +387,9 @@ $('objectColor').oninput=()=>{
 };
 $('objectOpacity').oninput=()=>{
   const o=objects[selectedObject];if(!o)return;
-  o.opacity=+$('objectOpacity').value/100;drawObjects();
+  o.opacity=+$('objectOpacity').value/100;
+  $('opacityValue').textContent=$('objectOpacity').value+'%';
+  drawObjects();
 };
 $('objectWarp').oninput=()=>drawObjects();
 $('objectAngle').oninput=()=>{
@@ -483,8 +504,17 @@ cv.addEventListener('pointermove',e=>{
   if(objectDrag){
     const o=objects[objectDrag.index],dx=x-objectDrag.startX,dy=y-objectDrag.startY;
     if(objectDrag.resize){
-      if(o.type==='image'){o.w=Math.max(12,objectDrag.origW+dx);o.h=Math.max(12,objectDrag.origH+dy);}
-      else o.size=Math.max(12,Math.min(300,objectDrag.origSize+dx));
+      if(o.type==='image'){
+        if(e.ctrlKey){
+          const ratio=objectDrag.origW/objectDrag.origH;
+          const useWidth=Math.abs(dx/objectDrag.origW)>=Math.abs(dy/objectDrag.origH);
+          if(useWidth){o.w=Math.max(12,objectDrag.origW+dx);o.h=o.w/ratio;}
+          else{o.h=Math.max(12,objectDrag.origH+dy);o.w=o.h*ratio;}
+        }else{
+          o.w=Math.max(12,objectDrag.origW+dx);
+          o.h=Math.max(12,objectDrag.origH+dy);
+        }
+      }else o.size=Math.max(12,Math.min(300,objectDrag.origSize+dx));
     }else{o.x=objectDrag.origX+dx;o.y=objectDrag.origY+dy;}
     drawObjects();return;
   }
@@ -514,20 +544,47 @@ addEventListener('dragover',e=>e.preventDefault());
 addEventListener('drop',e=>{e.preventDefault();loadFile(e.dataTransfer.files[0],init);});
 
 /* Depth */
+const DEPTH_MODEL_ID='onnx-community/depth-anything-v2-small';
 $('ai').onclick=async()=>{
-  if(!W)return;const btn=$('ai');btn.disabled=true;say('Loading depth model, first run downloads about 25 MB...');
+  if(!W)return;
+  const btn=$('ai');btn.disabled=true;
   try{
-    const{pipeline}=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2');
-    if(!depthPipe)depthPipe=await pipeline('depth-estimation','onnx-community/depth-anything-v2-small');
+    if(!depthPipe){
+      if(!depthPromise){
+        say('Checking browser model cache. The model downloads only if it is not cached yet...');
+        depthPromise=(async()=>{
+          const{pipeline,env}=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2');
+          // Transformers.js stores fetched model files in the browser Cache API.
+          // This survives page reloads in the same browser/profile unless browser
+          // storage is cleared or evicted.
+          env.useBrowserCache=true;
+          return await pipeline('depth-estimation',DEPTH_MODEL_ID,{
+            progress_callback:(progress)=>{
+              if(progress&&progress.status==='progress'&&progress.file){
+                const pct=progress.progress!=null?' ('+Math.round(progress.progress)+'%)':'';
+                say('Preparing depth model: '+progress.file+pct);
+              }else if(progress&&progress.status==='done'){
+                say('Depth model file ready: '+(progress.file||'cached asset'));
+              }
+            }
+          });
+        })().catch(err=>{depthPromise=null;throw err;});
+      }
+      depthPipe=await depthPromise;
+    }
+    say('Depth model ready. Analysing this photo...');
     const r=await depthPipe(bc.toDataURL('image/png'));
     const tmp=document.createElement('canvas');tmp.width=W;tmp.height=H;
     const tg=tmp.getContext('2d',{willReadFrequently:true});
     tg.drawImage(r.depth.toCanvas(),0,0,W,H);
     const d=tg.getImageData(0,0,W,H).data,f=new Float32Array(W*H);
     for(let i=0;i<W*H;i++)f[i]=d[i*4];
-    setDepth(blur(f,4,2));buildPaint();comp(0,0,W,H);say('AI depth applied. Model remains loaded for the next photo.');
-  }catch(err){say('AI depth failed ('+err.message+'). Serve this file over http(s) and check your connection.');}
-  btn.disabled=false;
+    setDepth(blur(f,4,2));buildPaint();comp(0,0,W,H);drawObjects();
+    say('AI depth applied. The model is kept in memory and its files are cached by this browser for future visits.');
+  }catch(err){
+    depthPipe=null;depthPromise=null;
+    say('AI depth failed ('+err.message+'). Check your connection and browser storage, then try again.');
+  }finally{btn.disabled=false;}
 };
 $('dv').onclick=()=>{
   if(!W)return;showD=!showD;
@@ -558,10 +615,43 @@ $('save').onclick=()=>{
   },'image/png');
 };
 
+function applyZoom(nextZoom,anchorClientX=null,anchorClientY=null){
+  if(!W||!H)return;
+  const stage=cv.parentElement,rect=stage.getBoundingClientRect();
+  const oldZoom=viewZoom;
+  const localX=anchorClientX==null?stage.clientWidth/2:anchorClientX-rect.left-stage.clientLeft;
+  const localY=anchorClientY==null?stage.clientHeight/2:anchorClientY-rect.top-stage.clientTop;
+  const imageX=(stage.scrollLeft+localX-18)/oldZoom;
+  const imageY=(stage.scrollTop+localY-18)/oldZoom;
+  viewZoom=clamp(nextZoom,.1,5);
+  cv.style.width=(W*viewZoom)+'px';cv.style.height=(H*viewZoom)+'px';
+  ov.style.width=(W*viewZoom)+'px';ov.style.height=(H*viewZoom)+'px';
+  ov.style.left=cv.offsetLeft+'px';ov.style.top=cv.offsetTop+'px';
+  $('zoomLabel').textContent=Math.round(viewZoom*100)+'%';
+  stage.scrollLeft=Math.max(0,imageX*viewZoom+18-localX);
+  stage.scrollTop=Math.max(0,imageY*viewZoom+18-localY);
+}
+function setZoomToFit(){
+  if(!W||!H)return;
+  const stage=cv.parentElement;
+  const availableW=Math.max(100,stage.clientWidth-36);
+  const availableH=Math.max(100,stage.clientHeight-36);
+  applyZoom(Math.min(1,availableW/W,availableH/H));
+}
+$('zoomIn').onclick=()=>applyZoom(viewZoom*1.2);
+$('zoomOut').onclick=()=>applyZoom(viewZoom/1.2);
+$('zoom100').onclick=()=>applyZoom(1);
+$('zoomFit').onclick=()=>setZoomToFit();
+cv.parentElement.addEventListener('wheel',e=>{
+  if(!W)return;
+  e.preventDefault();
+  const factor=e.deltaY<0?1.12:1/1.12;
+  applyZoom(viewZoom*factor,e.clientX,e.clientY);
+},{passive:false});
+
 function alignObjectCanvas(){
-  const r=cv.getBoundingClientRect(),stage=cv.parentElement.getBoundingClientRect();
-  ov.style.left=(r.left-stage.left)+'px';ov.style.top=(r.top-stage.top)+'px';
-  ov.style.width=r.width+'px';ov.style.height=r.height+'px';
+  ov.style.left=cv.offsetLeft+'px';ov.style.top=cv.offsetTop+'px';
+  ov.style.width=(W*viewZoom)+'px';ov.style.height=(H*viewZoom)+'px';
 }
 addEventListener('resize',alignObjectCanvas);
 const originalInit=init;
