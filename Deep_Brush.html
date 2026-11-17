@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LazyCoders Deep Brush v3</title>
+<link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" />
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-GC8PGC89NB');
+</script>
+
+<!-- Counter.dev analytics -->
+<script src="https://cdn.counter.dev/script.js"
+        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
+        data-utcoffset="6"></script>
+<style>
+:root{--bg:#23222b;--panel:#f1eff6;--ink:#25213a;--mute:#6d6985;--acc:#3b4cca;--line:#d4d0e2}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{display:flex;flex-direction:column}
+body{font:14px/1.4 "Gill Sans","Trebuchet MS",sans-serif;color:var(--ink);background:var(--bg)}
+.app{display:grid;grid-template-columns:1fr 310px;flex:1;min-height:0}
+.stage{display:flex;align-items:center;justify-content:center;padding:18px;min-width:0;min-height:0;position:relative}
+canvas{max-width:100%;max-height:100%;cursor:crosshair;touch-action:none;box-shadow:0 8px 40px #0008;background:#fff}#objectsCanvas{position:absolute;pointer-events:none;box-shadow:none;background:transparent}
+aside{background:var(--panel);padding:18px;overflow:auto;border-left:1px solid var(--line)}
+header{display:flex;align-items:center;gap:12px;padding:8px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.logo-img{height:44px;width:auto}
+h1{font:italic 700 26px Georgia,serif;margin:0}
+.tagline{margin:0;color:var(--mute)}
+footer{padding:8px 18px;background:var(--panel);border-top:1px solid var(--line);font-size:12px;color:var(--mute);text-align:center}
+footer a{color:var(--acc)}
+fieldset{border:1px solid var(--line);border-radius:6px;margin:0 0 12px;padding:10px 12px}
+legend{font-weight:700;padding:0 6px}
+label{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:6px 0}
+label span{color:var(--mute)}
+input[type=range]{width:150px;accent-color:var(--acc)}
+input[type=text],select{width:150px;padding:4px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--ink)}
+input[type=color]{width:44px;height:26px;padding:0;border:1px solid var(--line);background:#fff}
+button{font:inherit;padding:7px 10px;border:1px solid var(--acc);background:#fff;color:var(--acc);border-radius:5px;cursor:pointer;margin:0 6px 6px 0}
+button.p{background:var(--acc);color:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+#msg{color:var(--mute);font-size:12px;min-height:18px}
+@media(max-width:760px){.app{grid-template-columns:1fr;grid-template-rows:55% 45%}}
+</style>
+</head>
+<body>
+<header>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" alt="Wiki's Lazy Coders Logo" class="logo-img" />
+  <div>
+    <h1>LazyCoders Deep Brush</h1>
+    <p class="tagline">Paint text, logos and patterns onto a photo. The paint follows the surface and keeps the original shadows</p>
+  </div>
+</header>
+<div class="app">
+  <div class="stage"><canvas id="c"></canvas><canvas id="objectsCanvas"></canvas></div>
+  <aside>
+    <fieldset><legend>Image</legend>
+      <input type="file" id="file" accept="image/*" hidden>
+      <button class="p" id="open">Open photo</button>
+      <button id="ai">Use AI depth</button>
+      <button id="dv">Show depth</button>
+      <div id="msg">Drop a photo anywhere, or paint on the sample.</div>
+    </fieldset>
+
+    <fieldset><legend>Paint</legend>
+      <label>Pattern
+        <select id="pat" class="rb">
+          <option value="solid">Solid color</option>
+          <option value="stripes">Stripes</option>
+          <option value="dots">Dots</option>
+          <option value="checker">Checker</option>
+          <option value="text" selected>Text</option>
+          <option value="logo">Logo</option>
+        </select></label>
+      <label>Color 1 <input type="color" id="c1" class="rb" value="#d8344f"></label>
+      <label>Color 2 <input type="color" id="c2" class="rb" value="#f5efe0"></label>
+      <label>Text <input type="text" id="txt" class="rb" value="WIKI"></label>
+      <label>Logo <button id="lg" style="margin:0">Choose</button></label>
+      <input type="file" id="logoFile" accept="image/*" hidden>
+      <label>Pattern size <input type="range" id="size" class="rb" min="12" max="200" value="64"></label>
+    </fieldset>
+
+    <fieldset><legend>Spray bottle / colour painting</legend>
+      <label>Paint colour <input type="color" id="paintColor" value="#e53935"></label>
+      <label>Tool <select id="tool"><option value="brush">Colour brush / recolour</option><option value="spray">Spray paint</option><option value="select">Select / move designs</option></select></label>
+      <label>Spray intensity <input type="range" id="sprayIntensity" min="5" max="100" value="45"></label>
+      <p style="font-size:12px;color:var(--mute);margin:4px 0">Use the colour brush to recolour a bottle or another object. Keep the edge control high to reduce spill onto the background.</p>
+    </fieldset>
+
+    <fieldset><legend>Text & design layers</legend>
+      <label>New text <input type="text" id="objectText" value="Your text"></label>
+      <button class="p" id="addText">+ Add text</button>
+      <button id="addLogo">+ Add image / logo</button>
+      <input type="file" id="objectFile" accept="image/*" hidden>
+      <div id="objectList" style="font-size:12px;margin-top:6px"></div>
+      <label>Selected size <input type="range" id="objectSize" min="12" max="300" value="64"></label>
+      <label>Selected colour <input type="color" id="objectColor" value="#ffffff"></label>
+      <label>Selected opacity <input type="range" id="objectOpacity" min="5" max="100" value="100"></label>
+      <label>Angle <span><input type="range" id="objectAngle" min="-180" max="180" value="0" style="width:112px"><output id="angleValue">0°</output></span></label>
+      <button id="deleteObject">Delete selected</button>
+      <p style="font-size:12px;color:var(--mute);margin:4px 0">Choose Select / move designs, then drag an object. Drag an item to move it, use its corner handle to resize it, and use the Angle slider to rotate it.</p>
+    </fieldset>
+
+    <fieldset><legend>Surface</legend>
+      <label>Follow shape <input type="range" id="disp" class="rb" min="-100" max="100" value="40"></label>
+      <label>Keep light <input type="range" id="light" class="rb" min="0" max="100" value="90"></label>
+      <label>Keep texture <input type="range" id="tex" class="rb" min="0" max="100" value="60"></label>
+    </fieldset>
+
+    <fieldset><legend>Brush</legend>
+      <label>Size <input type="range" id="brush" min="8" max="200" value="60"></label>
+      <label>Opacity <input type="range" id="opacity" min="5" max="100" value="100"></label>
+      <label>Stay inside edges <input type="range" id="edge" min="0" max="100" value="50"></label>
+      <label>Erase mode <input type="checkbox" id="erase"></label>
+    </fieldset>
+
+    <button id="clear">Clear paint</button>
+    <button class="p" id="save">Save PNG</button>
+  </aside>
+</div>
+<footer>
+  Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener">Suyash Dwivedi</a> | Project: <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank" rel="noopener">Wiki's Lazy Coders</a> | Updated on: <strong>18 November 2026</strong>
+</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const cv=$('c'),ctx=cv.getContext('2d',{willReadFrequently:true});
+const ov=$('objectsCanvas'),octx=ov.getContext('2d');
+const bc=document.createElement('canvas'),bg=bc.getContext('2d',{willReadFrequently:true});
+let W=0,H=0,base,out,L,shade,det,depth,gx,gy,paint,mask,logo=null,showD=false,depthPipe=null,depthPromise=null;
+let objects=[],selectedObject=-1,objectDrag=null;
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const say=t=>$('msg').textContent=t;
+
+function blur1(src,w,h,r){
+  const t=new Float32Array(w*h),o=new Float32Array(w*h),n=2*r+1;
+  for(let y=0;y<h;y++){const row=y*w;let s=0;
+    for(let i=-r;i<=r;i++)s+=src[row+clamp(i,0,w-1)];
+    for(let x=0;x<w;x++){t[row+x]=s/n;s+=src[row+Math.min(w-1,x+r+1)]-src[row+Math.max(0,x-r)];}}
+  for(let x=0;x<w;x++){let s=0;
+    for(let i=-r;i<=r;i++)s+=t[clamp(i,0,h-1)*w+x];
+    for(let y=0;y<h;y++){o[y*w+x]=s/n;s+=t[Math.min(h-1,y+r+1)*w+x]-t[Math.max(0,y-r)*w+x];}}
+  return o;
+}
+const blur=(a,r,k=3)=>{for(let i=0;i<k;i++)a=blur1(a,W,H,r);return a};
+
+function sample(){
+  const c=document.createElement('canvas');c.width=900;c.height=600;
+  const g=c.getContext('2d'),d=g.createImageData(900,600);
+  for(let y=0;y<600;y++)for(let x=0;x<900;x++){
+    const f=.55+.3*Math.sin(x*.018+Math.sin(y*.012)*2.5)+.1*Math.sin(y*.03+x*.004),p=(y*900+x)*4;
+    d.data[p]=200*f;d.data[p+1]=185*f;d.data[p+2]=165*f;d.data[p+3]=255;}
+  g.putImageData(d,0,0);return c;
+}
+
+function setDepth(d){
+  let mn=1e9,mx=-1e9;
+  for(const v of d){if(v<mn)mn=v;if(v>mx)mx=v;}
+  const r=(mx-mn)||1;
+  depth=d.map(v=>(v-mn)/r);
+  gx=new Float32Array(W*H);gy=new Float32Array(W*H);
+  for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){
+    const i=y*W+x;gx[i]=(depth[i+1]-depth[i-1])/2;gy[i]=(depth[i+W]-depth[i-W])/2;}
+}
+
+function init(img){
+  const s=Math.min(1,1100/Math.max(img.width,img.height));
+  W=Math.round(img.width*s);H=Math.round(img.height*s);
+  cv.width=bc.width=ov.width=W;cv.height=bc.height=ov.height=H;
+  bg.drawImage(img,0,0,W,H);
+  base=bg.getImageData(0,0,W,H);
+  out=new ImageData(new Uint8ClampedArray(base.data),W,H);
+  L=new Float32Array(W*H);
+  for(let i=0;i<W*H;i++)L[i]=(.299*base.data[i*4]+.587*base.data[i*4+1]+.114*base.data[i*4+2])/255;
+  const Ls=blur(L,6),Lf=blur(L,2,2);
+  let m=0;for(let i=0;i<W*H;i++)m+=Ls[i];m/=W*H;
+  shade=new Float32Array(W*H);det=new Float32Array(W*H);
+  for(let i=0;i<W*H;i++){shade[i]=clamp(Ls[i]/m,.15,2.2);det[i]=clamp(L[i]/(Lf[i]+.02),.6,1.6);}
+  setDepth(blur(L,5));
+  mask=new Float32Array(W*H);paint=null;showD=false;
+  buildPaint();comp(0,0,W,H);
+}
+
+function makePattern(){
+  const pc=document.createElement('canvas');pc.width=W;pc.height=H;
+  const g=pc.getContext('2d'),t=$('pat').value,c1=$('c1').value,c2=$('c2').value,s=+$('size').value;
+  g.fillStyle=c2;
+  if(t==='solid'){g.fillStyle=c1;g.fillRect(0,0,W,H);}
+  else if(t==='stripes'){g.fillRect(0,0,W,H);g.save();g.translate(W/2,H/2);g.rotate(-.5);g.fillStyle=c1;
+    const R=W+H;for(let x=-R;x<R;x+=s*2)g.fillRect(x,-R,s,2*R);g.restore();}
+  else if(t==='dots'){g.fillRect(0,0,W,H);g.fillStyle=c1;
+    for(let y=s/2;y<H+s;y+=s)for(let x=s/2;x<W+s;x+=s){g.beginPath();g.arc(x,y,s*.3,0,7);g.fill();}}
+  else if(t==='checker'){g.fillRect(0,0,W,H);g.fillStyle=c1;
+    for(let y=0;y*s<H;y++)for(let x=0;x*s<W;x++)if((x+y)&1)g.fillRect(x*s,y*s,s,s);}
+  else if(t==='text'){g.fillStyle=c1;g.font='800 '+s+'px "Segoe UI",Arial,sans-serif';g.textBaseline='middle';
+    const tx=$('txt').value||'HELLO',tw=g.measureText(tx).width+s;let row=0;
+    for(let y=s;y<H+s;y+=s*1.8,row++)for(let x=-(row%2)*tw/2;x<W;x+=tw)g.fillText(tx,x,y);}
+  else if(t==='logo'&&logo){const lw=s*2,lh=lw*logo.height/logo.width,gap=lw*.4;
+    for(let y=0,row=0;y<H;y+=lh+gap,row++)for(let x=-(row%2)*(lw+gap)/2;x<W;x+=lw+gap)g.drawImage(logo,x,y,lw,lh);}
+  return g.getImageData(0,0,W,H).data;
+}
+
+function buildPaint(){
+  if(!W)return;
+  const pd=makePattern(),amt=+$('disp').value*40,lt=+$('light').value/100,tx=+$('tex').value/100;
+  if(!paint||paint.length!==W*H*4)paint=new Uint8ClampedArray(W*H*4);
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    const i=y*W+x;
+    let u=x+gx[i]*amt,v=y+gy[i]*amt;
+    u=((u%W)+W)%W;v=((v%H)+H)%H;
+    const x0=u|0,y0=v|0,x1=(x0+1)%W,y1=(y0+1)%H,fx=u-x0,fy=v-y0;
+    const a=(y0*W+x0)*4,b=(y0*W+x1)*4,c=(y1*W+x0)*4,d=(y1*W+x1)*4;
+    const k=((1-lt)+lt*shade[i])*((1-tx)+tx*det[i]),o=i*4;
+    for(let ch=0;ch<4;ch++){
+      const p=(pd[a+ch]*(1-fx)+pd[b+ch]*fx)*(1-fy)+(pd[c+ch]*(1-fx)+pd[d+ch]*fx)*fy;
+      paint[o+ch]=ch<3?p*k:p;}
+  }
+}
+
+function comp(x0,y0,x1,y1){
+  x0=Math.max(0,x0|0);y0=Math.max(0,y0|0);x1=Math.min(W,Math.ceil(x1));y1=Math.min(H,Math.ceil(y1));
+  if(x1<=x0||y1<=y0)return;
+  const o=out.data,b=base.data;
+  for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){
+    const i=y*W+x,p=i*4,a=mask[i]*paint[p+3]/255;
+    if(a<=0){o[p]=b[p];o[p+1]=b[p+1];o[p+2]=b[p+2];}
+    else for(let c=0;c<3;c++)o[p+c]=b[p+c]*(1-a)+paint[p+c]*a;
+  }
+  ctx.putImageData(out,0,0,x0,y0,x1-x0,y1-y0);
+}
+
+let pend=0;
+function rebuild(){
+  if(pend)return;
+  pend=requestAnimationFrame(()=>{pend=0;buildPaint();if(!showD)comp(0,0,W,H);});
+}
+document.querySelectorAll('.rb').forEach(e=>e.addEventListener('input',rebuild));
+
+
+/* Independent text and image design layers */
+function renderObjectList(){
+  const list=$('objectList');
+  if(!list)return;
+  list.innerHTML='';
+  objects.forEach((o,i)=>{
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:6px;margin:4px 0;padding:5px;border:1px solid var(--line);border-radius:4px;background:'+(i===selectedObject?'#e4e1f5':'#fff');
+    const name=document.createElement('span');
+    name.textContent=(o.type==='text'?'Text: '+o.text:'Image design '+(i+1));
+    name.style.cssText='flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
+    const pick=document.createElement('button');pick.textContent='Select';pick.style.margin='0';pick.onclick=()=>selectObject(i);
+    row.append(name,pick);list.append(row);
+  });
+}
+function selectObject(i){
+  selectedObject=i;
+  const o=objects[i];
+  if(o){
+    $('objectSize').value=Math.round(o.type==='text'?o.size:o.w);
+    $('objectColor').value=o.color||'#ffffff';
+    $('objectOpacity').value=Math.round(o.opacity*100);
+    const angle=Math.round((o.rotation||0)*180/Math.PI);
+    $('objectAngle').value=angle;$('angleValue').textContent=angle+'°';
+  }
+  renderObjectList();drawObjects();
+}
+function drawObjects(){
+  if(!W||!ov.width)return;
+  octx.clearRect(0,0,W,H);
+  objects.forEach((o,i)=>{
+    octx.save();octx.globalAlpha=o.opacity;
+    if(o.type==='text'){
+      octx.translate(o.x,o.y);octx.rotate(o.rotation||0);
+      octx.font='700 '+o.size+'px "Segoe UI",Arial,sans-serif';
+      octx.textBaseline='top';octx.fillStyle=o.color||'#ffffff';
+      octx.fillText(o.text,0,0);
+      if(i===selectedObject){
+        const m=octx.measureText(o.text);octx.globalAlpha=1;octx.strokeStyle='#3157d5';octx.lineWidth=2;
+        octx.strokeRect(-4,-4,m.width+8,o.size*1.25+8);
+        octx.fillStyle='#3157d5';octx.fillRect(m.width-5,o.size*1.25-5,12,12);
+      }
+    }else if(o.image){
+      octx.translate(o.x,o.y);octx.rotate(o.rotation||0);octx.drawImage(o.image,0,0,o.w,o.h);
+      if(i===selectedObject){octx.globalAlpha=1;octx.strokeStyle='#3157d5';octx.lineWidth=2;octx.strokeRect(0,0,o.w,o.h);octx.fillStyle='#3157d5';octx.fillRect(o.w-6,o.h-6,12,12);}
+    }
+    octx.restore();
+  });
+}
+function addTextObject(){
+  if(!W)return;
+  const text=$('objectText').value.trim()||'Text';
+  objects.push({type:'text',text,x:W*.2,y:H*.2,size:64,color:$('objectColor').value,opacity:1,rotation:0});
+  selectObject(objects.length-1);
+}
+$('addText').onclick=addTextObject;
+$('addLogo').onclick=()=>$('objectFile').click();
+$('objectFile').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  loadFile(f,img=>{
+    const w=Math.min(220,W*.35),h=w*img.height/img.width;
+    objects.push({type:'image',image:img,x:W*.2,y:H*.2,w,h,opacity:1,rotation:0});
+    selectObject(objects.length-1);
+  });
+  e.target.value='';
+};
+$('deleteObject').onclick=()=>{
+  if(selectedObject<0)return;
+  objects.splice(selectedObject,1);selectedObject=-1;renderObjectList();drawObjects();
+};
+$('objectSize').oninput=()=>{
+  const o=objects[selectedObject];if(!o)return;
+  const v=+$('objectSize').value;
+  if(o.type==='text')o.size=v;else{const ratio=o.h/o.w;o.w=v;o.h=v*ratio;}
+  drawObjects();
+};
+$('objectColor').oninput=()=>{
+  const o=objects[selectedObject];if(!o||o.type!=='text')return;
+  o.color=$('objectColor').value;drawObjects();
+};
+$('objectOpacity').oninput=()=>{
+  const o=objects[selectedObject];if(!o)return;
+  o.opacity=+$('objectOpacity').value/100;drawObjects();
+};
+$('objectAngle').oninput=()=>{
+  const o=objects[selectedObject];if(!o)return;
+  const angle=+$('objectAngle').value;
+  o.rotation=angle*Math.PI/180;
+  $('angleValue').textContent=angle+'°';drawObjects();
+};
+function objectPos(e){
+  const r=cv.getBoundingClientRect();
+  return [(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height];
+}
+function hitObject(x,y){
+  for(let i=objects.length-1;i>=0;i--){
+    const o=objects[i],a=-(o.rotation||0),dx=x-o.x,dy=y-o.y;
+    const lx=dx*Math.cos(a)-dy*Math.sin(a),ly=dx*Math.sin(a)+dy*Math.cos(a);
+    if(o.type==='text'){
+      octx.save();octx.font='700 '+o.size+'px "Segoe UI",Arial,sans-serif';
+      const width=octx.measureText(o.text).width;octx.restore();
+      if(lx>=-8&&lx<=width+8&&ly>=-8&&ly<=o.size*1.3+8)return i;
+    }else if(lx>=-8&&lx<=o.w+8&&ly>=-8&&ly<=o.h+8)return i;
+  }
+  return -1;
+}
+
+/* Brush */
+
+let drawing=false,seed=[0,0,0],last=null;
+function pos(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height];}
+function stamp(cx,cy){
+  const R=+$('brush').value/2,op=+$('opacity').value/100,edge=+$('edge').value/100,er=$('erase').checked;
+  const tol=.03+(1-edge)*.6,b=base.data;
+  const x0=Math.max(0,Math.floor(cx-R)),x1=Math.min(W,Math.ceil(cx+R)),y0=Math.max(0,Math.floor(cy-R)),y1=Math.min(H,Math.ceil(cy+R));
+  for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){
+    const d=Math.hypot(x-cx,y-cy)/R;if(d>=1)continue;
+    const i=y*W+x,p=i*4;
+    let w=1;
+    if(edge>0){const df=(Math.abs(b[p]-seed[0])+Math.abs(b[p+1]-seed[1])+Math.abs(b[p+2]-seed[2]))/765;w=Math.exp(-(df*df)/(tol*tol));}
+    const a=clamp((1-d)/.35,0,1)*w*op;
+    mask[i]=er?Math.max(0,mask[i]-a):Math.max(mask[i],a);
+  }
+  comp(x0,y0,x1,y1);
+}
+function hexRgb(hex){return [parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)];}
+function sprayAt(cx,cy){
+  const radius=+$('brush').value/2,intensity=+$('sprayIntensity').value/100;
+  const count=Math.max(2,Math.round(8*intensity));
+  for(let n=0;n<count;n++){
+    const angle=Math.random()*Math.PI*2,dist=Math.sqrt(Math.random())*radius;
+    const x=cx+Math.cos(angle)*dist,y=cy+Math.sin(angle)*dist;
+    const r=Math.max(1,radius*(.025+Math.random()*.07));
+    const x0=Math.max(0,Math.floor(x-r)),x1=Math.min(W,Math.ceil(x+r)),y0=Math.max(0,Math.floor(y-r)),y1=Math.min(H,Math.ceil(y+r));
+    const col=hexRgb($('paintColor').value);
+    for(let yy=y0;yy<y1;yy++)for(let xx=x0;xx<x1;xx++){
+      const d=Math.hypot(xx-x,yy-y)/r;if(d>=1)continue;
+      const i=yy*W+xx,p=i*4,a=(1-d)*intensity*.35;
+      paint[p]=col[0];paint[p+1]=col[1];paint[p+2]=col[2];paint[p+3]=255;
+      mask[i]=Math.max(mask[i],a);
+    }
+  }
+  comp(Math.max(0,cx-radius),Math.max(0,cy-radius),Math.min(W,cx+radius),Math.min(H,cy+radius));
+}
+function seedAt(cx,cy){
+  let r=0,g=0,bl=0,n=0;const b=base.data;
+  for(let y=-2;y<=2;y++)for(let x=-2;x<=2;x++){
+    const xx=clamp(Math.round(cx)+x,0,W-1),yy=clamp(Math.round(cy)+y,0,H-1),p=(yy*W+xx)*4;
+    r+=b[p];g+=b[p+1];bl+=b[p+2];n++;}
+  seed=[r/n,g/n,bl/n];
+}
+cv.addEventListener('pointerdown',e=>{
+  if(!W||showD)return;
+  const [x,y]=pos(e);
+  if($('tool').value==='select'){
+    const i=hitObject(x,y);
+    if(i>=0){
+      selectObject(i);
+      const o=objects[i],a=-(o.rotation||0),dx=x-o.x,dy=y-o.y;
+      const lx=dx*Math.cos(a)-dy*Math.sin(a),ly=dx*Math.sin(a)+dy*Math.cos(a);
+      octx.save();octx.font='700 '+(o.size||64)+'px "Segoe UI",Arial,sans-serif';
+      const tw=o.type==='text'?octx.measureText(o.text).width:0;octx.restore();
+      const resize=o.type==='image'?(lx>o.w-18&&ly>o.h-18):(lx>tw-18&&ly>o.size*.8);
+      objectDrag={index:i,startX:x,startY:y,origX:o.x,origY:o.y,origW:o.w,origH:o.h,origSize:o.size,resize};
+      cv.setPointerCapture(e.pointerId);
+    }else{selectedObject=-1;objectDrag=null;renderObjectList();drawObjects();}
+    return;
+  }
+  cv.setPointerCapture(e.pointerId);drawing=true;
+  seedAt(x,y);last=[x,y];
+  if($('tool').value==='spray')sprayAt(x,y);else stamp(x,y);
+});
+cv.addEventListener('pointermove',e=>{
+  const [x,y]=pos(e);
+  if(objectDrag){
+    const o=objects[objectDrag.index],dx=x-objectDrag.startX,dy=y-objectDrag.startY;
+    if(objectDrag.resize){
+      if(o.type==='image'){o.w=Math.max(12,objectDrag.origW+dx);o.h=Math.max(12,objectDrag.origH+dy);}
+      else o.size=Math.max(12,Math.min(300,objectDrag.origSize+dx));
+    }else{o.x=objectDrag.origX+dx;o.y=objectDrag.origY+dy;}
+    drawObjects();return;
+  }
+  if(!drawing)return;
+  const step=Math.max(2,+$('brush').value*.2),dx=x-last[0],dy=y-last[1];
+  const n=Math.max(1,Math.ceil(Math.hypot(dx,dy)/step));
+  for(let i=1;i<=n;i++){
+    const px=last[0]+dx*i/n,py=last[1]+dy*i/n;
+    if($('tool').value==='spray')sprayAt(px,py);else stamp(px,py);
+  }
+  last=[x,y];
+});
+['pointerup','pointercancel'].forEach(t=>cv.addEventListener(t,()=>{drawing=false;objectDrag=null;}));
+
+/* Files */
+function loadFile(f,cb){
+  if(!f)return;const img=new Image();
+  img.onload=()=>{cb(img);URL.revokeObjectURL(img.src);};
+  img.onerror=()=>say('That file could not be read as an image.');
+  img.src=URL.createObjectURL(f);
+}
+$('open').onclick=()=>$('file').click();
+$('file').onchange=e=>loadFile(e.target.files[0],init);
+$('lg').onclick=()=>$('logoFile').click();
+$('logoFile').onchange=e=>loadFile(e.target.files[0],img=>{logo=img;$('pat').value='logo';rebuild();});
+addEventListener('dragover',e=>e.preventDefault());
+addEventListener('drop',e=>{e.preventDefault();loadFile(e.dataTransfer.files[0],init);});
+
+/* Depth */
+$('ai').onclick=async()=>{
+  if(!W)return;const btn=$('ai');btn.disabled=true;say('Loading depth model, first run downloads about 25 MB...');
+  try{
+    const{pipeline}=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2');
+    if(!depthPipe)depthPipe=await pipeline('depth-estimation','onnx-community/depth-anything-v2-small');
+    const r=await depthPipe(bc.toDataURL('image/png'));
+    const tmp=document.createElement('canvas');tmp.width=W;tmp.height=H;
+    const tg=tmp.getContext('2d',{willReadFrequently:true});
+    tg.drawImage(r.depth.toCanvas(),0,0,W,H);
+    const d=tg.getImageData(0,0,W,H).data,f=new Float32Array(W*H);
+    for(let i=0;i<W*H;i++)f[i]=d[i*4];
+    setDepth(blur(f,4,2));buildPaint();comp(0,0,W,H);say('AI depth applied. Model remains loaded for the next photo.');
+  }catch(err){say('AI depth failed ('+err.message+'). Serve this file over http(s) and check your connection.');}
+  btn.disabled=false;
+};
+$('dv').onclick=()=>{
+  if(!W)return;showD=!showD;
+  if(showD){const im=new ImageData(W,H);
+    for(let i=0;i<W*H;i++){const v=depth[i]*255;im.data[i*4]=im.data[i*4+1]=im.data[i*4+2]=v;im.data[i*4+3]=255;}
+    ctx.putImageData(im,0,0);$('dv').textContent='Hide depth';
+  }else{comp(0,0,W,H);$('dv').textContent='Show depth';drawObjects();}
+};
+
+$('clear').onclick=()=>{if(!W)return;mask.fill(0);showD=false;$('dv').textContent='Show depth';comp(0,0,W,H);};
+$('save').onclick=()=>{
+  if(!W)return;showD=false;comp(0,0,W,H);
+  cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='deep_brush.png';a.click();});
+};
+
+function alignObjectCanvas(){
+  const r=cv.getBoundingClientRect(),stage=cv.parentElement.getBoundingClientRect();
+  ov.style.left=(r.left-stage.left)+'px';ov.style.top=(r.top-stage.top)+'px';
+  ov.style.width=r.width+'px';ov.style.height=r.height+'px';
+}
+addEventListener('resize',alignObjectCanvas);
+const originalInit=init;
+init= function(img){originalInit(img);requestAnimationFrame(alignObjectCanvas);};
+init(sample());
+</script>
+</body>
+</html>
