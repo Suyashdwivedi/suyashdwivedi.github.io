@@ -25,7 +25,7 @@
 html,body{margin:0;height:100%}
 body{display:flex;flex-direction:column}
 body{font:14px/1.4 "Gill Sans","Trebuchet MS",sans-serif;color:var(--ink);background:var(--bg)}
-.app{display:grid;grid-template-columns:1fr 310px;flex:1;min-height:0}
+.app{display:grid;grid-template-columns:1fr 340px;flex:1;min-height:0}
 .stage{display:block;padding:18px;min-width:0;min-height:0;position:relative;overflow:auto;overscroll-behavior:contain}
 canvas{display:block;max-width:none;max-height:none;flex:none;cursor:crosshair;touch-action:none;box-shadow:0 8px 40px #0008;background:#fff}#objectsCanvas{position:absolute;pointer-events:none;box-shadow:none;background:transparent;z-index:2}
 aside{background:var(--panel);padding:18px;overflow:auto;border-left:1px solid var(--line)}
@@ -49,6 +49,20 @@ button.p{background:var(--acc);color:#fff}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 #msg{color:var(--mute);font-size:12px;min-height:18px}
 @media(max-width:760px){.app{grid-template-columns:1fr;grid-template-rows:55% 45%}}
+.actions{display:flex;gap:6px;margin-bottom:8px}.actions button{flex:1;margin:0}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0 0 10px}
+.card h2,.card summary{font:700 12px "Gill Sans","Trebuchet MS",sans-serif;text-transform:uppercase;letter-spacing:.07em;color:var(--mute);margin:0 0 6px;cursor:pointer}
+details.card>summary{margin:0}details[open].card>summary{margin-bottom:8px}
+.seg{display:flex;border:1px solid var(--acc);border-radius:8px;overflow:hidden;margin:6px 0 10px}
+.seg button{flex:1;margin:0;border:0;border-radius:0;background:#fff;padding:9px 4px}
+.seg button.on{background:var(--acc);color:#fff}
+.hint{font-size:11px;color:var(--mute);margin:6px 0 0}
+.chk{justify-content:flex-start}
+#objPanel{margin:8px 0 0}
+#sw{margin:2px 0 6px}
+.sw{width:24px;height:24px;border-radius:50%;padding:0;margin:2px;border:2px solid #fff;box-shadow:0 0 0 1px var(--line)}
+label span{display:flex;align-items:center;gap:6px;color:var(--ink)}label span input[type=range]{width:100px}label output{min-width:36px;text-align:right;color:var(--mute);font-size:12px}
+#ring{position:absolute;pointer-events:none;border:1.5px solid #fff;outline:1px solid #000a;border-radius:50%;z-index:3;display:none}
 </style>
 </head>
 <body>
@@ -62,31 +76,59 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 <div class="app">
   <div class="stage"><canvas id="c"></canvas><canvas id="objectsCanvas"></canvas></div>
   <aside>
-    <fieldset><legend>Image</legend>
-      <input type="file" id="file" accept="image/*" hidden>
+    <div class="actions">
       <button class="p" id="open">Open photo</button>
-      <button id="ai">Use AI depth</button>
-      <button id="dv">Show depth</button>
-      <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:6px">
-        <button id="zoomOut" title="Zoom out">−</button>
-        <button id="zoomFit">Fit</button>
-        <button id="zoom100" class="p">100%</button>
-        <button id="zoomIn" title="Zoom in">+</button>
-        <span id="zoomLabel" style="font-size:12px;color:var(--mute)">100%</span>
-      </div>
-      <div style="font-size:11px;color:var(--mute)">Mouse wheel over image: zoom in/out. Ctrl + drag a design corner: preserve image/logo proportions.</div>
-      <div id="msg">Drop a photo anywhere, or paint on the sample.</div>
-    </fieldset>
+      <button id="undo" title="Ctrl+Z">Undo</button>
+      <button class="p" id="save">Save PNG</button>
+    </div>
+    <input type="file" id="file" accept="image/*" hidden>
+    <div id="msg" role="status">Drop a photo anywhere, or paint on the sample.</div>
 
-    <fieldset><legend>Paint</legend>
+    <section class="card"><h2>Tools</h2>
+      <div class="seg" id="tools">
+        <button data-tool="brush" title="Key: B">Colour</button>
+        <button data-tool="spray" title="Key: S">Spray</button>
+        <button data-tool="pattern" title="Key: P">Pattern</button>
+        <button data-tool="select" title="Key: V">Move</button>
+      </div>
+      <select id="tool" hidden><option value="brush">Colour brush (solid)</option><option value="pattern">Pattern brush</option><option value="spray">Spray paint</option><option value="select">Select / move designs</option></select>
+      <label>Colour <input type="color" id="paintColor" value="#e53935"></label>
+      <div id="sw"></div>
+      <label>Size <input type="range" id="brush" min="8" max="200" value="60"></label>
+      <label>Opacity <span><input type="range" id="opacity" min="0" max="100" step="1" value="100"><output id="brushOpacityValue">100%</output></span></label>
+      <label id="rowSpray">Spray density <span><input type="range" id="sprayIntensity" min="0" max="100" value="100"><output id="sprayIntensityValue">100%</output></span></label>
+      <label>Stay inside edges <input type="range" id="edge" min="0" max="100" value="50"></label>
+      <label id="rowShade">Keep shading on colour <input type="range" id="colShade" min="0" max="100" value="0"></label>
+      <label class="chk"><input type="checkbox" id="erase"> Eraser (key E)</label>
+      <button id="clear">Clear paint</button>
+      <p class="hint">100% opacity paints the exact colour with no see-through. Keys: B S P V tools, [ ] size, Ctrl+Z undo.</p>
+    </section>
+
+    <details class="card" open><summary>Text and logos</summary>
+      <label>New text <input type="text" id="objectText" value="Your text"></label>
+      <button class="p" id="addText">+ Add text</button>
+      <button id="addLogo">+ Add image / logo</button>
+      <input type="file" id="objectFile" accept="image/*" hidden>
+      <div id="objectList" style="font-size:12px;margin-top:6px"></div>
+      <fieldset id="objPanel" hidden><legend>Selected design</legend>
+        <label>Size <input type="range" id="objectSize" min="12" max="400" value="64"></label>
+        <label>Colour (text) <input type="color" id="objectColor" value="#ffffff"></label>
+        <label>Opacity <span><input type="range" id="objectOpacity" min="0" max="100" step="1" value="100"><output id="opacityValue">100%</output></span></label>
+        <label id="opaqueOption" class="chk"><input type="checkbox" id="forceOpaque" checked> Solid background for logo / image</label>
+        <label id="opaqueColorOption">Background colour <input type="color" id="opaqueBgColor" value="#ffffff"></label>
+        <label>Angle <span><input type="range" id="objectAngle" min="-180" max="180" value="0" style="width:112px"><output id="angleValue">0°</output></span></label>
+        <label>Surface wrap <span><input type="range" id="objectWarp" min="0" max="100" value="40"><output id="warpValue">40</output></span></label>
+        <p class="hint">Wrap bends the design with the depth map. Run AI depth first for cloth folds and curves.</p>
+        <button id="deleteObject">Delete selected</button>
+      </fieldset>
+      <p class="hint">Click a design on the photo to select and drag it. Drag its corner handle to resize (hold Ctrl to keep proportions).</p>
+    </details>
+
+    <details class="card"><summary>Pattern brush</summary>
       <label>Pattern
         <select id="pat" class="rb">
-          <option value="solid">Solid color</option>
-          <option value="stripes">Stripes</option>
-          <option value="dots">Dots</option>
-          <option value="checker">Checker</option>
-          <option value="text" selected>Text</option>
-          <option value="logo">Logo</option>
+          <option value="solid">Solid color</option><option value="stripes">Stripes</option><option value="dots">Dots</option>
+          <option value="checker">Checker</option><option value="text" selected>Text</option><option value="logo">Logo</option>
         </select></label>
       <label>Color 1 <input type="color" id="c1" class="rb" value="#d8344f"></label>
       <label>Color 2 <input type="color" id="c2" class="rb" value="#f5efe0"></label>
@@ -95,62 +137,26 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
       <input type="file" id="logoFile" accept="image/*" hidden>
       <label>Pattern size <input type="range" id="size" class="rb" min="12" max="200" value="64"></label>
       <label>Pattern opacity <span><input type="range" id="patternOpacity" min="0" max="100" value="100"><output id="patternOpacityValue">100%</output></span></label>
-      <small style="display:block;color:var(--mute);font-size:11px">Choose a pattern, then paint on the photo with the brush. 100% gives full pattern coverage.</small>
-    </fieldset>
+    </details>
 
-    <fieldset><legend>Spray bottle / colour painting</legend>
-      <label>Paint colour <input type="color" id="paintColor" value="#e53935"></label>
-      <label>Tool <select id="tool"><option value="brush">Colour brush (solid)</option><option value="pattern">Pattern brush</option><option value="spray">Spray paint</option><option value="select">Select / move designs</option></select></label>
-      <p style="font-size:12px;color:var(--mute);margin:4px 0">To move text or a logo, click it directly on the photo and drag. You do not need to switch tools first.</p>
-      <label>Spray density / intensity <span><input type="range" id="sprayIntensity" min="0" max="100" value="100"><output id="sprayIntensityValue">100%</output></span></label>
-      <p style="font-size:12px;color:var(--mute);margin:4px 0">Use the colour brush to recolour a bottle or another object. Keep the edge control high to reduce spill onto the background.</p>
-    </fieldset>
-
-    <fieldset><legend>Text & design layers</legend>
-      <label>New text <input type="text" id="objectText" value="Your text"></label>
-      <button class="p" id="addText">+ Add text</button>
-      <button id="addLogo">+ Add image / logo</button>
-      <input type="file" id="objectFile" accept="image/*" hidden>
-      <div id="objectList" style="font-size:12px;margin-top:6px"></div>
-      <label>Selected size <input type="range" id="objectSize" min="12" max="300" value="64"></label>
-      <label>Selected colour <input type="color" id="objectColor" value="#ffffff"></label>
-      <div class="layer-opacity-control">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <strong>Selected layer opacity</strong>
-          <output id="opacityValue" style="font-weight:700;font-size:14px">100%</output>
-        </div>
-        <input type="range" id="objectOpacity" min="0" max="100" step="1" value="100" aria-label="Selected layer opacity">
-        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--mute)"><span>0% transparent</span><span>100% opaque</span></div>
-      </div>
-      <label id="opaqueOption" style="display:flex;align-items:center;gap:8px">
-        <input type="checkbox" id="forceOpaque" checked>
-        Opaque logo/image background
-      </label>
-      <label id="opaqueColorOption">Background colour <input type="color" id="opaqueBgColor" value="#ffffff"></label>
-      <small style="display:block;color:var(--mute);font-size:11px">When enabled, the entire image/logo rectangle gets a solid background. This removes transparent holes so the photograph cannot show through the design.</small>
-      <label>Angle <span><input type="range" id="objectAngle" min="-180" max="180" value="0" style="width:112px"><output id="angleValue">0°</output></span></label>
-      <label>Surface wrap <span><input type="range" id="objectWarp" min="0" max="100" value="0"><output id="warpValue">0</output></span></label>
-      <small style="display:block;color:var(--mute);font-size:11px">Warp uses the current depth map. Run AI depth before increasing this control; the built-in brightness estimate is only a fallback and cannot model complex cloth folds.</small>
-      <small style="display:block;color:var(--mute);font-size:11px">0 = preserve the design's shape. Higher values add only a slight depth-based bend.</small>
-      <button id="deleteObject">Delete selected</button>
-      <p style="font-size:12px;color:var(--mute);margin:4px 0">Choose Select / move designs, then drag an object. Drag an item to move it, resize it with its corner handle, rotate it with Angle, and adjust Surface wrap to make it follow the photo.</p>
-    </fieldset>
-
-    <fieldset><legend>Surface</legend>
+    <details class="card" open><summary>Surface and depth</summary>
       <label>Follow shape <input type="range" id="disp" class="rb" min="-100" max="100" value="40"></label>
       <label>Keep light <input type="range" id="light" class="rb" min="0" max="100" value="90"></label>
       <label>Keep texture <input type="range" id="tex" class="rb" min="0" max="100" value="60"></label>
-    </fieldset>
+      <button id="ai">Use AI depth</button>
+      <button id="dv">Show depth</button>
+    </details>
 
-    <fieldset><legend>Brush</legend>
-      <label>Size <input type="range" id="brush" min="8" max="200" value="60"></label>
-      <label>Brush opacity / coverage <span><input type="range" id="opacity" min="0" max="100" step="1" value="100"><output id="brushOpacityValue">100%</output></span></label>
-      <label>Stay inside edges <input type="range" id="edge" min="0" max="100" value="50"></label>
-      <label>Erase mode <input type="checkbox" id="erase"></label>
-    </fieldset>
-
-    <button id="clear">Clear paint</button>
-    <button class="p" id="save">Save PNG</button>
+    <details class="card"><summary>View</summary>
+      <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+        <button id="zoomOut" title="Zoom out">−</button>
+        <button id="zoomFit">Fit</button>
+        <button id="zoom100" class="p">100%</button>
+        <button id="zoomIn" title="Zoom in">+</button>
+        <span id="zoomLabel" style="font-size:12px;color:var(--mute)">100%</span>
+      </div>
+      <p class="hint">Mouse wheel over the photo zooms.</p>
+    </details>
   </aside>
 </div>
 <footer>
@@ -163,7 +169,7 @@ const cv=$('c'),ctx=cv.getContext('2d',{willReadFrequently:true});
 const ov=$('objectsCanvas'),octx=ov.getContext('2d');
 const bc=document.createElement('canvas'),bg=bc.getContext('2d',{willReadFrequently:true});
 let W=0,H=0,base,out,L,shade,det,depth,gx,gy,paint,mask,logo=null,showD=false,depthPipe=null,depthPromise=null;
-let objects=[],selectedObject=-1,objectDrag=null;
+let objects=[],selectedObject=-1,objectDrag=null,sol,isSol,hist=[],gxo,gyo;
 let viewZoom=1;
 const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const say=t=>$('msg').textContent=t;
@@ -197,6 +203,7 @@ function setDepth(d){
   gx=new Float32Array(W*H);gy=new Float32Array(W*H);
   for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){
     const i=y*W+x;gx[i]=(depth[i+1]-depth[i-1])/2;gy[i]=(depth[i+W]-depth[i-W])/2;}
+  gx=blur(gx,3,2);gy=blur(gy,3,2);gxo=blur(gx,8,2);gyo=blur(gy,8,2);
 }
 
 function init(img){
@@ -213,7 +220,7 @@ function init(img){
   shade=new Float32Array(W*H);det=new Float32Array(W*H);
   for(let i=0;i<W*H;i++){shade[i]=clamp(Ls[i]/m,.15,2.2);det[i]=clamp(L[i]/(Lf[i]+.02),.6,1.6);}
   setDepth(blur(L,5));
-  mask=new Float32Array(W*H);paint=null;showD=false;objects=[];selectedObject=-1;
+  mask=new Float32Array(W*H);sol=new Uint8ClampedArray(W*H*4);isSol=new Uint8Array(W*H);hist=[];paint=null;showD=false;objects=[];selectedObject=-1;
   renderObjectList();buildPaint();comp(0,0,W,H);drawObjects();
   requestAnimationFrame(()=>setZoomToFit());
 }
@@ -264,9 +271,10 @@ function comp(x0,y0,x1,y1){
   if(x1<=x0||y1<=y0)return;
   const o=out.data,b=base.data;
   for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){
-    const i=y*W+x,p=i*4,a=clamp(mask[i]*paint[p+3]/255,0,1);
+    const i=y*W+x,p=i*4,sp=isSol[i]?sol:paint,a=clamp(mask[i]*sp[p+3]/255,0,1);
     if(a<=0){o[p]=b[p];o[p+1]=b[p+1];o[p+2]=b[p+2];}
-    else for(let c=0;c<3;c++)o[p+c]=b[p+c]*(1-a)+paint[p+c]*a;
+    else if(a>=.999){o[p]=sp[p];o[p+1]=sp[p+1];o[p+2]=sp[p+2];}   // true 100% opaque
+    else for(let c=0;c<3;c++)o[p+c]=b[p+c]*(1-a)+sp[p+c]*a;
   }
   ctx.putImageData(out,0,0,x0,y0,x1-x0,y1-y0);
 }
@@ -300,6 +308,7 @@ function renderObjectList(){
 }
 function selectObject(i){
   selectedObject=i;
+  $('objPanel').hidden=!objects[i];
   const o=objects[i];
   if(o){
     $('forceOpaque').disabled=o.type!=='image';
@@ -315,112 +324,70 @@ function selectObject(i){
   if(!o){$('forceOpaque').disabled=true;$('forceOpaque').parentElement.style.opacity='.5';$('opaqueColorOption').style.display='none';}
   renderObjectList();drawObjects();
 }
+function objBox(o){
+  if(o.type==='text'){octx.save();octx.font='700 '+o.size+'px "Segoe UI",Arial,sans-serif';const w=octx.measureText(o.text).width;octx.restore();return[w,o.size*1.3];}
+  return[o.w,o.h];
+}
+// Logo/image with optional solid matte behind transparent areas; cached so dragging stays fast.
+function imageCanvas(o){
+  const iw=Math.max(1,Math.ceil(o.w)),ih=Math.max(1,Math.ceil(o.h)),force=$('forceOpaque').checked,bgc=$('opaqueBgColor').value;
+  const key=[iw,ih,force,bgc].join('|');
+  if(o._k===key)return o._c;
+  const c=document.createElement('canvas');c.width=iw;c.height=ih;
+  const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(o.image,0,0,iw,ih);
+  if(force){
+    const im=g.getImageData(0,0,iw,ih),px=im.data,outside=new Uint8Array(iw*ih),queue=new Int32Array(iw*ih);
+    let head=0,tail=0;
+    const add=(x,y)=>{const n=y*iw+x;if(!outside[n]&&px[n*4+3]<250){outside[n]=1;queue[tail++]=n;}};
+    for(let x=0;x<iw;x++){add(x,0);add(x,ih-1);}
+    for(let y=1;y<ih-1;y++){add(0,y);add(iw-1,y);}
+    while(head<tail){const n=queue[head++],x=n%iw,y=(n/iw)|0;
+      if(x>0)add(x-1,y);if(x+1<iw)add(x+1,y);if(y>0)add(x,y-1);if(y+1<ih)add(x,y+1);}
+    const m=hexRgb(bgc);
+    for(let n=0;n<iw*ih;n++){const p=n*4;
+      if(!outside[n]){if(px[p+3]<250){px[p]=m[0];px[p+1]=m[1];px[p+2]=m[2];}px[p+3]=255;}}
+    g.putImageData(im,0,0);
+  }
+  o._k=key;o._c=c;return c;
+}
 function drawObjects(includeSelection=true){
   if(!W||!ov.width)return;
   octx.clearRect(0,0,W,H);
-
-  // Depth estimation is not a true UV/surface-normal map. Keep the effect
-  // optional and apply a bounded displacement field to each independent layer.
-  const warpStrength=+$('objectWarp').value/100;
-  const maxWarpPx=warpStrength*7;
-  let maxGradient=0;
-  if(gx&&gy){
-    for(let i=0;i<gx.length;i++){
-      const m=Math.hypot(gx[i],gy[i]);
-      if(m>maxGradient)maxGradient=m;
+  // Surface wrap: each output pixel samples the design at an offset taken from the smoothed depth gradient,
+  // the same field the pattern brush uses. Only the design's bounding box is processed.
+  const wv=+$('objectWarp').value,amt=wv*26,lim=wv?3+wv*.16:0,la=+$('light').value/100,ta=+$('tex').value/100;
+  objects.forEach(o=>{
+    const[lw,lh]=objBox(o),cs=Math.cos(o.rotation||0),sn=Math.sin(o.rotation||0);
+    const cx=[0,lw,0,lw],cy=[0,0,lh,lh];
+    const X=cx.map((v,j)=>o.x+v*cs-cy[j]*sn),Y=cx.map((v,j)=>o.y+v*sn+cy[j]*cs);
+    const pad=Math.ceil(lim)+3;
+    const bx0=Math.max(0,Math.floor(Math.min(...X)-pad)),by0=Math.max(0,Math.floor(Math.min(...Y)-pad));
+    const bx1=Math.min(W,Math.ceil(Math.max(...X)+pad)),by1=Math.min(H,Math.ceil(Math.max(...Y)+pad));
+    const bw=bx1-bx0,bh=by1-by0;if(bw<2||bh<2)return;
+    const sc=document.createElement('canvas');sc.width=bw;sc.height=bh;
+    const sg=sc.getContext('2d',{willReadFrequently:true});
+    sg.translate(o.x-bx0,o.y-by0);sg.rotate(o.rotation||0);
+    if(o.type==='text'){sg.font='700 '+o.size+'px "Segoe UI",Arial,sans-serif';sg.textBaseline='top';sg.fillStyle=o.color||'#ffffff';sg.fillText(o.text,0,0);}
+    else if(o.image)sg.drawImage(imageCanvas(o),0,0,o.w,o.h);
+    const sd=sg.getImageData(0,0,bw,bh).data,res=sg.createImageData(bw,bh),wd=res.data;
+    for(let y=0;y<bh;y++)for(let x=0;x<bw;x++){
+      const gi=(y+by0)*W+(x+bx0),p=(y*bw+x)*4;
+      let ddx=gxo[gi]*amt,ddy=gyo[gi]*amt;const dm=Math.hypot(ddx,ddy);if(dm>lim){ddx*=lim/dm;ddy*=lim/dm;}
+      const sx=clamp(x+ddx,0,bw-1.001),sy=clamp(y+ddy,0,bh-1.001);
+      const x0=sx|0,y0=sy|0,fx=sx-x0,fy=sy-y0;
+      const q0=(y0*bw+x0)*4,q1=q0+4,q2=q0+bw*4,q3=q2+4;
+      const w0=(1-fx)*(1-fy),w1=fx*(1-fy),w2=(1-fx)*fy,w3=fx*fy;
+      const a0=sd[q0+3]*w0,a1=sd[q1+3]*w1,a2=sd[q2+3]*w2,a3=sd[q3+3]*w3,A=a0+a1+a2+a3;
+      if(A<1)continue;
+      const k=clamp(((1-la)+la*clamp(shade[gi],.75,1.3))*((1-ta)+ta*clamp(det[gi],.9,1.1)),.65,1.4)/A;
+      wd[p]=clamp((sd[q0]*a0+sd[q1]*a1+sd[q2]*a2+sd[q3]*a3)*k,0,255);
+      wd[p+1]=clamp((sd[q0+1]*a0+sd[q1+1]*a1+sd[q2+1]*a2+sd[q3+1]*a3)*k,0,255);
+      wd[p+2]=clamp((sd[q0+2]*a0+sd[q1+2]*a1+sd[q2+2]*a2+sd[q3+2]*a3)*k,0,255);
+      wd[p+3]=Math.min(255,A);
     }
-  }
-  const lightAmount=+$('light').value/100;
-  const textureAmount=+$('tex').value/100;
-
-  objects.forEach((o)=>{
-    const source=document.createElement('canvas');source.width=W;source.height=H;
-    const sg=source.getContext('2d',{willReadFrequently:true});
-    sg.save();
-    sg.translate(o.x,o.y);sg.rotate(o.rotation||0);
-    if(o.type==='text'){
-      sg.globalAlpha=1;
-      sg.font='700 '+o.size+'px "Segoe UI",Arial,sans-serif';
-      sg.textBaseline='top';sg.fillStyle=o.color||'#ffffff';sg.fillText(o.text,0,0);
-    }else if(o.image){
-      // A true opaque layer needs a matte behind transparent pixels. A checkbox
-      // makes this explicit; the image's own transparency is otherwise preserved.
-      sg.globalAlpha=1;
-      if($('forceOpaque').checked){
-        const iw=Math.max(1,Math.ceil(o.w)),ih=Math.max(1,Math.ceil(o.h));
-        const logoCanvas=document.createElement('canvas');logoCanvas.width=iw;logoCanvas.height=ih;
-        const lg=logoCanvas.getContext('2d',{willReadFrequently:true});
-        lg.drawImage(o.image,0,0,iw,ih);
-        const imageData=lg.getImageData(0,0,iw,ih),px=imageData.data;
-        const outside=new Uint8Array(iw*ih),queue=new Int32Array(iw*ih);
-        let head=0,tail=0;
-        const add=(x,y)=>{
-          const n=y*iw+x;
-          if(!outside[n]&&px[n*4+3]<250){outside[n]=1;queue[tail++]=n;}
-        };
-        for(let x=0;x<iw;x++){add(x,0);if(ih>1)add(x,ih-1);}
-        for(let y=1;y<ih-1;y++){add(0,y);if(iw>1)add(iw-1,y);}
-        while(head<tail){
-          const n=queue[head++],x=n%iw,y=(n/iw)|0;
-          if(x>0)add(x-1,y);if(x+1<iw)add(x+1,y);
-          if(y>0)add(x,y-1);if(y+1<ih)add(x,y+1);
-        }
-        const matte=hexRgb($('opaqueBgColor').value||'#ffffff');
-        for(let n=0;n<iw*ih;n++){
-          const p=n*4;
-          if(!outside[n]&&px[p+3]<250){
-            px[p]=matte[0];px[p+1]=matte[1];px[p+2]=matte[2];px[p+3]=255;
-          }else if(!outside[n]&&px[p+3]>=250){
-            px[p+3]=255;
-          }
-        }
-        lg.putImageData(imageData,0,0);
-        sg.drawImage(logoCanvas,0,0,o.w,o.h);
-      }else{
-        sg.drawImage(o.image,0,0,o.w,o.h);
-      }
-    }
-    sg.restore();
-
-    const src=sg.getImageData(0,0,W,H),warped=sg.createImageData(W,H);
-    const sd=src.data,wd=warped.data;
-    for(let y=0;y<H;y++)for(let x=0;x<W;x++){
-      const i=y*W+x,p=i*4;
-      let sx=x,sy=y;
-      if(maxWarpPx>0&&maxGradient>1e-7&&gx&&gy){
-        // Normalize the local depth-gradient direction so the slider has a
-        // visible, predictable effect independent of the photo's contrast.
-        const mag=Math.hypot(gx[i],gy[i]);
-        if(mag>1e-7){
-          const strength=Math.min(1,mag/(maxGradient*.22));
-          const amount=maxWarpPx*strength;
-          sx=clamp(x-(gx[i]/mag)*amount,0,W-1);
-          sy=clamp(y-(gy[i]/mag)*amount,0,H-1);
-        }
-      }
-      const x0=Math.floor(sx),y0=Math.floor(sy),x1=Math.min(W-1,x0+1),y1=Math.min(H-1,y0+1);
-      const fx=sx-x0,fy=sy-y0;
-      const q00=(y0*W+x0)*4,q10=(y0*W+x1)*4,q01=(y1*W+x0)*4,q11=(y1*W+x1)*4;
-      const sample=(ch)=>((sd[q00+ch]*(1-fx)+sd[q10+ch]*fx)*(1-fy)+(sd[q01+ch]*(1-fx)+sd[q11+ch]*fx)*fy);
-      const alpha=sample(3);
-      if(alpha<1)continue;
-      const shadeFactor=shade?((1-lightAmount)+lightAmount*clamp(shade[i],.75,1.3)):1;
-      const textureFactor=det?((1-textureAmount)+textureAmount*clamp(det[i],.9,1.1)):1;
-      const k=clamp(shadeFactor*textureFactor,.65,1.4);
-      wd[p]=clamp(sample(0)*k,0,255);
-      wd[p+1]=clamp(sample(1)*k,0,255);
-      wd[p+2]=clamp(sample(2)*k,0,255);
-      wd[p+3]=alpha;
-    }
-    const result=document.createElement('canvas');result.width=W;result.height=H;
-    result.getContext('2d').putImageData(warped,0,0);
-    // Layer opacity is applied once, after the source has been made opaque.
-    octx.save();
-    octx.globalAlpha=clamp(o.opacity,0,1);
-    octx.drawImage(result,0,0);
-    octx.restore();
+    const rc=document.createElement('canvas');rc.width=bw;rc.height=bh;rc.getContext('2d').putImageData(res,0,0);
+    octx.globalAlpha=clamp(o.opacity,0,1);octx.drawImage(rc,bx0,by0);octx.globalAlpha=1;
   });
-
   if(includeSelection&&selectedObject>=0&&objects[selectedObject]){
     const o=objects[selectedObject];octx.save();octx.translate(o.x,o.y);octx.rotate(o.rotation||0);
     octx.strokeStyle='#3157d5';octx.lineWidth=2;octx.setLineDash([5,3]);
@@ -428,9 +395,7 @@ function drawObjects(includeSelection=true){
       octx.font='700 '+o.size+'px "Segoe UI",Arial,sans-serif';
       const m=octx.measureText(o.text);octx.strokeRect(-5,-5,m.width+10,o.size*1.3+10);
       octx.setLineDash([]);octx.fillStyle='#3157d5';octx.fillRect(m.width-6,o.size*1.3-6,12,12);
-    }else{
-      octx.strokeRect(0,0,o.w,o.h);octx.setLineDash([]);octx.fillStyle='#3157d5';octx.fillRect(o.w-6,o.h-6,12,12);
-    }
+    }else{octx.strokeRect(0,0,o.w,o.h);octx.setLineDash([]);octx.fillStyle='#3157d5';octx.fillRect(o.w-6,o.h-6,12,12);}
     octx.restore();
   }
 }
@@ -438,7 +403,6 @@ function addTextObject(){
   if(!W)return;
   const text=$('objectText').value.trim()||'Text';
   objects.push({type:'text',text,x:W*.2,y:H*.2,size:64,color:$('objectColor').value,opacity:1,rotation:0});
-  $('tool').value='select';
   selectObject(objects.length-1);
   say('Text added. Drag it directly on the photo to position it.');
 }
@@ -449,15 +413,14 @@ $('objectFile').onchange=e=>{
   loadFile(f,img=>{
     const w=Math.min(220,W*.35),h=w*img.height/img.width;
     objects.push({type:'image',image:img,x:W*.2,y:H*.2,w,h,opacity:1,rotation:0});
-    $('tool').value='select';
-    selectObject(objects.length-1);
+      selectObject(objects.length-1);
     say('Design added. Drag it directly on the photo to position it.');
   });
   e.target.value='';
 };
 $('deleteObject').onclick=()=>{
   if(selectedObject<0)return;
-  objects.splice(selectedObject,1);selectedObject=-1;renderObjectList();drawObjects();
+  objects.splice(selectedObject,1);selectObject(-1);
 };
 $('objectSize').oninput=()=>{
   const o=objects[selectedObject];if(!o)return;
@@ -511,56 +474,56 @@ function hitObject(x,y){
 
 let drawing=false,seed=[0,0,0],last=null;
 function pos(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height];}
+function pxCol(x,y){const p=(clamp(Math.round(y),0,H-1)*W+clamp(Math.round(x),0,W-1))*4,b=base.data;return[b[p],b[p+1],b[p+2]];}
+function edgeW(p,tol){
+  const b=base.data,df=(Math.abs(b[p]-seed[0])+Math.abs(b[p+1]-seed[1])+Math.abs(b[p+2]-seed[2]))/765;
+  // Full strength inside the tolerance and a short fade just beyond it, so the interior is never see-through.
+  return clamp((tol*1.5-df)/(tol*.5),0,1);
+}
+function followSeed(cx,cy,tol){
+  const c=pxCol(cx,cy),p=(clamp(Math.round(cy),0,H-1)*W+clamp(Math.round(cx),0,W-1))*4;
+  if(edgeW(p,tol)>.9)seed=[seed[0]+(c[0]-seed[0])*.2,seed[1]+(c[1]-seed[1])*.2,seed[2]+(c[2]-seed[2])*.2];
+}
+function putSolid(i,col,k){
+  const p=i*4,f=k>0?(1-k)+k*clamp(shade[i],.5,1.6):1;
+  sol[p]=clamp(col[0]*f,0,255);sol[p+1]=clamp(col[1]*f,0,255);sol[p+2]=clamp(col[2]*f,0,255);sol[p+3]=255;isSol[i]=1;
+}
+function hexRgb(hex){return [parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)];}
 function stamp(cx,cy){
-  const R=+$('brush').value/2,op=+$('opacity').value/100;
-  const edge=+$('edge').value/100,er=$('erase').checked;
-  const tol=.03+(1-edge)*.6,b=base.data;
-  const solid=$('tool').value!=='pattern';
-  const col=solid?hexRgb($('paintColor').value):null;
+  const R=+$('brush').value/2,op=+$('opacity').value/100,edge=+$('edge').value/100,er=$('erase').checked;
+  const tol=.03+(1-edge)*.6,solid=$('tool').value!=='pattern',col=hexRgb($('paintColor').value),k=+$('colShade').value/100;
+  if(edge>0)followSeed(cx,cy,tol);
   const x0=Math.max(0,Math.floor(cx-R)),x1=Math.min(W,Math.ceil(cx+R));
   const y0=Math.max(0,Math.floor(cy-R)),y1=Math.min(H,Math.ceil(cy+R));
   for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){
     const d=Math.hypot(x-cx,y-cy)/R;if(d>=1)continue;
-    const i=y*W+x,p=i*4;
-    let w=1;
-    if(edge>0){
-      const df=(Math.abs(b[p]-seed[0])+Math.abs(b[p+1]-seed[1])+Math.abs(b[p+2]-seed[2]))/765;
-      w=Math.exp(-(df*df)/(tol*tol));
-    }
-    // Solid centre coverage: no radial feathering. Only the outermost
-    // one-pixel edge is antialiased; 100% brush opacity means full coverage.
-    const boundary=Math.min(1,(1-d)*Math.max(1,R));
-    const coverage=(boundary<1?boundary:1)*w*op;
-    if(er){
-      mask[i]=Math.max(0,mask[i]-coverage);
-    }else{
-      if(solid){
-        paint[p]=col[0];paint[p+1]=col[1];paint[p+2]=col[2];paint[p+3]=255;
-      }
-      mask[i]=Math.max(mask[i],coverage);
-    }
+    const i=y*W+x,p=i*4,cov=Math.min(1,(1-d)*R)*(edge>0?edgeW(p,tol):1)*op;
+    if(cov<=0)continue;
+    if(er){mask[i]=Math.max(0,mask[i]-cov);continue;}
+    if(solid)putSolid(i,col,k);else isSol[i]=0;
+    mask[i]=Math.max(mask[i],cov);
   }
   comp(x0,y0,x1,y1);
 }
-function hexRgb(hex){return [parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)];}
 function sprayAt(cx,cy){
-  const radius=+$('brush').value/2,intensity=+$('sprayIntensity').value/100;
-  const count=Math.max(1,Math.round(90*intensity));
-  const col=hexRgb($('paintColor').value);
-  const x0=Math.max(0,Math.floor(cx-radius)),x1=Math.min(W,Math.ceil(cx+radius));
-  const y0=Math.max(0,Math.floor(cy-radius)),y1=Math.min(H,Math.ceil(cy+radius));
-  for(let n=0;n<count;n++){
-    const angle=Math.random()*Math.PI*2,dist=Math.sqrt(Math.random())*radius;
-    const x=cx+Math.cos(angle)*dist,y=cy+Math.sin(angle)*dist;
-    const r=Math.max(1,radius*(.035+Math.random()*.055));
+  const R=+$('brush').value/2,inten=+$('sprayIntensity').value/100,op=+$('opacity').value/100;
+  const edge=+$('edge').value/100,er=$('erase').checked,tol=.03+(1-edge)*.6;
+  const col=hexRgb($('paintColor').value),k=+$('colShade').value/100;
+  if(edge>0)followSeed(cx,cy,tol);
+  const n=Math.min(6000,Math.ceil(R*R*1.2*inten));
+  for(let q=0;q<n;q++){
+    const an=Math.random()*6.2832,dist=R*Math.pow(Math.random(),.65);
+    const x=cx+Math.cos(an)*dist,y=cy+Math.sin(an)*dist,r=1+Math.random()*1.3;
     for(let yy=Math.max(0,Math.floor(y-r));yy<Math.min(H,Math.ceil(y+r));yy++)
       for(let xx=Math.max(0,Math.floor(x-r));xx<Math.min(W,Math.ceil(x+r));xx++){
         const d=Math.hypot(xx-x,yy-y)/r;if(d>=1)continue;
-        const i=yy*W+xx,p=i*4,coverage=(1-d)*intensity;
-        paint[p]=col[0];paint[p+1]=col[1];paint[p+2]=col[2];paint[p+3]=255;
-        mask[i]=1-(1-mask[i])*(1-coverage);
+        const i=yy*W+xx,cov=(d<.6?1:(1-d)/.4)*(edge>0?edgeW(i*4,tol):1)*op;
+        if(cov<=0)continue;
+        if(er){mask[i]=Math.max(0,mask[i]-cov);continue;}
+        putSolid(i,col,k);mask[i]=1-(1-mask[i])*(1-cov);
       }
   }
+  const x0=Math.max(0,Math.floor(cx-R-3)),x1=Math.min(W,Math.ceil(cx+R+3)),y0=Math.max(0,Math.floor(cy-R-3)),y1=Math.min(H,Math.ceil(cy+R+3));
   comp(x0,y0,x1,y1);
 }
 function seedAt(cx,cy){
@@ -607,7 +570,7 @@ cv.addEventListener('pointerdown',e=>{
   }
 
   cv.setPointerCapture(e.pointerId);
-  drawing=true;seedAt(x,y);last=[x,y];
+  pushHist();drawing=true;seedAt(x,y);last=[x,y];
   if($('tool').value==='spray')sprayAt(x,y);else stamp(x,y);
 });
 cv.addEventListener('pointermove',e=>{
@@ -705,7 +668,7 @@ $('dv').onclick=()=>{
   }else{comp(0,0,W,H);$('dv').textContent='Show depth';drawObjects();}
 };
 
-$('clear').onclick=()=>{if(!W)return;mask.fill(0);showD=false;$('dv').textContent='Show depth';comp(0,0,W,H);};
+$('clear').onclick=()=>{if(!W)return;pushHist();mask.fill(0);isSol.fill(0);showD=false;$('dv').textContent='Show depth';comp(0,0,W,H);};
 $('save').onclick=()=>{
   if(!W)return;
   showD=false;$('dv').textContent='Show depth';
@@ -774,6 +737,46 @@ function alignObjectCanvas(){
 addEventListener('resize',alignObjectCanvas);
 const originalInit=init;
 init= function(img){originalInit(img);requestAnimationFrame(alignObjectCanvas);};
+/* UX: tools, swatches, ring cursor, undo, shortcuts */
+const ring=document.createElement('div');ring.id='ring';cv.parentElement.append(ring);
+function pushHist(){hist.push({m:mask.slice(),s:sol.slice(),f:isSol.slice()});if(hist.length>8)hist.shift();}
+function undo(){const h=hist.pop();if(!h){say('Nothing to undo.');return;}mask.set(h.m);sol.set(h.s);isSol.set(h.f);comp(0,0,W,H);say('Undone.');}
+$('undo').onclick=undo;
+function syncToolUI(){
+  const t=$('tool').value;
+  document.querySelectorAll('#tools button').forEach(b=>b.classList.toggle('on',b.dataset.tool===t));
+  $('rowSpray').style.display=t==='spray'?'flex':'none';
+  $('rowShade').style.display=(t==='pattern'||t==='select')?'none':'flex';
+  cv.style.cursor=t==='select'?'default':'crosshair';ring.style.display='none';
+}
+function setTool(t){$('tool').value=t;syncToolUI();}
+document.querySelectorAll('#tools button').forEach(b=>b.onclick=()=>setTool(b.dataset.tool));
+['#e53935','#fb8c00','#fdd835','#43a047','#1e88e5','#8e24aa','#ffffff','#111111'].forEach(c=>{
+  const b=document.createElement('button');b.className='sw';b.style.background=c;b.title=c;
+  b.onclick=()=>{$('paintColor').value=c;if($('tool').value==='select'||$('tool').value==='pattern')setTool('brush');};
+  $('sw').append(b);
+});
+cv.addEventListener('pointermove',e=>{
+  if($('tool').value==='select'||objectDrag){ring.style.display='none';return;}
+  const st=cv.parentElement,r=st.getBoundingClientRect(),d=+$('brush').value*viewZoom;
+  ring.style.display='block';ring.style.width=ring.style.height=d+'px';
+  ring.style.left=(e.clientX-r.left+st.scrollLeft-d/2)+'px';ring.style.top=(e.clientY-r.top+st.scrollTop-d/2)+'px';
+});
+cv.addEventListener('pointerleave',()=>{ring.style.display='none';});
+(function tick(){if(drawing&&last&&!showD&&$('tool').value==='spray')sprayAt(last[0],last[1]);requestAnimationFrame(tick);})();
+addEventListener('keydown',e=>{
+  const t=e.target,tag=(t.tagName||'').toLowerCase();
+  if(tag==='select'||(tag==='input'&&['text','search','number'].includes(t.type)))return;
+  const k=e.key.toLowerCase();
+  if((e.ctrlKey||e.metaKey)&&k==='z'){e.preventDefault();undo();return;}
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(k==='b')setTool('brush');else if(k==='s')setTool('spray');else if(k==='p')setTool('pattern');else if(k==='v')setTool('select');
+  else if(k==='e'){$('erase').checked=!$('erase').checked;say('Eraser '+($('erase').checked?'on':'off')+'.');}
+  else if(k==='['||k===']'){$('brush').value=+$('brush').value+(k===']'?8:-8);}
+  else if((k==='delete'||k==='backspace')&&selectedObject>=0){e.preventDefault();$('deleteObject').click();}
+  else if(k==='escape')selectObject(-1);
+});
+syncToolUI();
 init(sample());
 </script>
 </body>
