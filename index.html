@@ -1,405 +1,752 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Wikipedia Recent Changes - U:Suyash.dwivedi</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Wikipedia Recent Changes with Voice Alerts (76 Languages) | Wiki's Lazy Coders</title>
 
-    <meta name="description" content="Track Wikipedia Recent Changes across 42 languages with live updates, audio alerts, dark mode, and time-based filters. Created by Wikimedian Suyash Dwivedi.">
-    <meta name="keywords" content="Wikipedia recent changes, multilingual RC, Wikimedian tool, live Wikipedia monitor, Suyash Dwivedi, Wikimedia tools">
-    <meta name="author" content="Suyash Dwivedi">
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GC8PGC89NB');
+  </script>
 
-    <meta property="og:title" content="Wikipedia Recent Changes by Suyash Dwivedi">
-    <meta property="og:description" content="Live monitor for Wikipedia edits in 42+ languages. Listen to RC alerts with audio notifications.">
-    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png">
-    <meta property="og:url" content="https://suyashdwivedi.github.io/index.html">
-    <meta property="og:type" content="website">
+  <!-- Counter.dev analytics -->
+  <script src="https://cdn.counter.dev/script.js"
+          data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
+          data-utcoffset="6"></script>
 
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Wikipedia RC Monitor – by Suyash Dwivedi">
-    <meta name="twitter:description" content="Watch real-time Wikipedia edits with audio alerts.">
-    <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png">
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Monitor live Wikipedia Recent Changes across 76 languages (including Africa, Central Asia, and ESEAP regions) with real-time speech synthesis voice alerts and dark mode. Created by Wikimedian Suyash Dwivedi.">
+  <meta name="keywords" content="Wikipedia recent changes, Wikipedia voice alerts, text to speech Wikipedia monitor, multilingual RC, Wikimedian tool, live Wikipedia monitor, Suyash Dwivedi, Wiki's Lazy Coders, Wikimedia tools">
+  <meta name="author" content="Suyash Dwivedi">
 
-    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" type="image/svg+xml">
-    <link rel="canonical" href="https://suyashdwivedi.github.io/index.html" />
+  <!-- Open Graph -->
+  <meta property="og:title" content="Live Wikipedia Recent Changes with Voice Alerts – Wiki's Lazy Coders">
+  <meta property="og:description" content="Real-time Wikipedia edit monitor across 76 languages with automatic speech-out audio alerts for every new edit and editor.">
+  <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png">
+  <meta property="og:url" content="https://suyashdwivedi.github.io/">
+  <meta property="og:type" content="website">
 
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#4CAF50" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Live Wikipedia Recent Changes with Voice Alerts – Wiki's Lazy Coders">
+  <meta name="twitter:description" content="Watch and listen to real-time Wikipedia edits across 76 languages with automatic speech alerts.">
+  <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png">
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            transition: background 0.3s, color 0.3s;
-        }
-        header, footer {
-            padding: 10px;
-            background-color: #f4f4f4;
-            text-align: center;
-            position: relative;
-        }
-        header img {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            width: 75px;
-            height: auto;
-        }
-        .change-item {
-            margin-bottom: 10px;
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
-            transition: all 0.5s ease-in-out;
-        }
-        .date-time {
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            margin: 10px 0;
-            color: green;
-        }
-        #counter {
-            font-weight: bold;
-        }
-        .nav-buttons {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 10;
-        }
-        .nav-button {
-            margin: 5px;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .nav-button:hover {
-            background-color: #45a049;
-        }
-        #toggle-theme, #toggle-sound {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 8px 14px;
-            background: #222;
-            color: #ffd700;
-            border: none;
-            border-radius: 18px;
-            font-size: 15px;
-            cursor: pointer;
-            z-index: 120;
-            transition: background 0.2s, color 0.2s;
-        }
-        #toggle-sound {
-            right: 120px; /* Position to the left of the theme button */
-            background: #e74c3c;
-            color: white;
-        }
-        #toggle-sound.on {
-            background: #2ecc71;
-        }
-        #toggle-theme.light {
-            background: #e0e0e0;
-            color: #333;
-        }
-        /* Dark Mode Styles */
-        body.dark-mode {
-            background-color: #121212;
-            color: #f4f4f4;
-        }
-        body.dark-mode header,
-        body.dark-mode footer {
-            background-color: #191919;
-            color: #eee;
-        }
-        body.dark-mode .change-item {
-            border-bottom: 1px solid #444;
-            background-color: #181818;
-        }
-        body.dark-mode select,
-        body.dark-mode .nav-button {
-            background-color: #222;
-            color: #f4f4f4;
-        }
-        body.dark-mode a {
-            color: #6cf;
-        }
-    </style>
+  <!-- Favicon and Canonical -->
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" type="image/png">
+  <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png">
+  <link rel="canonical" href="https://suyashdwivedi.github.io/" />
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2e7d32" />
+
+  <style>
+    :root {
+      --bg-color: #f4f6f8;
+      --surface-color: #ffffff;
+      --header-bg: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+      --accent-color: #2e7d32;
+      --accent-hover: #1b5e20;
+      --link-color: #1565c0;
+      --border-color: #e5e7eb;
+      --shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    }
+
+    body.dark-mode {
+      --bg-color: #0f172a;
+      --surface-color: #1e293b;
+      --header-bg: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --accent-color: #4caf50;
+      --accent-hover: #66bb6a;
+      --link-color: #60a5fa;
+      --border-color: #334155;
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      transition: background-color 0.25s ease, color 0.25s ease;
+      line-height: 1.5;
+    }
+
+    a {
+      color: var(--link-color);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive Centered Header with Larger Logo Left to Title */
+    header {
+      background-color: var(--header-bg);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+      padding: 20px 24px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      text-align: center;
+    }
+
+    .header-top {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      position: relative;
+      flex-wrap: wrap;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      flex: 1 1 auto;
+    }
+
+    .brand-logo {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .brand-logo img {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--border-color);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
+      transition: transform 0.2s ease;
+    }
+
+    .brand-logo img:hover {
+      transform: scale(1.06);
+    }
+
+    .header-center {
+      text-align: center;
+    }
+
+    .header-center h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .header-center .subtitle {
+      margin: 6px 0 0;
+      font-size: 1.02rem;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    .controls-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .control-btn {
+      padding: 9px 15px;
+      border: none;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.2s ease, background-color 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .control-btn:active {
+      transform: scale(0.97);
+    }
+
+    #toggle-theme {
+      background: #1f2937;
+      color: #fbbf24;
+    }
+
+    body.dark-mode #toggle-theme {
+      background: #334155;
+      color: #fde047;
+    }
+
+    #toggle-voice {
+      background: #1d4ed8;
+      color: #ffffff;
+    }
+
+    #toggle-voice.off {
+      background: #6b7280;
+      color: #f3f4f6;
+    }
+
+    /* Filter & Status Bar */
+    .toolbar {
+      max-width: 1180px;
+      margin: 16px auto 0;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .lang-picker {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .lang-picker label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
+
+    select#language-select {
+      padding: 9px 14px;
+      font-size: 0.95rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      cursor: pointer;
+      outline: none;
+      min-width: 240px;
+      max-width: 100%;
+    }
+
+    select#language-select:focus {
+      border-color: var(--accent-color);
+    }
+
+    #counter {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--accent-color);
+      background: rgba(46, 125, 50, 0.1);
+      padding: 7px 14px;
+      border-radius: 999px;
+    }
+
+    /* Main Content Container */
+    main {
+      max-width: 1100px;
+      margin: 22px auto;
+      padding: 0 16px;
+    }
+
+    .date-time {
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+      padding: 10px 16px;
+      background-color: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--accent-color);
+      box-shadow: var(--shadow);
+    }
+
+    /* Change Cards */
+    #changes {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .change-item {
+      background-color: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-color);
+      border-radius: 10px;
+      padding: 14px 18px;
+      box-shadow: var(--shadow);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .change-item:hover {
+      transform: translateY(-1px);
+    }
+
+    .change-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      word-break: break-word;
+    }
+
+    .change-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .change-meta strong {
+      color: var(--text-primary);
+    }
+
+    .change-comment {
+      font-size: 0.9rem;
+      background-color: var(--bg-color);
+      padding: 6px 10px;
+      border-radius: 6px;
+      color: var(--text-secondary);
+      word-break: break-word;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 40px;
+      padding: 20px 16px;
+      background-color: var(--surface-color);
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    /* Floating Scroll Buttons */
+    .nav-buttons {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav-button {
+      padding: 10px 14px;
+      background-color: var(--accent-color);
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.2s ease, transform 0.15s ease;
+    }
+
+    .nav-button:hover {
+      background-color: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    /* Tablet Breakpoint (<= 960px) */
+    @media (max-width: 960px) {
+      header {
+        padding: 16px 18px;
+      }
+      .header-top {
+        flex-direction: column;
+        gap: 12px;
+      }
+      .brand-logo img {
+        width: 82px;
+        height: 82px;
+      }
+      .header-center h1 {
+        font-size: 1.65rem;
+      }
+    }
+
+    /* Mobile Breakpoint (<= 600px) */
+    @media (max-width: 600px) {
+      header {
+        padding: 12px 12px;
+        position: static;
+      }
+      .brand-group {
+        flex-direction: column;
+        gap: 10px;
+      }
+      .brand-logo img {
+        width: 72px;
+        height: 72px;
+      }
+      .header-center h1 {
+        font-size: 1.32rem;
+      }
+      .header-center .subtitle {
+        font-size: 0.88rem;
+      }
+      .toolbar {
+        flex-direction: column;
+        gap: 10px;
+      }
+      .lang-picker {
+        width: 100%;
+        flex-direction: column;
+        gap: 6px;
+      }
+      select#language-select {
+        width: 100%;
+        min-width: unset;
+      }
+      .change-item {
+        padding: 12px 14px;
+      }
+      .change-meta {
+        flex-direction: column;
+        gap: 4px;
+      }
+      .nav-buttons {
+        bottom: 12px;
+        right: 12px;
+      }
+      .nav-button {
+        padding: 8px 11px;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" alt="Wiki's Lazy Coders Logo">
-        <button id="toggle-theme" aria-label="Switch Dark/Light Theme">🌙 Dark Mode</button>
-        <button id="toggle-sound" aria-label="Toggle Sound">🔇 Sound Off</button>
-        <h1>Wikipedia Recent Changes</h1>
-        <p>Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> (in 43 languages)</p>
-        <label for="language-select">Select Language:</label>
-        <select id="language-select">
-            <option value="hi">हिन्दी (Hindi)</option>
-            <option value="en">English</option>
-            <option value="awa">अवधी (Awadhi)</option>
-            <option value="ar">العربية (Arabic)</option>
-            <option value="as">অসমীয়া (Assamese)</option>
-            <option value="bh">ভোজपुरी (Bhojpuri)</option>
-            <option value="bn">বাংলা (Bengali)</option>
-            <option value="bcl">Bikol Central (Central Bikol)</option>
-            <option value="zh">中文 (Chinese)</option>
-            <option value="da">Dansk (Danish)</option>
-            <option value="de">Deutsch (German)</option>
-            <option value="es">Español (Spanish)</option>
-            <option value="fa">فارسی (Persian)</option>
-            <option value="fr">Français (French)</option>
-            <option value="hif">Fiji Hindi (Fiji Baat)</option>
-            <option value="gu">ગુજરાતી (Gujarati)</option>
-            <option value="he">עברית (Hebrew)</option>             
-            <option value="it">Italiano (Italian)</option>
-            <option value="ja">日本語 (Japanese)</option>
-            <option value="jv">Basa Jawa (Javanese)</option>
-            <option value="kn">ಕನ್ನಡ (Kannada)</option>
-            <option value="ko">한국어 (Korean)</option>
-            <option value="mai">मैथिली (Maithili)</option>
-            <option value="ml">മലയാളം (Malayalam)</option>
-            <option value="mr">मराठी (Marathi)</option>
-            <option value="ms">Bahasa Melayu (Malay)</option>
-            <option value="ne">नेपाली (Nepali)</option>
-            <option value="nl">Nederlands (Dutch)</option>
-            <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
-            <option value="pl">Polski (Polish)</option>
-            <option value="pt">Português (Portuguese)</option>
-            <option value="ru">Русский (Russian)</option>
-            <option value="sa">संस्कृतम् (Sanskrit)</option>
-            <option value="si">සිංහල (Sinhala)</option>
-            <option value="sw">Kiswahili (Swahili)</option>
-            <option value="ta">தமிழ் (Tamil)</option>
-            <option value="te">తెలుగు (Telugu)</option>
-            <option value="th">ไทย (Thai)</option>
-            <option value="tr">Türkçe (Turkish)</option>
-            <option value="uk">Українська (Ukrainian)</option>
-            <option value="ur">اردو (Urdu)</option>
-            <option value="uz">Oʻzbekcha (Uzbek)</option>
-            <option value="vi">Tiếng Việt (Vietnamese)</option>
-        </select>
-    </header>
+  <header>
+    <div class="header-top">
+      <div class="brand-group">
+        <div class="brand-logo">
+          <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank" title="Wiki's Lazy Coders">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" alt="Wiki's Lazy Coders Logo">
+          </a>
+        </div>
 
-    <div id="date-time" class="date-time"></div>
-    <div id="counter">Changes Count: 0</div>
-    <div id="changes"></div>
+        <div class="header-center">
+          <h1>Wikipedia Recent Changes (Live Voice Alerts)</h1>
+          <p class="subtitle">Real-time edit monitor with speech-out notifications • Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> (in 76 languages)</p>
+        </div>
+      </div>
 
-    <footer>
-        Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> | Updated on: 08 May 2026
-    👁 Views: <span id="tc-views"></span>
-👤 Unique: <span id="tc-sessions"></span>
-<script src="https://toolcounter.toolforge.org/embed.js.php?tool=RC-GitHub&page=index"></script>
-    </footer>
-
-    <audio id="beepHi">
-        <source src="https://suyashdwivedi.github.io/RC/Recent_changes_hi.mp3" type="audio/mp3">
-    </audio>
-
-    <audio id="beepEn">
-        <source src="https://suyashdwivedi.github.io/RC/Recent_changes_en.mp3" type="audio/mp3">
-    </audio>
-
-    <audio id="beepGu">
-        <source src="https://suyashdwivedi.github.io/RC/પાનાઓમાં_ફેરફાર_થયો_છે_1.mp3" type="audio/mp3">
-    </audio>
-
-    <audio id="beepPa">
-        <source src="https://suyashdwivedi.github.io/RC/ਪੰਨਿਆਂ_ਵਿੱਚ_ਬਦਲਾਅ_ਆਇਆ_ਹੈ_2.mp3" type="audio/mp3">
-    </audio>
-
-    <div class="nav-buttons">
-        <button class="nav-button" onclick="goToTop()">Go to Top</button>
-        <button class="nav-button" onclick="goToBottom()">Go to Bottom</button>
+      <div class="controls-bar">
+        <button id="toggle-theme" class="control-btn" aria-label="Switch Dark/Light Theme">🌙 Dark Mode</button>
+        <button id="toggle-voice" class="control-btn" aria-label="Enable/Disable Voice"></button>
+      </div>
     </div>
 
-    <script>
-        const changesDiv = document.getElementById('changes');
-        const dateDisplay = document.getElementById('date-time');
-        const languageSelect = document.getElementById('language-select');
-        let lastChangeTimestamp = null;
-        let changeCount = 0;
-        let isSoundEnabled = true;
+    <div class="toolbar">
+      <div class="lang-picker">
+        <label for="language-select">Select Language:</label>
+        <select id="language-select">
+          <option value="hi">हिन्दी (Hindi)</option>
+          <option value="en">English</option>
+          <option value="af">Afrikaans (Africa)</option>
+          <option value="am">አማርኛ (Amharic)</option>
+          <option value="ar">العربية (Arabic)</option>
+          <option value="as">অসমীয়া (Assamese)</option>
+          <option value="awa">अवधी (Awadhi)</option>
+          <option value="az">Azərbaycanca (Azerbaijani)</option>
+          <option value="ban">Basa Bali (Balinese)</option>
+          <option value="bcl">Bikol Central (Central Bikol)</option>
+          <option value="bh">भोजपुरी (Bhojpuri)</option>
+          <option value="bn">বাংলা (Bengali)</option>
+          <option value="ceb">Cebuano (Philippines)</option>
+          <option value="da">Dansk (Danish)</option>
+          <option value="dag">Dagbanli (Dagbani)</option>
+          <option value="de">Deutsch (German)</option>
+          <option value="es">Español (Spanish)</option>
+          <option value="fa">فارسی (Persian)</option>
+          <option value="fr">Français (French)</option>
+          <option value="gu">ગુજરાતી (Gujarati)</option>
+          <option value="ha">Hausa (West Africa)</option>
+          <option value="he">עברית (Hebrew)</option>
+          <option value="hif">Fiji Hindi (Fiji Baat)</option>
+          <option value="id">Bahasa Indonesia (Indonesian)</option>
+          <option value="ig">Igbo (Nigeria)</option>
+          <option value="ilo">Ilokano (Ilocano)</option>
+          <option value="it">Italiano (Italian)</option>
+          <option value="ja">日本語 (Japanese)</option>
+          <option value="jv">Basa Jawa (Javanese)</option>
+          <option value="kk">Қазақша (Kazakh)</option>
+          <option value="km">ភាសាខ្មែរ (Khmer)</option>
+          <option value="kn">ಕನ್ನಡ (Kannada)</option>
+          <option value="ko">한국어 (Korean)</option>
+          <option value="ky">Кыргызча (Kyrgyz)</option>
+          <option value="lo">ລາວ (Lao)</option>
+          <option value="mai">मैथिली (Maithili)</option>
+          <option value="mg">Malagasy (Madagascar)</option>
+          <option value="mi">Māori (New Zealand)</option>
+          <option value="min">Baso Minangkabau (Minangkabau)</option>
+          <option value="ml">മലയാളം (Malayalam)</option>
+          <option value="mn">Монгол (Mongolian)</option>
+          <option value="mr">मराठी (Marathi)</option>
+          <option value="ms">Bahasa Melayu (Malay)</option>
+          <option value="my">မြန်မာဘာသာ (Burmese)</option>
+          <option value="ne">नेपाली (Nepali)</option>
+          <option value="nl">Nederlands (Dutch)</option>
+          <option value="om">Oromoo (Oromo)</option>
+          <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+          <option value="pl">Polski (Polish)</option>
+          <option value="pt">Português (Portuguese)</option>
+          <option value="ru">Русский (Russian)</option>
+          <option value="rw">Ikinyarwanda (Kinyarwanda)</option>
+          <option value="sa">संस्कृतम् (Sanskrit)</option>
+          <option value="si">සිංහල (Sinhala)</option>
+          <option value="sm">Gagana Samoa (Samoan)</option>
+          <option value="so">Soomaaliga (Somali)</option>
+          <option value="su">Basa Sunda (Sundanese)</option>
+          <option value="sw">Kiswahili (Swahili)</option>
+          <option value="ta">தமிழ் (Tamil)</option>
+          <option value="te">తెలుగు (Telugu)</option>
+          <option value="tg">Тоҷикӣ (Tajik)</option>
+          <option value="th">ไทย (Thai)</option>
+          <option value="tk">Türkmençe (Turkmen)</option>
+          <option value="tl">Tagalog (Philippines)</option>
+          <option value="tr">Türkçe (Turkish)</option>
+          <option value="tt">Татарча (Tatar)</option>
+          <option value="tw">Twi (Ghana)</option>
+          <option value="ug">ئۇيغۇرچە (Uyghur)</option>
+          <option value="uk">Українська (Ukrainian)</option>
+          <option value="ur">اردو (Urdu)</option>
+          <option value="uz">Oʻzbekcha (Uzbek)</option>
+          <option value="vi">Tiếng Việt (Vietnamese)</option>
+          <option value="war">Winaray (Waray)</option>
+          <option value="yo">Yorùbá (West Africa)</option>
+          <option value="zh">中文 (Chinese)</option>
+          <option value="zu">isiZulu (Zulu)</option>
+        </select>
+      </div>
+      <div id="counter">Changes Count: 0</div>
+    </div>
+  </header>
 
-        const beepMap = {
-            hi: 'beepHi',
-            en: 'beepEn',
-            gu: 'beepGu',
-            pa: 'beepPa'
-        };
+  <main>
+    <div id="date-time" class="date-time"></div>
+    <div id="changes"></div>
+  </main>
 
-        function displayDateTime() {
-            const now = new Date();
-            dateDisplay.innerHTML = `Date: ${now.toLocaleString('en-IN', {
-                timeZone: 'Asia/Kolkata',
-                hour12: true,
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                weekday: 'long',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            })}`;
+  <footer>
+    Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> | 
+    <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank">Wiki's Lazy Coders</a> | 
+    Updated on: 20 November 2026
+  </footer>
+
+  <div class="nav-buttons">
+    <button class="nav-button" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">↑ Top</button>
+    <button class="nav-button" onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })">↓ Bottom</button>
+  </div>
+
+  <script>
+    const languageSelect = document.getElementById("language-select");
+    const themeToggle = document.getElementById("toggle-theme");
+    const voiceToggle = document.getElementById("toggle-voice");
+    const counterDisplay = document.getElementById("counter");
+    const dateDisplay = document.getElementById("date-time");
+    const changesDiv = document.getElementById("changes");
+
+    let currentLang = localStorage.getItem("selectedLanguage") || "hi";
+    let changeCount = 0; 
+    let intervalCount = 0;
+    let previousChangeIDs = [];
+    let spokenQueue = [];
+    const REFRESH_INTERVAL = 20000; 
+    let fetchIntervalId; 
+    let voiceEnabled = localStorage.getItem("voiceEnabled") !== "false"; 
+
+    function updateVoiceButton() {
+      if (voiceEnabled) {
+        voiceToggle.textContent = "🔊 Voice: ON";
+        voiceToggle.classList.remove("off");
+      } else {
+        voiceToggle.textContent = "🔇 Voice: OFF";
+        voiceToggle.classList.add("off");
+      }
+    }
+    updateVoiceButton();
+
+    voiceToggle.onclick = () => {
+      voiceEnabled = !voiceEnabled;
+      localStorage.setItem("voiceEnabled", voiceEnabled);
+      updateVoiceButton();
+      if (!voiceEnabled) speechSynthesis.cancel();
+    };
+
+    const langMap = {
+      en: "en-US", hi: "hi-IN", af: "af-ZA", am: "am-ET", ar: "ar-SA", as: "as-IN", awa: "awa-IN",
+      az: "az-AZ", ban: "ban-ID", bcl: "bcl-PH", bh: "bh-IN", bn: "bn-IN", ceb: "ceb-PH", da: "da-DK",
+      dag: "dag-GH", de: "de-DE", es: "es-ES", fa: "fa-IR", fr: "fr-FR", gu: "gu-IN", ha: "ha-NG",
+      he: "he-IL", hif: "hif-FJ", id: "id-ID", ig: "ig-NG", ilo: "ilo-PH", it: "it-IT", ja: "ja-JP",
+      jv: "jv-ID", kk: "kk-KZ", km: "km-KH", kn: "kn-IN", ko: "ko-KR", ky: "ky-KG", lo: "lo-LA",
+      mai: "mai-IN", mg: "mg-MG", mi: "mi-NZ", min: "min-ID", ml: "ml-IN", mn: "mn-MN", mr: "mr-IN",
+      ms: "ms-MY", my: "my-MM", ne: "ne-NP", nl: "nl-NL", om: "om-ET", pa: "pa-IN", pl: "pl-PL",
+      pt: "pt-PT", ru: "ru-RU", rw: "rw-RW", sa: "sa-IN", si: "si-LK", sm: "sm-WS", so: "so-SO",
+      su: "su-ID", sw: "sw-KE", ta: "ta-IN", te: "te-IN", tg: "tg-TJ", th: "th-TH", tk: "tk-TM",
+      tl: "tl-PH", tr: "tr-TR", tt: "tt-RU", tw: "tw-GH", ug: "ug-CN", uk: "uk-UA", ur: "ur-PK",
+      uz: "uz-UZ", vi: "vi-VN", war: "war-PH", yo: "yo-NG", zh: "zh-CN", zu: "zu-ZA"
+    };
+
+    function displayDateTime() {
+      const now = new Date();
+      const localTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const formattedLocal = now.toLocaleString(undefined, {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true,
+        timeZoneName: 'short'
+      });
+      dateDisplay.textContent = `Current Local Time: ${formattedLocal} (${localTimeZoneName})`;
+    }
+    setInterval(displayDateTime, 1000);
+    displayDateTime();
+
+    function isIPAddress(user) {
+      return /^(\d{1,3}\.){3}\d{1,3}$/.test(user)
+        || /^[a-fA-F0-9:]+$/.test(user)
+        || (user && user.startsWith("~"));
+    }
+
+    function speakQueue(queue) {
+      if (!voiceEnabled || !queue || queue.length === 0) {
+        return;
+      }
+      speechSynthesis.cancel(); 
+
+      let utteranceIndex = 0;
+      const speakNext = () => {
+        if (utteranceIndex < queue.length) {
+          const msg = queue[utteranceIndex];
+          const utterance = new SpeechSynthesisUtterance(msg);
+          utterance.lang = langMap[currentLang] || "en-US";
+          utterance.onend = () => {
+            utteranceIndex++;
+            setTimeout(speakNext, 400); 
+          };
+          utterance.onerror = (event) => {
+            console.error('SpeechSynthesisUtterance.onerror', event);
+          };
+          speechSynthesis.speak(utterance);
+        }
+      };
+      speakNext(); 
+    }
+
+    async function fetchChanges() {
+      try {
+        const res = await fetch(`https://${currentLang}.wikipedia.org/w/api.php?action=query&list=recentchanges&rcprop=title|user|timestamp|comment|ids&rclimit=50&origin=*&format=json`);
+        const json = await res.json();
+        const changes = json.query.recentchanges.reverse(); 
+
+        const newChanges = changes.filter(change => !previousChangeIDs.includes(change.rcid));
+
+        let voiceBatch = [];
+        for (let i = newChanges.length - 1; i >= 0; i--) {
+          const change = newChanges[i];
+          voiceBatch.push(`Page Changed: ${change.title}. Editor: ${isIPAddress(change.user) ? "IP address" : (change.user || "Anonymous")}.`);
         }
 
-        async function fetchChanges(language) {
-            try {
-                const res = await fetch(`https://${language}.wikipedia.org/w/api.php?action=query&list=recentchanges&rcprop=title|user|timestamp|comment&rclimit=50&origin=*&format=json`);
-                const data = await res.json();
-                updateDisplay(data.query.recentchanges, language);
-            } catch (err) {
-                changesDiv.innerHTML = "<p style='color:red;'>Unable to fetch changes. Please try again later.</p>";
-            }
-        }
+        newChanges.forEach(change => { 
+          const timeUTC = new Date(change.timestamp).toUTCString();
+          const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          const timeLocal = new Date(change.timestamp).toLocaleString(undefined, {
+            year: "numeric", month: "2-digit", day: "2-digit",
+            hour: "2-digit", minute: "2-digit", second: "2-digit",
+            hour12: true,
+          });
 
-        function updateDisplay(changes, language) {
-            const changesDiv = document.getElementById('changes');
-            const currentItems = changesDiv.children;
-            const beep = document.getElementById(beepMap[language] || 'beepEn');
-            changes.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // Newest first
+          const comment = change.comment || "—";
+          const titleLink = `https://${currentLang}.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history`;
+          const userLink = `https://${currentLang}.wikipedia.org/wiki/Special:Contributions/${encodeURIComponent(change.user || "")}`;
+          const editorDisplay = isIPAddress(change.user) ? "IP address" : (change.user || "Anonymous");
 
-            changes.forEach((change, index) => {
-                let changeItem;
-                if (currentItems[index]) {
-                    // Update existing item
-                    changeItem = currentItems[index];
-                } else {
-                    // Create new item if needed
-                    changeItem = document.createElement('div');
-                    changeItem.className = 'change-item';
-                    changesDiv.appendChild(changeItem);
-                }
-                
-                const changeTime = new Date(change.timestamp);
-                changeItem.innerHTML = `
-                    <strong>Page Changed:</strong> <a href="https://${language}.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history" target="_blank">${change.title}</a><br>
-                    <strong>Editor:</strong> <a href="https://${language}.wikipedia.org/wiki/Special:Contributions/${encodeURIComponent(change.user)}" target="_blank">${change.user || 'Anonymous'}</a><br>
-                    <strong>Time (UTC):</strong> ${changeTime.toUTCString()}<br>
-                    <strong>Time (IST):</strong> ${changeTime.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}<br>
-                    <strong>Comment:</strong> ${change.comment || 'No summary'}<br>
-                `;
-
-                if (isSoundEnabled && (!lastChangeTimestamp || changeTime > lastChangeTimestamp)) {
-                    changeCount++;
-                    lastChangeTimestamp = changeTime;
-                    beep.play().catch(()=>{});
-                }
-            });
-
-            // Remove any extra items if the new list is shorter
-            while (changesDiv.children.length > changes.length) {
-                changesDiv.removeChild(changesDiv.lastChild);
-            }
-
-            document.getElementById('counter').innerText = `Changes Count: ${changeCount}`;
-        }
-
-        function goToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        function goToBottom() {
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        }
-
-        // Dark mode toggle
-        const themeBtn = document.getElementById('toggle-theme');
-        function setTheme(mode) {
-            if (mode === 'dark') {
-                document.body.classList.add('dark-mode');
-                themeBtn.textContent = '☀️ Light Mode';
-                themeBtn.classList.remove('light');
-            } else {
-                document.body.classList.remove('dark-mode');
-                themeBtn.textContent = '🌙 Dark Mode';
-                themeBtn.classList.add('light');
-            }
-            localStorage.setItem('theme', mode);
-        }
-        themeBtn.addEventListener('click', () => {
-            const isDark = document.body.classList.toggle('dark-mode');
-            setTheme(isDark ? 'dark' : 'light');
+          const newItemDiv = document.createElement('div');
+          newItemDiv.classList.add('change-item');
+          newItemDiv.innerHTML = `
+            <div class="change-title">
+              <a href="${titleLink}" target="_blank">${change.title}</a>
+            </div>
+            <div class="change-meta">
+              <span><strong>Editor:</strong> <a href="${userLink}" target="_blank">${editorDisplay}</a></span>
+              <span><strong>UTC:</strong> ${timeUTC}</span>
+              <span><strong>Local:</strong> ${timeLocal} (${localTimeZone})</span>
+            </div>
+            <div class="change-comment">
+              <strong>Comment:</strong> ${comment}
+            </div>
+          `;
+          changesDiv.prepend(newItemDiv);
         });
-        
-        // Sound toggle
-        const soundBtn = document.getElementById('toggle-sound');
-        function setSound(enabled) {
-            isSoundEnabled = enabled;
-            soundBtn.textContent = enabled ? '🔊 Sound On' : '🔇 Sound Off';
-            soundBtn.classList.toggle('on', enabled);
-            localStorage.setItem('soundEnabled', enabled);
+
+        while (changesDiv.children.length > 25) {
+          changesDiv.removeChild(changesDiv.lastChild);
         }
-        soundBtn.addEventListener('click', () => {
-            setSound(!isSoundEnabled);
-        });
+        previousChangeIDs = changes.map(change => change.rcid);
 
-        // Unlock audio on user interaction (browser autoplay rule)
-        document.body.addEventListener('click', () => {
-            ['beepHi','beepEn','beepGu','beepPa'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.play().then(()=>el.pause()).catch(()=>{});
-            });
-        }, { once:true });
+        changeCount = newChanges.length;
+        intervalCount++;
+        counterDisplay.textContent = `Refresh #${intervalCount} • New changes: ${changeCount}`;
 
-        // Load preferences on page load
-        window.onload = function() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                setTheme('dark');
-            } else {
-                setTheme('light');
-            }
-
-            const savedSound = localStorage.getItem('soundEnabled');
-            if (savedSound !== null) {
-                setSound(savedSound === 'true');
-            } else {
-                setSound(true); // Default to sound on
-            }
-        };
-
-        displayDateTime();
-        setInterval(displayDateTime, 1000);
-
-        const savedLang = localStorage.getItem('selectedLanguage') || 'hi';
-        languageSelect.value = savedLang;
-        fetchChanges(savedLang);
-        setInterval(() => fetchChanges(languageSelect.value), 5000);
-
-        languageSelect.addEventListener('change', () => {
-            localStorage.setItem('selectedLanguage', languageSelect.value);
-            fetchChanges(languageSelect.value);
-            lastChangeTimestamp = null;
-            changeCount = 0;
-            document.getElementById('counter').innerText = `Changes Count: 0`;
-        });
-    </script>
-
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GC8PGC89NB"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-GC8PGC89NB');
-    </script>
-
-    <script src="https://cdn.counter.dev/script.js"
-        data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
-        data-utcoffset="6">
-    </script>
-
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js').then(function(reg) {
-                console.log('✅ Service Worker registered: ', reg.scope);
-            }).catch(function(error) {
-                console.log('❌ Service Worker registration failed: ', error);
-            });
+        if (voiceBatch.length > 0) {
+          spokenQueue = voiceBatch; 
+          speakQueue(spokenQueue);
         }
-    </script>
+
+      } catch (e) {
+        console.error("Failed to fetch:", e);
+      }
+    }
+
+    languageSelect.value = currentLang;
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark-mode");
+      themeToggle.textContent = "☀️ Light Mode";
+    }
+
+    themeToggle.onclick = () => {
+      document.body.classList.toggle("dark-mode");
+      const mode = document.body.classList.contains("dark-mode") ? "dark" : "light";
+      themeToggle.textContent = mode === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode";
+      localStorage.setItem("theme", mode);
+    };
+
+    languageSelect.onchange = () => {
+      currentLang = languageSelect.value;
+      localStorage.setItem("selectedLanguage", currentLang);
+      changesDiv.innerHTML = "";
+      previousChangeIDs = [];
+      fetchChanges();
+    };
+
+    fetchChanges();
+    fetchIntervalId = setInterval(fetchChanges, REFRESH_INTERVAL);
+  </script>
 </body>
 </html>
