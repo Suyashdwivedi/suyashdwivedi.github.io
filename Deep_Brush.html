@@ -19,763 +19,1736 @@
 <script src="https://cdn.counter.dev/script.js"
         data-id="cc7a036d-a904-4d76-bcac-37ea4196c014"
         data-utcoffset="6"></script>
+
 <style>
-:root{--bg:#23222b;--panel:#f1eff6;--ink:#25213a;--mute:#6d6985;--acc:#3b4cca;--line:#d4d0e2}
-*{box-sizing:border-box}
-html,body{margin:0;height:100%}
-body{display:flex;flex-direction:column}
-body{font:14px/1.4 "Gill Sans","Trebuchet MS",sans-serif;color:var(--ink);background:var(--bg)}
-.app{display:grid;grid-template-columns:1fr 340px;flex:1;min-height:0}
-.stage{display:block;padding:18px;min-width:0;min-height:0;position:relative;overflow:auto;overscroll-behavior:contain}
-canvas{display:block;max-width:none;max-height:none;flex:none;cursor:crosshair;touch-action:none;box-shadow:0 8px 40px #0008;background:#fff}#objectsCanvas{position:absolute;pointer-events:none;box-shadow:none;background:transparent;z-index:2}
-aside{background:var(--panel);padding:18px;overflow:auto;border-left:1px solid var(--line)}
-.layer-opacity-control{display:block;padding:10px 11px;margin:8px 0;background:#fff;border:1px solid var(--line);border-radius:9px}
-.layer-opacity-control input{display:block;width:100%;margin:9px 0 3px;accent-color:var(--acc)}
-header{display:flex;align-items:center;gap:12px;padding:8px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-.logo-img{height:44px;width:auto}
-h1{font:italic 700 26px Georgia,serif;margin:0}
-.tagline{margin:0;color:var(--mute)}
-footer{padding:8px 18px;background:var(--panel);border-top:1px solid var(--line);font-size:12px;color:var(--mute);text-align:center}
-footer a{color:var(--acc)}
-fieldset{border:1px solid var(--line);border-radius:6px;margin:0 0 12px;padding:10px 12px}
-legend{font-weight:700;padding:0 6px}
-label{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:6px 0}
-label span{color:var(--mute)}
-input[type=range]{width:150px;accent-color:var(--acc)}
-input[type=text],select{width:150px;padding:4px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--ink)}
-input[type=color]{width:44px;height:26px;padding:0;border:1px solid var(--line);background:#fff}
-button{font:inherit;padding:7px 10px;border:1px solid var(--acc);background:#fff;color:var(--acc);border-radius:5px;cursor:pointer;margin:0 6px 6px 0}
-button.p{background:var(--acc);color:#fff}
-button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
-#msg{color:var(--mute);font-size:12px;min-height:18px}
-@media(max-width:760px){.app{grid-template-columns:1fr;grid-template-rows:55% 45%}}
-.actions{display:flex;gap:6px;margin-bottom:8px}.actions button{flex:1;margin:0}
-.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0 0 10px}
-.card h2,.card summary{font:700 12px "Gill Sans","Trebuchet MS",sans-serif;text-transform:uppercase;letter-spacing:.07em;color:var(--mute);margin:0 0 6px;cursor:pointer}
-details.card>summary{margin:0}details[open].card>summary{margin-bottom:8px}
-.seg{display:flex;border:1px solid var(--acc);border-radius:8px;overflow:hidden;margin:6px 0 10px}
-.seg button{flex:1;margin:0;border:0;border-radius:0;background:#fff;padding:9px 4px}
-.seg button.on{background:var(--acc);color:#fff}
-.hint{font-size:11px;color:var(--mute);margin:6px 0 0}
-.chk{justify-content:flex-start}
-#objPanel{margin:8px 0 0}
-#sw{margin:2px 0 6px}
-.sw{width:24px;height:24px;border-radius:50%;padding:0;margin:2px;border:2px solid #fff;box-shadow:0 0 0 1px var(--line)}
-label span{display:flex;align-items:center;gap:6px;color:var(--ink)}label span input[type=range]{width:100px}label output{min-width:36px;text-align:right;color:var(--mute);font-size:12px}
-#ring{position:absolute;pointer-events:none;border:1.5px solid #fff;outline:1px solid #000a;border-radius:50%;z-index:3;display:none}
+:root {
+  --bg-app: #121318;
+  --bg-panel: #1a1c24;
+  --bg-card: #222530;
+  --bg-input: #15171e;
+  --border: #2f3342;
+  --border-hi: #454b62;
+  --ink: #eef0f6;
+  --mute: #9499ad;
+  --acc: #6366f1;
+  --acc-hover: #7578ff;
+  --acc-soft: rgba(99, 102, 241, 0.16);
+  --ok: #10b981;
+  --ok-soft: rgba(16, 185, 129, 0.16);
+  --warn: #f59e0b;
+  --danger: #ef4444;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body {
+  display: flex;
+  flex-direction: column;
+  font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+  background: var(--bg-app);
+}
+
+/* Header */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.logo-img { height: 34px; width: auto; border-radius: 6px; }
+h1 { font: 700 17px/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; letter-spacing: -0.01em; }
+.tagline { margin: 0; color: var(--mute); font-size: 11.5px; }
+
+.top-actions { display: flex; align-items: center; gap: 8px; }
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--mute);
+}
+.badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--warn); }
+.badge.ai-active { background: var(--ok-soft); border-color: rgba(16,185,129,.4); color: #6ee7b7; }
+.badge.ai-active .dot { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+
+/* Workspace */
+.app { display: grid; grid-template-columns: 1fr 350px; flex: 1; min-height: 0; }
+
+.stage-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background:
+    radial-gradient(circle at center, #1d202b 0%, #121318 100%);
+}
+.stage {
+  flex: 1;
+  position: relative;
+  overflow: auto;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  overscroll-behavior: contain;
+}
+.canvas-holder {
+  position: relative;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255,255,255,0.08);
+  border-radius: 2px;
+  background-image:
+    linear-gradient(45deg, #262936 25%, transparent 25%),
+    linear-gradient(-45deg, #262936 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #262936 75%),
+    linear-gradient(-45deg, transparent 75%, #262936 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
+canvas {
+  display: block;
+  cursor: crosshair;
+  touch-action: none;
+}
+#objectsCanvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+#ring {
+  position: fixed;
+  pointer-events: none;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.75), inset 0 0 0 1px rgba(0,0,0,.4);
+  border-radius: 50%;
+  z-index: 50;
+  display: none;
+  transform: translate(-50%, -50%);
+}
+
+/* Floating Stage HUD */
+.hud-bar {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(26, 28, 36, 0.88);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-hi);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.45);
+  z-index: 15;
+}
+.hud-bar button {
+  padding: 4px 9px;
+  font-size: 12px;
+  border-radius: 999px;
+  margin: 0;
+  background: transparent;
+  border-color: transparent;
+  color: var(--ink);
+}
+.hud-bar button:hover { background: rgba(255,255,255,.08); }
+.hud-bar button.active { background: var(--acc); color: #fff; }
+.hud-sep { width: 1px; height: 16px; background: var(--border-hi); margin: 0 2px; }
+#zoomLabel { font-size: 12px; color: var(--mute); min-width: 42px; text-align: center; font-variant-numeric: tabular-nums; }
+
+/* Status Toast inside Stage */
+.status-pill {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(90%, 560px);
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(26, 28, 36, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-hi);
+  color: var(--ink);
+  font-size: 12px;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.35);
+}
+.spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255,255,255,.2);
+  border-top-color: var(--acc-hover);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  display: none;
+  flex-shrink: 0;
+}
+.status-pill.busy .spinner { display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Sidebar */
+aside {
+  background: var(--bg-panel);
+  padding: 12px;
+  overflow-y: auto;
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 11px 12px;
+}
+.card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--mute);
+  margin: 0 0 8px;
+}
+details.card > summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--mute);
+  cursor: pointer;
+  user-select: none;
+}
+details.card > summary::-webkit-details-marker { display: none; }
+details.card > summary::after { content: "▾"; font-size: 13px; transition: transform .15s; }
+details.card:not([open]) > summary::after { transform: rotate(-90deg); }
+details[open].card > summary { margin-bottom: 10px; }
+
+/* Buttons & Inputs */
+button {
+  font: inherit;
+  font-weight: 500;
+  padding: 6px 11px;
+  border: 1px solid var(--border-hi);
+  background: var(--bg-input);
+  color: var(--ink);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background .12s, border-color .12s, transform .05s;
+}
+button:hover:not(:disabled) { background: #2a2e3d; border-color: #5b627d; }
+button:active:not(:disabled) { transform: translateY(1px); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+button.p { background: var(--acc); border-color: var(--acc); color: #fff; }
+button.p:hover:not(:disabled) { background: var(--acc-hover); border-color: var(--acc-hover); }
+button.ai-btn {
+  width: 100%;
+  padding: 9px 12px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border: 1px solid rgba(255,255,255,.18);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+button.ai-btn:hover:not(:disabled) { filter: brightness(1.08); }
+button.danger { color: #fca5a5; border-color: rgba(239,68,68,.35); }
+button.danger:hover:not(:disabled) { background: rgba(239,68,68,.15); }
+
+.seg {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--bg-input);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-bottom: 10px;
+}
+.seg button {
+  border: 0;
+  background: transparent;
+  padding: 6px 4px;
+  font-size: 12px;
+  border-radius: 6px;
+  color: var(--mute);
+}
+.seg button.on { background: var(--acc); color: #fff; font-weight: 600; }
+
+label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin: 7px 0;
+  font-size: 12.5px;
+  color: var(--ink);
+}
+label .ctrl { display: flex; align-items: center; gap: 6px; }
+label output {
+  min-width: 36px;
+  text-align: right;
+  color: var(--mute);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+input[type=range] { width: 112px; accent-color: var(--acc); cursor: pointer; }
+input[type=text], select {
+  width: 145px;
+  padding: 5px 8px;
+  border: 1px solid var(--border-hi);
+  border-radius: 6px;
+  background: var(--bg-input);
+  color: var(--ink);
+  font: inherit;
+}
+input[type=color] {
+  width: 36px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--border-hi);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+input[type=checkbox] { accent-color: var(--acc); width: 15px; height: 15px; cursor: pointer; }
+
+.chk { justify-content: flex-start; gap: 8px; cursor: pointer; }
+.hint { font-size: 11px; color: var(--mute); margin: 6px 0 0; line-height: 1.4; }
+
+/* Swatches */
+#sw { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 8px; }
+.sw {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  padding: 0;
+  border: 2px solid rgba(255,255,255,.25);
+  box-shadow: 0 2px 5px rgba(0,0,0,.4);
+}
+.sw:hover { transform: scale(1.12); }
+
+/* Progress bar for AI Depth */
+.progress-wrap {
+  margin-top: 8px;
+  display: none;
+}
+.progress-wrap.active { display: block; }
+.progress-track {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-input);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--acc), #a855f7);
+  transition: width 0.2s ease;
+}
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--mute);
+  margin-top: 4px;
+}
+
+.row-btns { display: flex; gap: 6px; margin-top: 8px; }
+.row-btns > * { flex: 1; }
+
+.obj-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-input);
+  cursor: pointer;
+}
+.obj-item.sel { border-color: var(--acc); background: var(--acc-soft); }
+
+fieldset {
+  border: 1px solid var(--border-hi);
+  border-radius: 8px;
+  margin: 8px 0 0;
+  padding: 8px 10px;
+}
+legend { font-weight: 600; font-size: 11.5px; color: var(--mute); padding: 0 6px; }
+
+footer {
+  padding: 5px 16px;
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border);
+  font-size: 11.5px;
+  color: var(--mute);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+footer a { color: #93c5fd; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+@media (max-width: 820px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: 52% 48%; }
+  .tagline { display: none; }
+}
 </style>
 </head>
 <body>
-<header>
-  <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" alt="Wiki's Lazy Coders Logo" class="logo-img" />
-  <div>
-    <h1>LazyCoders Deep Brush</h1>
-    <p class="tagline">Paint text, logos and patterns onto a photo. The paint follows the surface and keeps the original shadows</p>
-  </div>
-</header>
-<div class="app">
-  <div class="stage"><canvas id="c"></canvas><canvas id="objectsCanvas"></canvas></div>
-  <aside>
-    <div class="actions">
-      <button class="p" id="open">Open photo</button>
-      <button id="undo" title="Ctrl+Z">Undo</button>
-      <button class="p" id="save">Save PNG</button>
-    </div>
-    <input type="file" id="file" accept="image/*" hidden>
-    <div id="msg" role="status">Drop a photo anywhere, or paint on the sample.</div>
 
-    <section class="card"><h2>Tools</h2>
+<header>
+  <div class="brand">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" alt="Logo" class="logo-img" />
+    <div>
+      <h1>LazyCoders Deep Brush</h1>
+      <p class="tagline">Surface-aware painting & 3D depth wrapping with original lighting preservation</p>
+    </div>
+  </div>
+  <div class="top-actions">
+    <span id="depthBadge" class="badge" title="Current surface depth source">
+      <span class="dot"></span>
+      <span id="depthBadgeText">Basic Lighting Depth</span>
+    </span>
+    <button class="p" id="open">Open Photo</button>
+    <button id="undo" title="Undo (Ctrl+Z)">Undo</button>
+    <button class="p" id="save">Export PNG</button>
+  </div>
+  <input type="file" id="file" accept="image/*" hidden>
+</header>
+
+<div class="app">
+  <div class="stage-wrap">
+    <div id="statusPill" class="status-pill" role="status">
+      <span class="spinner"></span>
+      <span id="msg">Drop a photo anywhere, or start painting on the sample surface.</span>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="canvas-holder" id="holder">
+        <canvas id="c"></canvas>
+        <canvas id="objectsCanvas"></canvas>
+      </div>
+    </div>
+
+    <div class="hud-bar">
+      <button id="dv" title="Toggle Depth Map Visualization (Key: D)">Show Depth Map</button>
+      <div class="hud-sep"></div>
+      <button id="zoomOut" title="Zoom Out">−</button>
+      <button id="zoomFit" title="Fit to Screen">Fit</button>
+      <button id="zoom100" title="Actual Size">100%</button>
+      <button id="zoomIn" title="Zoom In">+</button>
+      <span id="zoomLabel">100%</span>
+    </div>
+  </div>
+
+  <aside>
+    <!-- AI & Surface Depth Card (Promoted to Top for Visibility) -->
+    <section class="card">
+      <div class="card-title">
+        <span>1. Surface & AI Depth</span>
+        <span id="backendTag" style="font-weight:500;text-transform:none;font-size:11px">Ready</span>
+      </div>
+      <button id="ai" class="ai-btn">
+        <span>✨ Run AI Depth (Depth Anything V2)</span>
+      </button>
+      <div id="aiProgress" class="progress-wrap">
+        <div class="progress-track"><div id="aiProgressBar" class="progress-fill"></div></div>
+        <div class="progress-meta">
+          <span id="aiProgressFile">Initializing...</span>
+          <span id="aiProgressPct">0%</span>
+        </div>
+      </div>
+      <label style="margin-top:9px">Follow surface curve
+        <span class="ctrl"><input type="range" id="disp" class="rb" min="-100" max="100" value="55"><output id="dispVal">55</output></span>
+      </label>
+      <label>Keep original shadows
+        <span class="ctrl"><input type="range" id="light" class="rb" min="0" max="100" value="85"><output id="lightVal">85%</output></span>
+      </label>
+      <label>Keep surface texture
+        <span class="ctrl"><input type="range" id="tex" class="rb" min="0" max="100" value="65"><output id="texVal">65%</output></span>
+      </label>
+    </section>
+
+    <!-- Brush & Paint Tools -->
+    <section class="card">
+      <div class="card-title"><span>2. Paint Tools</span></div>
       <div class="seg" id="tools">
-        <button data-tool="brush" title="Key: B">Colour</button>
+        <button data-tool="brush" class="on" title="Key: B">Colour</button>
         <button data-tool="spray" title="Key: S">Spray</button>
         <button data-tool="pattern" title="Key: P">Pattern</button>
         <button data-tool="select" title="Key: V">Move</button>
       </div>
-      <select id="tool" hidden><option value="brush">Colour brush (solid)</option><option value="pattern">Pattern brush</option><option value="spray">Spray paint</option><option value="select">Select / move designs</option></select>
-      <label>Colour <input type="color" id="paintColor" value="#e53935"></label>
-      <div id="sw"></div>
-      <label>Size <input type="range" id="brush" min="8" max="200" value="60"></label>
-      <label>Opacity <span><input type="range" id="opacity" min="0" max="100" step="1" value="100"><output id="brushOpacityValue">100%</output></span></label>
-      <label id="rowSpray">Spray density <span><input type="range" id="sprayIntensity" min="0" max="100" value="100"><output id="sprayIntensityValue">100%</output></span></label>
-      <label>Stay inside edges <input type="range" id="edge" min="0" max="100" value="50"></label>
-      <label id="rowShade">Keep shading on colour <input type="range" id="colShade" min="0" max="100" value="0"></label>
-      <label class="chk"><input type="checkbox" id="erase"> Eraser (key E)</label>
-      <button id="clear">Clear paint</button>
-      <p class="hint">100% opacity paints the exact colour with no see-through. Keys: B S P V tools, [ ] size, Ctrl+Z undo.</p>
+      <select id="tool" hidden>
+        <option value="brush">Colour brush</option>
+        <option value="pattern">Pattern brush</option>
+        <option value="spray">Spray paint</option>
+        <option value="select">Select / move designs</option>
+      </select>
+
+      <div id="colorControls">
+        <label>Paint colour <input type="color" id="paintColor" value="#e53935"></label>
+        <div id="sw"></div>
+      </div>
+
+      <label>Brush size
+        <span class="ctrl"><input type="range" id="brush" min="8" max="200" value="60"><output id="brushSizeVal">60px</output></span>
+      </label>
+      <label>Opacity
+        <span class="ctrl"><input type="range" id="opacity" min="1" max="100" value="100"><output id="brushOpacityValue">100%</output></span>
+      </label>
+      <label id="rowSpray" style="display:none">Spray density
+        <span class="ctrl"><input type="range" id="sprayIntensity" min="5" max="100" value="75"><output id="sprayIntensityValue">75%</output></span>
+      </label>
+      <label>Stay inside edges
+        <span class="ctrl"><input type="range" id="edge" min="0" max="100" value="50"><output id="edgeVal">50%</output></span>
+      </label>
+      <label id="rowShade">Blend colour w/ shadows
+        <span class="ctrl"><input type="range" id="colShade" min="0" max="100" value="65"><output id="colShadeVal">65%</output></span>
+      </label>
+
+      <div class="row-btns" style="align-items:center">
+        <label class="chk" style="margin:0"><input type="checkbox" id="erase"> Eraser (E)</label>
+        <button id="clear" class="danger" style="flex:0 0 auto">Clear Paint</button>
+      </div>
     </section>
 
-    <details class="card" open><summary>Text and logos</summary>
-      <label>New text <input type="text" id="objectText" value="Your text"></label>
-      <button class="p" id="addText">+ Add text</button>
-      <button id="addLogo">+ Add image / logo</button>
-      <input type="file" id="objectFile" accept="image/*" hidden>
-      <div id="objectList" style="font-size:12px;margin-top:6px"></div>
-      <fieldset id="objPanel" hidden><legend>Selected design</legend>
-        <label>Size <input type="range" id="objectSize" min="12" max="400" value="64"></label>
-        <label>Colour (text) <input type="color" id="objectColor" value="#ffffff"></label>
-        <label>Opacity <span><input type="range" id="objectOpacity" min="0" max="100" step="1" value="100"><output id="opacityValue">100%</output></span></label>
-        <label id="opaqueOption" class="chk"><input type="checkbox" id="forceOpaque" checked> Solid background for logo / image</label>
-        <label id="opaqueColorOption">Background colour <input type="color" id="opaqueBgColor" value="#ffffff"></label>
-        <label>Angle <span><input type="range" id="objectAngle" min="-180" max="180" value="0" style="width:112px"><output id="angleValue">0°</output></span></label>
-        <label>Surface wrap <span><input type="range" id="objectWarp" min="0" max="100" value="40"><output id="warpValue">40</output></span></label>
-        <p class="hint">Wrap bends the design with the depth map. Run AI depth first for cloth folds and curves.</p>
-        <button id="deleteObject">Delete selected</button>
-      </fieldset>
-      <p class="hint">Click a design on the photo to select and drag it. Drag its corner handle to resize (hold Ctrl to keep proportions).</p>
-    </details>
-
-    <details class="card"><summary>Pattern brush</summary>
-      <label>Pattern
+    <!-- Pattern Settings -->
+    <details class="card" id="patternCard">
+      <summary>Pattern Brush Settings</summary>
+      <label>Pattern style
         <select id="pat" class="rb">
-          <option value="solid">Solid color</option><option value="stripes">Stripes</option><option value="dots">Dots</option>
-          <option value="checker">Checker</option><option value="text" selected>Text</option><option value="logo">Logo</option>
-        </select></label>
+          <option value="solid">Solid color</option>
+          <option value="stripes">Stripes</option>
+          <option value="dots">Dots</option>
+          <option value="checker">Checker</option>
+          <option value="text" selected>Repeating Text</option>
+          <option value="logo">Repeating Logo</option>
+        </select>
+      </label>
       <label>Color 1 <input type="color" id="c1" class="rb" value="#d8344f"></label>
       <label>Color 2 <input type="color" id="c2" class="rb" value="#f5efe0"></label>
-      <label>Text <input type="text" id="txt" class="rb" value="WIKI"></label>
-      <label>Logo <button id="lg" style="margin:0">Choose</button></label>
+      <label>Pattern text <input type="text" id="txt" class="rb" value="WIKI"></label>
+      <label>Pattern logo <button id="lg">Choose Image</button></label>
       <input type="file" id="logoFile" accept="image/*" hidden>
-      <label>Pattern size <input type="range" id="size" class="rb" min="12" max="200" value="64"></label>
-      <label>Pattern opacity <span><input type="range" id="patternOpacity" min="0" max="100" value="100"><output id="patternOpacityValue">100%</output></span></label>
+      <label>Tile scale
+        <span class="ctrl"><input type="range" id="size" class="rb" min="12" max="200" value="64"><output id="patSizeVal">64px</output></span>
+      </label>
+      <label>Pattern opacity
+        <span class="ctrl"><input type="range" id="patternOpacity" min="5" max="100" value="100"><output id="patternOpacityValue">100%</output></span>
+      </label>
     </details>
 
-    <details class="card" open><summary>Surface and depth</summary>
-      <label>Follow shape <input type="range" id="disp" class="rb" min="-100" max="100" value="40"></label>
-      <label>Keep light <input type="range" id="light" class="rb" min="0" max="100" value="90"></label>
-      <label>Keep texture <input type="range" id="tex" class="rb" min="0" max="100" value="60"></label>
-      <button id="ai">Use AI depth</button>
-      <button id="dv">Show depth</button>
-    </details>
-
-    <details class="card"><summary>View</summary>
-      <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
-        <button id="zoomOut" title="Zoom out">−</button>
-        <button id="zoomFit">Fit</button>
-        <button id="zoom100" class="p">100%</button>
-        <button id="zoomIn" title="Zoom in">+</button>
-        <span id="zoomLabel" style="font-size:12px;color:var(--mute)">100%</span>
+    <!-- Text & Logo Layers -->
+    <details class="card" open>
+      <summary>3. Text & Logo Decals</summary>
+      <div style="display:flex;gap:6px">
+        <input type="text" id="objectText" value="Your text" style="flex:1;width:auto" placeholder="Enter decal text...">
+        <button class="p" id="addText">+ Text</button>
+        <button id="addLogo">+ Logo</button>
       </div>
-      <p class="hint">Mouse wheel over the photo zooms.</p>
+      <input type="file" id="objectFile" accept="image/*" hidden>
+
+      <div id="objectList" style="font-size:12px;margin-top:8px"></div>
+
+      <fieldset id="objPanel" hidden>
+        <legend>Selected Decal</legend>
+        <label>Size
+          <span class="ctrl"><input type="range" id="objectSize" min="12" max="450" value="64"><output id="objSizeVal">64</output></span>
+        </label>
+        <label id="textColorRow">Text colour <input type="color" id="objectColor" value="#ffffff"></label>
+        <label>Opacity
+          <span class="ctrl"><input type="range" id="objectOpacity" min="5" max="100" value="100"><output id="opacityValue">100%</output></span>
+        </label>
+        <label id="opaqueOption" class="chk"><input type="checkbox" id="forceOpaque" checked> Solid matte inside logo</label>
+        <label id="opaqueColorOption">Matte colour <input type="color" id="opaqueBgColor" value="#ffffff"></label>
+        <label>Rotation
+          <span class="ctrl"><input type="range" id="objectAngle" min="-180" max="180" value="0"><output id="angleValue">0°</output></span>
+        </label>
+        <label>3D Surface wrap
+          <span class="ctrl"><input type="range" id="objectWarp" min="0" max="100" value="55"><output id="warpValue">55</output></span>
+        </label>
+        <button id="deleteObject" class="danger" style="width:100%;margin-top:6px">Delete Decal (Del)</button>
+      </fieldset>
+      <p class="hint">Click any decal on the photo to drag it. Drag bottom-right corner to resize (hold Ctrl to lock aspect ratio).</p>
     </details>
   </aside>
 </div>
+
 <footer>
-  Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener">Suyash Dwivedi</a> | Project: <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank" rel="noopener">Wiki's Lazy Coders</a> | Updated on: <strong>18 November 2026</strong>
+  <span>Shortcuts: <b>B</b> Brush · <b>S</b> Spray · <b>P</b> Pattern · <b>V</b> Move · <b>E</b> Eraser · <b>D</b> Depth View · <b>[ / ]</b> Size · <b>Space+Drag</b> Pan</span>
+  <span>By <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank" rel="noopener">Suyash Dwivedi</a> · <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank" rel="noopener">Wiki's Lazy Coders</a></span>
 </footer>
 
-<script>
-const $=id=>document.getElementById(id);
-const cv=$('c'),ctx=cv.getContext('2d',{willReadFrequently:true});
-const ov=$('objectsCanvas'),octx=ov.getContext('2d');
-const bc=document.createElement('canvas'),bg=bc.getContext('2d',{willReadFrequently:true});
-let W=0,H=0,base,out,L,shade,det,depth,gx,gy,paint,mask,logo=null,showD=false,depthPipe=null,depthPromise=null;
-let objects=[],selectedObject=-1,objectDrag=null,sol,isSol,hist=[],gxo,gyo;
-let viewZoom=1;
-const clamp=(v,a,b)=>v<a?a:v>b?b:v;
-const say=t=>$('msg').textContent=t;
+<div id="ring"></div>
 
-function blur1(src,w,h,r){
-  const t=new Float32Array(w*h),o=new Float32Array(w*h),n=2*r+1;
-  for(let y=0;y<h;y++){const row=y*w;let s=0;
-    for(let i=-r;i<=r;i++)s+=src[row+clamp(i,0,w-1)];
-    for(let x=0;x<w;x++){t[row+x]=s/n;s+=src[row+Math.min(w-1,x+r+1)]-src[row+Math.max(0,x-r)];}}
-  for(let x=0;x<w;x++){let s=0;
-    for(let i=-r;i<=r;i++)s+=t[clamp(i,0,h-1)*w+x];
-    for(let y=0;y<h;y++){o[y*w+x]=s/n;s+=t[Math.min(h-1,y+r+1)*w+x]-t[Math.max(0,y-r)*w+x];}}
+<script>
+const $ = id => document.getElementById(id);
+const cv = $('c'), ctx = cv.getContext('2d', { willReadFrequently: true });
+const ov = $('objectsCanvas'), octx = ov.getContext('2d');
+const bc = document.createElement('canvas'), bg = bc.getContext('2d', { willReadFrequently: true });
+const ring = $('ring'), stage = $('stage'), holder = $('holder');
+
+let W = 0, H = 0, base, out, L, shade, det, depth, gx, gy, gxo, gyo;
+let paint, mask, sol, isSol, logo = null;
+let showD = false, isAiDepth = false, depthPipe = null, depthPromise = null;
+let objects = [], selectedObject = -1, objectDrag = null, hist = [];
+let viewZoom = 1, spaceDown = false, panning = false, panStart = null;
+
+// Dirty-rect batching for smooth 60fps painting
+let dirty = null, compRaf = 0;
+
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+function say(t, busy = false) {
+  $('msg').textContent = t;
+  $('statusPill').classList.toggle('busy', busy);
+}
+
+function setDepthStatus(aiActive, labelText) {
+  isAiDepth = aiActive;
+  const badge = $('depthBadge');
+  badge.classList.toggle('ai-active', aiActive);
+  $('depthBadgeText').textContent = labelText || (aiActive ? 'AI Depth Active' : 'Basic Lighting Depth');
+}
+
+function markDirty(x0, y0, x1, y1) {
+  x0 = Math.max(0, x0 | 0);
+  y0 = Math.max(0, y0 | 0);
+  x1 = Math.min(W, Math.ceil(x1));
+  y1 = Math.min(H, Math.ceil(y1));
+  if (x1 <= x0 || y1 <= y0) return;
+  if (!dirty) dirty = [x0, y0, x1, y1];
+  else {
+    if (x0 < dirty[0]) dirty[0] = x0;
+    if (y0 < dirty[1]) dirty[1] = y0;
+    if (x1 > dirty[2]) dirty[2] = x1;
+    if (y1 > dirty[3]) dirty[3] = y1;
+  }
+  if (!compRaf) {
+    compRaf = requestAnimationFrame(() => {
+      compRaf = 0;
+      if (dirty && !showD) {
+        const [a, b, c, d] = dirty;
+        dirty = null;
+        comp(a, b, c, d);
+      }
+    });
+  }
+}
+
+function blur1(src, w, h, r) {
+  const t = new Float32Array(w * h), o = new Float32Array(w * h), n = 2 * r + 1;
+  for (let y = 0; y < h; y++) {
+    const row = y * w;
+    let s = 0;
+    for (let i = -r; i <= r; i++) s += src[row + clamp(i, 0, w - 1)];
+    for (let x = 0; x < w; x++) {
+      t[row + x] = s / n;
+      s += src[row + Math.min(w - 1, x + r + 1)] - src[row + Math.max(0, x - r)];
+    }
+  }
+  for (let x = 0; x < w; x++) {
+    let s = 0;
+    for (let i = -r; i <= r; i++) s += t[clamp(i, 0, h - 1) * w + x];
+    for (let y = 0; y < h; y++) {
+      o[y * w + x] = s / n;
+      s += t[Math.min(h - 1, y + r + 1) * w + x] - t[Math.max(0, y - r) * w + x];
+    }
+  }
   return o;
 }
-const blur=(a,r,k=3)=>{for(let i=0;i<k;i++)a=blur1(a,W,H,r);return a};
+const blur = (a, r, k = 3) => { for (let i = 0; i < k; i++) a = blur1(a, W, H, r); return a; };
 
-function sample(){
-  const c=document.createElement('canvas');c.width=900;c.height=600;
-  const g=c.getContext('2d'),d=g.createImageData(900,600);
-  for(let y=0;y<600;y++)for(let x=0;x<900;x++){
-    const f=.55+.3*Math.sin(x*.018+Math.sin(y*.012)*2.5)+.1*Math.sin(y*.03+x*.004),p=(y*900+x)*4;
-    d.data[p]=200*f;d.data[p+1]=185*f;d.data[p+2]=165*f;d.data[p+3]=255;}
-  g.putImageData(d,0,0);return c;
+function sample() {
+  const c = document.createElement('canvas');
+  c.width = 900; c.height = 600;
+  const g = c.getContext('2d'), d = g.createImageData(900, 600);
+  for (let y = 0; y < 600; y++) {
+    for (let x = 0; x < 900; x++) {
+      const fold = 0.58 + 0.28 * Math.sin(x * 0.016 + Math.sin(y * 0.011) * 2.4) + 0.09 * Math.sin(y * 0.028 + x * 0.005);
+      const weave = ((x + y) % 4 === 0) ? 0.96 : 1.02;
+      const f = fold * weave;
+      const p = (y * 900 + x) * 4;
+      d.data[p] = clamp(195 * f, 0, 255);
+      d.data[p + 1] = clamp(188 * f, 0, 255);
+      d.data[p + 2] = clamp(178 * f, 0, 255);
+      d.data[p + 3] = 255;
+    }
+  }
+  g.putImageData(d, 0, 0);
+  return c;
 }
 
-function setDepth(d){
-  let mn=1e9,mx=-1e9;
-  for(const v of d){if(v<mn)mn=v;if(v>mx)mx=v;}
-  const r=(mx-mn)||1;
-  depth=d.map(v=>(v-mn)/r);
-  gx=new Float32Array(W*H);gy=new Float32Array(W*H);
-  for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){
-    const i=y*W+x;gx[i]=(depth[i+1]-depth[i-1])/2;gy[i]=(depth[i+W]-depth[i-W])/2;}
-  gx=blur(gx,3,2);gy=blur(gy,3,2);gxo=blur(gx,8,2);gyo=blur(gy,8,2);
+function setDepth(d) {
+  let mn = 1e9, mx = -1e9;
+  for (let i = 0; i < d.length; i++) {
+    const v = d[i];
+    if (v < mn) mn = v;
+    if (v > mx) mx = v;
+  }
+  const r = (mx - mn) || 1;
+  depth = new Float32Array(d.length);
+  for (let i = 0; i < d.length; i++) depth[i] = (d[i] - mn) / r;
+
+  gx = new Float32Array(W * H);
+  gy = new Float32Array(W * H);
+  for (let y = 1; y < H - 1; y++) {
+    for (let x = 1; x < W - 1; x++) {
+      const i = y * W + x;
+      gx[i] = (depth[i + 1] - depth[i - 1]) * 0.5;
+      gy[i] = (depth[i + W] - depth[i - W]) * 0.5;
+    }
+  }
+  gx = blur(gx, 3, 2);
+  gy = blur(gy, 3, 2);
+  gxo = blur(gx, 8, 2);
+  gyo = blur(gy, 8, 2);
 }
 
-function init(img){
-  const s=Math.min(1,1100/Math.max(img.width,img.height));
-  W=Math.round(img.width*s);H=Math.round(img.height*s);
-  cv.width=bc.width=ov.width=W;cv.height=bc.height=ov.height=H;
-  bg.drawImage(img,0,0,W,H);
-  base=bg.getImageData(0,0,W,H);
-  out=new ImageData(new Uint8ClampedArray(base.data),W,H);
-  L=new Float32Array(W*H);
-  for(let i=0;i<W*H;i++)L[i]=(.299*base.data[i*4]+.587*base.data[i*4+1]+.114*base.data[i*4+2])/255;
-  const Ls=blur(L,6),Lf=blur(L,2,2);
-  let m=0;for(let i=0;i<W*H;i++)m+=Ls[i];m/=W*H;
-  shade=new Float32Array(W*H);det=new Float32Array(W*H);
-  for(let i=0;i<W*H;i++){shade[i]=clamp(Ls[i]/m,.15,2.2);det[i]=clamp(L[i]/(Lf[i]+.02),.6,1.6);}
-  setDepth(blur(L,5));
-  mask=new Float32Array(W*H);sol=new Uint8ClampedArray(W*H*4);isSol=new Uint8Array(W*H);hist=[];paint=null;showD=false;objects=[];selectedObject=-1;
-  renderObjectList();buildPaint();comp(0,0,W,H);drawObjects();
-  requestAnimationFrame(()=>setZoomToFit());
+function init(img) {
+  const s = Math.min(1, 1200 / Math.max(img.width, img.height));
+  W = Math.round(img.width * s);
+  H = Math.round(img.height * s);
+  cv.width = bc.width = ov.width = W;
+  cv.height = bc.height = ov.height = H;
+  bg.drawImage(img, 0, 0, W, H);
+  base = bg.getImageData(0, 0, W, H);
+  out = new ImageData(new Uint8ClampedArray(base.data), W, H);
+
+  L = new Float32Array(W * H);
+  for (let i = 0; i < W * H; i++) {
+    L[i] = (0.299 * base.data[i * 4] + 0.587 * base.data[i * 4 + 1] + 0.114 * base.data[i * 4 + 2]) / 255;
+  }
+  const Ls = blur(L, 6), Lf = blur(L, 2, 2);
+  let m = 0;
+  for (let i = 0; i < W * H; i++) m += Ls[i];
+  m /= W * H;
+
+  shade = new Float32Array(W * H);
+  det = new Float32Array(W * H);
+  for (let i = 0; i < W * H; i++) {
+    shade[i] = clamp(Ls[i] / (m || 0.5), 0.15, 2.2);
+    det[i] = clamp(L[i] / (Lf[i] + 0.02), 0.6, 1.6);
+  }
+
+  setDepth(blur(L, 5));
+  setDepthStatus(false, 'Basic Lighting Depth');
+
+  mask = new Float32Array(W * H);
+  sol = new Uint8ClampedArray(W * H * 4);
+  isSol = new Uint8Array(W * H);
+  hist = [];
+  paint = null;
+  showD = false;
+  $('dv').textContent = 'Show Depth Map';
+  $('dv').classList.remove('active');
+  objects = [];
+  selectedObject = -1;
+
+  renderObjectList();
+  buildPaint();
+  comp(0, 0, W, H);
+  drawObjects();
+  requestAnimationFrame(() => setZoomToFit());
 }
 
-function makePattern(){
-  const pc=document.createElement('canvas');pc.width=W;pc.height=H;
-  const g=pc.getContext('2d'),t=$('pat').value,c1=$('c1').value,c2=$('c2').value,s=+$('size').value;
-  g.fillStyle=c2;
-  if(t==='solid'){g.fillStyle=c1;g.fillRect(0,0,W,H);}
-  else if(t==='stripes'){g.fillRect(0,0,W,H);g.save();g.translate(W/2,H/2);g.rotate(-.5);g.fillStyle=c1;
-    const R=W+H;for(let x=-R;x<R;x+=s*2)g.fillRect(x,-R,s,2*R);g.restore();}
-  else if(t==='dots'){g.fillRect(0,0,W,H);g.fillStyle=c1;
-    for(let y=s/2;y<H+s;y+=s)for(let x=s/2;x<W+s;x+=s){g.beginPath();g.arc(x,y,s*.3,0,7);g.fill();}}
-  else if(t==='checker'){g.fillRect(0,0,W,H);g.fillStyle=c1;
-    for(let y=0;y*s<H;y++)for(let x=0;x*s<W;x++)if((x+y)&1)g.fillRect(x*s,y*s,s,s);}
-  else if(t==='text'){g.fillStyle=c1;g.font='800 '+s+'px "Segoe UI",Arial,sans-serif';g.textBaseline='middle';
-    const tx=$('txt').value||'HELLO',tw=g.measureText(tx).width+s;let row=0;
-    for(let y=s;y<H+s;y+=s*1.8,row++)for(let x=-(row%2)*tw/2;x<W;x+=tw)g.fillText(tx,x,y);}
-  else if(t==='logo'&&logo){const lw=s*2,lh=lw*logo.height/logo.width,gap=lw*.4;
-    for(let y=0,row=0;y<H;y+=lh+gap,row++)for(let x=-(row%2)*(lw+gap)/2;x<W;x+=lw+gap)g.drawImage(logo,x,y,lw,lh);}
-  const pixels=g.getImageData(0,0,W,H);
-  const patternAlpha=+$('patternOpacity').value/100;
-  if(patternAlpha<1){
-    for(let i=3;i<pixels.data.length;i+=4)pixels.data[i]=Math.round(pixels.data[i]*patternAlpha);
+function makePattern() {
+  const pc = document.createElement('canvas');
+  pc.width = W; pc.height = H;
+  const g = pc.getContext('2d'), t = $('pat').value, c1 = $('c1').value, c2 = $('c2').value, s = +$('size').value;
+  g.fillStyle = c2;
+  if (t === 'solid') {
+    g.fillStyle = c1;
+    g.fillRect(0, 0, W, H);
+  } else if (t === 'stripes') {
+    g.fillRect(0, 0, W, H);
+    g.save();
+    g.translate(W / 2, H / 2);
+    g.rotate(-0.5);
+    g.fillStyle = c1;
+    const R = W + H;
+    for (let x = -R; x < R; x += s * 2) g.fillRect(x, -R, s, 2 * R);
+    g.restore();
+  } else if (t === 'dots') {
+    g.fillRect(0, 0, W, H);
+    g.fillStyle = c1;
+    for (let y = s / 2; y < H + s; y += s) {
+      for (let x = s / 2; x < W + s; x += s) {
+        g.beginPath();
+        g.arc(x, y, s * 0.3, 0, Math.PI * 2);
+        g.fill();
+      }
+    }
+  } else if (t === 'checker') {
+    g.fillRect(0, 0, W, H);
+    g.fillStyle = c1;
+    for (let y = 0; y * s < H; y++) {
+      for (let x = 0; x * s < W; x++) {
+        if ((x + y) & 1) g.fillRect(x * s, y * s, s, s);
+      }
+    }
+  } else if (t === 'text') {
+    g.fillStyle = c1;
+    g.font = '800 ' + s + 'px "Segoe UI",Arial,sans-serif';
+    g.textBaseline = 'middle';
+    const tx = $('txt').value || 'HELLO', tw = g.measureText(tx).width + s;
+    let row = 0;
+    for (let y = s; y < H + s; y += s * 1.8, row++) {
+      for (let x = -(row % 2) * tw / 2; x < W; x += tw) g.fillText(tx, x, y);
+    }
+  } else if (t === 'logo' && logo) {
+    const lw = s * 2, lh = lw * logo.height / logo.width, gap = lw * 0.4;
+    for (let y = 0, row = 0; y < H; y += lh + gap, row++) {
+      for (let x = -(row % 2) * (lw + gap) / 2; x < W; x += lw + gap) g.drawImage(logo, x, y, lw, lh);
+    }
+  }
+  const pixels = g.getImageData(0, 0, W, H);
+  const patternAlpha = +$('patternOpacity').value / 100;
+  if (patternAlpha < 1) {
+    for (let i = 3; i < pixels.data.length; i += 4) {
+      pixels.data[i] = Math.round(pixels.data[i] * patternAlpha);
+    }
   }
   return pixels.data;
 }
 
-function buildPaint(){
-  if(!W)return;
-  const pd=makePattern(),amt=+$('disp').value*40,lt=+$('light').value/100,tx=+$('tex').value/100;
-  if(!paint||paint.length!==W*H*4)paint=new Uint8ClampedArray(W*H*4);
-  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
-    const i=y*W+x;
-    let u=x+gx[i]*amt,v=y+gy[i]*amt;
-    u=((u%W)+W)%W;v=((v%H)+H)%H;
-    const x0=u|0,y0=v|0,x1=(x0+1)%W,y1=(y0+1)%H,fx=u-x0,fy=v-y0;
-    const a=(y0*W+x0)*4,b=(y0*W+x1)*4,c=(y1*W+x0)*4,d=(y1*W+x1)*4;
-    const k=((1-lt)+lt*shade[i])*((1-tx)+tx*det[i]),o=i*4;
-    for(let ch=0;ch<4;ch++){
-      const p=(pd[a+ch]*(1-fx)+pd[b+ch]*fx)*(1-fy)+(pd[c+ch]*(1-fx)+pd[d+ch]*fx)*fy;
-      paint[o+ch]=ch<3?p*k:p;}
+function buildPaint() {
+  if (!W) return;
+  const pd = makePattern(), amt = +$('disp').value * 45, lt = +$('light').value / 100, tx = +$('tex').value / 100;
+  if (!paint || paint.length !== W * H * 4) paint = new Uint8ClampedArray(W * H * 4);
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      const i = y * W + x;
+      let u = x + gx[i] * amt, v = y + gy[i] * amt;
+      u = ((u % W) + W) % W;
+      v = ((v % H) + H) % H;
+      const x0 = u | 0, y0 = v | 0, x1 = (x0 + 1) % W, y1 = (y0 + 1) % H, fx = u - x0, fy = v - y0;
+      const a = (y0 * W + x0) * 4, b = (y0 * W + x1) * 4, c = (y1 * W + x0) * 4, d = (y1 * W + x1) * 4;
+      const k = ((1 - lt) + lt * shade[i]) * ((1 - tx) + tx * det[i]), o = i * 4;
+      for (let ch = 0; ch < 4; ch++) {
+        const p = (pd[a + ch] * (1 - fx) + pd[b + ch] * fx) * (1 - fy) + (pd[c + ch] * (1 - fx) + pd[d + ch] * fx) * fy;
+        paint[o + ch] = ch < 3 ? p * k : p;
+      }
+    }
   }
 }
 
-function comp(x0,y0,x1,y1){
-  x0=Math.max(0,x0|0);y0=Math.max(0,y0|0);x1=Math.min(W,Math.ceil(x1));y1=Math.min(H,Math.ceil(y1));
-  if(x1<=x0||y1<=y0)return;
-  const o=out.data,b=base.data;
-  for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){
-    const i=y*W+x,p=i*4,sp=isSol[i]?sol:paint,a=clamp(mask[i]*sp[p+3]/255,0,1);
-    if(a<=0){o[p]=b[p];o[p+1]=b[p+1];o[p+2]=b[p+2];}
-    else if(a>=.999){o[p]=sp[p];o[p+1]=sp[p+1];o[p+2]=sp[p+2];}   // true 100% opaque
-    else for(let c=0;c<3;c++)o[p+c]=b[p+c]*(1-a)+sp[p+c]*a;
+function recolorExistingSolid() {
+  if (!W || !isSol) return;
+  const k = +$('colShade').value / 100;
+  const tx = +$('tex').value / 100;
+  for (let i = 0; i < W * H; i++) {
+    if (!isSol[i]) continue;
+    const p = i * 4;
+    // Re-apply lighting & texture using stored unshaded base RGB in solBase if available
+    if (solBase) {
+      const f = (k > 0 ? (1 - k) + k * clamp(shade[i], 0.35, 1.7) : 1) * ((1 - tx) + tx * clamp(det[i], 0.75, 1.35));
+      sol[p] = clamp(solBase[p] * f, 0, 255);
+      sol[p + 1] = clamp(solBase[p + 1] * f, 0, 255);
+      sol[p + 2] = clamp(solBase[p + 2] * f, 0, 255);
+    }
   }
-  ctx.putImageData(out,0,0,x0,y0,x1-x0,y1-y0);
 }
 
-let pend=0;
-function rebuild(){
-  if(pend)return;
-  pend=requestAnimationFrame(()=>{pend=0;buildPaint();if(!showD)comp(0,0,W,H);});
+let solBase = null;
+
+function comp(x0, y0, x1, y1) {
+  x0 = Math.max(0, x0 | 0); y0 = Math.max(0, y0 | 0);
+  x1 = Math.min(W, Math.ceil(x1)); y1 = Math.min(H, Math.ceil(y1));
+  if (x1 <= x0 || y1 <= y0) return;
+  const o = out.data, b = base.data;
+  for (let y = y0; y < y1; y++) {
+    for (let x = x0; x < x1; x++) {
+      const i = y * W + x, p = i * 4, sp = isSol[i] ? sol : paint, a = clamp(mask[i] * sp[p + 3] / 255, 0, 1);
+      if (a <= 0) {
+        o[p] = b[p]; o[p + 1] = b[p + 1]; o[p + 2] = b[p + 2];
+      } else if (a >= 0.999) {
+        o[p] = sp[p]; o[p + 1] = sp[p + 1]; o[p + 2] = sp[p + 2];
+      } else {
+        const ia = 1 - a;
+        o[p] = b[p] * ia + sp[p] * a;
+        o[p + 1] = b[p + 1] * ia + sp[p + 1] * a;
+        o[p + 2] = b[p + 2] * ia + sp[p + 2] * a;
+      }
+    }
+  }
+  ctx.putImageData(out, 0, 0, x0, y0, x1 - x0, y1 - y0);
 }
-document.querySelectorAll('.rb').forEach(e=>e.addEventListener('input',rebuild));
-$('patternOpacity').addEventListener('input',()=>{
-  $('patternOpacityValue').textContent=$('patternOpacity').value+'%';
+
+let pend = 0;
+function rebuild() {
+  if (pend) return;
+  pend = requestAnimationFrame(() => {
+    pend = 0;
+    buildPaint();
+    recolorExistingSolid();
+    if (!showD) comp(0, 0, W, H);
+  });
+}
+
+document.querySelectorAll('.rb').forEach(e => e.addEventListener('input', () => {
+  if (e.id === 'disp') $('dispVal').textContent = e.value;
+  if (e.id === 'light') $('lightVal').textContent = e.value + '%';
+  if (e.id === 'tex') $('texVal').textContent = e.value + '%';
+  if (e.id === 'size') $('patSizeVal').textContent = e.value + 'px';
+  rebuild();
+}));
+
+$('colShade').addEventListener('input', () => {
+  $('colShadeVal').textContent = $('colShade').value + '%';
+  recolorExistingSolid();
+  if (!showD) comp(0, 0, W, H);
+});
+
+$('patternOpacity').addEventListener('input', () => {
+  $('patternOpacityValue').textContent = $('patternOpacity').value + '%';
   rebuild();
 });
 
+/* Independent Text and Image Decals */
+function renderObjectList() {
+  const list = $('objectList');
+  if (!list) return;
+  list.innerHTML = '';
+  objects.forEach((o, i) => {
+    const row = document.createElement('div');
+    row.className = 'obj-item' + (i === selectedObject ? ' sel' : '');
+    row.onclick = () => selectObject(i);
+    const name = document.createElement('span');
+    name.textContent = (o.type === 'text' ? 'T  ' + o.text : 'IMG  Decal ' + (i + 1));
+    name.style.cssText = 'flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
+    row.append(name);
+    list.append(row);
+  });
+}
 
-/* Independent text and image design layers */
-function renderObjectList(){
-  const list=$('objectList');
-  if(!list)return;
-  list.innerHTML='';
-  objects.forEach((o,i)=>{
-    const row=document.createElement('div');
-    row.style.cssText='display:flex;align-items:center;gap:6px;margin:4px 0;padding:5px;border:1px solid var(--line);border-radius:4px;background:'+(i===selectedObject?'#e4e1f5':'#fff');
-    const name=document.createElement('span');
-    name.textContent=(o.type==='text'?'Text: '+o.text:'Image design '+(i+1));
-    name.style.cssText='flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
-    const pick=document.createElement('button');pick.textContent='Select';pick.style.margin='0';pick.onclick=()=>selectObject(i);
-    row.append(name,pick);list.append(row);
-  });
-}
-function selectObject(i){
-  selectedObject=i;
-  $('objPanel').hidden=!objects[i];
-  const o=objects[i];
-  if(o){
-    $('forceOpaque').disabled=o.type!=='image';
-    $('forceOpaque').parentElement.style.opacity=o.type==='image'?'1':'.5';
-    $('opaqueColorOption').style.display=o.type==='image'?'flex':'none';
-    $('objectSize').value=Math.round(o.type==='text'?o.size:o.w);
-    $('objectColor').value=o.color||'#ffffff';
-    $('objectOpacity').value=Math.round(o.opacity*100);
-    $('opacityValue').textContent=Math.round(o.opacity*100)+'%';
-    const angle=Math.round((o.rotation||0)*180/Math.PI);
-    $('objectAngle').value=angle;$('angleValue').textContent=angle+'°';
+function selectObject(i) {
+  selectedObject = i;
+  $('objPanel').hidden = !objects[i];
+  const o = objects[i];
+  if (o) {
+    const isImg = o.type === 'image';
+    $('opaqueOption').style.display = isImg ? 'flex' : 'none';
+    $('opaqueColorOption').style.display = isImg ? 'flex' : 'none';
+    $('textColorRow').style.display = isImg ? 'none' : 'flex';
+    const sz = Math.round(o.type === 'text' ? o.size : o.w);
+    $('objectSize').value = sz;
+    $('objSizeVal').textContent = sz;
+    $('objectColor').value = o.color || '#ffffff';
+    $('objectOpacity').value = Math.round(o.opacity * 100);
+    $('opacityValue').textContent = Math.round(o.opacity * 100) + '%';
+    const angle = Math.round((o.rotation || 0) * 180 / Math.PI);
+    $('objectAngle').value = angle;
+    $('angleValue').textContent = angle + '°';
   }
-  if(!o){$('forceOpaque').disabled=true;$('forceOpaque').parentElement.style.opacity='.5';$('opaqueColorOption').style.display='none';}
-  renderObjectList();drawObjects();
+  renderObjectList();
+  drawObjects();
 }
-function objBox(o){
-  if(o.type==='text'){octx.save();octx.font='700 '+o.size+'px "Segoe UI",Arial,sans-serif';const w=octx.measureText(o.text).width;octx.restore();return[w,o.size*1.3];}
-  return[o.w,o.h];
-}
-// Logo/image with optional solid matte behind transparent areas; cached so dragging stays fast.
-function imageCanvas(o){
-  const iw=Math.max(1,Math.ceil(o.w)),ih=Math.max(1,Math.ceil(o.h)),force=$('forceOpaque').checked,bgc=$('opaqueBgColor').value;
-  const key=[iw,ih,force,bgc].join('|');
-  if(o._k===key)return o._c;
-  const c=document.createElement('canvas');c.width=iw;c.height=ih;
-  const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(o.image,0,0,iw,ih);
-  if(force){
-    const im=g.getImageData(0,0,iw,ih),px=im.data,outside=new Uint8Array(iw*ih),queue=new Int32Array(iw*ih);
-    let head=0,tail=0;
-    const add=(x,y)=>{const n=y*iw+x;if(!outside[n]&&px[n*4+3]<250){outside[n]=1;queue[tail++]=n;}};
-    for(let x=0;x<iw;x++){add(x,0);add(x,ih-1);}
-    for(let y=1;y<ih-1;y++){add(0,y);add(iw-1,y);}
-    while(head<tail){const n=queue[head++],x=n%iw,y=(n/iw)|0;
-      if(x>0)add(x-1,y);if(x+1<iw)add(x+1,y);if(y>0)add(x,y-1);if(y+1<ih)add(x,y+1);}
-    const m=hexRgb(bgc);
-    for(let n=0;n<iw*ih;n++){const p=n*4;
-      if(!outside[n]){if(px[p+3]<250){px[p]=m[0];px[p+1]=m[1];px[p+2]=m[2];}px[p+3]=255;}}
-    g.putImageData(im,0,0);
+
+function objBox(o) {
+  if (o.type === 'text') {
+    if (o._tw && o._tSize === o.size && o._tText === o.text) return [o._tw, o.size * 1.28];
+    octx.save();
+    octx.font = '700 ' + o.size + 'px "Segoe UI",Arial,sans-serif';
+    o._tw = octx.measureText(o.text).width;
+    o._tSize = o.size;
+    o._tText = o.text;
+    octx.restore();
+    return [o._tw, o.size * 1.28];
   }
-  o._k=key;o._c=c;return c;
+  return [o.w, o.h];
 }
-function drawObjects(includeSelection=true){
-  if(!W||!ov.width)return;
-  octx.clearRect(0,0,W,H);
-  // Surface wrap: each output pixel samples the design at an offset taken from the smoothed depth gradient,
-  // the same field the pattern brush uses. Only the design's bounding box is processed.
-  const wv=+$('objectWarp').value,amt=wv*26,lim=wv?3+wv*.16:0,la=+$('light').value/100,ta=+$('tex').value/100;
-  objects.forEach(o=>{
-    const[lw,lh]=objBox(o),cs=Math.cos(o.rotation||0),sn=Math.sin(o.rotation||0);
-    const cx=[0,lw,0,lw],cy=[0,0,lh,lh];
-    const X=cx.map((v,j)=>o.x+v*cs-cy[j]*sn),Y=cx.map((v,j)=>o.y+v*sn+cy[j]*cs);
-    const pad=Math.ceil(lim)+3;
-    const bx0=Math.max(0,Math.floor(Math.min(...X)-pad)),by0=Math.max(0,Math.floor(Math.min(...Y)-pad));
-    const bx1=Math.min(W,Math.ceil(Math.max(...X)+pad)),by1=Math.min(H,Math.ceil(Math.max(...Y)+pad));
-    const bw=bx1-bx0,bh=by1-by0;if(bw<2||bh<2)return;
-    const sc=document.createElement('canvas');sc.width=bw;sc.height=bh;
-    const sg=sc.getContext('2d',{willReadFrequently:true});
-    sg.translate(o.x-bx0,o.y-by0);sg.rotate(o.rotation||0);
-    if(o.type==='text'){sg.font='700 '+o.size+'px "Segoe UI",Arial,sans-serif';sg.textBaseline='top';sg.fillStyle=o.color||'#ffffff';sg.fillText(o.text,0,0);}
-    else if(o.image)sg.drawImage(imageCanvas(o),0,0,o.w,o.h);
-    const sd=sg.getImageData(0,0,bw,bh).data,res=sg.createImageData(bw,bh),wd=res.data;
-    for(let y=0;y<bh;y++)for(let x=0;x<bw;x++){
-      const gi=(y+by0)*W+(x+bx0),p=(y*bw+x)*4;
-      let ddx=gxo[gi]*amt,ddy=gyo[gi]*amt;const dm=Math.hypot(ddx,ddy);if(dm>lim){ddx*=lim/dm;ddy*=lim/dm;}
-      const sx=clamp(x+ddx,0,bw-1.001),sy=clamp(y+ddy,0,bh-1.001);
-      const x0=sx|0,y0=sy|0,fx=sx-x0,fy=sy-y0;
-      const q0=(y0*bw+x0)*4,q1=q0+4,q2=q0+bw*4,q3=q2+4;
-      const w0=(1-fx)*(1-fy),w1=fx*(1-fy),w2=(1-fx)*fy,w3=fx*fy;
-      const a0=sd[q0+3]*w0,a1=sd[q1+3]*w1,a2=sd[q2+3]*w2,a3=sd[q3+3]*w3,A=a0+a1+a2+a3;
-      if(A<1)continue;
-      const k=clamp(((1-la)+la*clamp(shade[gi],.75,1.3))*((1-ta)+ta*clamp(det[gi],.9,1.1)),.65,1.4)/A;
-      wd[p]=clamp((sd[q0]*a0+sd[q1]*a1+sd[q2]*a2+sd[q3]*a3)*k,0,255);
-      wd[p+1]=clamp((sd[q0+1]*a0+sd[q1+1]*a1+sd[q2+1]*a2+sd[q3+1]*a3)*k,0,255);
-      wd[p+2]=clamp((sd[q0+2]*a0+sd[q1+2]*a1+sd[q2+2]*a2+sd[q3+2]*a3)*k,0,255);
-      wd[p+3]=Math.min(255,A);
+
+function imageCanvas(o) {
+  const iw = Math.max(1, Math.ceil(o.w)), ih = Math.max(1, Math.ceil(o.h));
+  const force = $('forceOpaque').checked, bgc = $('opaqueBgColor').value;
+  const key = [iw, ih, force, bgc].join('|');
+  if (o._k === key) return o._c;
+  const c = document.createElement('canvas');
+  c.width = iw; c.height = ih;
+  const g = c.getContext('2d', { willReadFrequently: true });
+  g.drawImage(o.image, 0, 0, iw, ih);
+  if (force) {
+    const im = g.getImageData(0, 0, iw, ih), px = im.data, outside = new Uint8Array(iw * ih), queue = new Int32Array(iw * ih);
+    let head = 0, tail = 0;
+    const add = (x, y) => {
+      const n = y * iw + x;
+      if (!outside[n] && px[n * 4 + 3] < 250) { outside[n] = 1; queue[tail++] = n; }
+    };
+    for (let x = 0; x < iw; x++) { add(x, 0); add(x, ih - 1); }
+    for (let y = 1; y < ih - 1; y++) { add(0, y); add(iw - 1, y); }
+    while (head < tail) {
+      const n = queue[head++], x = n % iw, y = (n / iw) | 0;
+      if (x > 0) add(x - 1, y);
+      if (x + 1 < iw) add(x + 1, y);
+      if (y > 0) add(x, y - 1);
+      if (y + 1 < ih) add(x, y + 1);
     }
-    const rc=document.createElement('canvas');rc.width=bw;rc.height=bh;rc.getContext('2d').putImageData(res,0,0);
-    octx.globalAlpha=clamp(o.opacity,0,1);octx.drawImage(rc,bx0,by0);octx.globalAlpha=1;
+    const m = hexRgb(bgc);
+    for (let n = 0; n < iw * ih; n++) {
+      const p = n * 4;
+      if (!outside[n]) {
+        if (px[p + 3] < 250) { px[p] = m[0]; px[p + 1] = m[1]; px[p + 2] = m[2]; }
+        px[p + 3] = 255;
+      }
+    }
+    g.putImageData(im, 0, 0);
+  }
+  o._k = key; o._c = c;
+  return c;
+}
+
+// Reusable scratch canvases for zero-GC decal rendering
+const scratchIn = document.createElement('canvas'), scratchInCtx = scratchIn.getContext('2d', { willReadFrequently: true });
+const scratchOut = document.createElement('canvas'), scratchOutCtx = scratchOut.getContext('2d');
+
+function drawObjects(includeSelection = true) {
+  if (!W || !ov.width) return;
+  octx.clearRect(0, 0, W, H);
+  const wv = +$('objectWarp').value, amt = wv * 28, lim = wv ? 3 + wv * 0.18 : 0;
+  const la = +$('light').value / 100, ta = +$('tex').value / 100;
+
+  objects.forEach(o => {
+    const [lw, lh] = objBox(o), cs = Math.cos(o.rotation || 0), sn = Math.sin(o.rotation || 0);
+    const cx = [0, lw, 0, lw], cy = [0, 0, lh, lh];
+    const X = cx.map((v, j) => o.x + v * cs - cy[j] * sn);
+    const Y = cx.map((v, j) => o.y + v * sn + cy[j] * cs);
+    const pad = Math.ceil(lim) + 3;
+    const bx0 = Math.max(0, Math.floor(Math.min(...X) - pad)), by0 = Math.max(0, Math.floor(Math.min(...Y) - pad));
+    const bx1 = Math.min(W, Math.ceil(Math.max(...X) + pad)), by1 = Math.min(H, Math.ceil(Math.max(...Y) + pad));
+    const bw = bx1 - bx0, bh = by1 - by0;
+    if (bw < 2 || bh < 2) return;
+
+    scratchIn.width = bw; scratchIn.height = bh;
+    scratchInCtx.save();
+    scratchInCtx.translate(o.x - bx0, o.y - by0);
+    scratchInCtx.rotate(o.rotation || 0);
+    if (o.type === 'text') {
+      scratchInCtx.font = '700 ' + o.size + 'px "Segoe UI",Arial,sans-serif';
+      scratchInCtx.textBaseline = 'top';
+      scratchInCtx.fillStyle = o.color || '#ffffff';
+      scratchInCtx.fillText(o.text, 0, 0);
+    } else if (o.image) {
+      scratchInCtx.drawImage(imageCanvas(o), 0, 0, o.w, o.h);
+    }
+    scratchInCtx.restore();
+
+    const sd = scratchInCtx.getImageData(0, 0, bw, bh).data;
+    const res = scratchInCtx.createImageData(bw, bh), wd = res.data;
+
+    for (let y = 0; y < bh; y++) {
+      for (let x = 0; x < bw; x++) {
+        const gi = (y + by0) * W + (x + bx0), p = (y * bw + x) * 4;
+        let ddx = gxo[gi] * amt, ddy = gyo[gi] * amt;
+        const dm = Math.hypot(ddx, ddy);
+        if (dm > lim) { ddx *= lim / dm; ddy *= lim / dm; }
+        const sx = clamp(x + ddx, 0, bw - 1.001), sy = clamp(y + ddy, 0, bh - 1.001);
+        const x0 = sx | 0, y0 = sy | 0, fx = sx - x0, fy = sy - y0;
+        const q0 = (y0 * bw + x0) * 4, q1 = q0 + 4, q2 = q0 + bw * 4, q3 = q2 + 4;
+        const w0 = (1 - fx) * (1 - fy), w1 = fx * (1 - fy), w2 = (1 - fx) * fy, w3 = fx * fy;
+        const a0 = sd[q0 + 3] * w0, a1 = sd[q1 + 3] * w1, a2 = sd[q2 + 3] * w2, a3 = sd[q3 + 3] * w3;
+        const A = a0 + a1 + a2 + a3;
+        if (A < 1) continue;
+        const k = clamp(((1 - la) + la * clamp(shade[gi], 0.72, 1.32)) * ((1 - ta) + ta * clamp(det[gi], 0.88, 1.12)), 0.65, 1.4) / A;
+        wd[p] = clamp((sd[q0] * a0 + sd[q1] * a1 + sd[q2] * a2 + sd[q3] * a3) * k, 0, 255);
+        wd[p + 1] = clamp((sd[q0 + 1] * a0 + sd[q1 + 1] * a1 + sd[q2 + 1] * a2 + sd[q3 + 1] * a3) * k, 0, 255);
+        wd[p + 2] = clamp((sd[q0 + 2] * a0 + sd[q1 + 2] * a1 + sd[q2 + 2] * a2 + sd[q3 + 2] * a3) * k, 0, 255);
+        wd[p + 3] = Math.min(255, A);
+      }
+    }
+
+    scratchOut.width = bw; scratchOut.height = bh;
+    scratchOutCtx.putImageData(res, 0, 0);
+    octx.globalAlpha = clamp(o.opacity, 0, 1);
+    octx.drawImage(scratchOut, bx0, by0);
+    octx.globalAlpha = 1;
   });
-  if(includeSelection&&selectedObject>=0&&objects[selectedObject]){
-    const o=objects[selectedObject];octx.save();octx.translate(o.x,o.y);octx.rotate(o.rotation||0);
-    octx.strokeStyle='#3157d5';octx.lineWidth=2;octx.setLineDash([5,3]);
-    if(o.type==='text'){
-      octx.font='700 '+o.size+'px "Segoe UI",Arial,sans-serif';
-      const m=octx.measureText(o.text);octx.strokeRect(-5,-5,m.width+10,o.size*1.3+10);
-      octx.setLineDash([]);octx.fillStyle='#3157d5';octx.fillRect(m.width-6,o.size*1.3-6,12,12);
-    }else{octx.strokeRect(0,0,o.w,o.h);octx.setLineDash([]);octx.fillStyle='#3157d5';octx.fillRect(o.w-6,o.h-6,12,12);}
+
+  if (includeSelection && selectedObject >= 0 && objects[selectedObject]) {
+    const o = objects[selectedObject];
+    const [bw, bh] = objBox(o);
+    octx.save();
+    octx.translate(o.x, o.y);
+    octx.rotate(o.rotation || 0);
+    octx.strokeStyle = '#6366f1';
+    octx.lineWidth = 2;
+    octx.setLineDash([6, 4]);
+    octx.strokeRect(-4, -4, bw + 8, bh + 8);
+    octx.setLineDash([]);
+    octx.fillStyle = '#fff';
+    octx.strokeStyle = '#6366f1';
+    octx.fillRect(bw - 3, bh - 3, 12, 12);
+    octx.strokeRect(bw - 3, bh - 3, 12, 12);
     octx.restore();
   }
 }
-function addTextObject(){
-  if(!W)return;
-  const text=$('objectText').value.trim()||'Text';
-  objects.push({type:'text',text,x:W*.2,y:H*.2,size:64,color:$('objectColor').value,opacity:1,rotation:0});
-  selectObject(objects.length-1);
-  say('Text added. Drag it directly on the photo to position it.');
+
+function addTextObject() {
+  if (!W) return;
+  const text = $('objectText').value.trim() || 'Your text';
+  objects.push({ type: 'text', text, x: W * 0.25, y: H * 0.25, size: 68, color: $('objectColor').value, opacity: 1, rotation: 0 });
+  selectObject(objects.length - 1);
+  say('Text decal added. Drag it on the photo to position.');
 }
-$('addText').onclick=addTextObject;
-$('addLogo').onclick=()=>$('objectFile').click();
-$('objectFile').onchange=e=>{
-  const f=e.target.files[0];if(!f)return;
-  loadFile(f,img=>{
-    const w=Math.min(220,W*.35),h=w*img.height/img.width;
-    objects.push({type:'image',image:img,x:W*.2,y:H*.2,w,h,opacity:1,rotation:0});
-      selectObject(objects.length-1);
-    say('Design added. Drag it directly on the photo to position it.');
+$('addText').onclick = addTextObject;
+$('addLogo').onclick = () => $('objectFile').click();
+$('objectFile').onchange = e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  loadFile(f, img => {
+    const w = Math.min(240, W * 0.35), h = w * img.height / img.width;
+    objects.push({ type: 'image', image: img, x: W * 0.25, y: H * 0.25, w, h, opacity: 1, rotation: 0 });
+    selectObject(objects.length - 1);
+    say('Logo decal added. Drag it on the photo to position.');
   });
-  e.target.value='';
+  e.target.value = '';
 };
-$('deleteObject').onclick=()=>{
-  if(selectedObject<0)return;
-  objects.splice(selectedObject,1);selectObject(-1);
+$('deleteObject').onclick = () => {
+  if (selectedObject < 0) return;
+  objects.splice(selectedObject, 1);
+  selectObject(-1);
 };
-$('objectSize').oninput=()=>{
-  const o=objects[selectedObject];if(!o)return;
-  const v=+$('objectSize').value;
-  if(o.type==='text')o.size=v;else{const ratio=o.h/o.w;o.w=v;o.h=v*ratio;}
+$('objectSize').oninput = () => {
+  const o = objects[selectedObject];
+  if (!o) return;
+  const v = +$('objectSize').value;
+  $('objSizeVal').textContent = v;
+  if (o.type === 'text') o.size = v;
+  else { const ratio = o.h / o.w; o.w = v; o.h = v * ratio; }
   drawObjects();
 };
-$('objectColor').oninput=()=>{
-  const o=objects[selectedObject];if(!o||o.type!=='text')return;
-  o.color=$('objectColor').value;drawObjects();
-};
-$('objectOpacity').oninput=()=>{
-  $('opacityValue').textContent=$('objectOpacity').value+'%';
-  const o=objects[selectedObject];
-  if(!o)return;
-  o.opacity=+$('objectOpacity').value/100;
+$('objectColor').oninput = () => {
+  const o = objects[selectedObject];
+  if (!o || o.type !== 'text') return;
+  o.color = $('objectColor').value;
   drawObjects();
 };
-$('objectWarp').oninput=()=>{
-  $('warpValue').textContent=$('objectWarp').value;
+$('objectOpacity').oninput = () => {
+  $('opacityValue').textContent = $('objectOpacity').value + '%';
+  const o = objects[selectedObject];
+  if (!o) return;
+  o.opacity = +$('objectOpacity').value / 100;
   drawObjects();
 };
-$('forceOpaque').onchange=()=>drawObjects();
-$('opaqueBgColor').oninput=()=>drawObjects();
-$('opacity').addEventListener('input',()=>{$('brushOpacityValue').textContent=$('opacity').value+'%';});
-$('sprayIntensity').addEventListener('input',()=>{$('sprayIntensityValue').textContent=$('sprayIntensity').value+'%';});
-$('objectAngle').oninput=()=>{
-  const o=objects[selectedObject];if(!o)return;
-  const angle=+$('objectAngle').value;
-  o.rotation=angle*Math.PI/180;
-  $('angleValue').textContent=angle+'°';drawObjects();
+$('objectWarp').oninput = () => {
+  $('warpValue').textContent = $('objectWarp').value;
+  drawObjects();
 };
-function objectPos(e){
-  const r=cv.getBoundingClientRect();
-  return [(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height];
-}
-function hitObject(x,y){
-  for(let i=objects.length-1;i>=0;i--){
-    const o=objects[i],a=-(o.rotation||0),dx=x-o.x,dy=y-o.y;
-    const lx=dx*Math.cos(a)-dy*Math.sin(a),ly=dx*Math.sin(a)+dy*Math.cos(a);
-    if(o.type==='text'){
-      octx.save();octx.font='700 '+o.size+'px "Segoe UI",Arial,sans-serif';
-      const width=octx.measureText(o.text).width;octx.restore();
-      if(lx>=-8&&lx<=width+8&&ly>=-8&&ly<=o.size*1.3+8)return i;
-    }else if(lx>=-8&&lx<=o.w+8&&ly>=-8&&ly<=o.h+8)return i;
+$('forceOpaque').onchange = () => drawObjects();
+$('opaqueBgColor').oninput = () => drawObjects();
+$('objectAngle').oninput = () => {
+  const o = objects[selectedObject];
+  if (!o) return;
+  const angle = +$('objectAngle').value;
+  o.rotation = angle * Math.PI / 180;
+  $('angleValue').textContent = angle + '°';
+  drawObjects();
+};
+
+$('brush').addEventListener('input', () => { $('brushSizeVal').textContent = $('brush').value + 'px'; });
+$('opacity').addEventListener('input', () => { $('brushOpacityValue').textContent = $('opacity').value + '%'; });
+$('sprayIntensity').addEventListener('input', () => { $('sprayIntensityValue').textContent = $('sprayIntensity').value + '%'; });
+$('edge').addEventListener('input', () => { $('edgeVal').textContent = $('edge').value + '%'; });
+
+function hitObject(x, y) {
+  for (let i = objects.length - 1; i >= 0; i--) {
+    const o = objects[i], a = -(o.rotation || 0), dx = x - o.x, dy = y - o.y;
+    const lx = dx * Math.cos(a) - dy * Math.sin(a), ly = dx * Math.sin(a) + dy * Math.cos(a);
+    const [bw, bh] = objBox(o);
+    if (lx >= -10 && lx <= bw + 12 && ly >= -10 && ly <= bh + 12) return i;
   }
   return -1;
 }
 
-/* Brush */
+/* Optimized Brush & Spray Engine */
+let drawing = false, seed = [0, 0, 0], last = null;
 
-let drawing=false,seed=[0,0,0],last=null;
-function pos(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height];}
-function pxCol(x,y){const p=(clamp(Math.round(y),0,H-1)*W+clamp(Math.round(x),0,W-1))*4,b=base.data;return[b[p],b[p+1],b[p+2]];}
-function edgeW(p,tol){
-  const b=base.data,df=(Math.abs(b[p]-seed[0])+Math.abs(b[p+1]-seed[1])+Math.abs(b[p+2]-seed[2]))/765;
-  // Full strength inside the tolerance and a short fade just beyond it, so the interior is never see-through.
-  return clamp((tol*1.5-df)/(tol*.5),0,1);
+function pos(e) {
+  const r = cv.getBoundingClientRect();
+  return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height];
 }
-function followSeed(cx,cy,tol){
-  const c=pxCol(cx,cy),p=(clamp(Math.round(cy),0,H-1)*W+clamp(Math.round(cx),0,W-1))*4;
-  if(edgeW(p,tol)>.9)seed=[seed[0]+(c[0]-seed[0])*.2,seed[1]+(c[1]-seed[1])*.2,seed[2]+(c[2]-seed[2])*.2];
+function pxCol(x, y) {
+  const p = (clamp(Math.round(y), 0, H - 1) * W + clamp(Math.round(x), 0, W - 1)) * 4, b = base.data;
+  return [b[p], b[p + 1], b[p + 2]];
 }
-function putSolid(i,col,k){
-  const p=i*4,f=k>0?(1-k)+k*clamp(shade[i],.5,1.6):1;
-  sol[p]=clamp(col[0]*f,0,255);sol[p+1]=clamp(col[1]*f,0,255);sol[p+2]=clamp(col[2]*f,0,255);sol[p+3]=255;isSol[i]=1;
+function edgeW(p, tol) {
+  const b = base.data;
+  const df = (Math.abs(b[p] - seed[0]) + Math.abs(b[p + 1] - seed[1]) + Math.abs(b[p + 2] - seed[2])) / 765;
+  return clamp((tol * 1.5 - df) / (tol * 0.5), 0, 1);
 }
-function hexRgb(hex){return [parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)];}
-function stamp(cx,cy){
-  const R=+$('brush').value/2,op=+$('opacity').value/100,edge=+$('edge').value/100,er=$('erase').checked;
-  const tol=.03+(1-edge)*.6,solid=$('tool').value!=='pattern',col=hexRgb($('paintColor').value),k=+$('colShade').value/100;
-  if(edge>0)followSeed(cx,cy,tol);
-  const x0=Math.max(0,Math.floor(cx-R)),x1=Math.min(W,Math.ceil(cx+R));
-  const y0=Math.max(0,Math.floor(cy-R)),y1=Math.min(H,Math.ceil(cy+R));
-  for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){
-    const d=Math.hypot(x-cx,y-cy)/R;if(d>=1)continue;
-    const i=y*W+x,p=i*4,cov=Math.min(1,(1-d)*R)*(edge>0?edgeW(p,tol):1)*op;
-    if(cov<=0)continue;
-    if(er){mask[i]=Math.max(0,mask[i]-cov);continue;}
-    if(solid)putSolid(i,col,k);else isSol[i]=0;
-    mask[i]=Math.max(mask[i],cov);
+function followSeed(cx, cy, tol) {
+  const c = pxCol(cx, cy), p = (clamp(Math.round(cy), 0, H - 1) * W + clamp(Math.round(cx), 0, W - 1)) * 4;
+  if (edgeW(p, tol) > 0.9) {
+    seed[0] += (c[0] - seed[0]) * 0.2;
+    seed[1] += (c[1] - seed[1]) * 0.2;
+    seed[2] += (c[2] - seed[2]) * 0.2;
   }
-  comp(x0,y0,x1,y1);
 }
-function sprayAt(cx,cy){
-  const R=+$('brush').value/2,inten=+$('sprayIntensity').value/100,op=+$('opacity').value/100;
-  const edge=+$('edge').value/100,er=$('erase').checked,tol=.03+(1-edge)*.6;
-  const col=hexRgb($('paintColor').value),k=+$('colShade').value/100;
-  if(edge>0)followSeed(cx,cy,tol);
-  const n=Math.min(6000,Math.ceil(R*R*1.2*inten));
-  for(let q=0;q<n;q++){
-    const an=Math.random()*6.2832,dist=R*Math.pow(Math.random(),.65);
-    const x=cx+Math.cos(an)*dist,y=cy+Math.sin(an)*dist,r=1+Math.random()*1.3;
-    for(let yy=Math.max(0,Math.floor(y-r));yy<Math.min(H,Math.ceil(y+r));yy++)
-      for(let xx=Math.max(0,Math.floor(x-r));xx<Math.min(W,Math.ceil(x+r));xx++){
-        const d=Math.hypot(xx-x,yy-y)/r;if(d>=1)continue;
-        const i=yy*W+xx,cov=(d<.6?1:(1-d)/.4)*(edge>0?edgeW(i*4,tol):1)*op;
-        if(cov<=0)continue;
-        if(er){mask[i]=Math.max(0,mask[i]-cov);continue;}
-        putSolid(i,col,k);mask[i]=1-(1-mask[i])*(1-cov);
+function hexRgb(hex) {
+  return [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
+}
+function putSolid(i, col, k, tx) {
+  if (!solBase || solBase.length !== W * H * 3) solBase = new Uint8Array(W * H * 3);
+  const b3 = i * 3, p = i * 4;
+  solBase[b3] = col[0]; solBase[b3 + 1] = col[1]; solBase[b3 + 2] = col[2];
+  const f = (k > 0 ? (1 - k) + k * clamp(shade[i], 0.35, 1.7) : 1) * ((1 - tx) + tx * clamp(det[i], 0.75, 1.35));
+  sol[p] = clamp(col[0] * f, 0, 255);
+  sol[p + 1] = clamp(col[1] * f, 0, 255);
+  sol[p + 2] = clamp(col[2] * f, 0, 255);
+  sol[p + 3] = 255;
+  isSol[i] = 1;
+}
+
+function stamp(cx, cy) {
+  const R = +$('brush').value / 2, op = +$('opacity').value / 100, edge = +$('edge').value / 100, er = $('erase').checked;
+  const tol = 0.03 + (1 - edge) * 0.6, solid = $('tool').value !== 'pattern', col = hexRgb($('paintColor').value);
+  const k = +$('colShade').value / 100, tx = +$('tex').value / 100;
+  if (edge > 0) followSeed(cx, cy, tol);
+
+  const x0 = Math.max(0, Math.floor(cx - R)), x1 = Math.min(W, Math.ceil(cx + R));
+  const y0 = Math.max(0, Math.floor(cy - R)), y1 = Math.min(H, Math.ceil(cy + R));
+  const invR = 1 / R;
+
+  for (let y = y0; y < y1; y++) {
+    const dy = (y - cy) * invR, dy2 = dy * dy;
+    if (dy2 >= 1) continue;
+    for (let x = x0; x < x1; x++) {
+      const dx = (x - cx) * invR, d2 = dx * dx + dy2;
+      if (d2 >= 1) continue;
+      const d = Math.sqrt(d2);
+      const i = y * W + x, p = i * 4;
+      const cov = Math.min(1, (1 - d) * R) * (edge > 0 ? edgeW(p, tol) : 1) * op;
+      if (cov <= 0) continue;
+      if (er) {
+        mask[i] = Math.max(0, mask[i] - cov);
+        continue;
       }
+      if (solid) putSolid(i, col, k, tx);
+      else isSol[i] = 0;
+      if (cov > mask[i]) mask[i] = cov;
+    }
   }
-  const x0=Math.max(0,Math.floor(cx-R-3)),x1=Math.min(W,Math.ceil(cx+R+3)),y0=Math.max(0,Math.floor(cy-R-3)),y1=Math.min(H,Math.ceil(cy+R+3));
-  comp(x0,y0,x1,y1);
+  markDirty(x0, y0, x1, y1);
 }
-function seedAt(cx,cy){
-  let r=0,g=0,bl=0,n=0;const b=base.data;
-  for(let y=-2;y<=2;y++)for(let x=-2;x<=2;x++){
-    const xx=clamp(Math.round(cx)+x,0,W-1),yy=clamp(Math.round(cy)+y,0,H-1),p=(yy*W+xx)*4;
-    r+=b[p];g+=b[p+1];bl+=b[p+2];n++;}
-  seed=[r/n,g/n,bl/n];
-}
-cv.addEventListener('pointerdown',e=>{
-  if(!W||showD)return;
-  const [x,y]=pos(e);
 
-  // Object hit-testing comes first: clicking a visible text/logo selects it
-  // and starts dragging immediately, without requiring a tool-mode switch.
-  const hit=hitObject(x,y);
-  if(hit>=0){
+function sprayAt(cx, cy) {
+  const R = +$('brush').value / 2, inten = +$('sprayIntensity').value / 100, op = +$('opacity').value / 100;
+  const edge = +$('edge').value / 100, er = $('erase').checked, tol = 0.03 + (1 - edge) * 0.6;
+  const col = hexRgb($('paintColor').value), k = +$('colShade').value / 100, tx = +$('tex').value / 100;
+  if (edge > 0) followSeed(cx, cy, tol);
+
+  const n = Math.min(1800, Math.ceil(R * R * 0.45 * inten));
+  for (let q = 0; q < n; q++) {
+    const an = Math.random() * 6.283185, dist = R * Math.pow(Math.random(), 0.65);
+    const x = Math.round(cx + Math.cos(an) * dist), y = Math.round(cy + Math.sin(an) * dist);
+    if (x < 0 || x >= W || y < 0 || y >= H) continue;
+    const i = y * W + x;
+    const cov = (edge > 0 ? edgeW(i * 4, tol) : 1) * op * (0.55 + Math.random() * 0.45);
+    if (cov <= 0) continue;
+    if (er) {
+      mask[i] = Math.max(0, mask[i] - cov);
+      continue;
+    }
+    putSolid(i, col, k, tx);
+    mask[i] = 1 - (1 - mask[i]) * (1 - cov);
+  }
+  markDirty(cx - R - 2, cy - R - 2, cx + R + 2, cy + R + 2);
+}
+
+function seedAt(cx, cy) {
+  let r = 0, g = 0, bl = 0, n = 0;
+  const b = base.data;
+  for (let y = -2; y <= 2; y++) {
+    for (let x = -2; x <= 2; x++) {
+      const xx = clamp(Math.round(cx) + x, 0, W - 1), yy = clamp(Math.round(cy) + y, 0, H - 1);
+      const p = (yy * W + xx) * 4;
+      r += b[p]; g += b[p + 1]; bl += b[p + 2]; n++;
+    }
+  }
+  seed = [r / n, g / n, bl / n];
+}
+
+/* Pointer & Panning Interactions */
+stage.addEventListener('pointerdown', e => {
+  if (spaceDown || e.button === 1) {
+    e.preventDefault();
+    panning = true;
+    panStart = { x: e.clientX, y: e.clientY, sl: stage.scrollLeft, st: stage.scrollTop };
+    stage.style.cursor = 'grabbing';
+  }
+});
+
+cv.addEventListener('pointerdown', e => {
+  if (spaceDown || e.button === 1 || !W || showD) return;
+  const [x, y] = pos(e);
+
+  const hit = hitObject(x, y);
+  if (hit >= 0) {
     selectObject(hit);
-    const o=objects[hit],a=-(o.rotation||0),dx=x-o.x,dy=y-o.y;
-    const lx=dx*Math.cos(a)-dy*Math.sin(a),ly=dx*Math.sin(a)+dy*Math.cos(a);
-    octx.save();
-    octx.font='700 '+(o.size||64)+'px "Segoe UI",Arial,sans-serif';
-    const textWidth=o.type==='text'?octx.measureText(o.text).width:0;
-    octx.restore();
-    const handleSize=22;
-    const resize=o.type==='image'
-      ? (lx>o.w-handleSize&&ly>o.h-handleSize)
-      : (lx>textWidth-handleSize&&ly>o.size*1.0);
-    objectDrag={
-      index:hit,startX:x,startY:y,
-      origX:o.x,origY:o.y,origW:o.w,origH:o.h,
-      origSize:o.size,resize
+    const o = objects[hit], a = -(o.rotation || 0), dx = x - o.x, dy = y - o.y;
+    const lx = dx * Math.cos(a) - dy * Math.sin(a), ly = dx * Math.sin(a) + dy * Math.cos(a);
+    const [bw, bh] = objBox(o);
+    const handleSize = 24 / viewZoom;
+    const resize = (lx > bw - handleSize && ly > bh - handleSize);
+    objectDrag = {
+      index: hit, startX: x, startY: y,
+      origX: o.x, origY: o.y, origW: o.w, origH: o.h,
+      origSize: o.size, resize
     };
     cv.setPointerCapture(e.pointerId);
-    say('Selected '+(o.type==='text'?'text':'design')+'. Drag to move; drag the corner handle to resize.');
+    say('Moving decal. Drag bottom-right corner handle to resize.');
     return;
   }
 
-  // In Select mode, clicking empty canvas must not paint.
-  if($('tool').value==='select'){
-    selectedObject=-1;objectDrag=null;renderObjectList();drawObjects();
-    say('No design at this position. Select a text or logo, or add a new one.');
+  if ($('tool').value === 'select') {
+    selectedObject = -1;
+    objectDrag = null;
+    renderObjectList();
+    drawObjects();
+    say('Click a decal to select it, or switch to Colour / Spray / Pattern to paint.');
     return;
   }
 
   cv.setPointerCapture(e.pointerId);
-  pushHist();drawing=true;seedAt(x,y);last=[x,y];
-  if($('tool').value==='spray')sprayAt(x,y);else stamp(x,y);
+  pushHist();
+  drawing = true;
+  seedAt(x, y);
+  last = [x, y];
+  if ($('tool').value === 'spray') sprayAt(x, y);
+  else stamp(x, y);
 });
-cv.addEventListener('pointermove',e=>{
-  const [x,y]=pos(e);
-  if(objectDrag){
-    const o=objects[objectDrag.index],dx=x-objectDrag.startX,dy=y-objectDrag.startY;
-    if(objectDrag.resize){
-      if(o.type==='image'){
-        if(e.ctrlKey){
-          const ratio=objectDrag.origW/objectDrag.origH;
-          const useWidth=Math.abs(dx/objectDrag.origW)>=Math.abs(dy/objectDrag.origH);
-          if(useWidth){o.w=Math.max(12,objectDrag.origW+dx);o.h=o.w/ratio;}
-          else{o.h=Math.max(12,objectDrag.origH+dy);o.w=o.h*ratio;}
-        }else{
-          o.w=Math.max(12,objectDrag.origW+dx);
-          o.h=Math.max(12,objectDrag.origH+dy);
+
+addEventListener('pointermove', e => {
+  if (panning && panStart) {
+    stage.scrollLeft = panStart.sl - (e.clientX - panStart.x);
+    stage.scrollTop = panStart.st - (e.clientY - panStart.y);
+    return;
+  }
+
+  // Update brush ring cursor
+  if (e.target === cv && $('tool').value !== 'select' && !objectDrag && !spaceDown && !showD) {
+    const d = +$('brush').value * viewZoom;
+    ring.style.display = 'block';
+    ring.style.width = ring.style.height = d + 'px';
+    ring.style.left = e.clientX + 'px';
+    ring.style.top = e.clientY + 'px';
+  } else {
+    ring.style.display = 'none';
+  }
+
+  if (!W) return;
+  const [x, y] = pos(e);
+
+  if (objectDrag) {
+    const o = objects[objectDrag.index], dx = x - objectDrag.startX, dy = y - objectDrag.startY;
+    if (objectDrag.resize) {
+      if (o.type === 'image') {
+        if (e.ctrlKey || e.shiftKey) {
+          const ratio = objectDrag.origW / objectDrag.origH;
+          o.w = Math.max(12, objectDrag.origW + dx);
+          o.h = o.w / ratio;
+        } else {
+          o.w = Math.max(12, objectDrag.origW + dx);
+          o.h = Math.max(12, objectDrag.origH + dy);
         }
-      }else o.size=Math.max(12,Math.min(300,objectDrag.origSize+dx));
-    }else{o.x=objectDrag.origX+dx;o.y=objectDrag.origY+dy;}
-    drawObjects();return;
+        $('objectSize').value = Math.round(o.w);
+        $('objSizeVal').textContent = Math.round(o.w);
+      } else {
+        o.size = Math.round(clamp(objectDrag.origSize + dx, 12, 450));
+        $('objectSize').value = o.size;
+        $('objSizeVal').textContent = o.size;
+      }
+    } else {
+      o.x = objectDrag.origX + dx;
+      o.y = objectDrag.origY + dy;
+    }
+    drawObjects();
+    return;
   }
-  if(!drawing)return;
-  const step=Math.max(2,+$('brush').value*.2),dx=x-last[0],dy=y-last[1];
-  const n=Math.max(1,Math.ceil(Math.hypot(dx,dy)/step));
-  for(let i=1;i<=n;i++){
-    const px=last[0]+dx*i/n,py=last[1]+dy*i/n;
-    if($('tool').value==='spray')sprayAt(px,py);else stamp(px,py);
+
+  if (!drawing) return;
+  const step = Math.max(2.5, +$('brush').value * 0.22), dx = x - last[0], dy = y - last[1];
+  const dist = Math.hypot(dx, dy);
+  const n = Math.min(40, Math.max(1, Math.ceil(dist / step)));
+  for (let i = 1; i <= n; i++) {
+    const px = last[0] + dx * i / n, py = last[1] + dy * i / n;
+    if ($('tool').value === 'spray') sprayAt(px, py);
+    else stamp(px, py);
   }
-  last=[x,y];
+  last = [x, y];
 });
-['pointerup','pointercancel'].forEach(t=>addEventListener(t,()=>{drawing=false;objectDrag=null;}));
 
-/* Files */
-function loadFile(f,cb){
-  if(!f)return;const img=new Image();
-  img.onload=()=>{cb(img);URL.revokeObjectURL(img.src);};
-  img.onerror=()=>say('That file could not be read as an image.');
-  img.src=URL.createObjectURL(f);
+['pointerup', 'pointercancel'].forEach(t => addEventListener(t, () => {
+  drawing = false;
+  objectDrag = null;
+  if (panning) {
+    panning = false;
+    panStart = null;
+    stage.style.cursor = spaceDown ? 'grab' : '';
+  }
+}));
+
+/* File Loading */
+function loadFile(f, cb) {
+  if (!f) return;
+  const img = new Image();
+  img.onload = () => { cb(img); URL.revokeObjectURL(img.src); };
+  img.onerror = () => say('That file could not be read as an image.');
+  img.src = URL.createObjectURL(f);
 }
-$('open').onclick=()=>$('file').click();
-$('file').onchange=e=>loadFile(e.target.files[0],init);
-$('lg').onclick=()=>$('logoFile').click();
-$('logoFile').onchange=e=>loadFile(e.target.files[0],img=>{logo=img;$('pat').value='logo';rebuild();});
-addEventListener('dragover',e=>e.preventDefault());
-addEventListener('drop',e=>{e.preventDefault();loadFile(e.dataTransfer.files[0],init);});
+$('open').onclick = () => $('file').click();
+$('file').onchange = e => loadFile(e.target.files[0], img => {
+  init(img);
+  say('Photo loaded. Click "Run AI Depth" to detect 3D surfaces and folds.');
+});
+$('lg').onclick = () => $('logoFile').click();
+$('logoFile').onchange = e => loadFile(e.target.files[0], img => {
+  logo = img;
+  $('pat').value = 'logo';
+  rebuild();
+});
+addEventListener('dragover', e => e.preventDefault());
+addEventListener('drop', e => {
+  e.preventDefault();
+  if (e.dataTransfer.files[0]) {
+    loadFile(e.dataTransfer.files[0], img => {
+      init(img);
+      say('Photo loaded. Click "Run AI Depth" to detect 3D surfaces and folds.');
+    });
+  }
+});
 
-/* Depth */
-const DEPTH_MODEL_ID='onnx-community/depth-anything-v2-small';
-$('ai').onclick=async()=>{
-  if(!W)return;
-  const btn=$('ai');btn.disabled=true;
-  try{
-    if(!depthPipe){
-      if(!depthPromise){
-        say('Checking browser model cache. The model downloads only if it is not cached yet...');
-        depthPromise=(async()=>{
-          const{pipeline,env}=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2');
-          // Transformers.js stores fetched model files in the browser Cache API.
-          // This survives page reloads in the same browser/profile unless browser
-          // storage is cleared or evicted.
-          env.useBrowserCache=true;
-          return await pipeline('depth-estimation',DEPTH_MODEL_ID,{
-            progress_callback:(progress)=>{
-              if(progress&&progress.status==='progress'&&progress.file){
-                const pct=progress.progress!=null?' ('+Math.round(progress.progress)+'%)':'';
-                say('Preparing depth model: '+progress.file+pct);
-              }else if(progress&&progress.status==='done'){
-                say('Depth model file ready: '+(progress.file||'cached asset'));
+/* AI Depth Estimation (WebGPU accelerated + clear progress + auto verification) */
+const DEPTH_MODEL_ID = 'onnx-community/depth-anything-v2-small';
+
+function toggleDepthView(forceState = null) {
+  if (!W) return;
+  showD = forceState !== null ? forceState : !showD;
+  const btn = $('dv');
+  if (showD) {
+    const im = new ImageData(W, H);
+    for (let i = 0; i < W * H; i++) {
+      const v = depth[i] * 255;
+      im.data[i * 4] = im.data[i * 4 + 1] = im.data[i * 4 + 2] = v;
+      im.data[i * 4 + 3] = 255;
+    }
+    ctx.putImageData(im, 0, 0);
+    btn.textContent = 'Hide Depth Map';
+    btn.classList.add('active');
+    say(isAiDepth
+      ? 'Viewing AI Depth Map (brighter = closer to camera). Click "Hide Depth Map" or press D to resume painting.'
+      : 'Viewing Basic Lighting Depth. Run AI Depth for true 3D surface geometry.');
+  } else {
+    comp(0, 0, W, H);
+    btn.textContent = 'Show Depth Map';
+    btn.classList.remove('active');
+    drawObjects();
+  }
+}
+$('dv').onclick = () => toggleDepthView();
+
+$('ai').onclick = async () => {
+  if (!W) return;
+  const btn = $('ai');
+  const progWrap = $('aiProgress');
+  const progBar = $('aiProgressBar');
+  const progFile = $('aiProgressFile');
+  const progPct = $('aiProgressPct');
+
+  btn.disabled = true;
+  progWrap.classList.add('active');
+  progBar.style.width = '8%';
+  progFile.textContent = 'Loading AI engine...';
+  progPct.textContent = '';
+
+  try {
+    if (!depthPipe) {
+      if (!depthPromise) {
+        say('Initializing Depth Anything V2 model (cached in browser after first run)...', true);
+        depthPromise = (async () => {
+          const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2');
+          env.useBrowserCache = true;
+          const hasWebGPU = !!navigator.gpu;
+          $('backendTag').textContent = hasWebGPU ? 'WebGPU' : 'WASM CPU';
+
+          const opts = {
+            ...(hasWebGPU ? { device: 'webgpu', dtype: 'fp16' } : {}),
+            progress_callback: (p) => {
+              if (!p) return;
+              if (p.status === 'progress' && p.file) {
+                const pct = p.progress != null ? Math.round(p.progress) : 0;
+                progBar.style.width = Math.max(10, pct) + '%';
+                progFile.textContent = p.file.split('/').pop();
+                progPct.textContent = pct + '%';
+                say('Downloading AI depth weights: ' + pct + '%', true);
+              } else if (p.status === 'ready') {
+                progBar.style.width = '85%';
+                progFile.textContent = 'Running neural inference...';
+                progPct.textContent = '';
               }
             }
-          });
-        })().catch(err=>{depthPromise=null;throw err;});
+          };
+
+          try {
+            return await pipeline('depth-estimation', DEPTH_MODEL_ID, opts);
+          } catch (gpuErr) {
+            // Clean fallback to standard WASM if WebGPU adapter fails
+            $('backendTag').textContent = 'WASM CPU';
+            delete opts.device;
+            delete opts.dtype;
+            return await pipeline('depth-estimation', DEPTH_MODEL_ID, opts);
+          }
+        })().catch(err => {
+          depthPromise = null;
+          throw err;
+        });
       }
-      depthPipe=await depthPromise;
+      depthPipe = await depthPromise;
     }
-    say('Depth model ready. Analysing this photo...');
-    const r=await depthPipe(bc.toDataURL('image/png'));
-    const tmp=document.createElement('canvas');tmp.width=W;tmp.height=H;
-    const tg=tmp.getContext('2d',{willReadFrequently:true});
-    tg.drawImage(r.depth.toCanvas(),0,0,W,H);
-    const d=tg.getImageData(0,0,W,H).data,f=new Float32Array(W*H);
-    for(let i=0;i<W*H;i++)f[i]=d[i*4];
-    setDepth(blur(f,4,2));buildPaint();comp(0,0,W,H);drawObjects();
-    say('AI depth applied. The model is kept in memory and its files are cached by this browser for future visits.');
-  }catch(err){
-    depthPipe=null;depthPromise=null;
-    say('AI depth failed ('+err.message+'). Check your connection and browser storage, then try again.');
-  }finally{btn.disabled=false;}
-};
-$('dv').onclick=()=>{
-  if(!W)return;showD=!showD;
-  if(showD){const im=new ImageData(W,H);
-    for(let i=0;i<W*H;i++){const v=depth[i]*255;im.data[i*4]=im.data[i*4+1]=im.data[i*4+2]=v;im.data[i*4+3]=255;}
-    ctx.putImageData(im,0,0);$('dv').textContent='Hide depth';
-  }else{comp(0,0,W,H);$('dv').textContent='Show depth';drawObjects();}
+
+    progBar.style.width = '90%';
+    progFile.textContent = 'Analyzing 3D surface geometry...';
+    progPct.textContent = '';
+    say('Analyzing photo 3D depth...', true);
+
+    // Yield one frame so UI updates before heavy compute
+    await new Promise(r => requestAnimationFrame(() => setTimeout(r, 16)));
+
+    const t0 = performance.now();
+    // Pass HTMLCanvasElement directly (avoids slow toDataURL PNG encoding/decoding)
+    const r = await depthPipe(bc);
+    const ms = Math.round(performance.now() - t0);
+
+    const tmp = document.createElement('canvas');
+    tmp.width = W; tmp.height = H;
+    const tg = tmp.getContext('2d', { willReadFrequently: true });
+    tg.drawImage(r.depth.toCanvas(), 0, 0, W, H);
+    const d = tg.getImageData(0, 0, W, H).data, f = new Float32Array(W * H);
+    for (let i = 0; i < W * H; i++) f[i] = d[i * 4];
+
+    setDepth(blur(f, 4, 2));
+    setDepthStatus(true, `AI Depth Active (${ms}ms)`);
+    $('backendTag').textContent = `Done in ${ms}ms`;
+
+    progBar.style.width = '100%';
+    progFile.textContent = 'Depth map applied';
+    progPct.textContent = '100%';
+
+    buildPaint();
+    drawObjects();
+    // Briefly show the generated AI depth map for 1.2s so user visually confirms it worked
+    toggleDepthView(true);
+    say(`AI Depth applied in ${ms}ms! Previewing depth map...`, false);
+    setTimeout(() => {
+      if (showD) {
+        toggleDepthView(false);
+        say(`AI Depth active (${ms}ms). Paint or place decals—strokes now warp to 3D geometry.`);
+      }
+      progWrap.classList.remove('active');
+    }, 1200);
+  } catch (err) {
+    depthPipe = null;
+    depthPromise = null;
+    progWrap.classList.remove('active');
+    setDepthStatus(false, 'Basic Lighting Depth');
+    say('AI depth error: ' + err.message, false);
+  } finally {
+    btn.disabled = false;
+  }
 };
 
-$('clear').onclick=()=>{if(!W)return;pushHist();mask.fill(0);isSol.fill(0);showD=false;$('dv').textContent='Show depth';comp(0,0,W,H);};
-$('save').onclick=()=>{
-  if(!W)return;
-  showD=false;$('dv').textContent='Show depth';
-  comp(0,0,W,H);
-  // Re-render without selection outlines, then flatten base paint + editable layers.
+/* Clear & Export */
+$('clear').onclick = () => {
+  if (!W) return;
+  pushHist();
+  mask.fill(0);
+  isSol.fill(0);
+  if (showD) toggleDepthView(false);
+  else comp(0, 0, W, H);
+  say('Paint layer cleared.');
+};
+
+$('save').onclick = () => {
+  if (!W) return;
+  if (showD) toggleDepthView(false);
+  comp(0, 0, W, H);
   drawObjects(false);
-  const exportCanvas=document.createElement('canvas');exportCanvas.width=W;exportCanvas.height=H;
-  const exportCtx=exportCanvas.getContext('2d');
-  exportCtx.drawImage(cv,0,0);
-  exportCtx.drawImage(ov,0,0);
-  exportCanvas.toBlob(blob=>{
-    if(!blob){say('Export failed. Please try again.');drawObjects(true);return;}
-    const url=URL.createObjectURL(blob),a=document.createElement('a');
-    a.href=url;a.download='lazycoders_deep_brush.png';a.click();
-    setTimeout(()=>URL.revokeObjectURL(url),1500);
-    say('PNG exported with all text and design layers.');
+  const exportCanvas = document.createElement('canvas');
+  exportCanvas.width = W; exportCanvas.height = H;
+  const exportCtx = exportCanvas.getContext('2d');
+  exportCtx.drawImage(cv, 0, 0);
+  exportCtx.drawImage(ov, 0, 0);
+  exportCanvas.toBlob(blob => {
+    if (!blob) {
+      say('Export failed. Please try again.');
+      drawObjects(true);
+      return;
+    }
+    const url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url;
+    a.download = 'lazycoders_deep_brush.png';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    say('PNG exported with all surface-wrapped paint & decals.');
     drawObjects(true);
-  },'image/png');
+  }, 'image/png');
 };
 
-function applyZoom(nextZoom,anchorClientX=null,anchorClientY=null){
-  if(!W||!H)return;
-  const stage=cv.parentElement,rect=stage.getBoundingClientRect();
-  const style=getComputedStyle(stage);
-  const padLeft=parseFloat(style.paddingLeft)||0;
-  const padTop=parseFloat(style.paddingTop)||0;
-  const oldZoom=viewZoom;
-  const localX=anchorClientX==null?stage.clientWidth/2:anchorClientX-rect.left-stage.clientLeft;
-  const localY=anchorClientY==null?stage.clientHeight/2:anchorClientY-rect.top-stage.clientTop;
-  // Image coordinate beneath the chosen anchor before changing scale.
-  const imageX=(stage.scrollLeft+localX-padLeft)/oldZoom;
-  const imageY=(stage.scrollTop+localY-padTop)/oldZoom;
-  viewZoom=clamp(nextZoom,.1,5);
-  cv.style.width=(W*viewZoom)+'px';cv.style.height=(H*viewZoom)+'px';
-  ov.style.width=(W*viewZoom)+'px';ov.style.height=(H*viewZoom)+'px';
-  $('zoomLabel').textContent=Math.round(viewZoom*100)+'%';
-  requestAnimationFrame(()=>{
-    stage.scrollLeft=Math.max(0,imageX*viewZoom+padLeft-localX);
-    stage.scrollTop=Math.max(0,imageY*viewZoom+padTop-localY);
-    alignObjectCanvas();
+/* Zoom & Viewport Alignment */
+function applyZoom(nextZoom, anchorClientX = null, anchorClientY = null) {
+  if (!W || !H) return;
+  const rect = stage.getBoundingClientRect();
+  const oldZoom = viewZoom;
+  const localX = anchorClientX == null ? stage.clientWidth / 2 : anchorClientX - rect.left;
+  const localY = anchorClientY == null ? stage.clientHeight / 2 : anchorClientY - rect.top;
+  const holderRect = holder.getBoundingClientRect();
+  const imageX = (localX - (holderRect.left - rect.left)) / oldZoom;
+  const imageY = (localY - (holderRect.top - rect.top)) / oldZoom;
+
+  viewZoom = clamp(nextZoom, 0.1, 5);
+  cv.style.width = (W * viewZoom) + 'px';
+  cv.style.height = (H * viewZoom) + 'px';
+  ov.style.width = (W * viewZoom) + 'px';
+  ov.style.height = (H * viewZoom) + 'px';
+  $('zoomLabel').textContent = Math.round(viewZoom * 100) + '%';
+
+  requestAnimationFrame(() => {
+    const newHolderRect = holder.getBoundingClientRect();
+    const curImageScreenX = (newHolderRect.left - rect.left) + imageX * viewZoom;
+    const curImageScreenY = (newHolderRect.top - rect.top) + imageY * viewZoom;
+    stage.scrollLeft += curImageScreenX - localX;
+    stage.scrollTop += curImageScreenY - localY;
   });
 }
-function setZoomToFit(){
-  if(!W||!H)return;
-  const stage=cv.parentElement;
-  const availableW=Math.max(100,stage.clientWidth-36);
-  const availableH=Math.max(100,stage.clientHeight-36);
-  applyZoom(Math.min(1,availableW/W,availableH/H));
-}
-$('zoomIn').onclick=()=>applyZoom(viewZoom*1.2);
-$('zoomOut').onclick=()=>applyZoom(viewZoom/1.2);
-$('zoom100').onclick=()=>applyZoom(1);
-$('zoomFit').onclick=()=>setZoomToFit();
-cv.parentElement.addEventListener('wheel',e=>{
-  if(!W)return;
-  e.preventDefault();
-  const factor=e.deltaY<0?1.12:1/1.12;
-  // Keep the exact pixel under the pointer stationary while zooming.
-  applyZoom(viewZoom*factor,e.clientX,e.clientY);
-},{passive:false});
 
-function alignObjectCanvas(){
-  ov.style.left=cv.offsetLeft+'px';ov.style.top=cv.offsetTop+'px';
-  ov.style.width=(W*viewZoom)+'px';ov.style.height=(H*viewZoom)+'px';
+function setZoomToFit() {
+  if (!W || !H) return;
+  const availableW = Math.max(120, stage.clientWidth - 56);
+  const availableH = Math.max(120, stage.clientHeight - 64);
+  applyZoom(Math.min(1, availableW / W, availableH / H));
 }
-addEventListener('resize',alignObjectCanvas);
-const originalInit=init;
-init= function(img){originalInit(img);requestAnimationFrame(alignObjectCanvas);};
-/* UX: tools, swatches, ring cursor, undo, shortcuts */
-const ring=document.createElement('div');ring.id='ring';cv.parentElement.append(ring);
-function pushHist(){hist.push({m:mask.slice(),s:sol.slice(),f:isSol.slice()});if(hist.length>8)hist.shift();}
-function undo(){const h=hist.pop();if(!h){say('Nothing to undo.');return;}mask.set(h.m);sol.set(h.s);isSol.set(h.f);comp(0,0,W,H);say('Undone.');}
-$('undo').onclick=undo;
-function syncToolUI(){
-  const t=$('tool').value;
-  document.querySelectorAll('#tools button').forEach(b=>b.classList.toggle('on',b.dataset.tool===t));
-  $('rowSpray').style.display=t==='spray'?'flex':'none';
-  $('rowShade').style.display=(t==='pattern'||t==='select')?'none':'flex';
-  cv.style.cursor=t==='select'?'default':'crosshair';ring.style.display='none';
+
+$('zoomIn').onclick = () => applyZoom(viewZoom * 1.2);
+$('zoomOut').onclick = () => applyZoom(viewZoom / 1.2);
+$('zoom100').onclick = () => applyZoom(1);
+$('zoomFit').onclick = () => setZoomToFit();
+
+stage.addEventListener('wheel', e => {
+  if (!W) return;
+  e.preventDefault();
+  const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+  applyZoom(viewZoom * factor, e.clientX, e.clientY);
+}, { passive: false });
+
+/* Undo, Tools, Swatches & Shortcuts */
+function pushHist() {
+  hist.push({ m: mask.slice(), s: sol.slice(), f: isSol.slice() });
+  if (hist.length > 10) hist.shift();
 }
-function setTool(t){$('tool').value=t;syncToolUI();}
-document.querySelectorAll('#tools button').forEach(b=>b.onclick=()=>setTool(b.dataset.tool));
-['#e53935','#fb8c00','#fdd835','#43a047','#1e88e5','#8e24aa','#ffffff','#111111'].forEach(c=>{
-  const b=document.createElement('button');b.className='sw';b.style.background=c;b.title=c;
-  b.onclick=()=>{$('paintColor').value=c;if($('tool').value==='select'||$('tool').value==='pattern')setTool('brush');};
+function undo() {
+  const h = hist.pop();
+  if (!h) { say('Nothing to undo.'); return; }
+  mask.set(h.m); sol.set(h.s); isSol.set(h.f);
+  if (showD) toggleDepthView(false);
+  else comp(0, 0, W, H);
+  say('Undone.');
+}
+$('undo').onclick = undo;
+
+function syncToolUI() {
+  const t = $('tool').value;
+  document.querySelectorAll('#tools button').forEach(b => b.classList.toggle('on', b.dataset.tool === t));
+  $('rowSpray').style.display = t === 'spray' ? 'flex' : 'none';
+  $('rowShade').style.display = (t === 'pattern' || t === 'select') ? 'none' : 'flex';
+  $('colorControls').style.display = (t === 'pattern' || t === 'select') ? 'none' : 'block';
+  if (t === 'pattern') $('patternCard').open = true;
+  cv.style.cursor = t === 'select' ? 'default' : 'crosshair';
+  ring.style.display = 'none';
+}
+function setTool(t) { $('tool').value = t; syncToolUI(); }
+document.querySelectorAll('#tools button').forEach(b => b.onclick = () => setTool(b.dataset.tool));
+
+['#e53935', '#fb8c00', '#fdd835', '#43a047', '#00acc1', '#1e88e5', '#8e24aa', '#f8fafc', '#111827'].forEach(c => {
+  const b = document.createElement('button');
+  b.className = 'sw';
+  b.style.background = c;
+  b.title = c;
+  b.onclick = () => {
+    $('paintColor').value = c;
+    if ($('tool').value === 'select' || $('tool').value === 'pattern') setTool('brush');
+  };
   $('sw').append(b);
 });
-cv.addEventListener('pointermove',e=>{
-  if($('tool').value==='select'||objectDrag){ring.style.display='none';return;}
-  const st=cv.parentElement,r=st.getBoundingClientRect(),d=+$('brush').value*viewZoom;
-  ring.style.display='block';ring.style.width=ring.style.height=d+'px';
-  ring.style.left=(e.clientX-r.left+st.scrollLeft-d/2)+'px';ring.style.top=(e.clientY-r.top+st.scrollTop-d/2)+'px';
+
+addEventListener('keydown', e => {
+  const t = e.target, tag = (t.tagName || '').toLowerCase();
+  if (tag === 'select' || (tag === 'input' && ['text', 'search', 'number'].includes(t.type))) return;
+  if (e.code === 'Space' && !spaceDown) {
+    e.preventDefault();
+    spaceDown = true;
+    stage.style.cursor = 'grab';
+    ring.style.display = 'none';
+    return;
+  }
+  const k = e.key.toLowerCase();
+  if ((e.ctrlKey || e.metaKey) && k === 'z') { e.preventDefault(); undo(); return; }
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (k === 'b') setTool('brush');
+  else if (k === 's') setTool('spray');
+  else if (k === 'p') setTool('pattern');
+  else if (k === 'v') setTool('select');
+  else if (k === 'd') toggleDepthView();
+  else if (k === 'e') {
+    $('erase').checked = !$('erase').checked;
+    say('Eraser ' + ($('erase').checked ? 'enabled' : 'disabled') + '.');
+  } else if (k === '[' || k === ']') {
+    $('brush').value = clamp(+$('brush').value + (k === ']' ? 8 : -8), 8, 200);
+    $('brushSizeVal').textContent = $('brush').value + 'px';
+  } else if ((k === 'delete' || k === 'backspace') && selectedObject >= 0) {
+    e.preventDefault();
+    $('deleteObject').click();
+  } else if (k === 'escape') {
+    selectObject(-1);
+  }
 });
-cv.addEventListener('pointerleave',()=>{ring.style.display='none';});
-(function tick(){if(drawing&&last&&!showD&&$('tool').value==='spray')sprayAt(last[0],last[1]);requestAnimationFrame(tick);})();
-addEventListener('keydown',e=>{
-  const t=e.target,tag=(t.tagName||'').toLowerCase();
-  if(tag==='select'||(tag==='input'&&['text','search','number'].includes(t.type)))return;
-  const k=e.key.toLowerCase();
-  if((e.ctrlKey||e.metaKey)&&k==='z'){e.preventDefault();undo();return;}
-  if(e.ctrlKey||e.metaKey||e.altKey)return;
-  if(k==='b')setTool('brush');else if(k==='s')setTool('spray');else if(k==='p')setTool('pattern');else if(k==='v')setTool('select');
-  else if(k==='e'){$('erase').checked=!$('erase').checked;say('Eraser '+($('erase').checked?'on':'off')+'.');}
-  else if(k==='['||k===']'){$('brush').value=+$('brush').value+(k===']'?8:-8);}
-  else if((k==='delete'||k==='backspace')&&selectedObject>=0){e.preventDefault();$('deleteObject').click();}
-  else if(k==='escape')selectObject(-1);
+
+addEventListener('keyup', e => {
+  if (e.code === 'Space') {
+    spaceDown = false;
+    if (!panning) stage.style.cursor = '';
+  }
 });
+
 syncToolUI();
 init(sample());
 </script>
