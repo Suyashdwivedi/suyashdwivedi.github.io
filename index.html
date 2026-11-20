@@ -58,6 +58,10 @@
       --link-color: #1565c0;
       --border-color: #e5e7eb;
       --shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+      --mobile-banner-bg: #fff8e1;
+      --mobile-banner-text: #8d4900;
+      --mobile-banner-border: #ffb300;
+      --speaking-bg: #fef9c3;
     }
 
     body.dark-mode {
@@ -71,6 +75,10 @@
       --link-color: #60a5fa;
       --border-color: #334155;
       --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+      --mobile-banner-bg: #3b2a08;
+      --mobile-banner-text: #fde68a;
+      --mobile-banner-border: #f59e0b;
+      --speaking-bg: #2e3b1f;
     }
 
     * {
@@ -270,6 +278,33 @@
       padding: 0 16px;
     }
 
+    /* Highlighted Colored Mobile Recommendation Line */
+    .mobile-notice {
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      padding: 10px 16px;
+      background-color: var(--mobile-banner-bg);
+      color: var(--mobile-banner-text);
+      border: 1px solid var(--mobile-banner-border);
+      border-left: 5px solid var(--mobile-banner-border);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .linux-tts-notice {
+      display: none;
+      text-align: center;
+      font-size: 0.88rem;
+      margin-bottom: 14px;
+      padding: 10px 16px;
+      background-color: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+    }
+
     .date-time {
       text-align: center;
       font-size: 0.95rem;
@@ -297,11 +332,32 @@
       border-radius: 10px;
       padding: 14px 18px;
       box-shadow: var(--shadow);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.25s ease;
     }
 
     .change-item:hover {
       transform: translateY(-1px);
+    }
+
+    .change-item.is-speaking {
+      background-color: var(--speaking-bg);
+      border-left-color: #eab308;
+    }
+
+    .change-item.is-new-priority {
+      border-left-width: 6px;
+    }
+
+    .new-badge {
+      display: inline-block;
+      background-color: var(--accent-color);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+      margin-right: 6px;
+      vertical-align: middle;
     }
 
     .change-title {
@@ -551,6 +607,16 @@
   </header>
 
   <main>
+    <!-- Colored Mobile Recommendation Line -->
+    <div class="mobile-notice">
+      📱 For a better experience, open in Mobile.
+    </div>
+
+    <!-- Linux System Voice Notice (shown automatically only if Linux has 0 TTS voices installed) -->
+    <div id="linux-tts-notice" class="linux-tts-notice">
+      <strong>Linux Audio Notice:</strong> No system speech voices were detected by your browser. On Linux Chromium/Firefox, install <code>speech-dispatcher</code> and <code>espeak-ng</code> (e.g., <code>sudo apt install speech-dispatcher espeak-ng</code>) and restart the browser.
+    </div>
+
     <div id="date-time" class="date-time"></div>
     <div id="changes"></div>
   </main>
@@ -573,15 +639,58 @@
     const counterDisplay = document.getElementById("counter");
     const dateDisplay = document.getElementById("date-time");
     const changesDiv = document.getElementById("changes");
+    const linuxNotice = document.getElementById("linux-tts-notice");
 
     let currentLang = localStorage.getItem("selectedLanguage") || "hi";
     let changeCount = 0; 
     let intervalCount = 0;
     let previousChangeIDs = [];
-    let spokenQueue = [];
+    let allDisplayedItems = []; // Full page items in top-to-bottom order
+    let activeSpeechQueue = []; // Dynamic queue currently being spoken
+    let isSpeakingQueue = false;
     const REFRESH_INTERVAL = 20000; 
     let fetchIntervalId; 
     let voiceEnabled = localStorage.getItem("voiceEnabled") !== "false"; 
+    let availableVoices = [];
+    let currentUtterance = null;
+    let speechCycleToken = 0;
+    let keepAliveInterval = null;
+
+    // Cross-platform voice loader (critical for Linux Chromium & Firefox)
+    function loadVoices() {
+      if (!("speechSynthesis" in window)) return;
+      const list = window.speechSynthesis.getVoices();
+      if (list && list.length > 0) {
+        availableVoices = list;
+        linuxNotice.style.display = "none";
+      }
+    }
+
+    if ("speechSynthesis" in window) {
+      loadVoices();
+      if (typeof window.speechSynthesis.onvoiceschanged !== "undefined") {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+      }
+      setTimeout(() => {
+        loadVoices();
+        if (availableVoices.length === 0 && navigator.platform.toLowerCase().includes("linux")) {
+          linuxNotice.style.display = "block";
+        }
+      }, 1500);
+    }
+
+    // Unlock audio synthesis on first user click (required by desktop Chromium/Firefox)
+    function unlockSpeechEngine() {
+      if (!("speechSynthesis" in window)) return;
+      loadVoices();
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+      if (voiceEnabled && !isSpeakingQueue && allDisplayedItems.length > 0) {
+        startSpeakingList(allDisplayedItems);
+      }
+    }
+    document.addEventListener("click", unlockSpeechEngine, { once: true });
 
     function updateVoiceButton() {
       if (voiceEnabled) {
@@ -598,22 +707,77 @@
       voiceEnabled = !voiceEnabled;
       localStorage.setItem("voiceEnabled", voiceEnabled);
       updateVoiceButton();
-      if (!voiceEnabled) speechSynthesis.cancel();
+      if (!voiceEnabled) {
+        stopSpeech();
+      } else {
+        unlockSpeechEngine();
+        if (!isSpeakingQueue && allDisplayedItems.length > 0) {
+          startSpeakingList(allDisplayedItems);
+        }
+      }
     };
 
     const langMap = {
-      en: "en-US", hi: "hi-IN", af: "af-ZA", am: "am-ET", ar: "ar-SA", as: "as-IN", awa: "awa-IN",
-      az: "az-AZ", ban: "ban-ID", bcl: "bcl-PH", bh: "bh-IN", bn: "bn-IN", ceb: "ceb-PH", da: "da-DK",
-      dag: "dag-GH", de: "de-DE", es: "es-ES", fa: "fa-IR", fr: "fr-FR", gu: "gu-IN", ha: "ha-NG",
-      he: "he-IL", hif: "hif-FJ", id: "id-ID", ig: "ig-NG", ilo: "ilo-PH", it: "it-IT", ja: "ja-JP",
+      en: "en-US", hi: "hi-IN", af: "af-ZA", am: "am-ET", ar: "ar-SA", as: "as-IN", awa: "hi-IN",
+      az: "az-AZ", ban: "id-ID", bcl: "tl-PH", bh: "hi-IN", bn: "bn-IN", ceb: "ceb-PH", da: "da-DK",
+      dag: "en-GH", de: "de-DE", es: "es-ES", fa: "fa-IR", fr: "fr-FR", gu: "gu-IN", ha: "ha-NG",
+      he: "he-IL", hif: "hi-IN", id: "id-ID", ig: "ig-NG", ilo: "ilo-PH", it: "it-IT", ja: "ja-JP",
       jv: "jv-ID", kk: "kk-KZ", km: "km-KH", kn: "kn-IN", ko: "ko-KR", ky: "ky-KG", lo: "lo-LA",
-      mai: "mai-IN", mg: "mg-MG", mi: "mi-NZ", min: "min-ID", ml: "ml-IN", mn: "mn-MN", mr: "mr-IN",
+      mai: "hi-IN", mg: "mg-MG", mi: "mi-NZ", min: "id-ID", ml: "ml-IN", mn: "mn-MN", mr: "mr-IN",
       ms: "ms-MY", my: "my-MM", ne: "ne-NP", nl: "nl-NL", om: "om-ET", pa: "pa-IN", pl: "pl-PL",
       pt: "pt-PT", ru: "ru-RU", rw: "rw-RW", sa: "sa-IN", si: "si-LK", sm: "sm-WS", so: "so-SO",
       su: "su-ID", sw: "sw-KE", ta: "ta-IN", te: "te-IN", tg: "tg-TJ", th: "th-TH", tk: "tk-TM",
-      tl: "tl-PH", tr: "tr-TR", tt: "tt-RU", tw: "tw-GH", ug: "ug-CN", uk: "uk-UA", ur: "ur-PK",
-      uz: "uz-UZ", vi: "vi-VN", war: "war-PH", yo: "yo-NG", zh: "zh-CN", zu: "zu-ZA"
+      tl: "tl-PH", tr: "tr-TR", tt: "tt-RU", tw: "ak-GH", ug: "ug-CN", uk: "uk-UA", ur: "ur-PK",
+      uz: "uz-UZ", vi: "vi-VN", war: "tl-PH", yo: "yo-NG", zh: "zh-CN", zu: "zu-ZA"
     };
+
+    const localizedPhrases = {
+      hi: { page: "पृष्ठ बदला गया", editor: "संपादक", ip: "आईपी पता", anon: "अज्ञात" },
+      bn: { page: "পাতা পরিবর্তিত হয়েছে", editor: "সম্পাদক", ip: "আইপি ঠিকানা", anon: "বেনামী" },
+      mr: { page: "पान बदलले", editor: "संपादक", ip: "आयपी पत्ता", anon: "अनामिक" },
+      gu: { page: "પાનું બદલાયું", editor: "સંપાદક", ip: "આઈપી સરનામું", anon: "અનામી" },
+      pa: { page: "ਸਫ਼ਾ ਬਦਲਿਆ ਗਿਆ", editor: "ਸੰਪਾਦਕ", ip: "ਆਈਪੀ ਪਤਾ", anon: "ਅਗਿਆਤ" },
+      ta: { page: "பக்கம் மாற்றப்பட்டது", editor: "தொகுப்பாளர்", ip: "ஐபி முகவரி", anon: "அடையாளம் தெரியாதவர்" },
+      te: { page: "పేజీ మార్చబడింది", editor: "సవరించినవారు", ip: "ఐపీ చిరునామా", anon: "అజ్ఞాత" },
+      kn: { page: "ಪುಟ ಬದಲಾಗಿದೆ", editor: "ಸಂಪಾದಕರು", ip: "ಐಪಿ ವಿಳಾಸ", anon: "ಅನಾಮಧೇಯ" },
+      ml: { page: "താൾ മാറ്റിയിരിക്കുന്നു", editor: "തിരുത്തിയ ആൾ", ip: "ഐപി വിലാസം", anon: "അജ്ഞാതൻ" },
+      ur: { page: "صفحہ تبدیل ہوا", editor: "ترمیم کنندہ", ip: "آئی پی پتہ", anon: "نامعلوم" },
+      ar: { page: "تم تعديل الصفحة", editor: "المحرر", ip: "عنوان آي بي", anon: "مجهول" },
+      es: { page: "Página modificada", editor: "Editor", ip: "dirección IP", anon: "Anónimo" },
+      fr: { page: "Page modifiée", editor: "Éditeur", ip: "adresse IP", anon: "Anonyme" },
+      de: { page: "Seite geändert", editor: "Bearbeiter", ip: "IP-Adresse", anon: "Anonym" },
+      ru: { page: "Страница изменена", editor: "Редактор", ip: "IP-адрес", anon: "Аноним" },
+      ja: { page: "ページが変更されました", editor: "編集者", ip: "IPアドレス", anon: "匿名" },
+      zh: { page: "页面已更改", editor: "编辑者", ip: "IP地址", anon: "匿名" }
+    };
+
+    function formatSpeechSentence(langCode, title, user) {
+      const phrases = localizedPhrases[langCode] || {
+        page: "Page Changed",
+        editor: "Editor",
+        ip: "IP address",
+        anon: "Anonymous"
+      };
+      const editorText = isIPAddress(user) ? phrases.ip : (user || phrases.anon);
+      return `${phrases.page}: ${title}. ${phrases.editor}: ${editorText}.`;
+    }
+
+    function getMatchingVoice(bcp47Lang) {
+      if (!availableVoices.length) loadVoices();
+      if (!availableVoices.length) return null;
+
+      const target = bcp47Lang.replace("_", "-").toLowerCase();
+      const base = target.split("-")[0];
+
+      let voice = availableVoices.find(v => v.lang.replace("_", "-").toLowerCase() === target);
+      if (!voice) {
+        voice = availableVoices.find(v => v.lang.replace("_", "-").toLowerCase().startsWith(target));
+      }
+      if (!voice) {
+        voice = availableVoices.find(v => v.lang.replace("_", "-").toLowerCase().split("-")[0] === base);
+      }
+      return voice || null;
+    }
 
     function displayDateTime() {
       const now = new Date();
@@ -634,29 +798,103 @@
         || (user && user.startsWith("~"));
     }
 
-    function speakQueue(queue) {
-      if (!voiceEnabled || !queue || queue.length === 0) {
+    function clearSpeakingHighlights() {
+      document.querySelectorAll(".change-item.is-speaking").forEach(el => {
+        el.classList.remove("is-speaking");
+      });
+    }
+
+    function stopSpeech() {
+      speechCycleToken++;
+      isSpeakingQueue = false;
+      activeSpeechQueue = [];
+      clearInterval(keepAliveInterval);
+      currentUtterance = null;
+      clearSpeakingHighlights();
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    /**
+     * Reads through activeSpeechQueue one item at a time until the entire page is read.
+     * If new edits arrive mid-speech, they are inserted at the front of activeSpeechQueue
+     * so they speak next without restarting or looping the page from the top.
+     */
+    function startSpeakingList(items) {
+      if (!voiceEnabled || !("speechSynthesis" in window) || !items || items.length === 0) {
         return;
       }
-      speechSynthesis.cancel(); 
 
-      let utteranceIndex = 0;
-      const speakNext = () => {
-        if (utteranceIndex < queue.length) {
-          const msg = queue[utteranceIndex];
-          const utterance = new SpeechSynthesisUtterance(msg);
-          utterance.lang = langMap[currentLang] || "en-US";
-          utterance.onend = () => {
-            utteranceIndex++;
-            setTimeout(speakNext, 400); 
-          };
-          utterance.onerror = (event) => {
-            console.error('SpeechSynthesisUtterance.onerror', event);
-          };
-          speechSynthesis.speak(utterance);
+      stopSpeech();
+      const token = ++speechCycleToken;
+      isSpeakingQueue = true;
+      activeSpeechQueue = [...items];
+
+      keepAliveInterval = setInterval(() => {
+        if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+          window.speechSynthesis.pause();
+          window.speechSynthesis.resume();
         }
+      }, 10000);
+
+      const speakNext = () => {
+        if (token !== speechCycleToken || !voiceEnabled) {
+          isSpeakingQueue = false;
+          clearInterval(keepAliveInterval);
+          clearSpeakingHighlights();
+          return;
+        }
+
+        if (activeSpeechQueue.length === 0) {
+          isSpeakingQueue = false;
+          clearInterval(keepAliveInterval);
+          clearSpeakingHighlights();
+          currentUtterance = null;
+          return;
+        }
+
+        // Shift the next item from the queue so it never repeats in a loop
+        const item = activeSpeechQueue.shift();
+
+        clearSpeakingHighlights();
+        if (item.rcid) {
+          const card = document.querySelector(`.change-item[data-rcid="${item.rcid}"]`);
+          if (card) card.classList.add("is-speaking");
+        }
+
+        const utterance = new SpeechSynthesisUtterance(item.text);
+        utterance.lang = item.lang || (langMap[currentLang] || "en-US");
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+
+        const matchedVoice = getMatchingVoice(utterance.lang);
+        if (matchedVoice) {
+          utterance.voice = matchedVoice;
+        }
+
+        currentUtterance = utterance;
+
+        utterance.onend = () => {
+          if (token !== speechCycleToken) return;
+          setTimeout(speakNext, 300);
+        };
+
+        utterance.onerror = (event) => {
+          if (token !== speechCycleToken) return;
+          if (event.error !== "interrupted" && event.error !== "canceled") {
+            console.warn("SpeechSynthesisUtterance error, skipping item:", event.error);
+            setTimeout(speakNext, 300);
+          }
+        };
+
+        if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+        window.speechSynthesis.speak(utterance);
       };
-      speakNext(); 
+
+      setTimeout(speakNext, 60);
     }
 
     async function fetchChanges() {
@@ -665,13 +903,27 @@
         const json = await res.json();
         const changes = json.query.recentchanges.reverse(); 
 
+        const isFirstLoad = previousChangeIDs.length === 0;
         const newChanges = changes.filter(change => !previousChangeIDs.includes(change.rcid));
+        const targetBcp47 = langMap[currentLang] || "en-US";
 
-        let voiceBatch = [];
+        if (newChanges.length > 0) {
+          document.querySelectorAll(".new-badge").forEach(b => b.remove());
+          document.querySelectorAll(".change-item.is-new-priority").forEach(c => c.classList.remove("is-new-priority"));
+        }
+
+        // Build priority speech list for newly detected edits (newest first)
+        const priorityBatch = [];
         for (let i = newChanges.length - 1; i >= 0; i--) {
           const change = newChanges[i];
-          voiceBatch.push(`Page Changed: ${change.title}. Editor: ${isIPAddress(change.user) ? "IP address" : (change.user || "Anonymous")}.`);
+          priorityBatch.push({
+            rcid: change.rcid,
+            text: formatSpeechSentence(currentLang, change.title, change.user),
+            lang: targetBcp47
+          });
         }
+
+        const remainingItems = [...allDisplayedItems];
 
         newChanges.forEach(change => { 
           const timeUTC = new Date(change.timestamp).toUTCString();
@@ -686,11 +938,17 @@
           const titleLink = `https://${currentLang}.wikipedia.org/w/index.php?title=${encodeURIComponent(change.title)}&action=history`;
           const userLink = `https://${currentLang}.wikipedia.org/wiki/Special:Contributions/${encodeURIComponent(change.user || "")}`;
           const editorDisplay = isIPAddress(change.user) ? "IP address" : (change.user || "Anonymous");
+          const showNewTag = !isFirstLoad;
 
           const newItemDiv = document.createElement('div');
           newItemDiv.classList.add('change-item');
+          if (showNewTag) newItemDiv.classList.add('is-new-priority');
+          newItemDiv.setAttribute('data-rcid', change.rcid);
+          newItemDiv.setAttribute('lang', targetBcp47);
+
           newItemDiv.innerHTML = `
             <div class="change-title">
+              ${showNewTag ? '<span class="new-badge">NEW</span>' : ''}
               <a href="${titleLink}" target="_blank">${change.title}</a>
             </div>
             <div class="change-meta">
@@ -708,15 +966,31 @@
         while (changesDiv.children.length > 25) {
           changesDiv.removeChild(changesDiv.lastChild);
         }
+
+        allDisplayedItems = [...priorityBatch, ...remainingItems].slice(0, 25);
         previousChangeIDs = changes.map(change => change.rcid);
 
         changeCount = newChanges.length;
         intervalCount++;
         counterDisplay.textContent = `Refresh #${intervalCount} • New changes: ${changeCount}`;
 
-        if (voiceBatch.length > 0) {
-          spokenQueue = voiceBatch; 
-          speakQueue(spokenQueue);
+        // Speech Queue Handling:
+        // Case A: Already reading through the page -> DO NOT interrupt or restart from item #1!
+        //         If new edits arrived, prepend them to the front of the remaining queue so they speak next.
+        if (isSpeakingQueue) {
+          if (priorityBatch.length > 0) {
+            activeSpeechQueue = [...priorityBatch, ...activeSpeechQueue];
+          }
+          return;
+        }
+
+        // Case B: Not currently speaking ->
+        //         If new edits exist, speak new edits first + remaining items.
+        //         If no new edits exist, read out the whole page one by one.
+        if (priorityBatch.length > 0) {
+          startSpeakingList([...priorityBatch, ...remainingItems]);
+        } else if (allDisplayedItems.length > 0) {
+          startSpeakingList(allDisplayedItems);
         }
 
       } catch (e) {
@@ -740,8 +1014,11 @@
     languageSelect.onchange = () => {
       currentLang = languageSelect.value;
       localStorage.setItem("selectedLanguage", currentLang);
+      stopSpeech();
       changesDiv.innerHTML = "";
       previousChangeIDs = [];
+      allDisplayedItems = [];
+      intervalCount = 0;
       fetchChanges();
     };
 
