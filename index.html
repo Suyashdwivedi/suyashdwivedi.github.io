@@ -654,7 +654,7 @@
     let availableVoices = [];
     let currentUtterance = null;
     let speechCycleToken = 0;
-    let keepAliveInterval = null;
+    let itemWatchdogTimer = null;
 
     // Cross-platform voice loader (critical for Linux Chromium & Firefox)
     function loadVoices() {
@@ -808,7 +808,7 @@
       speechCycleToken++;
       isSpeakingQueue = false;
       activeSpeechQueue = [];
-      clearInterval(keepAliveInterval);
+      clearTimeout(itemWatchdogTimer);
       currentUtterance = null;
       clearSpeakingHighlights();
       if ("speechSynthesis" in window) {
@@ -818,8 +818,8 @@
 
     /**
      * Reads through activeSpeechQueue one item at a time until the entire page is read.
-     * If new edits arrive mid-speech, they are inserted at the front of activeSpeechQueue
-     * so they speak next without restarting or looping the page from the top.
+     * Uses a self-healing watchdog (without pause/resume) so Linux Chromium and Firefox
+     * never stall at 10 seconds or hang when onend fails to fire.
      */
     function startSpeakingList(items) {
       if (!voiceEnabled || !("speechSynthesis" in window) || !items || items.length === 0) {
@@ -831,30 +831,22 @@
       isSpeakingQueue = true;
       activeSpeechQueue = [...items];
 
-      keepAliveInterval = setInterval(() => {
-        if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
-          window.speechSynthesis.pause();
-          window.speechSynthesis.resume();
-        }
-      }, 10000);
-
       const speakNext = () => {
+        clearTimeout(itemWatchdogTimer);
+
         if (token !== speechCycleToken || !voiceEnabled) {
           isSpeakingQueue = false;
-          clearInterval(keepAliveInterval);
           clearSpeakingHighlights();
           return;
         }
 
         if (activeSpeechQueue.length === 0) {
           isSpeakingQueue = false;
-          clearInterval(keepAliveInterval);
           clearSpeakingHighlights();
           currentUtterance = null;
           return;
         }
 
-        // Shift the next item from the queue so it never repeats in a loop
         const item = activeSpeechQueue.shift();
 
         clearSpeakingHighlights();
@@ -874,27 +866,51 @@
         }
 
         currentUtterance = utterance;
+        let finishedCurrent = false;
 
-        utterance.onend = () => {
-          if (token !== speechCycleToken) return;
-          setTimeout(speakNext, 300);
+        const advance = () => {
+          if (finishedCurrent || token !== speechCycleToken) return;
+          finishedCurrent = true;
+          clearTimeout(itemWatchdogTimer);
+          setTimeout(speakNext, 250);
         };
 
+        utterance.onend = advance;
+
         utterance.onerror = (event) => {
-          if (token !== speechCycleToken) return;
           if (event.error !== "interrupted" && event.error !== "canceled") {
             console.warn("SpeechSynthesisUtterance error, skipping item:", event.error);
-            setTimeout(speakNext, 300);
+            advance();
           }
         };
 
-        if (window.speechSynthesis.paused) {
-          window.speechSynthesis.resume();
-        }
+        // Self-healing watchdog: if Linux/Firefox finishes speaking without firing onend,
+        // automatically move to the next item once speechSynthesis.speaking becomes false.
+        const minDurationMs = Math.max(2500, item.text.length * 85);
+        const maxDurationMs = Math.max(9000, item.text.length * 180);
+        const startedAt = Date.now();
+
+        const checkProgress = () => {
+          if (finishedCurrent || token !== speechCycleToken) return;
+          const elapsed = Date.now() - startedAt;
+
+          if (elapsed > minDurationMs && !window.speechSynthesis.speaking) {
+            advance();
+            return;
+          }
+          if (elapsed > maxDurationMs) {
+            window.speechSynthesis.cancel();
+            advance();
+            return;
+          }
+          itemWatchdogTimer = setTimeout(checkProgress, 500);
+        };
+
         window.speechSynthesis.speak(utterance);
+        itemWatchdogTimer = setTimeout(checkProgress, minDurationMs);
       };
 
-      setTimeout(speakNext, 60);
+      speakNext();
     }
 
     async function fetchChanges() {
@@ -975,8 +991,8 @@
         counterDisplay.textContent = `Refresh #${intervalCount} • New changes: ${changeCount}`;
 
         // Speech Queue Handling:
-        // Case A: Already reading through the page -> DO NOT interrupt or restart from item #1!
-        //         If new edits arrived, prepend them to the front of the remaining queue so they speak next.
+        // Case A: Already reading through the page -> continue reading without interruption;
+        //         if new edits arrived, insert them at the front of the queue so they speak next.
         if (isSpeakingQueue) {
           if (priorityBatch.length > 0) {
             activeSpeechQueue = [...priorityBatch, ...activeSpeechQueue];
