@@ -1,4 +1,4 @@
-<img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png/500px-Wiki_s_Lazy_Coders_logo_small_transparent.png?utm_source=meta.wikimedia.org&utm_campaign=index&utm_content=thumbnail" alt="Wiki's Lazy Coders Logo" align="right" width="120" />
+<a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png/500px-Wiki_s_Lazy_Coders_logo_small_transparent.png" alt="Wiki's Lazy Coders Logo" align="right" width="120" /></a>
 
 🚫 **Important Notice**  
 Forking this repository is not permitted without written permission from the author.  
@@ -16,7 +16,7 @@ Monitor live Wikipedia Recent Changes across **76 languages** in real time with 
 **Suyash Dwivedi**  
 [User:Suyash.dwivedi](https://meta.wikimedia.org/wiki/User:Suyash.dwivedi)  
 
-<a href="https://commons.wikimedia.org/wiki/File:Suyash_Dwivedi_01(cropped).jpg"><img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Suyash_Dwivedi_01%28cropped%29.jpg/250px-Suyash_Dwivedi_01%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail" alt="Suyash Dwivedi" align="right" width="180" /></a>  
+<a href="https://commons.wikimedia.org/wiki/File:Suyash_Dwivedi_01(cropped).jpg"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Suyash_Dwivedi_01%28cropped%29.jpg/250px-Suyash_Dwivedi_01%28cropped%29.jpg" alt="Suyash Dwivedi" width="180" /></a>  
 
 **Project:** [Wiki's Lazy Coders](https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders)
 
@@ -125,7 +125,7 @@ Monitor live Wikipedia Recent Changes across **76 languages** in real time with 
    - Check or uncheck **Show Bot Edits** to filter automated bot activity.
    - Switch between **🌙 Dark Mode** and **☀️ Light Mode** to suit your screen preference.
 
-> **Note for Linux Desktop Users:** If your browser does not detect any system text-to-speech voices, install `speech-dispatcher` and `espeak-ng` (for example, `sudo apt install speech-dispatcher espeak-ng`) and restart your browser.
+> **Note for Linux Desktop Users:** If your browser does not detect any system text-to-speech voices, install `speech-dispatcher` and `espeak-ng` (e.g., `sudo apt install speech-dispatcher espeak-ng`) and restart your browser.
 
 ## Date and Time of Code Updates
 
