@@ -1,4 +1,4 @@
-<img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png" alt="Wiki's Lazy Coders Logo" align="right" width="120" />
+<img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png/500px-Wiki_s_Lazy_Coders_logo_small_transparent.png?utm_source=meta.wikimedia.org&utm_campaign=index&utm_content=thumbnail" alt="Wiki's Lazy Coders Logo" align="right" width="120" />
 
 🚫 **Important Notice**  
 Forking this repository is not permitted without written permission from the author.  
