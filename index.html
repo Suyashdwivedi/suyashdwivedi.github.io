@@ -625,9 +625,9 @@
           <option value="zu">isiZulu (Zulu)</option>
         </select>
       </div>
-      <label class="bot-filter" for="include-iabot" title="Toggle display and voice alerts for InternetArchiveBot edits">
-        <input type="checkbox" id="include-iabot">
-        <span>Show InternetArchiveBot</span>
+      <label class="bot-filter" for="include-bots" title="Toggle display and voice alerts for all bot accounts">
+        <input type="checkbox" id="include-bots">
+        <span>Show Bot Edits</span>
       </label>
       <div id="counter">Changes Count: 0</div>
     </div>
@@ -663,7 +663,7 @@
     const languageSelect = document.getElementById("language-select");
     const themeToggle = document.getElementById("toggle-theme");
     const voiceToggle = document.getElementById("toggle-voice");
-    const includeIABotCheckbox = document.getElementById("include-iabot");
+    const includeBotsCheckbox = document.getElementById("include-bots");
     const counterDisplay = document.getElementById("counter");
     const dateDisplay = document.getElementById("date-time");
     const changesDiv = document.getElementById("changes");
@@ -679,8 +679,8 @@
     const REFRESH_INTERVAL = 20000; 
     let fetchIntervalId; 
     let voiceEnabled = localStorage.getItem("voiceEnabled") !== "false";
-    let includeIABot = localStorage.getItem("includeIABot") === "true";
-    includeIABotCheckbox.checked = includeIABot;
+    let includeBots = localStorage.getItem("includeBots") === "true";
+    includeBotsCheckbox.checked = includeBots;
     let availableVoices = [];
     let currentUtterance = null;
     let speechCycleToken = 0;
@@ -822,6 +822,15 @@
     setInterval(displayDateTime, 1000);
     displayDateTime();
 
+    function isBotEdit(change) {
+      if (!change) return false;
+      // 1. Official MediaWiki bot flag
+      if (typeof change.bot !== "undefined") return true;
+      // 2. Fallback check for unflagged bot accounts whose username ends with "bot" (e.g., InternetArchiveBot, ClueBot NG, etc.)
+      const username = (change.user || "").trim().toLowerCase();
+      return /\bbot\b|bot$/i.test(username);
+    }
+
     function isIPAddress(user) {
       return /^(\d{1,3}\.){3}\d{1,3}$/.test(user)
         || /^[a-fA-F0-9:]+$/.test(user)
@@ -945,14 +954,14 @@
 
     async function fetchChanges() {
       try {
-        const res = await fetch(`https://${currentLang}.wikipedia.org/w/api.php?action=query&list=recentchanges&rcprop=title|user|timestamp|comment|ids&rclimit=50&origin=*&format=json`);
+        const res = await fetch(`https://${currentLang}.wikipedia.org/w/api.php?action=query&list=recentchanges&rcprop=title|user|timestamp|comment|ids|flags&rclimit=50&origin=*&format=json`);
         const json = await res.json();
         const changes = json.query.recentchanges.reverse(); 
 
         const isFirstLoad = previousChangeIDs.length === 0;
-        const visibleChanges = includeIABot
+        const visibleChanges = includeBots
           ? changes
-          : changes.filter(change => (change.user || "").trim().toLowerCase() !== "internetarchivebot");
+          : changes.filter(change => !isBotEdit(change));
         const newChanges = visibleChanges.filter(change => !previousChangeIDs.includes(change.rcid));
         const targetBcp47 = langMap[currentLang] || "en-US";
 
@@ -1060,9 +1069,9 @@
       localStorage.setItem("theme", mode);
     };
 
-    includeIABotCheckbox.onchange = () => {
-      includeIABot = includeIABotCheckbox.checked;
-      localStorage.setItem("includeIABot", includeIABot);
+    includeBotsCheckbox.onchange = () => {
+      includeBots = includeBotsCheckbox.checked;
+      localStorage.setItem("includeBots", includeBots);
       stopSpeech();
       changesDiv.innerHTML = "";
       previousChangeIDs = [];
