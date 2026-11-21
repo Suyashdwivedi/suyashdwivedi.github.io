@@ -16,7 +16,7 @@ Monitor live Wikipedia Recent Changes across **76 languages** in real time with 
 **Suyash Dwivedi**  
 [User:Suyash.dwivedi](https://meta.wikimedia.org/wiki/User:Suyash.dwivedi)  
 
-<a href="https://commons.wikimedia.org/wiki/File:Suyash_Dwivedi_01(cropped).jpg"><img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Suyash_Dwivedi_01%28cropped%29.jpg/250px-Suyash_Dwivedi_01%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail" alt="Suyash Dwivedi" width="180" /></a>  
+<a href="https://commons.wikimedia.org/wiki/File:Suyash_Dwivedi_01(cropped).jpg"><img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Suyash_Dwivedi_01%28cropped%29.jpg/250px-Suyash_Dwivedi_01%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail" alt="Suyash Dwivedi" align="right" width="180" /></a>  
 
 **Project:** [Wiki's Lazy Coders](https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders)
 
