@@ -262,6 +262,29 @@
       border-color: var(--accent-color);
     }
 
+    .bot-filter {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      background-color: var(--bg-color);
+      border: 1px solid var(--border-color);
+      padding: 7px 13px;
+      border-radius: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .bot-filter input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent-color);
+      cursor: pointer;
+      margin: 0;
+    }
+
     #counter {
       font-size: 0.9rem;
       font-weight: 600;
@@ -602,6 +625,10 @@
           <option value="zu">isiZulu (Zulu)</option>
         </select>
       </div>
+      <label class="bot-filter" for="include-iabot" title="Toggle display and voice alerts for InternetArchiveBot edits">
+        <input type="checkbox" id="include-iabot">
+        <span>Show InternetArchiveBot</span>
+      </label>
       <div id="counter">Changes Count: 0</div>
     </div>
   </header>
@@ -624,7 +651,7 @@
   <footer>
     Created by <a href="https://meta.wikimedia.org/wiki/User:Suyash.dwivedi" target="_blank">Suyash Dwivedi</a> | 
     <a href="https://meta.wikimedia.org/wiki/Wikis_Lazy_Coders" target="_blank">Wiki's Lazy Coders</a> | 
-    Updated on: 20 November 2026
+    Updated on: 21 November 2026
   </footer>
 
   <div class="nav-buttons">
@@ -636,6 +663,7 @@
     const languageSelect = document.getElementById("language-select");
     const themeToggle = document.getElementById("toggle-theme");
     const voiceToggle = document.getElementById("toggle-voice");
+    const includeIABotCheckbox = document.getElementById("include-iabot");
     const counterDisplay = document.getElementById("counter");
     const dateDisplay = document.getElementById("date-time");
     const changesDiv = document.getElementById("changes");
@@ -650,7 +678,9 @@
     let isSpeakingQueue = false;
     const REFRESH_INTERVAL = 20000; 
     let fetchIntervalId; 
-    let voiceEnabled = localStorage.getItem("voiceEnabled") !== "false"; 
+    let voiceEnabled = localStorage.getItem("voiceEnabled") !== "false";
+    let includeIABot = localStorage.getItem("includeIABot") === "true";
+    includeIABotCheckbox.checked = includeIABot;
     let availableVoices = [];
     let currentUtterance = null;
     let speechCycleToken = 0;
@@ -920,7 +950,10 @@
         const changes = json.query.recentchanges.reverse(); 
 
         const isFirstLoad = previousChangeIDs.length === 0;
-        const newChanges = changes.filter(change => !previousChangeIDs.includes(change.rcid));
+        const visibleChanges = includeIABot
+          ? changes
+          : changes.filter(change => (change.user || "").trim().toLowerCase() !== "internetarchivebot");
+        const newChanges = visibleChanges.filter(change => !previousChangeIDs.includes(change.rcid));
         const targetBcp47 = langMap[currentLang] || "en-US";
 
         if (newChanges.length > 0) {
@@ -1025,6 +1058,17 @@
       const mode = document.body.classList.contains("dark-mode") ? "dark" : "light";
       themeToggle.textContent = mode === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode";
       localStorage.setItem("theme", mode);
+    };
+
+    includeIABotCheckbox.onchange = () => {
+      includeIABot = includeIABotCheckbox.checked;
+      localStorage.setItem("includeIABot", includeIABot);
+      stopSpeech();
+      changesDiv.innerHTML = "";
+      previousChangeIDs = [];
+      allDisplayedItems = [];
+      intervalCount = 0;
+      fetchChanges();
     };
 
     languageSelect.onchange = () => {
