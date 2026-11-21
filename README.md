@@ -1,3 +1,5 @@
+<img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/Wiki_s_Lazy_Coders_logo_small_transparent.png/500px-Wiki_s_Lazy_Coders_logo_small_transparent.png?utm_source=meta.wikimedia.org&utm_campaign=index&utm_content=thumbnail" alt="Wiki's Lazy Coders Logo" align="right" width="140" />
+
 🚫 **Important Notice**  
 Forking this repository is not permitted without written permission from the author.  
 Please respect the license and terms of use outlined in the LICENSE file.  
